@@ -295,7 +295,7 @@
   }
 
   // ---------- skin picker ----------
-  // The four shipped uikit skins (assets/skins/, built by tools/build-skins.mjs)
+  // The shipped uikit skins (assets/skins/, built by tools/build-skins.mjs)
   // and their modes; assets/skin.js applies the choice before the page paints.
   function buildSkinPicker() {
     const S = window.DNPSkin;

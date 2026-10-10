@@ -1,5 +1,5 @@
 // Puts the reader's chosen skin on the page before it paints. Loaded without
-// `defer`, right after assets/skins/skins.js (the generated list of the four
+// `defer`, right after assets/skins/skins.js (the generated list of the
 // shipped uikit skins and their modes). The choice is a skin and a mode;
 // mode "auto" picks the skin's first dark or light mode to match the system.
 // Sets data-skin and data-skin-mode (what skins.css keys on) and data-theme

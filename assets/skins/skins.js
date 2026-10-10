@@ -115,5 +115,34 @@ window.DNP_SKINS = [
     ]
    }
   ]
+ },
+ {
+  "id": "aero",
+  "name": "Frutiger Aero",
+  "about": "Mid-2000s optimism: frosted glass panes over a bright sky, glossy aqua buttons, lime-green progress, soft glows, bubbles and orbs, humanist sans. Modes: day (sky and grass) and night (deep ocean glass).",
+  "modes": [
+   {
+    "id": "day",
+    "dark": false,
+    "swatches": [
+     "#d8eefa",
+     "#f4fbfe",
+     "#1e9ee0",
+     "#123047",
+     "#5fb82a"
+    ]
+   },
+   {
+    "id": "night",
+    "dark": true,
+    "swatches": [
+     "#071a2b",
+     "#0e2a42",
+     "#3cc4ff",
+     "#e6f6ff",
+     "#9be15d"
+    ]
+   }
+  ]
  }
 ];

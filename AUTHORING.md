@@ -73,7 +73,7 @@ Pages are one folder deep (`studio/`, `sprites/` …), so assets are at `../asse
 - `opts` holds the element's `data-*` attributes.
 - Use the `.wrow`, `.wbtn`, `.wlabel` and `.wout` classes.
 - For sound, use `window.DNPAudio.ctx()`. It creates the AudioContext, and must only be called from a click.
-- The page wears one of the four shipped uikit skins (the reader picks). Use the site's variables (`--bg`, `--panel`, `--accent`, `--accent-ink`, `--text`…), never fixed colours, so every skin and mode works.
+- The page wears one of the five shipped uikit skins (the reader picks). Use the site's variables (`--bg`, `--panel`, `--accent`, `--accent-ink`, `--text`…), never fixed colours, so every skin and mode works.
 - Read colours from CSS variables with `getComputedStyle(document.documentElement).getPropertyValue('--accent')`, so canvases follow the theme.
 - `window.DNPh(tag, attrs, ...children)` builds elements.
 

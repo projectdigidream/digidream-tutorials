@@ -373,3 +373,21 @@ figcaption { font-size: 13px; color: var(--text-dim); margin-top: 6px; }
 :root[data-skin="ps1"] .sidebar li a.here { background: var(--dnp-pattern-select); box-shadow: inset 3px 0 0 var(--dnp-color-gold-top); }
 :root[data-skin="ps1"] .progress > i { background: var(--dnp-pattern-blocks); }
 :root[data-skin="ps1"] h2 { border-top-color: var(--dnp-color-win-rimShadow); }
+
+/* aero (Frutiger Aero): a sky behind frosted-glass panes, glossy aqua buttons, lime progress, soft glows */
+:root[data-skin="aero"] body { background: var(--dnp-pattern-sky) fixed; }
+:root[data-skin="aero"] .topbar { background: var(--dnp-pattern-title); border-bottom: 1px solid var(--dnp-color-glass-edge); box-shadow: 0 1px 0 var(--dnp-color-glass-rim); backdrop-filter: blur(16px); }
+:root[data-skin="aero"] .sidebar { background: var(--dnp-pattern-glassDense); border-right: 1px solid var(--dnp-color-glass-edge); backdrop-filter: blur(16px); }
+:root[data-skin="aero"] :is(.goal, ol.steps > li, .quiz, .widget, .track, .callout, .pager a, .path, .vb-card, .diagram, .skinpop, .search .results, .hotnote) { background: var(--dnp-pattern-glass); border: 1px solid var(--dnp-color-glass-edge); box-shadow: var(--dnp-shadow-card); backdrop-filter: blur(12px); }
+:root[data-skin="aero"] :is(.wbtn, .iconbtn, .quiz li button, pre .copy, .skincard) { background: var(--dnp-pattern-gloss); border: 1px solid var(--dnp-color-gloss-border); color: var(--text); box-shadow: var(--dnp-shadow-raised), inset 0 1px 0 var(--dnp-color-sheen); text-shadow: 0 1px 0 var(--dnp-color-textGlow); }
+:root[data-skin="aero"] :is(.wbtn, .iconbtn, .quiz li button, pre .copy, .skincard):hover { background: var(--dnp-pattern-glossHover); border-color: var(--dnp-color-glow); box-shadow: var(--dnp-shadow-glow); }
+:root[data-skin="aero"] :is(.wbtn, .iconbtn, .quiz li button):active { background: var(--dnp-pattern-glossDown); box-shadow: inset 0 2px 4px rgba(0,40,80,.25); }
+:root[data-skin="aero"] :is(.wbtn.on, .wbtn.primary) { background: var(--dnp-pattern-aqua); border-color: var(--dnp-color-aqua-border); color: #fff; text-shadow: 0 1px 1px rgba(0,50,90,.45); }
+:root[data-skin="aero"] .skincard.on { background: var(--dnp-pattern-pick); border-color: var(--dnp-color-pick-border); box-shadow: inset 0 0 0 1px var(--dnp-color-pick-border); }
+:root[data-skin="aero"] .sidebar li a.here { background: var(--dnp-pattern-pick); box-shadow: inset 0 0 0 1px var(--dnp-color-pick-border), inset 0 1px 0 var(--dnp-color-sheen); }
+:root[data-skin="aero"] :is(.search input, .filters input, .vb-bar input, .wlabel select, .wlabel input) { box-shadow: inset 0 1px 2px rgba(20,80,130,.15); }
+:root[data-skin="aero"] :is(.search input, .filters input, .vb-bar input, .wlabel select, .wlabel input):focus { border-color: var(--dnp-color-glow); box-shadow: 0 0 0 3px color-mix(in srgb, var(--dnp-color-glow) 30%, transparent); }
+:root[data-skin="aero"] .progress { background: linear-gradient(180deg, var(--line), var(--line-soft) 60%, var(--raised)); border: 1px solid var(--dnp-color-gloss-border); box-shadow: inset 0 1px 2px rgba(0,40,80,.25); }
+:root[data-skin="aero"] .progress > i { background: var(--dnp-pattern-lime); }
+:root[data-skin="aero"] :is(kbd, .ui) { background: var(--dnp-pattern-gloss); border: 1px solid var(--dnp-color-gloss-border); }
+:root[data-skin="aero"] article h1, :root[data-skin="aero"] .hero h1 { font-weight: 300; letter-spacing: -.01em; text-shadow: 0 1px 0 var(--dnp-color-textGlow); }

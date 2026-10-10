@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Dress the tutorial site in the four shipped uikit skins (uikit/skins/
+// Dress the tutorial site in the shipped uikit skins (uikit/skins/
 // index.json "ship"). Each skin is compiled by uikit's own compiler, so the
 // colours, fonts, radii, bevels and patterns are the ones the tools wear.
 //
