@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Camera and cinematics · Digidream Studio tutorials</title>
+<meta name="description" content="Set how the game looks at a map, draw camera paths, and make the camera track the player or fly along a path.">
+<link rel="stylesheet" href="../assets/site.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 16%22%3E%3Cpath d=%22M8 1l7 7-7 7-7-7z%22 fill=%22%235b8fd6%22/%3E%3C/svg%3E">
+<script defer src="../assets/nav.js"></script>
+<script defer src="../assets/shortcuts.js"></script>
+<script defer src="../assets/site.js"></script>
+</head>
+<body>
+<article>
+  <h1>Camera and cinematics</h1>
+  <p class="lede">Each map can say how the game's camera looks at it: from which angle, how far away, and whether the player may turn or zoom. It can also have camera <em>paths</em> — curves the camera rides — for a fixed-track shot or a flythrough.</p>
+  <div class="goal">
+    <b>You'll learn</b><span>how to set a map's camera angle and distance, lock them, draw a camera path, and choose how the camera follows</span>
+    <b>Time</b><span>20 minutes</span>
+    <b>Needs</b><span>a map with a few rooms (see <a href="02-first-map.html">Your first map</a>)</span>
+  </div>
+
+  <h2>The Camera sheet</h2>
+  <figure class="shot" data-src="../assets/shots/studio-camera.png" data-alt="The Camera sheet beside the map in the game view">
+    <figcaption>The Camera sheet: the angle and distance, how it follows, and the map's camera paths.</figcaption>
+  </figure>
+  <p>Choose <span class="ui">🎥 Camera</span> (key <kbd>6</kbd>), or <span class="ui">⋯ More</span> → <span class="ui">Camera…</span>. A sheet titled <b>Camera</b> opens. Its first line says how the game looks at this map when nothing is set: the engine's own camera, 45° around, 51° down, free to turn and zoom.</p>
+
+  <h3>Angle and distance</h3>
+  <ul>
+    <li><span class="ui">set the angle</span>: turn it on to fix the camera's angle. It starts at the engine's own, switches the view to the game view, and shows two sliders:
+      <ul>
+        <li><b>around</b>: which way the camera faces, all the way round. The label shows the angle, for example <em>around (45°)</em>.</li>
+        <li><b>down</b>: how steeply it looks down, for example <em>down (51°)</em>.</li>
+      </ul></li>
+    <li><span class="ui">set the distance</span>: turn it on to fix how far the camera stands back. The <span class="ui">distance</span> slider goes from 8 to 80 and starts at 38.</li>
+    <li><span class="ui">lock turning</span>: the player cannot turn the camera.</li>
+    <li><span class="ui">lock zoom</span>: the player cannot zoom.</li>
+  </ul>
+  <p>The studio's game view follows these settings while they are set, so what you see is what the player will see.</p>
+  <div class="callout tip"><p>Sprites stand upright in the world. So the steeper the camera looks down, the shorter they look — in the studio and in the game. Check your monsters after you change <b>down</b>.</p></div>
+
+  <h2>Camera paths</h2>
+  <p>Further down the sheet is <b>⌁ camera paths</b>. A path is a line the camera can ride. It bends outward at every corner, because the camera rides a smooth curve <em>through</em> the points, not the straight lines between them.</p>
+  <p>Each path has a row: its tag (and <em>loop</em> if it loops), how many points it has, and its length in units of curve. <span class="ui">✎</span> edits it; <span class="ui">✕</span> deletes it after asking. <span class="ui">+ new path</span> makes a path and starts editing it.</p>
+
+  <h3>Editing a path</h3>
+  <p>While you edit a path, the view switches to the game view, and the sheet becomes <b>Path tag</b> and the path's tag. In the viewport:</p>
+  <ul>
+    <li><b>Tap the floor</b> to add a waypoint at the end.</li>
+    <li><b>Tap a waypoint</b> to pick it.</li>
+    <li><b>Drag</b> a waypoint to move it.</li>
+    <li><b>Hold</b> a waypoint (long-press) to remove it.</li>
+  </ul>
+  <p>A new waypoint arrives at the height of the one you last worked on. A camera path usually runs above head height, and a point dropped on the floor below would put the shot in the carpet. Every waypoint is numbered on the map, and the curve is drawn through them.</p>
+  <p>The sheet shows the picked waypoint as <b>waypoint N of M</b>, with:</p>
+  <ul>
+    <li><span class="ui">height</span>, <span class="ui">x</span> and <span class="ui">y</span>.</li>
+    <li><span class="ui">‹ previous</span> and <span class="ui">next ›</span>: pick the waypoint before or after.</li>
+    <li><span class="ui">remove</span>: delete this waypoint.</li>
+    <li><span class="ui">◀ earlier</span> and <span class="ui">later ▶</span>: move it one place along the path. The camera runs through the points in order, so the same points in another order are another path.</li>
+    <li><span class="ui">+ after this</span>: a new waypoint halfway to the next one. Use it to add a bend; adding at the end would change where the shot finishes instead.</li>
+  </ul>
+  <p>Below the waypoint:</p>
+  <ul>
+    <li><span class="ui">height for every waypoint</span>: sets all of them to one height at once.</li>
+    <li><span class="ui">tag</span>: the number scripts and the camera use to name the path. Tags are not unique; the first path with a tag wins.</li>
+    <li><span class="ui">loop</span>: the path joins its end to its start.</li>
+    <li><span class="ui">rides the sectors under it</span> (on by default): each point moves with the room it sits over, so a path over a lift moves with the lift. Turn it off to pin every point to the world.</li>
+    <li><span class="ui">‹ all cameras</span>: back to the Camera sheet.</li>
+  </ul>
+  <div class="callout warn"><p>Do not let a path ride a room that a script moves in steps. Its position arrives over the network, and the camera judders.</p></div>
+  <p><kbd>Esc</kbd> also stops editing the path.</p>
+
+  <h2>🎬 How it follows</h2>
+  <p>The <span class="ui">mode</span> menu under <b>🎬 how it follows</b> says what the camera does with a path:</p>
+  <table>
+    <thead><tr><th>Mode</th><th>What the camera does</th><th>Extra fields</th></tr></thead>
+    <tbody>
+      <tr><td><b>follow the player (the engine's own)</b></td><td>The usual camera. No path.</td><td>—</td></tr>
+      <tr><td><b>track: stay on the path, nearest the player</b></td><td>Stands on the path at the point nearest the player, still aimed at the player. A fixed-track shot.</td><td><span class="ui">path</span>, <span class="ui">blend rate</span></td></tr>
+      <tr><td><b>flythrough: ride the path at a speed</b></td><td>Rides along the path, taking both its position and its aim from the path.</td><td><span class="ui">path</span>, <span class="ui">speed (units/s)</span>, <span class="ui">blend rate</span></td></tr>
+      <tr><td><b>auto: take the path when the player comes near</b></td><td>Tracks the path while the player is near it, and follows the player otherwise.</td><td><span class="ui">path</span>, <span class="ui">take it within</span>, <span class="ui">blend rate</span></td></tr>
+    </tbody>
+  </table>
+  <ul>
+    <li><span class="ui">path</span>: which path, by tag. It starts as <em>(choose a path)</em>.</li>
+    <li><span class="ui">speed (units/s)</span>: −40 to 40, 6 to begin with. A negative speed rides the path backwards, looking backwards.</li>
+    <li><span class="ui">take it within</span>: how near the player must come for <em>auto</em> to take the path, 1 to 40. It lets go again at 1.5 times that distance, so a player walking along the edge does not make it flicker.</li>
+    <li><span class="ui">blend rate</span>: how fast the camera fades onto the path and off it, 0.5 to 20. There is no cut: the camera eases from one to the other.</li>
+  </ul>
+  <p>For a flythrough, the sheet says how long the shot lasts: the path's length divided by the speed. Write that number down if a script times a cutscene: the engine has no event that says a flythrough has finished.</p>
+  <div class="callout"><p>These settings are where the map <em>starts</em>, for everyone who joins it. A trigger's <code>camera</code> action can change any of them later (see <a href="04-triggers.html">Triggers</a>), and a graph can run a whole cutscene (see <a href="06-graphs.html">Graphs</a>).</p></div>
+
+  <h2>Exercise: a tracking shot</h2>
+  <ol class="steps">
+    <li><p>Open your map and choose <span class="ui">🎥 Camera</span>. Turn on <span class="ui">set the angle</span> and drag <b>around</b> until the main room faces you. Turn on <span class="ui">lock turning</span>.</p></li>
+    <li><p>Press <span class="ui">+ new path</span>. Tap the floor four times along one side of the room, at about head height and above.</p></li>
+    <li><p>Pick the second waypoint and press <span class="ui">+ after this</span>. Drag the new waypoint out to make a bend.</p></li>
+    <li><p>Set <span class="ui">height for every waypoint</span> to 6.</p></li>
+    <li><p>Press <span class="ui">‹ all cameras</span>. Set <span class="ui">mode</span> to <b>track: stay on the path, nearest the player</b> and choose your path's tag in <span class="ui">path</span>.</p></li>
+    <li><p>Change <span class="ui">mode</span> to <b>flythrough: ride the path at a speed</b> and read how long the shot lasts. Set <span class="ui">speed (units/s)</span> to 3 and read it again.</p></li>
+    <li><p>If you are in the app, press <span class="ui">▶ Play</span> to see the shot.</p></li>
+  </ol>
+
+  <div class="quiz" data-answer="1">
+    <p class="q">You want the camera to stay on a rail beside a corridor while still looking at the player. Which mode?</p>
+    <ul>
+      <li>flythrough</li>
+      <li>track</li>
+      <li>follow the player</li>
+    </ul>
+    <p class="why">Track takes its position from the path and still aims at the player. Flythrough takes its aim from the path too.</p>
+  </div>
+  <div class="quiz" data-answer="2">
+    <p class="q">Your path has the right points but bends the wrong way. What do you try first?</p>
+    <ul>
+      <li>Delete it and tap the points again</li>
+      <li>Turn on loop</li>
+      <li>Pick a waypoint and use ◀ earlier / later ▶ to put the points in the right order</li>
+    </ul>
+    <p class="why">The camera runs through the points in order, so the order is part of the shape. You can move a point along the path without deleting it.</p>
+  </div>
+  <div class="quiz" data-answer="0">
+    <p class="q">A flythrough path is 30 units of curve and the speed is 6. How long is the shot?</p>
+    <ul>
+      <li>5 seconds</li>
+      <li>180 seconds</li>
+      <li>Until the engine reports the flythrough has finished</li>
+    </ul>
+    <p class="why">Length divided by speed: 30 / 6 = 5 s. The engine has no completion event, so a cutscene is timed from this number.</p>
+  </div>
+</article>
+</body>
+</html>

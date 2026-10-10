@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Your first sprite · Digidream Studio tutorials</title>
+<meta name="description" content="What views, mirroring and the square canvas mean in ThreeSprite, and how to make a sprite from the studio's Sprites page and bring it back baked.">
+<link rel="stylesheet" href="../assets/site.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 16%22%3E%3Cpath d=%22M8 1l7 7-7 7-7-7z%22 fill=%22%235b8fd6%22/%3E%3C/svg%3E">
+<script defer src="../assets/nav.js"></script>
+<script defer src="../assets/shortcuts.js"></script>
+<script defer src="../assets/site.js"></script>
+</head>
+<body>
+<article>
+  <h1>Your first sprite</h1>
+  <p class="lede">ThreeSprite draws characters that live in a 3D world but are pictures: one picture per <em>view</em>, the angle the camera sees them from. You draw each view by hand, a 3D rig moves them all at once, and the studio bakes the result into the sheet a monster or a prop is drawn with.</p>
+  <div class="goal">
+    <b>You'll learn</b><span>what views, mirroring and the canvas are; how to make a sprite from the studio and come back with it baked; where everything sits in ThreeSprite's window</span>
+    <b>Time</b><span>15 minutes</span>
+    <b>Needs</b><span>the studio with the ThreeSprite plugin (the desktop app or the dev server), and a module open</span>
+  </div>
+
+  <h2>Views: the one idea to get right</h2>
+  <p>A sprite has a number of <b>views</b>, from 1 to 64. The presets offered are 1, 4, 6, 8, 12, 16, 24 and 32. Each view is the picture a camera sees when it stands at one angle around the character. With 8 views there is one every 45°.</p>
+  <ul>
+    <li><b>View 1 faces the viewer.</b> It is the character seen from the front.</li>
+    <li><b>The views go anticlockwise seen from above.</b> View <i>k</i> is what a camera sees from <code>(k−1)/N</code> of a turn around the character.</li>
+    <li>So with 8 views, view 3 is the camera at the character's <em>left</em>, and the character appears facing screen-left. View 5 is its back, and view 7 its right side.</li>
+  </ul>
+  <p>This is the same convention Doom uses for its rotations, so Doom-style exports need no remapping.</p>
+  <p>The game picks a view from where the camera stands relative to where the character heads. The demo below does the same sum as ThreeSprite. Drag the camera round the circle, or turn the character with <b>Facing</b>.</p>
+  <div class="widget" data-widget="view-dial" data-views="8" data-mirror="0" data-title="Which view does the camera see?"></div>
+  <div class="callout tip"><p>Each view owns a wedge of the circle centred on its own angle. With 8 views, view 1 covers 22.5° either side of straight ahead, and the view swaps halfway between two angles.</p></div>
+
+  <h2>Mirror symmetry</h2>
+  <p>Most characters look the same from the left as from the right, flipped. With <b>mirror symmetry</b> on, you draw only ⌊N/2⌋+1 of the N views, and the rest are made by flipping:</p>
+  <table>
+    <thead><tr><th>Views</th><th>You draw</th><th>Flipped copies</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>1</td><td>—</td></tr>
+      <tr><td>4</td><td>1, 2, 3</td><td>4 (from 2)</td></tr>
+      <tr><td>8</td><td>1 – 5</td><td>6 (from 4), 7 (from 3), 8 (from 2)</td></tr>
+      <tr><td>16</td><td>1 – 9</td><td>10 – 16 (from 8 down to 2)</td></tr>
+    </tbody>
+  </table>
+  <p>View 1 (front) and, with an even count, the back view are their own mirrors. Turn <b>Mirror symmetry</b> on in the demo above and watch the dashed views: those are the ones you never draw.</p>
+  <div class="callout warn"><p>Mirroring flips the <em>whole finished frame</em>, so anything lopsided flips too. A sword in the right hand becomes a sword in the left hand in every flipped view. The little knight in the demo shows it. If that matters, turn mirroring off and draw every view.</p></div>
+
+  <h2>One square canvas, feet on the bottom row</h2>
+  <p>Every frame of every view is drawn on one square canvas. You pick its size when you make the sprite: 16, 24, 32, 48, 64, 96, 128 or 256 pixels, or a custom size from 8 to 256. The size is fixed after that. The character's <b>feet go on the bottom row</b>, and an orange ground line under the canvas marks it. The game hangs the sprite from its feet, so a character drawn floating will float in the game too.</p>
+
+  <h2>Make a sprite from the studio</h2>
+  <figure class="shot" data-src="../assets/shots/studio-sprites-page.png" data-alt="The studio's Sprites page, with its sheets as tiles">
+    <figcaption>🎞 Sprites: every sheet in the module, and the buttons to add one.</figcaption>
+  </figure>
+  <p>Open <b>🎞 Sprites</b> from the rail or from Home. The page shows every sheet in the module as a tile:</p>
+  <ul>
+    <li>A tile marked <b>◇</b> is a sheet with no ThreeSprite project behind it: it was imported as a finished atlas, so there is nothing to edit.</li>
+    <li>Click a tile to see its card: how many animations it has, which props draw it, and whether it was baked from a project.</li>
+    <li>A sheet with a project has <span class="ui">✎ edit in ThreeSprite</span>. When more than one editor can open it, <span class="ui">open with…</span> lets you choose.</li>
+  </ul>
+  <ol class="steps">
+    <li><p>Press <span class="ui">+ new sprite</span>. The studio asks for <em>the new sheet's name (A-Z, 0-9, _)</em>. Type <code>BLOB</code> and confirm. Lower-case letters are turned into capitals, and anything else is dropped.</p></li>
+    <li><p>ThreeSprite opens on an empty project and shows the <b>New sprite</b> dialog. Leave <span class="ui">Name</span> and <span class="ui">Sprite id</span> as they are.</p></li>
+    <li><p>Under <b>Canvas size</b>, pick <span class="ui">32</span>. Under <b>Views</b>, pick <span class="ui">8</span>. Leave <b>Mirror symmetry</b> ticked: the line reads <em>draw only 5 of 8 views; the rest are flipped automatically</em>.</p></li>
+    <li><p>Press <span class="ui">Create</span>. The project starts with one bone called <code>body</code>, one part called <code>body</code> covering the whole canvas, and one animation called <code>idle</code> (4 frames at 8 fps, looping), so you can draw straight away.</p></li>
+    <li><p>With the Pencil, draw a blob standing on the bottom row in view 1. Then press <kbd>.</kbd> to go to view 2 and draw it again, a little turned.</p></li>
+    <li><p>Press <span class="ui">← studio</span> in the bar above ThreeSprite. The studio saves the project into the module and bakes it. <code>BLOB</code> now has a tile on the Sprites page with no ◇.</p></li>
+  </ol>
+
+  <h3>The New sprite dialog</h3>
+  <table>
+    <thead><tr><th>Field</th><th>What it does</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">Name</span></td><td>The project's name, shown in ThreeSprite's top bar.</td></tr>
+      <tr><td><span class="ui">Sprite id (the stem of every exported file)</span></td><td>Letters, digits, <code>_</code> and <code>-</code>. Only matters for ThreeSprite's own Export tab: inside the studio, the sheet takes the studio's name for it.</td></tr>
+      <tr><td><b>Canvas size</b></td><td>The square canvas, 8–256 px. Fixed once made.</td></tr>
+      <tr><td><b>Views</b></td><td>1–64, from the presets or <i>custom</i>. The line below says how many degrees apart they are.</td></tr>
+      <tr><td><b>Mirror symmetry</b></td><td>Draw ⌊N/2⌋+1 views and flip the rest. On by default.</td></tr>
+    </tbody>
+  </table>
+  <p>The view count and mirroring can be changed later in <b>Project settings</b>. Fewer views drops the images drawn for views that no longer exist, and the dialog warns you before it does.</p>
+
+  <h3>What the studio keeps, and what the game reads</h3>
+  <div class="diagram"><svg viewBox="0 0 640 120" width="640" height="120" role="img" aria-label="sources/sprites/NAME.tsprite is baked into assets/sprites/NAME.json and NAME.png">
+    <rect class="box" x="10" y="35" width="200" height="50" rx="8"/>
+    <text x="110" y="57" text-anchor="middle" font-size="13">sources/sprites/</text>
+    <text x="110" y="74" text-anchor="middle" font-size="13">BLOB.tsprite</text>
+    <path class="arrow" d="M215 60 H 300"/><path class="arrow" d="M292 54 L300 60 L292 66"/>
+    <text x="258" y="50" text-anchor="middle" font-size="12" class="dim">bake</text>
+    <rect class="acc" x="305" y="20" width="200" height="80" rx="8"/>
+    <text x="405" y="47" text-anchor="middle" font-size="13">assets/sprites/</text>
+    <text x="405" y="65" text-anchor="middle" font-size="13">BLOB.json</text>
+    <text x="405" y="83" text-anchor="middle" font-size="13">BLOB.png</text>
+    <text x="575" y="57" text-anchor="middle" font-size="12" class="dim">props and</text>
+    <text x="575" y="73" text-anchor="middle" font-size="12" class="dim">monsters</text>
+    <path class="arrow" d="M510 60 H 535"/>
+  </svg></div>
+  <ul>
+    <li>The <b>source</b> is the ThreeSprite project, kept at <code>sources/sprites/NAME.tsprite</code>.</li>
+    <li>The <b>bake</b> makes what the game draws: <code>assets/sprites/NAME.json</code> (the atlas manifest) and <code>NAME.png</code> (the packed sheet). It runs when you press <span class="ui">← studio</span>, and again before Play and Export for any source that changed.</li>
+    <li><b>Props and monsters pick a sheet by name.</b> Re-bake a sheet under the same name and everything drawn with it changes.</li>
+  </ul>
+  <p>You can also bring in work made elsewhere with <span class="ui">+ import a sprite (.tsprite, or an atlas)</span>. A <code>.tsprite</code> is kept as the source and baked. An atlas (its <code>.json</code>, then its <code>.png</code>) is taken as a finished sheet and gets the ◇ mark.</p>
+
+  <h3>Inside the studio, ThreeSprite is slightly different</h3>
+  <ul>
+    <li>Its project menu (☰) has no <b>New project…</b>, <b>Open…</b> or <b>Save as…</b>: the studio decides which file you are editing.</li>
+    <li><kbd>⌘S</kbd> saves only a <b>draft</b>, which survives a reload. ThreeSprite also keeps a draft by itself every few seconds while you edit.</li>
+    <li><span class="ui">← studio</span> is what saves into the module and bakes. The <span class="ui">✕</span> beside it discards your changes and goes back.</li>
+  </ul>
+  <div class="callout warn"><p>Leaving with <span class="ui">✕</span> throws the session's changes away. If you are not sure, use <span class="ui">← studio</span>: an unwanted change can be undone on the studio's page afterwards.</p></div>
+
+  <h2>Running ThreeSprite on its own</h2>
+  <p>ThreeSprite is also a standalone app. From its own repository:</p>
+<pre><code>pnpm install
+pnpm dev          # browser build on http://localhost:1420
+pnpm dev:web      # the browser-only build, on port 1421
+pnpm tauri dev    # the desktop app</code></pre>
+  <p>There is also a VS Code extension that opens <code>.tsprite</code> files in an editor tab. On its own, ThreeSprite keeps projects in its library and saves <code>.tsprite</code> files; its Export tab writes the sheets. Inside the studio you never need Export, because the studio bakes.</p>
+
+  <h2>Finding your way around</h2>
+  <figure class="shot" data-src="../assets/shots/sprite-draw.png" data-hotspots='[{"x": 3, "y": 1.7, "t": "← studio", "d": "save into the module and go back; ✕ throws the changes away"}, {"x": 5, "y": 6, "t": "The project", "d": "name, canvas size, views, mirrored — click for settings"}, {"x": 55, "y": 6, "t": "Mode tabs", "d": "Draw · Rig · Animate · 3D · Export"}, {"x": 15, "y": 11, "t": "View strip", "d": "one button per view; ⇄ marks mirrored views ( , and . step)"}, {"x": 2, "y": 15, "t": "Tools", "d": "pencil, eraser, dither, fill, pick, select, move, pan"}, {"x": 2, "y": 46, "t": "Brush size", "d": "1 to 4 pixels"}, {"x": 2, "y": 60, "t": "Toggles", "d": "mirror drawing, dim other parts, pixel grid"}, {"x": 41, "y": 50, "t": "The canvas", "d": "one square frame; the feet stand on the orange line"}, {"x": 88, "y": 20, "t": "Palette", "d": "primary and secondary colour, swap with X"}, {"x": 88, "y": 34, "t": "Parts", "d": "what is drawn, hung on bones; variants per part"}, {"x": 88, "y": 49, "t": "Solids", "d": "3D shapes drawn in every view; Bake turns them into pixels"}]' data-alt="ThreeSprite in the Draw tab">
+    <figcaption>The Draw tab: tools on the left, the view strip over the canvas, palette and parts on the right.</figcaption>
+  </figure>
+  <h3>The top bar</h3>
+  <p>From left to right:</p>
+  <ul>
+    <li><b>☰</b> — the project menu: <b>Save</b>, <b>Import PNG as part…</b>, and (outside the studio) new, open and recent projects.</li>
+    <li><b>The project's name</b>, with a <b>•</b> while there are unsaved changes, then its canvas size, view count and <i>mirrored</i>, for example <code>32px · 8 views · mirrored</code>. Click it to open <b>Project settings</b>.</li>
+    <li><b>Undo</b> and <b>Redo</b> (<kbd>⌘Z</kbd>, <kbd>⇧⌘Z</kbd> or <kbd>⌘Y</kbd>).</li>
+    <li><b>The mode tabs</b>, in the middle.</li>
+    <li><b>?</b> — every shortcut and gesture — and the settings gear, which opens Project settings too.</li>
+  </ul>
+  <h3>The mode tabs</h3>
+  <table>
+    <thead><tr><th>Tab</th><th>What you do there</th><th>Tutorial</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">Draw</span></td><td>paint each part's picture in each view; palette, parts and solids</td><td><a href="02-drawing.html">Drawing</a></td></tr>
+      <tr><td><span class="ui">Rig</span></td><td>bones, where parts hang, skinning, layer order</td><td><a href="03-rig.html">Rig, bones and parts</a></td></tr>
+      <tr><td><span class="ui">Animate</span></td><td>the timeline: animations, frames and keys</td><td><a href="04-animate.html">Animating</a></td></tr>
+      <tr><td><span class="ui">3D</span></td><td>the sprite standing in 3D; orbit it and every view swaps in</td><td><a href="05-preview-palettes-bake.html">3D preview, palettes, baking</a></td></tr>
+      <tr><td><span class="ui">Export</span></td><td>write sheets and files (standalone; the studio bakes for you)</td><td><a href="05-preview-palettes-bake.html#export-standalone">Export</a></td></tr>
+    </tbody>
+  </table>
+
+  <div class="quiz" data-answer="1">
+    <p class="q">A sprite has 8 views. The camera stands exactly at the character's left side. Which view does it see?</p>
+    <ul>
+      <li>View 7</li>
+      <li>View 3</li>
+      <li>View 5</li>
+    </ul>
+    <p class="why">Views go anticlockwise seen from above, starting with view 1 in front. A quarter turn round is (3−1)/8 = ¼, and that puts the camera at the character's left, with the character facing screen-left.</p>
+  </div>
+  <div class="quiz" data-answer="2">
+    <p class="q">You make a 16-view sprite with mirror symmetry on. How many views do you draw?</p>
+    <ul>
+      <li>8</li>
+      <li>16</li>
+      <li>9</li>
+    </ul>
+    <p class="why">Mirroring draws ⌊16/2⌋+1 = 9 views: the front, the back and the seven on one side. Views 10 to 16 are flipped copies of views 8 down to 2.</p>
+  </div>
+  <div class="quiz" data-answer="0">
+    <p class="q">You edit a sprite in ThreeSprite inside the studio and press ⌘S. What happens?</p>
+    <ul>
+      <li>A draft is kept; the module changes only when you press ← studio</li>
+      <li>The module is saved and the sheet is baked</li>
+      <li>A Save as dialog asks where to put the .tsprite</li>
+    </ul>
+    <p class="why">Inside the studio, ⌘S only keeps a draft. ← studio saves the project into sources/sprites/ and bakes assets/sprites/NAME.json and NAME.png.</p>
+  </div>
+</article>
+</body>
+</html>

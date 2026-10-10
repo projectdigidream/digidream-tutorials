@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Your first sound · Digidream Studio tutorials</title>
+<meta name="description" content="Open DigidreamSound, find your way around its screen, make a sound from a recipe, and name it the way the game asks for it.">
+<link rel="stylesheet" href="../assets/site.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 16%22%3E%3Cpath d=%22M8 1l7 7-7 7-7-7z%22 fill=%22%235b8fd6%22/%3E%3C/svg%3E">
+<script defer src="../assets/nav.js"></script>
+<script defer src="../assets/shortcuts.js"></script>
+<script defer src="../assets/site.js"></script>
+</head>
+<body>
+<article>
+  <h1>Your first sound</h1>
+  <p class="lede">DigidreamSound is the sound-effect editor. You pick a kind of sound, press until one is close, nudge it, and give it the name the game will ask for. A bank stores <em>recipes, not recordings</em>: every sound can still be changed, and a hundred of them are a couple of hundred kilobytes of JSON.</p>
+  <div class="goal">
+    <b>You'll learn</b><span>how to open the editor on its own or from the studio, how its screen is laid out, the difference between Randomize and Vary, and how to name a sound</span>
+    <b>Time</b><span>15 minutes</span>
+    <b>Needs</b><span>a checkout of the repository with Node.js (and emsdk, once), or the studio with a module open</span>
+  </div>
+
+  <h2>Five ideas</h2>
+  <p>Everything in the editor is one of these five things. The rest of the track keeps coming back to them.</p>
+  <table>
+    <thead><tr><th>Word</th><th>What it is</th></tr></thead>
+    <tbody>
+      <tr><td><b>Sound</b></td><td>One thing the game asks for by name, such as <code>weapon.pistol.fire</code> or <code>monster.imp.death</code>. The list on the left is the sounds.</td></tr>
+      <tr><td><b>Recipe</b></td><td>How a sound is made: a kind of sound (gunshot, explosion…) and the positions of its knobs.</td></tr>
+      <tr><td><b>Take</b></td><td>A version of a sound. The game picks one take at random each time the sound plays.</td></tr>
+      <tr><td><b>Layer</b></td><td>A part of a take, such as the crack, the body or the tail. Layers start together and are added together.</td></tr>
+      <tr><td><b>Group</b></td><td>A bus: sounds that share a volume, a limit on how many play at once, and effect sends. Every sound plays on one group.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Two ways to open it</h2>
+  <p>The same page runs on its own and inside the studio. What differs is where the file lives.</p>
+  <table>
+    <thead><tr><th></th><th>On its own</th><th>In the studio</th></tr></thead>
+    <tbody>
+      <tr><td>The document</td><td>a <code>.sfxproj</code> file you open and save</td><td>one of the module's sound packs</td></tr>
+      <tr><td><span class="ui">Open</span>, <span class="ui">Save</span>, <span class="ui">New bank</span></td><td>✓</td><td>hidden — <span class="ui">← studio</span> saves</td></tr>
+      <tr><td><span class="ui">Export for the game (.sfxb)</span></td><td>✓</td><td>hidden — the game reads a pack as written</td></tr>
+      <tr><td><span class="ui">Export this sound as WAV</span></td><td>✓</td><td>✓</td></tr>
+    </tbody>
+  </table>
+
+  <h3>On its own</h3>
+  <ol class="steps">
+    <li><p>From the <code>sound/</code> directory, build the WebAssembly engine once. Do it again only after changing the engine. It needs emsdk.</p>
+<pre><code>./scripts/build_wasm.sh</code></pre></li>
+    <li><p>Start the editor's server:</p>
+<pre><code>node tool/serve.js</code></pre>
+      <p>Then open <a href="http://localhost:8940/tool/sfx.html">http://localhost:8940/tool/sfx.html</a>.</p></li>
+    <li><p>Press <span class="ui">Start</span>. A browser only lets a page make sound after a click, so the editor waits for one. It then opens the small example bank, so there is always something to play.</p></li>
+  </ol>
+  <div class="callout warn"><p>The editor needs a <b>secure context</b>. <code>localhost</code> is one. A plain <code>http://</code> address on your network is not: the page loads but makes no sound. To use another device, serve over HTTPS or use the Android app.</p></div>
+  <p><code>serve.js</code> also takes a port, <code>--host 0.0.0.0</code> to reach it from another device, and <code>--root DIR</code> to serve a packaged build instead of the source tree. The desktop and Android apps skip <span class="ui">Start</span>.</p>
+
+  <h3>From the studio</h3>
+  <p>DigidreamSound ships with the studio as a plugin. Open the <span class="ui">🔊 Sounds</span> section, then either press <span class="ui">+ new sound pack</span> or press <span class="ui">✎ edit in DigidreamSound</span> on a pack. The editor fills the screen under a slim bar: <span class="ui">← studio</span> goes back and saves, <span class="ui">✕</span> goes back without saving. Packs are covered in <a href="04-mix-and-ship.html#packs">Mix, test and ship</a>.</p>
+
+  <h2>The screen</h2>
+  <figure class="shot" data-src="../assets/shots/sound-main.png" data-hotspots='[{"x": 10, "y": 25, "t": "Library", "d": "every sound in the bank, grouped by its first name part"}, {"x": 16.8, "y": 9.3, "t": "＋ New", "d": "a new sound"}, {"x": 21, "y": 3.1, "t": "Views", "d": "Sounds, and Mix & test for the whole bank"}, {"x": 29.5, "y": 3.1, "t": "Play", "d": "Space plays the sound"}, {"x": 48, "y": 24, "t": "The player", "d": "the waveform; Fix level, Repeat, Play on change"}, {"x": 73, "y": 34.5, "t": "Layers timeline", "d": "when each layer sounds; S solo, M mute"}, {"x": 25.5, "y": 50, "t": "Takes", "d": "A, B, C… — the game picks one at random"}, {"x": 48, "y": 72, "t": "Start from", "d": "13 recipes — press one until it is close"}, {"x": 29.5, "y": 86, "t": "🎲 Randomize and ✨ Vary", "d": "a new one of the kind, or a small nudge"}, {"x": 68.5, "y": 86, "t": "🎙 Match a recording…", "d": "fit the sound to a WAV you have"}, {"x": 85, "y": 9, "t": "In the game", "d": "group, limits, variety, distance, ducking, looping"}, {"x": 97.8, "y": 3.1, "t": "⋯", "d": "new bank, open, export for the game, export WAV"}]' data-alt="DigidreamSound with the example bank open">
+    <figcaption>The library on the left, the selected sound in the middle, and <b>In the game</b> on the right.</figcaption>
+  </figure>
+  <p><b>The top bar</b>, left to right:</p>
+  <ul>
+    <li>The bank's name. Click it to rename the bank. A dot beside it means there are unsaved changes.</li>
+    <li>The two views, <span class="ui">Sounds</span> and <span class="ui">Mix &amp; test</span>.</li>
+    <li>The play button <span class="ui">▶</span>, with the name of the sound it will play. <kbd>Space</kbd> does the same.</li>
+    <li><span class="ui">↶</span> and <span class="ui">↷</span> (undo and redo), <span class="ui">Open</span> and <span class="ui">Save</span>.</li>
+    <li><span class="ui">⋯</span>, the menu for everything else: <span class="ui">New bank</span>, <span class="ui">Open…</span>, <span class="ui">Open the example bank</span>, <span class="ui">Save</span>, <span class="ui">Save as…</span>, <span class="ui">Export for the game (.sfxb)</span>, <span class="ui">Export this sound as WAV</span> and <span class="ui">How this works</span>.</li>
+  </ul>
+  <p><b>The library</b> (left) lists every sound, grouped by the first part of its name. Each row shows a small picture of the sound, its length, a dot if something is wrong, and <em>too loud</em> if it would clip. The search box matches names and tags. <span class="ui">＋ New</span> makes a sound. The library's own <span class="ui">⋯</span>, at its foot, holds <span class="ui">Even out the levels of all sounds…</span> and <span class="ui">Sort A → Z</span>.</p>
+  <p><b>The sound</b> (middle) is the selected sound, top to bottom in the order you work on it:</p>
+  <ul>
+    <li>its name and tags;</li>
+    <li>the player: the waveform, one lane per layer with <span class="ui">S</span> and <span class="ui">M</span>, and the <span class="ui">Repeat</span> and <span class="ui">Play on change</span> boxes;</li>
+    <li>problems, each with a button for its fix;</li>
+    <li><span class="ui">Takes</span>, with <span class="ui">A</span> <span class="ui">B</span> <span class="ui">＋</span>;</li>
+    <li>the cards <span class="ui">Start from</span>, <span class="ui">Shape</span>, <span class="ui">Layers</span> and <span class="ui">Timing &amp; notes</span>.</li>
+  </ul>
+  <p><b>In the game</b> (right) is how the game plays the selected sound: its group, how many may play at once, variation, distance, music and playback. See <a href="03-takes-and-in-game.html">Takes and in-game rules</a>.</p>
+  <p>The <b>status line</b> at the bottom says what just happened. Click it for the full log.</p>
+  <div class="callout tip"><p>On a window narrower than 1250 px, <b>In the game</b> becomes a drawer: press <span class="ui">In the game ›</span> at the top of the sound. On a phone (under 900 px), the library and the sound are two screens, and <span class="ui">‹ Sounds</span> goes back.</p></div>
+
+  <h2>Start from a recipe</h2>
+  <p>The <span class="ui">Start from</span> card has thirteen kinds of sound. Pressing one <b>replaces the selected take</b> with a new sound of that kind. Every press makes a different one, so keep pressing until one is close.</p>
+  <table>
+    <thead><tr><th>Kind</th><th>Good for</th></tr></thead>
+    <tbody>
+      <tr><td>🔫 Gunshot</td><td>firearms: a crack, a body, a tail, a mechanical action</td></tr>
+      <tr><td>💥 Explosion</td><td>blasts, rockets, barrels</td></tr>
+      <tr><td>⚡ Laser / zap</td><td>energy weapons, magic, electricity</td></tr>
+      <tr><td>👊 Hit / punch</td><td>impacts, footsteps, thuds</td></tr>
+      <tr><td>🔔 Metal / bell</td><td>anything struck that rings</td></tr>
+      <tr><td>✨ Pickup / blip</td><td>items, UI</td></tr>
+      <tr><td>🎵 Jingle</td><td>a few notes in a row: power-ups, alerts</td></tr>
+      <tr><td>🚪 Door / mechanism</td><td>doors, switches, lifts</td></tr>
+      <tr><td>⚙️ Machine</td><td>working, buzzing things</td></tr>
+      <tr><td>🚗 Engine hum</td><td>held drones, motors, chainsaws</td></tr>
+      <tr><td>👹 Monster</td><td>roars and growls</td></tr>
+      <tr><td>🗣️ Voice / grunt</td><td>vowel-like shouts, pain</td></tr>
+      <tr><td>💨 Whoosh</td><td>swings, air, passing things</td></tr>
+    </tbody>
+  </table>
+  <p>Under the kinds are three buttons:</p>
+  <ul>
+    <li><span class="ui">🎲 Randomize</span> (<kbd>R</kbd>) makes <b>another sound of the same kind</b>, staying with the recipe you have.</li>
+    <li><span class="ui">✨ Vary</span> (<kbd>V</kbd>) moves every knob <b>a little</b>: the same sound, slightly different. It is greyed out for a take that was not made from a recipe.</li>
+    <li><span class="ui">🎙 Match a recording…</span> finds a recipe that sounds like a WAV you have. See <a href="04-mix-and-ship.html#match">Match a recording</a>.</li>
+  </ul>
+  <p>Every generated sound is levelled to −6 dB before you hear it, so pressing through kinds never blasts you. The card's subtitle says where the take came from: <em>made from the Explosion recipe</em>, <em>matched to shotgun.wav</em>, or <em>hand-made</em>.</p>
+  <div class="callout"><p><b>Randomize jumps; Vary nudges.</b> Use Randomize while you are still looking for the right sound. Once one is close, use Vary to search around it without losing it. If you overshoot, <kbd>⌘Z</kbd> brings back the last one: every press is one undo step.</p></div>
+
+  <h3>Try the idea here</h3>
+  <p>This toy has four of the recipes and two layers: a filtered noise burst and a tone that sweeps in pitch. Press a recipe, then compare <span class="ui">🎲 Randomize</span> and <span class="ui">✨ Vary</span>. Watch the recipe knobs below: Randomize moves them anywhere, Vary moves them a little.</p>
+  <div class="widget" data-widget="sfx-toy" data-title="Toy sound · two layers"></div>
+
+  <h2>Make one, step by step</h2>
+  <ol class="steps">
+    <li><p>In the library, press <span class="ui">＋ New</span>. A sound appears, made from a random kind, and plays. It gets a placeholder name such as <code>new.gunshot</code>.</p></li>
+    <li><p>In <span class="ui">Start from</span>, press <span class="ui">⚡ Laser / zap</span>. Press it a few more times and listen to how different each one is.</p></li>
+    <li><p>Press <kbd>R</kbd> until one is close to a plasma shot. Then press <kbd>V</kbd> three or four times to try its neighbours. Undo (<kbd>⌘Z</kbd>) back to the one you liked best.</p></li>
+    <li><p>Click the name at the top of the sound and type <code>weapon.plasma.fire</code>. Press Enter. The sound moves into a <b>WEAPON</b> group in the library.</p></li>
+    <li><p>Press <kbd>Space</kbd> to play it, and tick <span class="ui">Repeat</span> (<kbd>L</kbd>) to hear it again and again. A short sound is easier to judge by repetition. Untick it when you are done; it is only a listening aid.</p></li>
+    <li><p>Press <kbd>⌘S</kbd> to save the bank as a <code>.sfxproj</code>. In the studio, press <span class="ui">← studio</span> instead.</p></li>
+  </ol>
+  <div class="callout warn"><p>Nothing is saved automatically. The <code>.sfxproj</code> is your document. The editor remembers only where you were (the view, the selected sound, the search, which cards were folded). If you reload with unsaved changes, it asks first.</p></div>
+
+  <h2>Naming sounds</h2>
+  <p>A sound's name is its whole identity. The game asks for <code>weapon.shotgun.fire</code>; there is no table of numbers anywhere. So the name you type is the name a script, a monster or a weapon has to use, letter for letter.</p>
+  <ul>
+    <li><b>Use dots</b> to go from general to specific: <code>what.which.event</code>. The library groups sounds by the part before the first dot.</li>
+    <li><b>Name the event, not the sound.</b> <code>world.door.open</code> stays right when you replace its creak with a hiss.</li>
+    <li><b>Keep names stable.</b> Renaming a sound silences everything that still uses the old name. The studio lists those on Home as a problem.</li>
+  </ul>
+  <p>The example bank (<span class="ui">⋯</span> → <span class="ui">Open the example bank</span>) shows the pattern. It has three groups, and each sound picks one:</p>
+  <table>
+    <thead><tr><th>Sound</th><th>Group</th><th>Why that group</th></tr></thead>
+    <tbody>
+      <tr><td><code>weapon.pistol.fire</code>, <code>weapon.shotgun.fire</code></td><td>player</td><td>your own gun, at the same level wherever you are</td></tr>
+      <tr><td><code>impact.flesh</code>, <code>player.step.stone</code>, <code>world.door.open</code></td><td>world</td><td>things that happen somewhere, quieter with distance</td></tr>
+      <tr><td><code>pickup.health</code>, <code>ui.select</code></td><td>ui</td><td>feedback, not part of the world</td></tr>
+    </tbody>
+  </table>
+  <p>The <b>world</b> group is <em>placed in the world</em> (its sounds fade with distance, and it sends a little to the room reverb); <b>player</b> and <b>ui</b> are not. A new sound starts on the first group that is placed in the world. Groups are set up in <a href="04-mix-and-ship.html#groups">Mix &amp; test</a>.</p>
+  <div class="callout tip"><p>Tags help you find sounds, not the game. Type one into <span class="ui">+ tag</span> under the name and press Enter; the library search matches tags as well as names.</p></div>
+
+  <h2>Keys</h2>
+  <p>Practise the editor's keys here. <kbd>⌘</kbd> means Ctrl on Windows and Linux.</p>
+  <div class="widget trainer" data-tool="sounds"></div>
+
+  <div class="quiz" data-answer="1">
+    <p class="q">You have a laser that is almost right, but the end is slightly too low. Which button keeps the sound and tries close neighbours?</p>
+    <ul>
+      <li>🎲 Randomize</li>
+      <li>✨ Vary</li>
+      <li>Press ⚡ Laser / zap again</li>
+    </ul>
+    <p class="why">Vary moves every knob a little. Randomize and pressing the kind both make a new sound of that kind, so the one you had is gone (until you undo).</p>
+  </div>
+  <div class="quiz" data-answer="2">
+    <p class="q">A monster's script asks for <code>monster.imp.sight</code>, but your bank calls the sound <code>imp.sight</code>. What happens in the game?</p>
+    <ul>
+      <li>The engine finds the closest name and plays it</li>
+      <li>It plays the first sound in the bank instead</li>
+      <li>Nothing is heard: a name the bank does not have is silence</li>
+    </ul>
+    <p class="why">The name is the whole identity of a sound. A missing name is silence, said once in the client's console, and the studio lists it on Home.</p>
+  </div>
+  <div class="quiz" data-answer="0">
+    <p class="q">You opened the editor at http://192.168.1.20:8940/tool/sfx.html from a tablet. It loads, but nothing plays. Why?</p>
+    <ul>
+      <li>A plain http:// network address is not a secure context, so the page cannot make sound</li>
+      <li>The example bank only plays on desktops</li>
+      <li>You need to export a .sfxb first</li>
+    </ul>
+    <p class="why">localhost and HTTPS are secure contexts; a LAN address over plain HTTP is not. Serve over HTTPS or use the Android app.</p>
+  </div>
+</article>
+</body>
+</html>

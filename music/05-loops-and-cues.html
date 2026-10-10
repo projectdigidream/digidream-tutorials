@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Loops, cuts and cues · Digidream Studio tutorials</title>
+<meta name="description" content="Cut a song into looping pieces, test how they follow each other, then give a map its cues in the studio and switch them from a trigger.">
+<link rel="stylesheet" href="../assets/site.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 16%22%3E%3Cpath d=%22M8 1l7 7-7 7-7-7z%22 fill=%22%235b8fd6%22/%3E%3C/svg%3E">
+<script defer src="../assets/nav.js"></script>
+<script defer src="../assets/shortcuts.js"></script>
+<script defer src="../assets/site.js"></script>
+</head>
+<body>
+<article>
+  <h1>Loops, cuts and cues</h1>
+  <p class="lede">Game music has to loop for as long as the player stays, and change when the game changes: a calm piece while you explore, a harder one when the fight starts. Here you cut a song into looping pieces, test the changes in the DAW, then hand the pieces to a map in the studio and switch them from a trigger.</p>
+  <div class="goal">
+    <b>You'll learn</b><span>how the loop region becomes loop markers, how to cut slices in Cut &amp; Loop, how to test changes in Cues, and how the studio's Music page and the trigger <code>music</code> action switch music in the game</span>
+    <b>Time</b><span>25 minutes</span>
+    <b>Needs</b><span>a project of at least 8 bars (see <a href="01-daw-tour.html">A tour of the DAW</a>); the studio for the last part</span>
+  </div>
+
+  <h2>The loop region is the track's loop</h2>
+  <p>The loop region you drag on the Arrange ruler is not only for listening. When <span class="ui">loop</span> is on, it is written into the song as two markers, <code>loopStart</code> and <code>loopEnd</code>, in the exported <code>.mid</code> and in the baked <code>.mstk</code>. The game plays the track once up to <code>loopEnd</code>, then goes back to <code>loopStart</code> and loops from there for ever.</p>
+  <p>So an intro is simply the bars before the loop region: put the loop on bars 5–20 and bars 1–4 play once.</p>
+  <div class="callout tip"><p>Listen to the seam before you bake: with <span class="ui">loop</span> on, the DAW plays the region round and round exactly as the game will.</p></div>
+
+  <h2>Cut &amp; Loop</h2>
+  <figure class="shot" data-src="../assets/shots/synth-cut.png" data-alt="The Cut and Loop tab: the timeline with a selected region, the playback buttons, and the slice list">
+    <figcaption>Cut &amp; Loop: drag a region on the timeline, listen, add it as a slice.</figcaption>
+  </figure>
+  <p>One song can give several pieces. The <span class="ui">Cut &amp; Loop</span> tab cuts them:</p>
+  <ul>
+    <li><span class="ui">Bake project → load here</span> bakes the whole project in memory, with its bank, kit, effects and mastering, and opens it here. <span class="ui">…or load a .mstk</span> opens a baked track from a file instead.</li>
+    <li>On the <b>timeline</b>, drag to select a region; click to move the playhead. With <span class="ui">snap to bars</span> ticked, the region snaps to bar lines.</li>
+    <li><span class="ui">▶ Loop region</span> plays just the region, looping, so you hear how the seam sounds. <span class="ui">▶ Whole track</span> plays everything; <span class="ui">⏹</span> stops.</li>
+    <li><span class="ui">crossfade ms</span> and <span class="ui">⇄ Crossfade into region</span>: while something plays, fade from it into the region, to hear the change.</li>
+    <li>Type a <span class="ui">slice name</span> (it suggests one from the bar number) and press <span class="ui">＋ Add slice</span>.</li>
+  </ul>
+  <p>Each slice in the list shows its bars, length and size, with <span class="ui">▶ loop</span>, <span class="ui">⇄</span> (crossfade into it), <span class="ui">⬇</span> (download) and <span class="ui">×</span>. <span class="ui">⬇ Export all slices</span> saves them all, as does <span class="ui">File</span> › <span class="ui">Export slices (.mstk)</span>.</p>
+  <p>A slice is a complete track of its own, ready for the game:</p>
+  <ul>
+    <li>It starts sounding exactly as the song did at that point: the right programs, controllers and tempo.</li>
+    <li>Notes that crossed its edges are closed cleanly, so nothing hangs.</li>
+    <li>It loops whole.</li>
+    <li>It keeps all of its parent's instruments, so slices of one song can crossfade into each other smoothly.</li>
+  </ul>
+  <p>The project remembers each slice's bars. Open the project again later and bake, and the slices are cut again from the new version.</p>
+
+  <ol class="steps">
+    <li><p>Open <span class="ui">Cut &amp; Loop</span> and press <span class="ui">Bake project → load here</span>.</p></li>
+    <li><p>Drag across bars 1–4 on the timeline and press <span class="ui">▶ Loop region</span>. Listen to it wrap a few times.</p></li>
+    <li><p>Name it <code>calm</code> and press <span class="ui">＋ Add slice</span>.</p></li>
+    <li><p>Select bars 5–8, press <span class="ui">⇄ Crossfade into region</span> while <code>calm</code> loops, then add it as <code>fight</code>.</p></li>
+  </ol>
+
+  <h2 id="cues">Cues: try the changes</h2>
+  <figure class="shot" data-src="../assets/shots/synth-cues.png" data-alt="The Cues tab: one card per piece with its switch buttons and chain rule, and the transition log">
+    <figcaption>Cues: one card per piece, and a log of every switch.</figcaption>
+  </figure>
+  <p>The <span class="ui">Cues</span> tab plays pieces and switches between them the way the game does. Its pieces are your slices (they appear on their own), plus:</p>
+  <ul>
+    <li><span class="ui">＋ whole project as a piece</span>, which bakes the project and adds it;</li>
+    <li><span class="ui">＋ import .mstk pieces…</span>, for tracks baked elsewhere.</li>
+  </ul>
+  <p>Each piece has a card. The buttons on it say <b>when</b> that piece takes over:</p>
+  <table>
+    <thead><tr><th>Button</th><th>When the switch lands</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">▶ now</span></td><td>At once, a hard cut. Also how you start the first piece.</td></tr>
+      <tr><td><span class="ui">⏭ at loop end</span></td><td>When the current piece finishes its loop. The playing card counts down the seconds left.</td></tr>
+      <tr><td><span class="ui">⏭ next bar</span></td><td>On the next bar line of the current piece.</td></tr>
+      <tr><td><span class="ui">⇄ fade</span></td><td>Now, crossfading over <span class="ui">crossfade ms</span> (800 at first).</td></tr>
+    </tbody>
+  </table>
+  <p>While a switch is waiting, the card says <em>queued</em> and <span class="ui">✕ cancel queued</span> calls it off. <span class="ui">⏹ stop</span> stops playback.</p>
+  <p>Try the timing here. The demo is silent unless you tick <span class="ui">sound</span>:</p>
+  <div class="widget" data-widget="cue-timeline" data-title="When does the switch land?"></div>
+
+  <h3>Chain rules and the entry piece</h3>
+  <p>A card's second row is a rule: <span class="ui">then →</span> <em>piece</em> <span class="ui">after</span> <em>N</em> <span class="ui">loops</span>, at <code>loop end</code> or <code>next bar</code>. When the piece has looped N times, the tab queues the next one by itself. Use it for an intro that plays once and hands over to the main loop, or for two variations that alternate.</p>
+  <p>Tick <span class="ui">entry piece</span> on the card a level should start with. The <b>Transition log</b> records every switch with its song time, so you can check a chain did what you meant.</p>
+  <p><span class="ui">File</span> › <span class="ui">Export cues.json</span> writes the pieces, the entry piece and the rules:</p>
+<pre><code>{ "version": 1, "entry": "intro",
+  "pieces": [{ "name": "intro", "file": "intro.mstk", "loop": true, "lengthMs": 8000 }, …],
+  "transitions": { "intro": { "then": "loopA", "after": 1, "mode": "loopEnd" } } }</code></pre>
+  <div class="callout soon"><p>The game does not read <code>cues.json</code> or run chain rules yet. In a module, a map's cues come from the studio's Music page and change only when a trigger or script asks (below). Use the Cues tab to try out and tune your pieces.</p></div>
+
+  <ol class="steps">
+    <li><p>Open <span class="ui">Cues</span>. Press <span class="ui">▶ now</span> on <code>calm</code>.</p></li>
+    <li><p>Press <span class="ui">⏭ at loop end</span> on <code>fight</code>. Watch the countdown on <code>calm</code>'s card and the switch land on the loop's end.</p></li>
+    <li><p>On <code>fight</code>'s card, set <span class="ui">then →</span> <code>calm</code> <span class="ui">after</span> 2 <span class="ui">loops</span>. Check the log: after two loops of <code>fight</code>, <code>calm</code> comes back.</p></li>
+  </ol>
+
+  <h2 id="studio">In the studio: the Music page</h2>
+  <figure class="shot" data-src="../assets/shots/studio-music-page.png" data-alt="The studio's Music page: the map's cues on top, the module's tracks below">
+    <figcaption>The Music page: this map's cues on top, the module's tracks below.</figcaption>
+  </figure>
+  <p>In the studio, open <b>♪ Music</b> from the rail. The page has two parts.</p>
+  <h3>Tracks in the module</h3>
+  <p>Every track the module has, with its size (or <em>not baked yet</em>), how many cues use it, and buttons:</p>
+  <ul>
+    <li><span class="ui">+ new track</span> asks for a name and opens a new project in DigidreamSynth, right inside the studio. It needs the DigidreamSynth plugin.</li>
+    <li><span class="ui">✎ edit in DigidreamSynth</span> opens that track's project. Going back to the studio saves it.</li>
+    <li><span class="ui">+ import track (.mstk)</span> adds a track baked elsewhere. If the map has no <code>default</code> cue yet, the track becomes it.</li>
+    <li><span class="ui">bake now</span> bakes the project into its track at once. <span class="ui">▶</span> listens, <span class="ui">■</span> stops, <span class="ui">✕</span> deletes the track and every cue that uses it.</li>
+  </ul>
+  <p>A track you make in the studio is kept as its project, <code>sources/music/NAME.msproj</code>. The game plays the baked file, <code>assets/music/NAME.mstk</code>, and the studio makes it from the project when you press <span class="ui">▶ Play</span> or <span class="ui">⇪ Export</span>, or <span class="ui">bake now</span>. You never handle the <code>.mstk</code> yourself.</p>
+
+  <h3>The map's cues</h3>
+  <p>The top part, <b>♪ <em>map</em>: cues</b>, belongs to the map you have open: every map keeps its own. Each cue is a name and a track. <span class="ui">+ cue</span> adds one (the first is suggested as <code>default</code>, the next as <code>fight</code>); the list beside it picks the track; <span class="ui">▶</span> listens; <span class="ui">✕</span> removes the cue.</p>
+  <ul>
+    <li>The cue called <code>default</code> starts with the map. A map with cues but no <code>default</code> gets a warning when you play or export.</li>
+    <li>The others play only when a trigger or a script asks for them by name.</li>
+  </ul>
+  <p>The studio writes all maps' cues into <code>assets/music/index.json</code>, keyed by the map's name:</p>
+<pre><code>{
+  "map01": {
+    "default": "theme_calm.mstk",
+    "fight": "theme_fight.mstk"
+  }
+}</code></pre>
+  <div class="callout warn"><p>Music is not set in <code>module.txt</code>. There are no music lines there; everything comes from the Music page and its <code>index.json</code>.</p></div>
+  <div class="callout tip"><p>Cut a map's cues from <b>one</b> project in Cut &amp; Loop. Slices of one parent share their instruments, so the game crossfades between them on the beat. Unrelated tracks are swapped instead.</p></div>
+
+  <h2>Switching music from a trigger</h2>
+  <p>A trigger's <code>music</code> action changes the cue. Its fields:</p>
+  <table>
+    <thead><tr><th>Field</th><th>Meaning</th><th>When left out</th></tr></thead>
+    <tbody>
+      <tr><td><code>cue</code></td><td>A cue name from this map's list.</td><td>required</td></tr>
+      <tr><td><code>fade</code></td><td>Crossfade length in ms.</td><td>800</td></tr>
+      <tr><td><code>at</code></td><td><code>next_bar</code>, <code>loop_end</code> or <code>now</code>.</td><td><code>next_bar</code></td></tr>
+      <tr><td><code>everyone</code></td><td>Every player in the level, not just the one who set it off.</td><td>only that player</td></tr>
+    </tbody>
+  </table>
+  <p>Here is a trip-wire that starts the fight music for everyone when a player crosses into an arena, written as the trigger table the studio saves:</p>
+<pre><code>{ name = "arena music",
+  event = "on_cross",
+  once = true,
+  conditions = {
+    { c = "side_is", side = 12 },
+    { c = "entity_is_player" },
+  },
+  actions = {
+    { a = "music", cue = "fight", at = "next_bar", fade = 800, everyone = true },
+  } },</code></pre>
+  <p>A Lua script can do the same with <code>dnp.music(who, cue, fade, at)</code>. Pass a player for <code>who</code>, or <code>nil</code> for everyone in the level:</p>
+<pre><code>dnp.music(nil, "fight", 800, "loop_end")</code></pre>
+  <ul>
+    <li>A cue the map does not have is not an error in the game; it is named in the client's log and the music carries on.</li>
+    <li>A cue change is a moment, not a state: a player who joins later starts on <code>default</code>.</li>
+    <li>Without <code>everyone</code>, an event with no player (a timer, say) sends nothing.</li>
+  </ul>
+  <ol class="steps">
+    <li><p>On the Music page, give your map a <code>default</code> cue with the <code>calm</code> track and a <code>fight</code> cue with the <code>fight</code> track.</p></li>
+    <li><p>In the map editor, add a trigger on a doorway into a room, with the <code>music</code> action: cue <code>fight</code>, at <code>next_bar</code>. (Triggers are covered in <a href="../studio/04-triggers.html">Triggers</a>.)</p></li>
+    <li><p>Press <span class="ui">▶ Play</span>. The map starts on <code>calm</code>; walk through the doorway and the music turns to <code>fight</code> on the next bar.</p></li>
+  </ol>
+
+  <div class="quiz" data-answer="2">
+    <p class="q">A trigger's music action has only <code>cue = "fight"</code>. When does the change land, and for whom?</p>
+    <ul>
+      <li>At once, for everyone</li>
+      <li>At the end of the loop, for the player who set it off</li>
+      <li>On the next bar, crossfading over 800 ms, for the player who set it off</li>
+    </ul>
+    <p class="why">The defaults are <code>at = next_bar</code>, <code>fade = 800</code>, and the event's player unless <code>everyone</code> is set.</p>
+  </div>
+  <div class="quiz" data-answer="0">
+    <p class="q">Which cue does a map start with?</p>
+    <ul>
+      <li>The one called <code>default</code></li>
+      <li>The first one in the list</li>
+      <li>The one set with <span class="ui">entry piece</span> in the DAW's Cues tab</li>
+    </ul>
+    <p class="why">The game starts each map on its <code>default</code> cue from <code>assets/music/index.json</code>. The DAW's entry piece is for testing.</p>
+  </div>
+  <div class="quiz" data-answer="1">
+    <p class="q">You edited a track's project in DigidreamSynth from the studio. When is its .mstk made again?</p>
+    <ul>
+      <li>Only when you export it from the DAW's File menu</li>
+      <li>At Play, at Export, or when you press bake now</li>
+      <li>Every time you press a key in the DAW</li>
+    </ul>
+    <p class="why">The studio keeps the project as the source and bakes the track the game loads from it whenever it would otherwise be stale.</p>
+  </div>
+</article>
+</body>
+</html>

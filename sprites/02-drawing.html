@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Drawing · Digidream Studio tutorials</title>
+<meta name="description" content="The Draw tab in ThreeSprite: its eight tools, brush sizes, dithering, mirror drawing, colours, and moving between views.">
+<link rel="stylesheet" href="../assets/site.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 16%22%3E%3Cpath d=%22M8 1l7 7-7 7-7-7z%22 fill=%22%235b8fd6%22/%3E%3C/svg%3E">
+<script defer src="../assets/nav.js"></script>
+<script defer src="../assets/shortcuts.js"></script>
+<script defer src="../assets/site.js"></script>
+</head>
+<body>
+<article>
+  <h1>Drawing</h1>
+  <p class="lede">The Draw tab is a pixel editor that paints one part's picture in one view at a time. This page covers the eight tools, dithering, mirror drawing and colours, and how to step round the views without leaving the keyboard.</p>
+  <div class="goal">
+    <b>You'll learn</b><span>every drawing tool and its key, brush sizes, the dither density and offset, the three toggles under the tools, colours, and the view strip</span>
+    <b>Time</b><span>20 minutes</span>
+    <b>Needs</b><span>a sprite open in ThreeSprite (see <a href="01-first-sprite.html">Your first sprite</a>)</span>
+  </div>
+
+  <figure class="shot" data-src="../assets/shots/sprite-draw.png" data-hotspots='[{"x": 3, "y": 1.7, "t": "← studio", "d": "save into the module and go back; ✕ throws the changes away"}, {"x": 5, "y": 6, "t": "The project", "d": "name, canvas size, views, mirrored — click for settings"}, {"x": 55, "y": 6, "t": "Mode tabs", "d": "Draw · Rig · Animate · 3D · Export"}, {"x": 15, "y": 11, "t": "View strip", "d": "one button per view; ⇄ marks mirrored views ( , and . step)"}, {"x": 2, "y": 15, "t": "Tools", "d": "pencil, eraser, dither, fill, pick, select, move, pan"}, {"x": 2, "y": 46, "t": "Brush size", "d": "1 to 4 pixels"}, {"x": 2, "y": 60, "t": "Toggles", "d": "mirror drawing, dim other parts, pixel grid"}, {"x": 41, "y": 50, "t": "The canvas", "d": "one square frame; the feet stand on the orange line"}, {"x": 88, "y": 20, "t": "Palette", "d": "primary and secondary colour, swap with X"}, {"x": 88, "y": 34, "t": "Parts", "d": "what is drawn, hung on bones; variants per part"}, {"x": 88, "y": 49, "t": "Solids", "d": "3D shapes drawn in every view; Bake turns them into pixels"}]' data-alt="ThreeSprite's Draw tab">
+    <figcaption>The Draw tab: tools on the left, the view strip over the canvas, the palette, parts and solids on the right.</figcaption>
+  </figure>
+
+  <h2>What you are drawing on</h2>
+  <p>A sprite is made of <b>parts</b>, such as a body, a head or an arm. Each part has its own picture <em>in every view</em>. The Draw tab paints the part selected in the <b>Parts</b> panel, in the view selected in the view strip. You see the whole sprite composed, and by default the other parts are dimmed so you can tell what you are painting.</p>
+  <p>When the selected part has no picture yet in the current view, a banner says <em>"This part has no image for view k. Drawing creates one, or:"</em> with two buttons. <span class="ui">Blank</span> starts an empty picture. <span class="ui">Copy view N</span> starts from the nearest view that already has one, which is usually the quickest way to start a new angle.</p>
+
+  <h2>The tools</h2>
+  <p>The tool column on the left. The keys work while the Draw tab is open.</p>
+  <table>
+    <thead><tr><th>Key</th><th>Tool</th><th>What it does</th></tr></thead>
+    <tbody>
+      <tr><td><kbd>B</kbd></td><td><span class="ui">Pencil</span></td><td>Paints the primary colour with a square brush.</td></tr>
+      <tr><td><kbd>E</kbd></td><td><span class="ui">Eraser</span></td><td>Paints transparency.</td></tr>
+      <tr><td><kbd>D</kbd></td><td><span class="ui">Dither</span></td><td>Paints the primary colour through a pattern. See <a href="#dithering">Dithering</a>.</td></tr>
+      <tr><td><kbd>G</kbd></td><td><span class="ui">Fill</span></td><td>Flood-fills the area of one colour under the pointer.</td></tr>
+      <tr><td><kbd>I</kbd></td><td><span class="ui">Pick colour</span></td><td>Makes the colour under the pointer the primary colour.</td></tr>
+      <tr><td><kbd>M</kbd></td><td><span class="ui">Select</span></td><td>Drags out a rectangle on the part's picture.</td></tr>
+      <tr><td><kbd>V</kbd></td><td><span class="ui">Move</span></td><td>Drags the selection. With nothing selected, it drags the part's whole picture in this view.</td></tr>
+      <tr><td><kbd>H</kbd></td><td><span class="ui">Pan</span></td><td>Drags the canvas around.</td></tr>
+    </tbody>
+  </table>
+  <ul>
+    <li>With a selection, <kbd>Delete</kbd> or <kbd>Backspace</kbd> clears its pixels, and <kbd>Esc</kbd> drops it. Clicking outside it with Move drops it too.</li>
+    <li><b>Right-click</b> picks a colour with any tool. On a touch screen, <b>long-press</b> does the same.</li>
+    <li><kbd>Esc</kbd> during a stroke cancels the stroke.</li>
+  </ul>
+  <div class="widget trainer" data-tool="sprites"></div>
+
+  <h3>Brush sizes</h3>
+  <p>Under the tools are four dots, sizes 1 to 4. The brush is a square of that many pixels a side. The size applies to the Pencil, the Eraser and Dither.</p>
+
+  <h2 id="dithering">Dithering</h2>
+  <p>Dither paints through an ordered 4×4 Bayer pattern. When the Dither tool is chosen, two controls appear under the brush sizes:</p>
+  <ul>
+    <li><b>Density</b>: a slider, shown as a percentage, from nothing to solid in 16 steps. Half, 50%, is a checkerboard. Lower values give a thinning stipple, and higher ones a thickening one.</li>
+    <li><b>Offset</b>: a button reading <span class="ui">→0</span>. Each press slides the pattern one pixel sideways (→0, →1, →2, →3, then back to →0).</li>
+  </ul>
+  <p>The pattern is fixed to the picture, not to your stroke. Going back and forth over the same area never doubles up, and two strokes at the same density land on the same pixels. That is what the offset is for: change it, and a second pass meshes in between the first instead of landing on top of it.</p>
+  <div class="callout tip"><p>For a two-tone gradient, paint the light colour solid, then dither the dark colour at 25% over one band and 50% over the next. To mix three colours, dither the second at 50% with →0, then the third at 25% with →1 or →2 so the dots don't collide.</p></div>
+
+  <h2>The three toggles</h2>
+  <p>Below the brush sizes are three buttons that stay on or off:</p>
+  <table>
+    <thead><tr><th>Button</th><th>What it does</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">Mirror drawing</span> (symmetry)</td><td>Everything you paint is painted again mirrored about the vertical centre of the part's picture. A dashed blue line shows that centre. Fill mirrors too. Off by default.</td></tr>
+      <tr><td><span class="ui">Dim other parts</span></td><td>Shows every part except the selected one faded, so you can see what you are painting. On by default.</td></tr>
+      <tr><td><span class="ui">Pixel grid</span></td><td>Draws a line between pixels. It only appears when you are zoomed to 8× or closer.</td></tr>
+    </tbody>
+  </table>
+  <div class="callout warn"><p><b>Mirror drawing</b> is not <b>mirror symmetry</b>. Mirror drawing makes the left and right halves of <em>one picture</em> match, which is what you want in the front and back views. Mirror symmetry, set when the sprite is made, flips <em>whole views</em> into the ones you don't draw. In a side view, turn mirror drawing off: a character seen from the side isn't symmetrical.</p></div>
+
+  <h2>Colours</h2>
+  <p>The palette panel, top right, holds:</p>
+  <ul>
+    <li>The <b>active palette</b>, in a drop-down. A project can hold several palettes.</li>
+    <li>The <b>primary colour</b> (the big swatch; click it for the system colour picker) and the <b>secondary colour</b> (the small swatch). Clicking the small swatch, the swap button, or pressing <kbd>X</kbd> swaps them.</li>
+    <li>The swatches. Click one for the primary colour, and <b>Shift-click</b> one for the secondary.</li>
+    <li>A <b>+</b> that appears when the primary colour isn't in the palette, to add it.</li>
+    <li><span class="ui">Replace secondary → primary everywhere</span>, which repaints every pixel of the secondary colour with the primary colour in every picture.</li>
+  </ul>
+  <p>The palette button opens the full palette editor. See <a href="05-preview-palettes-bake.html#palettes">Palettes</a>.</p>
+
+  <h2>Moving round the views</h2>
+  <p>The <b>view strip</b> over the canvas has one tab per view. Each tab shows the view's number and a short label: <b>F</b> for front, <b>L</b> and <b>R</b> for the sides, <b>B</b> for the back, and the angle in degrees for the others. Hover a tab for its full name, for example <em>Front-left 45°</em>.</p>
+  <ul>
+    <li>A flipped view (with mirror symmetry) is dimmed and labelled <b>⇄</b> and its source, such as <code>⇄2</code>. You can look at it but not paint on it. Its banner says it is mirrored, and its <span class="ui">Edit view N</span> button takes you to the view it comes from.</li>
+    <li>A tab is marked as empty when the selected part has no picture in that view. Hover it and the tooltip ends with <em>no image for this part</em>.</li>
+    <li><kbd>,</kbd> and <kbd>.</kbd> step to the previous and next view, wrapping round.</li>
+  </ul>
+
+  <h3>Zoom and pan</h3>
+  <table>
+    <thead><tr><th>Keys or gesture</th><th>Does</th></tr></thead>
+    <tbody>
+      <tr><td><kbd>+</kbd> / <kbd>−</kbd></td><td>Zoom in / out, through whole steps (1×, 2×, 3×, 4×, 6×, 8× … 64×) so pixels stay crisp</td></tr>
+      <tr><td><kbd>0</kbd></td><td>Fit the canvas to the window</td></tr>
+      <tr><td><kbd>Ctrl</kbd>+wheel, or pinch</td><td>Zoom about the pointer</td></tr>
+      <tr><td><kbd>Space</kbd>+drag, middle button, or the wheel</td><td>Pan</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Exercise: a turned head</h2>
+  <ol class="steps">
+    <li><p>In view 1, select the <code>body</code> part and turn on <span class="ui">Mirror drawing</span>. With the <span class="ui">Pencil</span> (<kbd>B</kbd>) at size 1, draw a round head with two eyes. The second eye appears by itself.</p></li>
+    <li><p>Press <kbd>D</kbd> for Dither, set density to 50%, and shade the bottom half of the head in a darker colour. Then press the offset button once and shade the same band in a third colour. The two patterns mesh.</p></li>
+    <li><p>Press <kbd>.</kbd> twice to reach view 3, the character's left side. If the part has no picture there yet, the banner offers <span class="ui">Blank</span> and a <span class="ui">Copy view N</span> button. Press <span class="ui">Blank</span>.</p></li>
+    <li><p>Turn <span class="ui">Mirror drawing</span> off, and draw the head in profile, looking to the <em>left</em> of the screen with one eye.</p></li>
+    <li><p>Press <kbd>.</kbd> until you reach view 7. It is labelled <code>⇄3</code> and shows your profile flipped, looking right. Press <span class="ui">Edit view 3</span> to jump back.</p></li>
+    <li><p>Press <kbd>M</kbd>, drag a box round the eye, then press <kbd>V</kbd> and drag it one pixel down. Press <kbd>⌘Z</kbd> to put it back.</p></li>
+  </ol>
+
+  <div class="quiz" data-answer="1">
+    <p class="q">You dithered a band at 50%, and want a second colour to fill the gaps instead of covering the same pixels. What do you change?</p>
+    <ul>
+      <li>The brush size</li>
+      <li>The dither offset</li>
+      <li>Mirror drawing</li>
+    </ul>
+    <p class="why">The pattern is anchored to the picture, so the same density always hits the same pixels. The offset slides the pattern sideways, and the next pass lands in between.</p>
+  </div>
+  <div class="quiz" data-answer="2">
+    <p class="q">In an 8-view sprite with mirror symmetry, you click view 6 and try to paint. What happens?</p>
+    <ul>
+      <li>It paints, and view 4 updates to match</li>
+      <li>It paints, but only in view 6</li>
+      <li>Nothing: view 6 is a flipped copy of view 4, and the banner offers Edit view 4</li>
+    </ul>
+    <p class="why">With mirroring, views 6, 7 and 8 are flipped from 4, 3 and 2. They can be looked at, not painted. You change them by painting their source.</p>
+  </div>
+  <div class="quiz" data-answer="0">
+    <p class="q">The pixel grid button is on, but you see no grid. Why?</p>
+    <ul>
+      <li>You are zoomed out below 8×</li>
+      <li>Dim other parts is on</li>
+      <li>The grid only shows in the Rig tab</li>
+    </ul>
+    <p class="why">The grid only appears from 8× zoom, where a pixel is big enough for the lines to help.</p>
+  </div>
+</article>
+</body>
+</html>

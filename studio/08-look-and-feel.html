@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sky, screens and weather · Digidream Studio tutorials</title>
+<meta name="description" content="Give the module a sky, lay out the HUD and touch controls, design panels, style fonts and subtitles, and add rain, snow, dust, embers and fog to rooms.">
+<link rel="stylesheet" href="../assets/site.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 16%22%3E%3Cpath d=%22M8 1l7 7-7 7-7-7z%22 fill=%22%235b8fd6%22/%3E%3C/svg%3E">
+<script defer src="../assets/nav.js"></script>
+<script defer src="../assets/shortcuts.js"></script>
+<script defer src="../assets/site.js"></script>
+</head>
+<body>
+<article>
+  <h1>Sky, screens and weather</h1>
+  <p class="lede">This page covers how the module looks around and over the play: the sky above the maps, the HUD and touch controls on screen, the panels a player opens, their fonts and colours, and weather and fog in single rooms.</p>
+  <div class="goal">
+    <b>You'll learn</b><span>how to give the module and a map a sky, edit the HUD and touch buttons in a device frame, design and try a panel, style it, and make it rain in one room</span>
+    <b>Time</b><span>30 minutes</span>
+    <b>Needs</b><span>a module with a map, and a picture or two for the sky (<a href="../textures/04-frames-and-skies.html">Animation and skies</a>)</span>
+  </div>
+
+  <h2>Sky</h2>
+  <figure class="shot" data-src="../assets/shots/studio-sky.png" data-alt="The Sky section: the kind, its picture, and a preview to drag round">
+    <figcaption>The Sky section: its form on one side, the preview on the other.</figcaption>
+  </figure>
+  <p><b>🌌 Sky</b> sets what the module and each map are drawn under. A new module names no sky, so it gets the game's dark background. <span class="ui">+ give the module a sky</span> starts one.</p>
+  <p>A sky has a <span class="ui">kind</span>:</p>
+  <table>
+    <thead><tr><th>Kind</th><th>Pictures</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td>strip</td><td>one picture round the horizon (DOOM's)</td><td>any width × height; DOOM's are 256×128. Its left edge is at north, running clockwise. Also <span class="ui">times round the horizon</span> and <span class="ui">height (how far up the sky)</span>.</td></tr>
+      <tr><td>panorama</td><td>one picture of the whole sphere, 2:1</td><td>its middle faces north; 2048×1024 is kind to phones</td></tr>
+      <tr><td>cube</td><td>six square faces</td><td>east, west, north, south, up, down</td></tr>
+      <tr><td>none</td><td>none</td><td>the game's dark background; sky ceilings show a dark gradient</td></tr>
+    </tbody>
+  </table>
+  <p>Every kind but none can be <span class="ui">turned, degrees</span>. The pictures are textures, the module's own or the app's, picked with their thumbnails. A sky with a missing picture is said here and on Home. The form's last line shows the <code>module.txt</code> line it writes, such as <code>sky default strip …</code>.</p>
+  <p>The preview is the game's own sky. Drag it to look round; it says which way you are facing.</p>
+
+  <h3>A map's own sky</h3>
+  <p>The <span class="ui">whose</span> list at the top switches between <span class="ui">the module (every map)</span> and each map; a map with its own sky is marked <code>(own)</code>. For a map, turn on <span class="ui"><i>map</i> has a sky of its own</span>. It starts as a copy of the module's. Turned off, the map is drawn under the module's sky again. You can also reach it from the map editor's <b>⋯ → Map settings</b>.</p>
+
+  <h3>Sky ceilings</h3>
+  <p>A room shows the sky where its ceiling is open. In the room's inspector, turn on <span class="ui">ceiling open to the sky</span>. The ceiling becomes DOOM's sky flat, <code>F_SKY1</code>, lined up with the sky past the walls. Turn it off and the ceiling gets back the texture it had.</p>
+  <p>A graph can change the sky while the game runs with the <code>set_sky</code> node.</p>
+
+  <ol class="steps">
+    <li><p>Open <b>🌌 Sky</b> and press <span class="ui">+ give the module a sky</span>. Keep <span class="ui">kind</span> at strip and pick a picture.</p></li>
+    <li><p>Drag the preview round. Change <span class="ui">times round the horizon</span> to 2 and watch the picture repeat.</p></li>
+    <li><p>In <span class="ui">whose</span>, choose one of your maps and turn on <span class="ui"><i>map</i> has a sky of its own</span>. Change its kind to none.</p></li>
+    <li><p>Open a room of a map in the map editor and turn on <span class="ui">ceiling open to the sky</span> in its inspector.</p></li>
+  </ol>
+
+  <h2>Screens</h2>
+  <figure class="shot" data-src="../assets/shots/studio-screens.png" data-alt="The Screens window: a phone frame with the HUD drawn in it">
+    <figcaption>Screens: the HUD drawn in a device frame by the game's own code.</figcaption>
+  </figure>
+  <p><b>▣ Screens</b> is what is drawn over the game. Its frame is drawn by the game's own HUD code, so it shows what that screen will show. The bar has:</p>
+  <ul>
+    <li><span class="ui">🌐 every map</span> and <span class="ui">🗺 only <i>map</i></span>. A map can have a complete layout of its own, which starts as a copy of the module's.</li>
+    <li>The device: <code>phone, landscape</code>, <code>phone, portrait</code>, <code>tablet</code> or <code>desktop</code>, with a notch's safe area where it has one.</li>
+    <li>Three tabs: <span class="ui">HUD</span>, <span class="ui">touch</span> and <span class="ui">templates</span>.</li>
+  </ul>
+  <h3>HUD</h3>
+  <p>The list shows the HUD's <b>elements</b>. Tap one in the frame or the list to edit it. <b>Drag it in the frame to move it</b>: it re-anchors to the ninth of the screen it lands in, so it stays in that corner on a wider screen. <span class="ui">+ element…</span> adds a text, a number, a bar, an image or a group.</p>
+  <ul>
+    <li>An element binds to what the game knows, such as <code>hp</code>, or what the weapons runtime sends, such as <code>hud.ammo</code> or <code>hud.weapon</code>.</li>
+    <li><span class="ui">shown</span> can be <code>always</code>, <code>touch screens only</code> or <code>keyboard and mouse only</code>.</li>
+    <li><b>sample data</b> sets the values the frame shows, so you can see a low-health bar without playing.</li>
+  </ul>
+  <h3>Touch</h3>
+  <p>The touch tab moves, resizes, relabels and hides the engine's buttons for the module's control scheme. It cannot invent a button, because each one is an input. The module's own keys with a touch label appear here too, to place beside the engine's (see <a href="07-workshops.html#controls">Controls</a>). <span class="ui">back to the engine's buttons</span> undoes the module's layout for them.</p>
+  <h3>Templates</h3>
+  <p>Templates are for panels that a hand-written script opens: where such a panel sits and where each widget goes (<span class="ui">+ template</span>, <span class="ui">+ slot</span>). The module's own panels are designed in Panels instead; <span class="ui">▢ Panels…</span> goes there.</p>
+  <div class="callout"><p>Nothing is written until something is changed, so a module that never opens Screens gets the game's default HUD.</p></div>
+
+  <h2>Panels</h2>
+  <p><b>▢ Panels</b> are the module's windows over the game: a shop, a dialogue, a choice. There is one library for every map and the game. A panel is one document, content and look together:</p>
+  <ul>
+    <li>a title;</li>
+    <li>up to 32 widgets of five kinds: label, button, toggle, slider and select. Each has a name that graphs use;</li>
+    <li>decor behind them: text (which may show <code>{hud.name}</code>), a bar (a value, drawn as health is), and pictures.</li>
+  </ul>
+  <p>The designer draws the panel with the game's own code, in a device frame over the module's HUD:</p>
+  <ul>
+    <li><span class="ui">+ new panel</span> makes one, and <span class="ui">+ add…</span> adds a widget or decor.</li>
+    <li>Drag the panel to move it (it re-anchors like a HUD element) and its edges to size it. Drag a widget or decor to place it, and a widget's corner to size it. Arrow keys nudge, and <kbd>Delete</kbd> removes.</li>
+    <li>Zoom with a pinch, the wheel, or the bar: <span class="ui">−</span>, <span class="ui">+</span>, <span class="ui">▢</span> (zoom onto the panel) and <span class="ui">⤢</span> (the whole screen).</li>
+    <li>The panel's details include its <span class="ui">style</span> (with <span class="ui">🎨</span> to go to Style), <span class="ui">duplicate</span> and <span class="ui">delete panel</span>.</li>
+  </ul>
+  <h3>Try</h3>
+  <p>Switch from <span class="ui">✎ edit</span> to <span class="ui">▶ try</span> and the panel works as it does in the game. Each press says what a graph would hear, for example <code>when_panel_used · shop · buy → value 1</code>. <span class="ui">open it again</span> starts over.</p>
+  <h3>Hooking it to a graph</h3>
+  <p>Under <span class="ui">◇ graphs</span>, the panel lists every graph that opens or answers it. <span class="ui">open it from</span> adds an opening node to a graph you choose, and <span class="ui">answer</span> adds the nodes that react to one widget. See <a href="06-graphs.html">Graphs</a>.</p>
+
+  <h2>Style</h2>
+  <p><b>🎨 Style</b> is how the module's screens look:</p>
+  <table>
+    <thead><tr><th>Section</th><th>What it holds</th></tr></thead>
+    <tbody>
+      <tr><td>🔤 fonts</td><td><span class="ui">+ import fonts (.woff2 .woff .ttf .otf)</span>. Each font is checked by the browser's own font loader and shown as a sample.</td></tr>
+      <tr><td>🎨 the whole UI</td><td>the font and colours of every screen</td></tr>
+      <tr><td>🖼 pictures</td><td><span class="ui">+ import pictures (.png)</span>, for panel styles and the HUD</td></tr>
+      <tr><td>▢ panel styles</td><td><span class="ui">+ new style</span>. A named style has a font, colours, an accent, and a 9-slice picture for the box, the title bar and the buttons, with its slice lines drawn over the picture. A panel takes a style by name.</td></tr>
+      <tr><td>💬 subtitles</td><td>the subtitle line a cutscene speaks: font, colours, sizes, outline, a box behind it, and where it sits</td></tr>
+    </tbody>
+  </table>
+  <ol class="steps">
+    <li><p>In <b>🎨 Style</b>, press <span class="ui">+ new style</span> and give it colours.</p></li>
+    <li><p>Open <b>▢ Panels</b>, press <span class="ui">+ new panel</span>, and add a button with <span class="ui">+ add…</span>.</p></li>
+    <li><p>Choose your style in the panel's <span class="ui">style</span>.</p></li>
+    <li><p>Switch to <span class="ui">▶ try</span> and press the button. Read what a graph would hear.</p></li>
+  </ol>
+
+  <h2>Weather and fog</h2>
+  <p>Rain, snow, dust, embers and fog belong to a <b>room</b>. In the map editor, select a room. Its inspector has a <b>🌦 weather and fog</b> section with a chip for each kind:</p>
+  <p><span class="ui">+ 🌧 rain</span> <span class="ui">+ ❄ snow</span> <span class="ui">+ · dust</span> <span class="ui">+ ✦ embers</span> <span class="ui">+ 🌫 fog</span></p>
+  <p>A room can have as many as it wants, such as rain and a low fog together. Each becomes a card with its settings and a <span class="ui">✕</span> to remove it.</p>
+  <ul>
+    <li><b>An empty field is the engine's default</b>, shown greyed as the placeholder. The studio reads the defaults from the engine itself, so they are always the game's.</li>
+    <li><b>A value set here is marked with •</b> after the key's name, such as <code>density •</code>. <span class="ui">↺</span> clears it back to the default.</li>
+    <li>Distances are units above the floor. <code>top</code> defaults to the ceiling.</li>
+  </ul>
+  <table>
+    <thead><tr><th>Key</th><th>Particles (rain, snow, dust, embers)</th><th>Fog</th></tr></thead>
+    <tbody>
+      <tr><td><code>density</code></td><td>particles per cubic unit</td><td>how quickly it hides things</td></tr>
+      <tr><td><code>color</code>, <code>alpha</code></td><td>colour and opacity</td><td>colour, and the most it may hide</td></tr>
+      <tr><td><code>bottom</code>, <code>top</code></td><td>the band they live in</td><td>the band it fills</td></tr>
+      <tr><td><code>glow</code></td><td>0 lit by the room's light, 1 self-lit</td><td>the same</td></tr>
+      <tr><td>others</td><td><code>speed</code>, <code>windx</code>, <code>windy</code>, <code>sway</code>, <code>size</code>, <code>length</code></td><td><code>falloff</code> (thinner going up), <code>noise</code> (billowing), <code>drift</code></td></tr>
+    </tbody>
+  </table>
+  <p>The level view draws the effects with the game's own code, fog included. They are looks only: nothing in the game reads them, so a rainy floor is not slippery. A map holds up to 256 effects.</p>
+  <ol class="steps">
+    <li><p>Select a room with its ceiling open to the sky, and press <span class="ui">+ 🌧 rain</span>.</p></li>
+    <li><p>Type 1.5 in <code>windx</code>. The key now reads <code>windx •</code>, and the rain slants in the view.</p></li>
+    <li><p>Press <span class="ui">+ 🌫 fog</span>, and set <code>top</code> to 1 for a low mist.</p></li>
+    <li><p>Press <span class="ui">↺</span> beside <code>windx</code> to go back to the default.</p></li>
+  </ol>
+  <div class="callout tip"><p>A graph can change a room's weather or fog while the game runs, with the <code>set_sector_effect</code> node in the node menu's <em>move the map</em> group.</p></div>
+
+  <h2>Animated textures</h2>
+  <p>A wall, floor or ceiling texture can be animated: a sprite sheet of frames. When you import a PNG in <b>🧱 Textures</b>, the sheet dialog cuts it into frames and sets how many play per second. A texture's card opens it again: <span class="ui">animate…</span> on a still picture, <span class="ui">cut &amp; speed…</span> on a sheet. Drawing frames and skies is covered in the Textures track: <a href="../textures/04-frames-and-skies.html">Animation and skies</a>.</p>
+
+  <div class="quiz" data-answer="1">
+    <p class="q">In a fog card, <code>density</code> shows 0.15 in grey and <code>top</code> shows <code>ceiling</code> in grey. What does that mean?</p>
+    <ul>
+      <li>They are broken and need filling in</li>
+      <li>Nothing is set: the fog uses the engine's defaults</li>
+      <li>They were set by another map</li>
+    </ul>
+    <p class="why">An empty field is the engine's default, greyed. A value you set is marked with •.</p>
+  </div>
+  <div class="quiz" data-answer="2">
+    <p class="q">You drag a HUD element into the top-right corner of a phone frame. What happens on a wide desktop screen?</p>
+    <ul>
+      <li>It stays at the same pixel position, now near the middle</li>
+      <li>It is hidden, because it was placed for a phone</li>
+      <li>It stays in the top-right, because it re-anchored to that part of the screen</li>
+    </ul>
+    <p class="why">A dragged element re-anchors to the ninth of the screen it lands in, keeping its place there.</p>
+  </div>
+  <div class="quiz" data-answer="0">
+    <p class="q">How do you give one map a different sky from the rest of the module?</p>
+    <ul>
+      <li>Give that map a sky of its own in 🌌 Sky (choose it in whose)</li>
+      <li>Change the module's sky every time you open that map</li>
+      <li>Add a fog effect to every room</li>
+    </ul>
+    <p class="why">A map's own sky is written as its own <code>sky</code> line; every other map keeps the module's.</p>
+  </div>
+</article>
+</body>
+</html>

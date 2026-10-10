@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mastering · Digidream Studio tutorials</title>
+<meta name="description" content="Use the Master tab: EQ, compressor, limiter, width and gain, the meters, per-channel EQ and the reverb, chorus and delay sends, all baked into the track.">
+<link rel="stylesheet" href="../assets/site.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 16%22%3E%3Cpath d=%22M8 1l7 7-7 7-7-7z%22 fill=%22%235b8fd6%22/%3E%3C/svg%3E">
+<script defer src="../assets/nav.js"></script>
+<script defer src="../assets/shortcuts.js"></script>
+<script defer src="../assets/site.js"></script>
+</head>
+<body>
+<article>
+  <h1>Mastering</h1>
+  <p class="lede">The <b>Master</b> tab is the last stage before the speakers: a chain that evens out the whole mix and stops it from clipping, an EQ per channel, and the song's reverb, chorus and delay. All of it is baked into the <code>.mstk</code>, so the game plays the track exactly as you mastered it.</p>
+  <div class="goal">
+    <b>You'll learn</b><span>how to turn mastering on and compare, the EQ, compressor, limiter, width and gain, how to read the meters, per-channel EQ, and the send effects</span>
+    <b>Time</b><span>20 minutes</span>
+    <b>Needs</b><span>a project with a few tracks that play (see <a href="01-daw-tour.html">A tour of the DAW</a>)</span>
+  </div>
+
+  <figure class="shot" data-src="../assets/shots/synth-master.png" data-alt="The Master tab: EQ curve, compressor, limiter and output meters, then per-channel EQ and send effects">
+    <figcaption>Master: the mastering chain on top, per-channel EQ and the send effects below.</figcaption>
+  </figure>
+
+  <h2>The chain</h2>
+  <p>Mastering runs in the engine, in this order:</p>
+  <div class="diagram"><svg viewBox="0 0 700 70" role="img" aria-label="EQ, then compressor and saturation, then width, then gain, then limiter, then out">
+    <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="dim"/></marker></defs>
+    <rect class="box" x="5" y="15" width="90" height="40" rx="6"/><text x="50" y="40" text-anchor="middle" font-size="13">mix</text>
+    <rect class="acc" x="120" y="15" width="90" height="40" rx="6"/><text x="165" y="40" text-anchor="middle" font-size="13">EQ</text>
+    <rect class="acc" x="235" y="15" width="110" height="40" rx="6"/><text x="290" y="34" text-anchor="middle" font-size="13">compressor</text><text x="290" y="49" text-anchor="middle" font-size="10" class="dim">+ saturation</text>
+    <rect class="acc" x="370" y="15" width="90" height="40" rx="6"/><text x="415" y="34" text-anchor="middle" font-size="13">width</text><text x="415" y="49" text-anchor="middle" font-size="10" class="dim">+ gain</text>
+    <rect class="acc" x="485" y="15" width="90" height="40" rx="6"/><text x="530" y="40" text-anchor="middle" font-size="13">limiter</text>
+    <rect class="box" x="600" y="15" width="90" height="40" rx="6"/><text x="645" y="40" text-anchor="middle" font-size="13">out</text>
+    <path class="arrow" d="M95,35 H118" marker-end="url(#ah)"/><path class="arrow" d="M210,35 H233" marker-end="url(#ah)"/>
+    <path class="arrow" d="M345,35 H368" marker-end="url(#ah)"/><path class="arrow" d="M460,35 H483" marker-end="url(#ah)"/>
+    <path class="arrow" d="M575,35 H598" marker-end="url(#ah)"/>
+  </svg></div>
+
+  <h2>On, off and compare</h2>
+  <ul>
+    <li><span class="ui">enabled</span>: mastering is off in a new project. Off, the output is exactly what an unmastered engine makes, bit for bit.</li>
+    <li><span class="ui">A/B bypass</span>: <b>hold</b> it down to hear the mix without mastering; let go to hear it with. It changes nothing in the project.</li>
+    <li><span class="ui">reset</span>: every control back to its default. It leaves <span class="ui">enabled</span> as it is.</li>
+  </ul>
+  <p>With mastering on, the line beside the buttons shows the limiter's latency, for example <em>"+128 samples latency (2.7 ms)"</em>. The song's timing does not change; the sound simply arrives that much later.</p>
+
+  <h2>EQ</h2>
+  <p>Three bands: a <b>low shelf</b>, a <b>mid</b> bell and a <b>high shelf</b>. On the curve, <b>drag a handle</b>: left and right move its frequency, up and down its gain. <b><kbd>⇧</kbd>-drag the mid handle</b> up or down to make the bell narrower or wider (its Q).</p>
+  <p>The sliders under the curve do the same: <span class="ui">low shelf</span> and <span class="ui">low dB</span>, <span class="ui">mid Hz</span>, <span class="ui">mid dB</span> and <span class="ui">mid Q</span>, <span class="ui">high shelf</span> and <span class="ui">high dB</span>. Gains go from −24 to +24 dB.</p>
+  <div class="callout tip"><p>Cut before you boost. A small dip in the low mids (around 300 Hz) often clears up a muddy mix better than a boost anywhere else.</p></div>
+
+  <h2>Width &amp; gain</h2>
+  <ul>
+    <li><span class="ui">width</span>: 0 is mono, 1 leaves the stereo image as it is, 2 doubles the sides.</li>
+    <li><span class="ui">gain dB</span>: output gain before the limiter.</li>
+  </ul>
+
+  <h2>Compressor</h2>
+  <p>The compressor turns the loud parts down, so the mix sits at a steadier level.</p>
+  <table>
+    <thead><tr><th>Control</th><th>What it does</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">threshold</span></td><td>The level (−60 to 0 dB) above which it starts turning down.</td></tr>
+      <tr><td><span class="ui">ratio</span></td><td>How hard: 1 is no compression, 4 means 4 dB over the threshold comes out as 1 dB over.</td></tr>
+      <tr><td><span class="ui">attack ms</span> · <span class="ui">release ms</span></td><td>How fast it reacts, and how fast it lets go.</td></tr>
+      <tr><td><span class="ui">makeup dB</span></td><td>Gain after compression, to win back the level it took.</td></tr>
+      <tr><td><span class="ui">saturation</span></td><td>Soft saturation of the whole mix, between the compressor and the limiter. 1 is off; 1.5 to 2.5 adds glue and loudness.</td></tr>
+      <tr><td><span class="ui">knee dB</span></td><td>How gently it starts around the threshold. 0 is a hard corner.</td></tr>
+      <tr><td><span class="ui">gain reduction</span></td><td>A meter: how much it is turning down right now.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Limiter</h2>
+  <p>The limiter is the safety net: the output never goes above its <span class="ui">ceiling dB</span>. It looks ahead, so it starts turning down before a peak arrives instead of clipping it.</p>
+  <ul>
+    <li><span class="ui">ceiling dB</span>: −12 to 0. Around −1 leaves room for the player's own system.</li>
+    <li><span class="ui">lookahead</span>: 1 to 8 blocks of 64 samples. More is smoother on sharp peaks, and adds latency.</li>
+    <li><span class="ui">release ms</span>: how fast the level comes back.</li>
+    <li><span class="ui">limiter gain</span>: a meter of what it is doing.</li>
+  </ul>
+
+  <h2>Output</h2>
+  <ul>
+    <li><span class="ui">peak L</span>, <span class="ui">peak R</span>, <span class="ui">RMS L</span>, <span class="ui">RMS R</span>: meters for each side.</li>
+    <li><span class="ui">loudness</span>: the average level over the last 3 seconds, in dBFS RMS, and a count of clipped samples if there were any.</li>
+    <li><span class="ui">dither (TPDF)</span>: adds a tiny noise when the output is turned into 16-bit samples, so very quiet tails fade smoothly instead of crackling. It applies to what you hear and to <span class="ui">Render .wav</span>; it is a setting of your session, not part of the baked track.</li>
+  </ul>
+  <p>The meters read the signal before the final soft clip, and they keep reading when mastering is bypassed, so you can compare levels both ways.</p>
+
+  <ol class="steps">
+    <li><p>Play a loop of your song. Tick <span class="ui">enabled</span>.</p></li>
+    <li><p>Set <span class="ui">threshold</span> to −18, <span class="ui">ratio</span> to 3, and watch <span class="ui">gain reduction</span>. Aim for a few dB of movement on the loud parts.</p></li>
+    <li><p>Raise <span class="ui">makeup dB</span> until the loudness reading is back where it was. Set the limiter's <span class="ui">ceiling dB</span> to −1.</p></li>
+    <li><p>Hold <span class="ui">A/B bypass</span> and let go a few times. If the mastered version only sounds better because it is louder, lower <span class="ui">makeup dB</span> and compare again.</p></li>
+  </ol>
+
+  <h2>Per-channel EQ (mixer strips)</h2>
+  <p>Below the chain, a small EQ for each MIDI channel. Pick a <span class="ui">channel</span>, then set <span class="ui">low dB</span> (a shelf at 120 Hz), <span class="ui">mid dB</span> and <span class="ui">mid Hz</span> (a bell), and <span class="ui">high dB</span> (a shelf at 6 kHz).</p>
+  <p>A flat channel costs nothing, so leave the ones you do not need alone. Use it to give each part its own room: take some low end out of a pad so the bass is clear, or some highs out of a busy drum channel.</p>
+
+  <h2 id="sends">Send effects (song-level)</h2>
+  <p>Three effects are shared by the whole song. Each channel decides how much to send to them with its <span class="ui">CC91 reverb</span>, <span class="ui">CC93 chorus</span> and <span class="ui">CC94 delay</span> lanes in the piano roll (and a patch's layers can override that, see <a href="03-patches.html">Designing patches</a>).</p>
+  <table>
+    <thead><tr><th>Effect</th><th>Controls</th></tr></thead>
+    <tbody>
+      <tr><td>reverb</td><td><span class="ui">room</span> (size), <span class="ui">damp</span> (how quickly the highs die), <span class="ui">width</span>, <span class="ui">wet</span></td></tr>
+      <tr><td>chorus</td><td><span class="ui">rate</span>, <span class="ui">depth</span>, <span class="ui">wet</span></td></tr>
+      <tr><td>delay</td><td><span class="ui">time</span>, <span class="ui">fbk</span> (feedback: how many repeats), <span class="ui">wet</span>, and <span class="ui">ping-pong</span>, which bounces the echoes between left and right</td></tr>
+    </tbody>
+  </table>
+  <div class="callout"><p>The delay's <span class="ui">wet</span> starts at 0, and no channel sends to it until you paint its <span class="ui">CC94 delay</span> lane. Turning up the wet alone does nothing.</p></div>
+  <ol class="steps">
+    <li><p>Set the delay's <span class="ui">wet</span> about halfway and tick <span class="ui">ping-pong</span>.</p></li>
+    <li><p>Open a lead track in the <b>Track</b> tab, set <span class="ui">lane</span> to <span class="ui">CC94 delay</span> and paint a value near the top at the start.</p></li>
+    <li><p>Play. Only the lead echoes, bouncing left and right.</p></li>
+  </ol>
+
+  <h2>Baking it in</h2>
+  <p><span class="ui">File</span> › <span class="ui">Bake .mstk (with mastering)</span> makes the game's file. It carries the effects, the per-channel EQ and, when <span class="ui">enabled</span> is ticked, the mastering chain. The game loads all of it with the track, so there is nothing to set up on the game's side, and every player hears the same master. <span class="ui">Render .wav</span> uses the same chain.</p>
+  <p>To reuse a master on another song, use <span class="ui">Export master.json</span> here and <span class="ui">Import master.json…</span> there.</p>
+
+  <div class="quiz" data-answer="1">
+    <p class="q">You master a track in the DAW. What does the game need to play it the same way?</p>
+    <ul>
+      <li>A master.json shipped beside the .mstk</li>
+      <li>Nothing more: the mastering is baked into the .mstk</li>
+      <li>The same settings entered again in the studio</li>
+    </ul>
+    <p class="why">Bake .mstk (with mastering) puts the chain in the track, and the game applies it when it loads the track.</p>
+  </div>
+  <div class="quiz" data-answer="0">
+    <p class="q">What does holding A/B bypass do to the project?</p>
+    <ul>
+      <li>Nothing. It only lets you hear the mix without mastering while you hold it</li>
+      <li>It turns mastering off until you press it again</li>
+      <li>It swaps between two saved masters</li>
+    </ul>
+    <p class="why">It is a momentary compare. Let go and mastering is back; the enabled box never changes.</p>
+  </div>
+  <div class="quiz" data-answer="2">
+    <p class="q">You turn the delay's wet all the way up and hear no echo. Why?</p>
+    <ul>
+      <li>Ping-pong is off</li>
+      <li>Mastering is not enabled</li>
+      <li>No track sends to the delay: its CC94 lane is empty</li>
+    </ul>
+    <p class="why">A send effect only hears what channels send to it. Paint the CC94 delay lane on the tracks that should echo.</p>
+  </div>
+</article>
+</body>
+</html>

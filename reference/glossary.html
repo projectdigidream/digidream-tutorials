@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Glossary · Digidream Studio tutorials</title>
+<meta name="description" content="The words the studio and its editors use, in one place.">
+<link rel="stylesheet" href="../assets/site.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 16%22%3E%3Cpath d=%22M8 1l7 7-7 7-7-7z%22 fill=%22%235b8fd6%22/%3E%3C/svg%3E">
+<script defer src="../assets/nav.js"></script>
+<script defer src="../assets/shortcuts.js"></script>
+<script defer src="../assets/site.js"></script>
+<style>
+  dl.gloss { display: grid; grid-template-columns: minmax(120px, 200px) 1fr; gap: 0; margin: 16px 0; }
+  dl.gloss dt, dl.gloss dd { margin: 0; padding: 10px 12px; border-bottom: 1px solid var(--line-soft); }
+  dl.gloss dt { font-weight: 600; }
+  dl.gloss dd { color: var(--text-2); }
+  dl.gloss .hide { display: none; }
+  @media (max-width: 560px) { dl.gloss { grid-template-columns: 1fr; } dl.gloss dt { border-bottom: 0; padding-bottom: 0; } }
+</style>
+</head>
+<body>
+<article>
+  <h1>Glossary</h1>
+  <p class="lede">The words used across the five tools, grouped by tool.</p>
+  <div class="filters"><input type="search" id="gq" placeholder="Filter the glossary"></div>
+  <dl class="gloss" id="gloss">
+    <dt>Module</dt><dd>A whole game: maps, monsters, weapons, textures, music, sounds and screens. It is one folder, and one pack when exported.</dd>
+    <dt>Pack</dt><dd>A module exported as a .zip. The standalone engine loads it unchanged, and <span class="ui">⇩ import pack</span> brings it into a studio.</dd>
+    <dt>Map</dt><dd>One level, made of rooms. The <span class="ui">▦ metamap</span> places maps on a grid so they form one world.</dd>
+    <dt>Room</dt><dd>A sector: a floor polygon with a floor height, a ceiling, light, and edges. It is drawn with the ▭ Room tool.</dd>
+    <dt>Wall</dt><dd>One edge of a room. Its flags say whether it blocks, can be climbed, is a trigger, and so on.</dd>
+    <dt>Thing</dt><dd>A spawn, light, monster or prop placed on a map with ✦ Place.</dd>
+    <dt>Facing</dt><dd>The direction a placed thing turns to, from 0° to 355°. 0 points along +x, and angles go counter-clockwise. Props honour it; monsters do not yet.</dd>
+    <dt>Trigger</dt><dd>A card that says WHEN something happens, IF a condition holds, THEN do something. The presets are door, lift, switch, teleport and others.</dd>
+    <dt>Graph</dt><dd>A Blueprint-style board of nodes and links that runs logic for the game or for one map.</dd>
+    <dt>Workshop</dt><dd>The window where monsters, weapons and the player are edited, with tabs for brain, swing, body and so on.</dd>
+    <dt>Swing</dt><dd>An attack's timing: its phases, from wind-up to hit to recovery.</dd>
+    <dt>Plugin</dt><dd>An editor that runs inside the studio and edits one kind of source, such as ThreeSprite or qPainter.</dd>
+    <dt>Source</dt><dd>A project file an editor can open again. It lives under <code>sources/</code>.</dd>
+    <dt>Bake</dt><dd>Turning a source into what the game loads, under <code>assets/</code>. Play and Export bake whatever is stale.</dd>
+    <dt>Draft</dt><dd>Unsaved work in a plugin, kept every couple of seconds so it survives a reload. When you reopen, you are asked "go on with it" or "start from the saved one".</dd>
+    <dt>Snapshot</dt><dd>A copy of the module kept on the device. You can restore the whole module from it, or one map.</dd>
+    <dt>View</dt><dd>ThreeSprite: one rotation angle of a sprite. View 1 faces the viewer, and views go anticlockwise seen from above.</dd>
+    <dt>Mirror</dt><dd>ThreeSprite: you draw only half the views plus one, and the rest are flipped copies.</dd>
+    <dt>Rig · bone · part</dt><dd>ThreeSprite: a 3D skeleton. Hand-drawn 2D parts hang on its bones, and each part can have variants.</dd>
+    <dt>Solid</dt><dd>ThreeSprite: a 3D shape (cube, sphere, cylinder, cone or pyramid) drawn in every view.</dd>
+    <dt>Onion skin</dt><dd>Showing the previous frame faintly behind the current one while you animate.</dd>
+    <dt>Atlas</dt><dd>One PNG holding every frame of every view, plus a JSON manifest that says where each one is.</dd>
+    <dt>Wrap</dt><dd>qPainter: strokes that run off one edge come back on the opposite edge, so the texture tiles without seams.</dd>
+    <dt>Offset ½</dt><dd>qPainter: shifts the picture by half its size, so the seams come to the middle where you can see them.</dd>
+    <dt>Palette lock</dt><dd>qPainter: every colour you paint snaps to the palette, either to the nearest colour or as a dither between two.</dd>
+    <dt>Ramp</dt><dd>An ordered run of colours from dark to light. The ramp shade brush steps along it.</dd>
+    <dt>Sheet</dt><dd>An animated texture: frames stacked vertically (or side by side) in one picture, played at a set speed.</dd>
+    <dt>Skybox</dt><dd>A sky picture. A strip is DOOM-style, a panorama is 2:1, and a cube has six faces.</dd>
+    <dt>Patch</dt><dd>DigidreamSynth: one instrument's sound, made of oscillator, envelopes, filter, LFOs and mod matrix.</dd>
+    <dt>Bank · kit</dt><dd>The melodic patches (programs 0–127) and the drum sounds, one per note number (General MIDI drums are 35–81).</dd>
+    <dt>Envelope (ADSR)</dt><dd>How a value moves over a note's life: attack, hold, decay, sustain, release, with an optional delay first.</dd>
+    <dt>Mastering</dt><dd>The final EQ, compressor and limiter on the whole mix. It is baked into the .mstk.</dd>
+    <dt>Loop region</dt><dd>The part of a track that repeats. It is written as loopStart / loopEnd markers.</dd>
+    <dt>Cue · piece</dt><dd>A piece of music the game can switch to. A switch can happen now, at the next bar or at loop end, with or without a fade.</dd>
+    <dt>Recipe</dt><dd>DigidreamSound: a kind of sound to start from (Gunshot, Explosion, Laser / zap…). Randomize makes a new one of that kind.</dd>
+    <dt>Randomize · Vary</dt><dd>🎲 makes a fresh sound from the recipe; ✨ nudges the current one slightly.</dd>
+    <dt>Take</dt><dd>One version of a sound. The game picks one of the takes at random each time, so repeats don't sound identical.</dd>
+    <dt>Layer</dt><dd>One voice inside a take (noise, tone or metal), each with its own envelope and tone. Layers start together and add up.</dd>
+    <dt>Rings</dt><dd>Resonators that make a sound ring like a struck body. There can be up to 8.</dd>
+    <dt>Group</dt><dd>DigidreamSound: a shared bus (such as world, player or ui) with its own volume, limit and effect sends.</dd>
+    <dt>Sound pack</dt><dd>One .sfxproj in the module. The studio merges all packs into one bank, and a higher pack wins on a shared name.</dd>
+  </dl>
+</article>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const q = document.getElementById('gq');
+    q.addEventListener('input', () => {
+      const v = q.value.trim().toLowerCase();
+      document.querySelectorAll('#gloss dt').forEach(dt => {
+        const dd = dt.nextElementSibling;
+        const hit = !v || (dt.textContent + ' ' + dd.textContent).toLowerCase().includes(v);
+        dt.classList.toggle('hide', !hit); dd.classList.toggle('hide', !hit);
+      });
+    });
+  });
+</script>
+</body>
+</html>

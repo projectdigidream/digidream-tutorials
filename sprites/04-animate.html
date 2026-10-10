@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Animating · Digidream Studio tutorials</title>
+<meta name="description" content="ThreeSprite's timeline: animations, frames, fps and loop, bone keys with linear, ease and step, part visibility and variant keys, the onion skin, and copying keys.">
+<link rel="stylesheet" href="../assets/site.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 16%22%3E%3Cpath d=%22M8 1l7 7-7 7-7-7z%22 fill=%22%235b8fd6%22/%3E%3C/svg%3E">
+<script defer src="../assets/nav.js"></script>
+<script defer src="../assets/shortcuts.js"></script>
+<script defer src="../assets/site.js"></script>
+</head>
+<body>
+<article>
+  <h1>Animating</h1>
+  <p class="lede">You animate the rig, not the pictures. Keys on bones turn, move and scale them; keys on parts show, hide and swap them. Because the bones are 3D, one set of keys animates every view at once.</p>
+  <div class="goal">
+    <b>You'll learn</b><span>how to add and set up animations, set and edit keys, choose how keys blend, key a part's visibility and variant, use the onion skin, and copy keys</span>
+    <b>Time</b><span>25 minutes</span>
+    <b>Needs</b><span>a rigged sprite (see <a href="03-rig.html">Rig, bones and parts</a>)</span>
+  </div>
+
+  <figure class="shot" data-src="../assets/shots/sprite-animate.png" data-alt="ThreeSprite's Animate tab with the timeline at the bottom">
+    <figcaption>The Animate tab: the canvas, the keys at the current frame on the right, the timeline along the bottom.</figcaption>
+  </figure>
+
+  <h2>Animations</h2>
+  <p>A sprite holds any number of animations, each with its own frame count, speed and loop. A new sprite has one called <code>idle</code>: 4 frames at 8 fps, looping. The left end of the timeline's transport bar manages them:</p>
+  <ul>
+    <li>A drop-down of the sprite's animations.</li>
+    <li><b>+</b> <span class="ui">Add animation</span> asks for a name (it suggests <i>anim 2</i>, <i>anim 3</i> …).</li>
+    <li><b>Pencil</b> <span class="ui">Rename animation</span> and <b>trash</b> <span class="ui">Delete animation</span>. Deleting removes its keys, and is undoable.</li>
+  </ul>
+  <p>Then come the controls for the one you chose:</p>
+  <table>
+    <thead><tr><th>Control</th><th>What it does</th></tr></thead>
+    <tbody>
+      <tr><td><b>Play / pause</b></td><td>Plays the animation on the canvas. <kbd>Space</kbd> does the same in the Animate and 3D tabs.</td></tr>
+      <tr><td><code>3 / 8</code></td><td>The current frame and the frame count.</td></tr>
+      <tr><td><span class="ui">fps</span></td><td>Frames per second. <b>0</b> holds the first frame.</td></tr>
+      <tr><td><span class="ui">frames</span></td><td>How many frames, from 1 to 256.</td></tr>
+      <tr><td><span class="ui">loop</span></td><td>Loop, or play once and hold the last frame.</td></tr>
+      <tr><td><b>Onion skin</b></td><td>Shows the previous frame faded under the current one.</td></tr>
+    </tbody>
+  </table>
+  <p><kbd>[</kbd> and <kbd>]</kbd> step to the previous and next frame, wrapping round.</p>
+
+  <h2>The timeline</h2>
+  <p>The timeline has one row per bone (as a tree, the same as the Bones panel) and then one row per part. Each column is a frame, and the header numbers them from 1.</p>
+  <ul>
+    <li><b>Click or drag along the header</b> to scrub. It pauses playback.</li>
+    <li><b>Click a cell</b> to go to that frame.</li>
+    <li>A <b>◆</b> in a cell is a key.</li>
+  </ul>
+  <table>
+    <thead><tr><th>On a key</th><th>Does</th></tr></thead>
+    <tbody>
+      <tr><td>Click</td><td>Selects it, goes to its frame, and selects its bone or part</td></tr>
+      <tr><td><kbd>Shift</kbd>-click, or <kbd>⌘</kbd>/<kbd>Ctrl</kbd>-click</td><td>Adds it to the selection, or removes it</td></tr>
+      <tr><td>Drag</td><td>Moves it to another frame</td></tr>
+      <tr><td>Right-click, or long-press</td><td>Deletes it</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Setting keys</h2>
+  <p>There are two ways to set a key on the current frame:</p>
+  <ol>
+    <li><b>On the canvas</b>: drag a bone, as in the Rig tab. Dragging the tip sets a rotation key, and dragging the root sets a move key. The drag works in the plane of the view you are looking at.</li>
+    <li><b>In the Inspector</b>, now titled <b>Keys at frame</b>: type values for the selected bone. It says <em>Frame f of n</em> at the top.</li>
+  </ol>
+  <p>For a bone the Inspector shows three groups, each with a <b>◆</b> badge that is lit when there is a key at this frame. Click the badge to set or remove that key.</p>
+  <ul>
+    <li><span class="ui">Rot yaw</span>, <span class="ui">Rot pitch</span>, <span class="ui">Rot roll</span> (degrees)</li>
+    <li><span class="ui">Move right</span>, <span class="ui">Move up</span>, <span class="ui">Move forward</span> (pixels)</li>
+    <li><span class="ui">Scale right</span>, <span class="ui">Scale up</span>, <span class="ui">Scale forward</span></li>
+  </ul>
+  <p>Under them:</p>
+  <ul>
+    <li><span class="ui">Ease</span> chooses how this frame's keys blend to the next ones. It is greyed out when the bone has no key at this frame.</li>
+    <li><span class="ui">Key all</span> keys rotation, move and scale at this frame, with their current values.</li>
+    <li><span class="ui">Delete keys</span> removes all three at this frame.</li>
+  </ul>
+
+  <h3>Ease: linear, easeInOut, step</h3>
+  <p>The key at the <em>start</em> of a stretch decides how it gets to the next key:</p>
+  <table>
+    <thead><tr><th>Ease</th><th>Between this key and the next</th><th>Good for</th></tr></thead>
+    <tbody>
+      <tr><td><code>linear</code></td><td>moves at an even speed</td><td>walk cycles, steady swings</td></tr>
+      <tr><td><code>easeInOut</code></td><td>starts slowly, speeds up, slows into the next key</td><td>breathing, a weight being lifted</td></tr>
+      <tr><td><code>step</code></td><td>holds this key's value, then jumps</td><td>snappy, Doom-like poses; anything that must not blend</td></tr>
+    </tbody>
+  </table>
+  <div class="callout tip"><p>Sprites often have only 4 to 8 frames, and blending between so few can look mushy. Try <code>step</code> on every key: each frame is then exactly the pose you set.</p></div>
+
+  <h2 id="parts-in-the-timeline">Parts in the timeline</h2>
+  <p>Select a part (in its timeline row or in Parts) and the Inspector shows two more keys for it. Both are always <code>step</code>, since a part can't be half visible or half one variant.</p>
+  <ul>
+    <li><span class="ui">Visible</span>: a tick box. Untick it to hide the part from this frame on. Use it for a muzzle flash, or for a part that only shows in one pose.</li>
+    <li><span class="ui">Variant</span>: which of the part's variants is shown. Use it to open a hand, or to open a mouth to shout.</li>
+  </ul>
+
+  <h2>The onion skin</h2>
+  <p>With the onion skin on, the previous frame is drawn faded under the current one. On frame 1 the "previous" frame is the last one, so the loop point can be checked as well. Try it below: a four-frame bounce, with frame 1 squashed on the ground, then a stretch going up, round at the top, and a stretch coming down.</p>
+  <div class="widget" data-widget="onion" data-title="Onion skin"></div>
+
+  <h2>Copying keys</h2>
+  <ol>
+    <li>Click a key, and <kbd>Shift</kbd>-click or <kbd>⌘</kbd>-click more. On a touch screen, turn on the <b>multi-select</b> button first and then tap each key.</li>
+    <li>Press <b>Copy</b>, or <kbd>⌘C</kbd>.</li>
+    <li>Go to another frame and press <b>Paste</b>, or <kbd>⌘V</kbd>. The keys land at the current frame, with the same spacing between them and the same ease.</li>
+  </ol>
+  <div class="callout warn"><p>Keys don't wrap round the loop. Before the first key a bone holds the first key's value, and after the last key it holds the last one. When a looping animation reaches its last frame it jumps back to frame 1. So key the last frame as the step <em>before</em> frame 1's pose, not as frame 1's pose itself, or the loop shows the same pose twice and stutters.</p></div>
+
+  <h2>Exercise: a bob</h2>
+  <ol class="steps">
+    <li><p>Open <span class="ui">Animate</span>. Choose <code>idle</code> in the drop-down, set <span class="ui">frames</span> to 4 and <span class="ui">fps</span> to 6, and make sure <span class="ui">loop</span> is ticked.</p></li>
+    <li><p>On frame 1, select the <code>body</code> bone in the timeline and press <span class="ui">Key all</span>.</p></li>
+    <li><p>Press <kbd>]</kbd> twice to reach frame 3. Type <code>-2</code> in <span class="ui">Move up</span>. A key appears on frame 3.</p></li>
+    <li><p>Press <kbd>]</kbd> to reach frame 4 and type <code>-1</code> in <span class="ui">Move up</span>. That is the step on the way back to frame 1.</p></li>
+    <li><p>Press <kbd>Space</kbd> to play. The body bobs in every view: press <kbd>.</kbd> while it plays to see.</p></li>
+    <li><p>Click the key on frame 1 and set its <span class="ui">Ease</span> to <code>step</code>. Play again: frame 2 now holds frame 1's pose.</p></li>
+    <li><p>Click the key on frame 3, <kbd>Shift</kbd>-click the one on frame 4, and press <kbd>⌘C</kbd>. Set <span class="ui">frames</span> to 6, go to frame 5 and press <kbd>⌘V</kbd>. Then press <kbd>⌘Z</kbd> twice to put things back.</p></li>
+    <li><p>Turn on the onion skin, pause, and step through with <kbd>[</kbd> and <kbd>]</kbd>.</p></li>
+  </ol>
+
+  <h2>What the studio does with animations</h2>
+  <p>Each animation becomes one animation in the baked sheet, with its frame count, fps and loop. A monster's body card picks one animation for each of its five states. When a sheet is chosen, the studio guesses from the names:</p>
+  <table>
+    <thead><tr><th>State</th><th>An animation whose name contains</th></tr></thead>
+    <tbody>
+      <tr><td>idle</td><td><code>idle</code> or <code>stand</code></td></tr>
+      <tr><td>walk</td><td><code>walk</code>, <code>run</code> or <code>move</code></td></tr>
+      <tr><td>attack</td><td><code>attack</code>, <code>fire</code> or <code>melee</code></td></tr>
+      <tr><td>pain</td><td><code>pain</code> or <code>hurt</code> (else the idle one)</td></tr>
+      <tr><td>death</td><td><code>death</code> or <code>die</code></td></tr>
+    </tbody>
+  </table>
+  <p>If nothing matches, the first animation is used. You can change any of them on the card afterwards.</p>
+  <div class="callout tip"><p>Name your animations <code>idle</code>, <code>walk</code>, <code>attack</code>, <code>pain</code> and <code>death</code>, and a new monster is wired up the moment you give it the sheet.</p></div>
+
+  <div class="quiz" data-answer="2">
+    <p class="q">A bone has a key on frame 1 set to step, and another on frame 5. What does it do on frames 2 to 4?</p>
+    <ul>
+      <li>Moves evenly towards frame 5's pose</li>
+      <li>Eases out of frame 1 and into frame 5</li>
+      <li>Holds frame 1's pose, then jumps on frame 5</li>
+    </ul>
+    <p class="why">The key at the start of a stretch decides how it gets to the next key, and step holds.</p>
+  </div>
+  <div class="quiz" data-answer="0">
+    <p class="q">You want a muzzle flash only on frame 2 of the attack. What do you key?</p>
+    <ul>
+      <li>The flash part's Visible: on at frame 2, off at frames 1 and 3</li>
+      <li>The flash bone's scale to 0 on the other frames</li>
+      <li>A second animation with the flash in it</li>
+    </ul>
+    <p class="why">Visibility keys show and hide a part, and are always step. Keying it off at frame 1 matters, because before the first key a part shows its first key's value.</p>
+  </div>
+  <div class="quiz" data-answer="1">
+    <p class="q">You copy keys on frames 1 and 3, then paste with the playhead on frame 5. Where do they land?</p>
+    <ul>
+      <li>On frames 1 and 3 again</li>
+      <li>On frames 5 and 7</li>
+      <li>Both on frame 5</li>
+    </ul>
+    <p class="why">Paste puts the first copied frame at the playhead and keeps the spacing between them.</p>
+  </div>
+</article>
+</body>
+</html>

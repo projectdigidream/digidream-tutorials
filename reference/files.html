@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Files and baking · Digidream Studio tutorials</title>
+<meta name="description" content="What every file in a module is, which editor makes it, and how the studio bakes sources into what the game loads.">
+<link rel="stylesheet" href="../assets/site.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 16%22%3E%3Cpath d=%22M8 1l7 7-7 7-7-7z%22 fill=%22%235b8fd6%22/%3E%3C/svg%3E">
+<script defer src="../assets/nav.js"></script>
+<script defer src="../assets/shortcuts.js"></script>
+<script defer src="../assets/site.js"></script>
+</head>
+<body>
+<article>
+  <h1>Files and baking</h1>
+  <p class="lede">A module is a folder. Some of its files are <b>sources</b>, projects an editor opens again. The rest are <b>assets</b>, what the game loads. The studio turns sources into assets; this is called <b>baking</b>.</p>
+
+  <h2>Sources and what they bake into</h2>
+  <table>
+    <thead><tr><th>Editor</th><th>Source (kept in the module)</th><th>Baked into</th><th>When it is baked</th></tr></thead>
+    <tbody>
+      <tr><td>🎞 ThreeSprite</td><td><code>sources/sprites/NAME.tsprite</code></td><td><code>assets/sprites/NAME.json</code> + <code>NAME.png</code> (an atlas)</td><td>on <span class="ui">← studio</span>, and at Play / Export if stale</td></tr>
+      <tr><td>🧱 qPainter</td><td><code>sources/textures/NAME.texproj.json</code></td><td><code>assets/textures/NAME.png</code>. Visible layers are flattened; a multi-frame project becomes a vertical sheet.</td><td>on <span class="ui">← studio</span>, and at Play / Export if stale</td></tr>
+      <tr><td>♪ DigidreamSynth</td><td><code>sources/music/NAME.msproj</code></td><td><code>assets/music/NAME.mstk</code>, with mastering baked in</td><td>only at Play, Export or <span class="ui">bake now</span></td></tr>
+      <tr><td>🔊 DigidreamSound</td><td><code>sources/sounds/ID.sfxproj</code> (one per pack)</td><td>merged into <code>assets/sounds/bank.sfxproj</code>; when two packs share a name, the higher pack wins</td><td>when the module is written (no baker)</td></tr>
+    </tbody>
+  </table>
+  <p>A plain PNG texture becomes a qPainter project the first time you edit it. Baked results are cached in the browser (IndexedDB <code>bakecache</code>), so unchanged sources are not baked again. To bake from a terminal:</p>
+<pre><code>node studio/tools/bake.mjs sources/textures/STONE1.texproj.json</code></pre>
+
+  <h2>Other files the studio writes</h2>
+  <table>
+    <thead><tr><th>File</th><th>What it holds</th><th>Made from</th></tr></thead>
+    <tbody>
+      <tr><td><code>module.txt</code></td><td>name, id, about, controls, debug, <code>key</code>, <code>persist</code>, <code>game</code>, <code>sky</code> and <code>player</code> lines</td><td>Settings, Controls, Sky, Player, Graphs</td></tr>
+      <tr><td><code>assets/animations.txt</code></td><td><code>sheet NAME vertical N</code> lines for animated textures (an <code>fps</code> is added when it isn't 8)</td><td>a texture's <span class="ui">cut &amp; speed…</span></td></tr>
+      <tr><td><code>assets/music/index.json</code></td><td><code>{ map: { cue: "track.mstk" } }</code>. A map starts on its <code>default</code> cue.</td><td>each map's music cues</td></tr>
+      <tr><td><code>props.txt</code></td><td>props, with <code>atlas NAME</code> naming their sprite sheet</td><td>Props</td></tr>
+    </tbody>
+  </table>
+  <div class="callout tip"><p>There are <b>no sound or music lines</b> in <code>module.txt</code>. The game finds the sound bank and the music index by their paths in the module, and plays a sound by its name, such as <code>weapon.shotgun.fire</code>.</p></div>
+
+  <h2>File types</h2>
+  <table>
+    <thead><tr><th>Extension</th><th>What</th><th>Opened by</th></tr></thead>
+    <tbody>
+      <tr><td><code>.tsprite</code></td><td>A zip holding <code>project.json</code>, <code>parts/&lt;part&gt;/&lt;variant&gt;/v&lt;k&gt;.png</code> and a thumbnail</td><td>ThreeSprite</td></tr>
+      <tr><td><code>.texproj.json</code></td><td>Layers, frames, palette, ramps and settings</td><td>qPainter</td></tr>
+      <tr><td><code>.msproj</code></td><td>A DAW project, in JSON</td><td>DigidreamSynth</td></tr>
+      <tr><td><code>.mstk</code></td><td>A sealed binary track, mastering included. It can be imported back for cutting and cues.</td><td>the game; DigidreamSynth Cut &amp; Loop / Cues</td></tr>
+      <tr><td><code>.mid</code></td><td>Standard MIDI. Its loop is kept as <code>loopStart</code> / <code>loopEnd</code> markers.</td><td>DigidreamSynth (import / export)</td></tr>
+      <tr><td><code>bank.json</code> · <code>kit.json</code></td><td>Melodic patches (programs 0–127 plus a fallback) and drum sounds by note number (General MIDI drums are 35–81; the shipped kit covers 31–87)</td><td>DigidreamSynth's patch editor</td></tr>
+      <tr><td><code>cues.json</code></td><td>Pieces and the rules between them</td><td>DigidreamSynth Cues</td></tr>
+      <tr><td><code>.sfxproj</code></td><td>A sound bank: groups, effects, master and sounds (each with takes and rings)</td><td>DigidreamSound; the game loads it as is</td></tr>
+      <tr><td><code>.sfxb</code></td><td>A sealed binary sound bank, for other games that embed the sound engine</td><td>DigidreamSound standalone</td></tr>
+      <tr><td><code>.dnpplugin</code></td><td>A studio plugin</td><td>Home → <span class="ui">🧩 plugins</span></td></tr>
+      <tr><td>palettes</td><td><code>.gpl</code>, <code>.hex</code>, <code>.pal</code>, <code>.png</code> strips</td><td>ThreeSprite and qPainter</td></tr>
+    </tbody>
+  </table>
+
+  <div class="quiz" data-answer="1">
+    <p class="q">You changed a melody in DigidreamSynth and went back to the studio. When does the game's .mstk change?</p>
+    <ul>
+      <li>Right away, when you press ← studio</li>
+      <li>At the next Play or Export, or when you press bake now</li>
+      <li>Never; you have to export the .mstk by hand</li>
+    </ul>
+    <p class="why">Music is the one source that isn't baked when you go back to the studio, because baking a track takes a while. Play and Export bake whatever is stale.</p>
+  </div>
+</article>
+</body>
+</html>

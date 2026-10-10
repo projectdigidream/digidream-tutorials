@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Piano roll and recording · Digidream Studio tutorials</title>
+<meta name="description" content="Draw, select and erase notes in the Track tab, paint velocity, controllers and pitch bend, and record from a MIDI keyboard.">
+<link rel="stylesheet" href="../assets/site.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 16%22%3E%3Cpath d=%22M8 1l7 7-7 7-7-7z%22 fill=%22%235b8fd6%22/%3E%3C/svg%3E">
+<script defer src="../assets/nav.js"></script>
+<script defer src="../assets/shortcuts.js"></script>
+<script defer src="../assets/site.js"></script>
+</head>
+<body>
+<article>
+  <h1>Piano roll and recording</h1>
+  <p class="lede">The <b>Track</b> tab is where notes are made. You draw them with the mouse or a finger, shape them with a lane of velocity, controllers or pitch bend, or play them in from a MIDI keyboard.</p>
+  <div class="goal">
+    <b>You'll learn</b><span>the three tools, moving and resizing notes, the controller lanes and ramps, recording with count-in and quantize, and the touch gestures</span>
+    <b>Time</b><span>15 minutes</span>
+    <b>Needs</b><span>the DAW running (see <a href="01-daw-tour.html">A tour of the DAW</a>); a MIDI keyboard for the recording part</span>
+  </div>
+
+  <figure class="shot" data-src="../assets/shots/synth-track.png" data-alt="The Track tab: the toolbar, the piano roll with its keyboard on the left, the lane below, and the Record box">
+    <figcaption>Track: the toolbar, the roll, the lane under it, and the Record box at the bottom.</figcaption>
+  </figure>
+
+  <h2>The toolbar</h2>
+  <ul>
+    <li><span class="ui">track</span>: which track the roll shows. It follows the track you select in Arrange.</li>
+    <li>The three tools: <span class="ui">✎ draw</span> (<kbd>D</kbd>), <span class="ui">▭ select</span> (<kbd>S</kbd>) and <span class="ui">⌫ erase</span> (<kbd>E</kbd>).</li>
+    <li><span class="ui">lane</span>: what the strip under the roll edits.</li>
+    <li><span class="ui">vel</span>: the velocity new notes get, 1 to 127. It is 100 at first.</li>
+  </ul>
+
+  <h2>The three tools</h2>
+  <table>
+    <thead><tr><th>Tool</th><th>On empty grid</th><th>On a note</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">✎ draw</span></td><td>Drag to make a note. It starts on the snap grid and its length follows the drag.</td><td>Drag to move it. Drag its right edge to resize it.</td></tr>
+      <tr><td><span class="ui">▭ select</span></td><td>Drag a box to select notes. Hold <kbd>⇧</kbd> to add to the selection.</td><td>Same as draw: click selects, drag moves, right edge resizes.</td></tr>
+      <tr><td><span class="ui">⌫ erase</span></td><td>—</td><td>Click to delete it.</td></tr>
+    </tbody>
+  </table>
+  <p>Whatever the tool, <b>right-click</b> a note to delete it. Clicking a note plays it, so you hear what you picked.</p>
+  <ul>
+    <li><kbd>⇧</kbd>-click adds a note to the selection; <kbd>⇧A</kbd> selects every note of the track.</li>
+    <li><kbd>⌫</kbd> or <kbd>Delete</kbd> deletes the selection.</li>
+    <li><kbd>⌘D</kbd> duplicates the selection and puts the copy right after it, rounded to the snap grid.</li>
+    <li>Moving and resizing follow <span class="ui">snap</span> in the header. Set it to <code>off</code> for free placement.</li>
+  </ul>
+
+  <h3>Getting around</h3>
+  <ul>
+    <li>The wheel scrolls up and down through pitch; a sideways swipe or <kbd>⇧</kbd> + wheel scrolls through time.</li>
+    <li><kbd>⌘</kbd> + wheel zooms (Ctrl on Windows and Linux).</li>
+    <li>The bar under the grid scrolls the song: drag it, or click it to jump.</li>
+    <li>The keyboard on the left: click a key to hear it on the track's channel; drag along the keys to scroll pitch.</li>
+    <li>Click the ruler at the top of the roll to move the playhead.</li>
+  </ul>
+
+  <ol class="steps">
+    <li><p>In Arrange, select a track playing a piano or a lead, and double-click its lane. Leave <span class="ui">snap</span> at <code>1/4</code>.</p></li>
+    <li><p>With <span class="ui">✎ draw</span>, click four notes into the first bar, one on each beat. A click makes a note one grid step long.</p></li>
+    <li><p>Press <kbd>S</kbd>, drag a box around the four notes, then press <kbd>⌘D</kbd>. The figure now fills two bars. Press <kbd>⇧A</kbd> to select all of it and <kbd>⌘D</kbd> again: four bars.</p></li>
+    <li><p>Drag the right edge of the last note to make it two beats long. Right-click the second note to delete it.</p></li>
+    <li><p>Press <kbd>Space</kbd>. While it plays, move a note up a step: you hear the change on the next pass without the music stopping.</p></li>
+  </ol>
+
+  <h2>The lane</h2>
+  <p>The strip under the roll edits one thing at a time. Pick it in <span class="ui">lane</span>:</p>
+  <table>
+    <thead><tr><th>Lane</th><th>What it changes</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">velocity</span></td><td>How hard each note is played, one bar per note.</td></tr>
+      <tr><td><span class="ui">CC1 mod</span></td><td>The mod wheel. A patch decides what it does (often vibrato; see the mod matrix in <a href="03-patches.html#mod">Designing patches</a>).</td></tr>
+      <tr><td><span class="ui">CC7 volume</span></td><td>The channel's volume.</td></tr>
+      <tr><td><span class="ui">CC10 pan</span></td><td>Left to right.</td></tr>
+      <tr><td><span class="ui">CC11 expr</span></td><td>Expression: a second volume, for swells inside a phrase.</td></tr>
+      <tr><td><span class="ui">CC64 sustain</span></td><td>The sustain pedal.</td></tr>
+      <tr><td><span class="ui">CC91 reverb</span> · <span class="ui">CC93 chorus</span> · <span class="ui">CC94 delay</span></td><td>How much of the channel goes to each send effect. The effects themselves are set on the <a href="04-mastering.html#sends">Master tab</a>.</td></tr>
+      <tr><td><span class="ui">pitch bend</span></td><td>Bends the channel's pitch up or down.</td></tr>
+    </tbody>
+  </table>
+  <ul>
+    <li><b>Drag</b> to paint values.</li>
+    <li><b><kbd>⇧</kbd>-drag</b> draws a straight ramp between where you pressed and where you let go, at grid resolution. This is the tool for a slow filter sweep or a long fade.</li>
+    <li><b>Right-click</b>, or the <span class="ui">⌫ erase</span> tool, deletes points.</li>
+  </ul>
+  <div class="callout tip"><p>The delay effect is silent until something is sent to it. Paint the <span class="ui">CC94 delay</span> lane on a track to give just that track echoes.</p></div>
+
+  <ol class="steps">
+    <li><p>Set <span class="ui">lane</span> to <span class="ui">CC11 expr</span>. <kbd>⇧</kbd>-drag from low at the start of bar 1 to high at the end of bar 4.</p></li>
+    <li><p>Play it. The track swells over four bars. Then right-click along the lane to clear the ramp.</p></li>
+  </ol>
+
+  <h2 id="record">Recording</h2>
+  <p>The <b>Record</b> box at the bottom of the tab takes notes, controllers and pitch bend from a MIDI keyboard.</p>
+  <table>
+    <thead><tr><th>Setting</th><th>What it does</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">device</span></td><td>Which MIDI input to listen to, or <code>all inputs</code>.</td></tr>
+      <tr><td><span class="ui">mode</span></td><td><code>overdub</code> adds the take to what is there. <code>replace</code> first clears the loop region of the track (or the whole track, if <span class="ui">loop</span> is off).</td></tr>
+      <tr><td><span class="ui">quantize</span></td><td>Snaps the take to <code>1/4</code>, <code>1/8</code>, <code>1/16</code> or <code>1/32</code> when you stop, or leaves it as played (<code>off</code>).</td></tr>
+      <tr><td><span class="ui">latency ms</span></td><td>Shifts the take earlier by this much, if your setup makes everything land late. Negative values shift it later.</td></tr>
+    </tbody>
+  </table>
+  <p>The keyboard always plays through the armed track's channel, even when you are not recording, so you hear the track's own sound as you play.</p>
+  <ol class="steps">
+    <li><p>Connect a MIDI keyboard. The header should read the device's state instead of <em>"MIDI: probing…"</em>.</p></li>
+    <li><p>In Arrange, press <span class="ui">R</span> on the track to arm it. (With nothing armed, recording uses the selected track.)</p></li>
+    <li><p>Set <span class="ui">count-in</span> in the header to 1, <span class="ui">mode</span> to <code>overdub</code> and <span class="ui">quantize</span> to <code>1/16</code>.</p></li>
+    <li><p>Press <span class="ui">● Rec</span> or <kbd>R</kbd>. The click plays one bar, then the song plays from the start and you play along.</p></li>
+    <li><p>Press <span class="ui">● Rec</span>, <kbd>R</kbd> or <span class="ui">⏹</span> to stop. The take is snapped to the grid and added as one step, so a single <kbd>⌘Z</kbd> takes the whole take back.</p></li>
+  </ol>
+  <div class="callout warn"><p>Web MIDI needs a secure page (<code>localhost</code> counts) and does not exist in the Android app at all. There, draw the notes instead.</p></div>
+
+  <h2>On a touch screen</h2>
+  <p>A drag on the roll draws or moves, so the page cannot scroll with one finger. Instead:</p>
+  <ul>
+    <li><b>Two fingers</b> pan and pinch-zoom. Spread sideways to zoom time, spread up and down to zoom pitch.</li>
+    <li><b>Hold a note</b> to delete it. There is no right-click on a touch screen.</li>
+    <li><b>Slide along the keys</b> to scroll up and down; <b>drag the bar under the grid</b> to scroll through the song.</li>
+    <li>The <span class="ui">⌫ erase</span> tool deletes on a tap.</li>
+    <li>A second finger landing in the middle of a drag cancels that drag, so a pinch never leaves a stray note behind.</li>
+  </ul>
+
+  <div class="quiz" data-answer="2">
+    <p class="q">You want a filter to open slowly over 32 bars on one track. What is the quickest way?</p>
+    <ul>
+      <li>Draw 32 bars of points by hand in the velocity lane</li>
+      <li>Record yourself turning a knob</li>
+      <li>Pick the controller's lane and ⇧-drag from the start to the end</li>
+    </ul>
+    <p class="why">⇧-drag in a lane writes a straight ramp between the two ends at grid resolution.</p>
+  </div>
+  <div class="quiz" data-answer="1">
+    <p class="q">Loop is on, set to bars 5–8. You record a take in replace mode. What is cleared?</p>
+    <ul>
+      <li>The whole track</li>
+      <li>The armed track's notes, controllers and bends inside bars 5–8</li>
+      <li>Nothing: replace only affects the next take</li>
+    </ul>
+    <p class="why">Replace clears the loop region of the track before the take goes in. With loop off, it clears the whole track.</p>
+  </div>
+  <div class="quiz" data-answer="0">
+    <p class="q">You select a one-bar figure and press ⌘D. Where does the copy go?</p>
+    <ul>
+      <li>Right after the selection</li>
+      <li>On top of the original, to be dragged away</li>
+      <li>At the playhead</li>
+    </ul>
+    <p class="why">⌘D places the copy straight after the selection's span, rounded to the snap grid.</p>
+  </div>
+</article>
+</body>
+</html>

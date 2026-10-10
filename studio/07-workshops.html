@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Monsters, weapons, player · Digidream Studio tutorials</title>
+<meta name="description" content="The workshops: a monster's brain and body, a weapon's phases and swing, the player's skin, size, moves, kit and sounds, and the module's own keys.">
+<link rel="stylesheet" href="../assets/site.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 16%22%3E%3Cpath d=%22M8 1l7 7-7 7-7-7z%22 fill=%22%235b8fd6%22/%3E%3C/svg%3E">
+<script defer src="../assets/nav.js"></script>
+<script defer src="../assets/shortcuts.js"></script>
+<script defer src="../assets/site.js"></script>
+</head>
+<body>
+<article>
+  <h1>Monsters, weapons, player</h1>
+  <p class="lede">The workshops are where the things that move are made: monsters, the weapons the player holds, and the player. Monsters and weapons are graphs of states you draw. The player is a set of forms. Controls, at the end, gives the module keys of its own.</p>
+  <div class="goal">
+    <b>You'll learn</b><span>how a monster's brain, swing and body fit together, how a weapon's phases work, how to set the player up for every map or one map, and how to add a key</span>
+    <b>Time</b><span>30 minutes</span>
+    <b>Needs</b><span>a module with a sprite sheet for the monster (<a href="../sprites/01-first-sprite.html">Sprites track</a>), and a map to play-test in</span>
+  </div>
+
+  <h2>They belong to the module</h2>
+  <p>Monsters, weapons, props, particles and the player belong to the <b>module</b>, never to one map. Every map of the module sees the same imp and the same shotgun. The window says so in its bar: <em>"monsters belong to the module, not to one map"</em>. A map holds only its geometry, what is placed in it, its triggers, its camera, its cues and its paths.</p>
+  <p>The three windows share one layout:</p>
+  <ul>
+    <li>A bar with <span class="ui">‹ back</span>, a button across to the next workshop (<span class="ui">🧍 player</span> from Monsters, <span class="ui">☠ monsters</span> from Weapons, <span class="ui">⚔ weapons</span> from Player), and the names of the monsters or weapons with <span class="ui">+ new monster</span> or <span class="ui">+ new weapon</span>.</li>
+    <li>A problem count in the runtime's own words, or <em>"loads clean"</em>.</li>
+    <li>Three panes: <span class="ui">🎞 preview</span>, <span class="ui">⬡ graph</span> (not for the player) and <span class="ui">☰ details</span>. On a wide screen you see them side by side; on a phone, these tabs switch between them.</li>
+  </ul>
+
+  <figure class="shot" data-src="../assets/shots/studio-monsters.png" data-alt="The monster workshop: preview, state graph and details">
+    <figcaption>The monster workshop: the preview, the brain's states, and the details tabs.</figcaption>
+  </figure>
+
+  <h2>Monsters</h2>
+  <p>A monster's brain is a <b>state machine</b>. Each state says how the monster moves and faces, which animation it plays, when it goes to another state (its <em>transitions</em>), and what it does at given ticks while it is in it (its <em>sequence</em>). The game runs at 60 ticks a second.</p>
+  <p><span class="ui">+ new monster</span> asks for a name and gives the monster a working brain to start from. It has five states:</p>
+  <table>
+    <thead><tr><th>State</th><th>What it does</th></tr></thead>
+    <tbody>
+      <tr><td><code>look</code> ★</td><td>stands still; goes to <code>chase</code> when it has a target it can see</td></tr>
+      <tr><td><code>chase</code></td><td>runs at the target; goes to <code>attack</code> when the target is within 1.5 and its cooldown is ready</td></tr>
+      <tr><td><code>attack</code></td><td>faces, claws for 8 at tick 10, starts a 60-tick cooldown, then back to <code>chase</code></td></tr>
+      <tr><td><code>pain</code></td><td>flinches for 10 ticks</td></tr>
+      <tr><td><code>death</code></td><td>stops being solid and stays dead</td></tr>
+    </tbody>
+  </table>
+  <p>The ★ marks the initial state. A new monster also gets a body, drawn with the module's first sprite sheet.</p>
+
+  <h3>The state graph</h3>
+  <p>The graph pane draws each state as a box with its animation, its movement, its ticks and where it goes next, and how many transitions and steps it has. Arrows are transitions. Its bar has:</p>
+  <ul>
+    <li><span class="ui">+ state</span>, which asks for a name.</li>
+    <li>With a state picked: <span class="ui">★ initial</span>, <span class="ui">→ link</span> (then tap the state to go to; it adds a transition), and <span class="ui">✕ state</span>.</li>
+    <li><span class="ui">auto layout</span> and <span class="ui">delete monster</span>.</li>
+  </ul>
+  <p>Drag a state to move it. The board zooms like a graph's: pinch, the wheel, or <span class="ui">−</span>, <span class="ui">+</span> and <span class="ui">⤢</span> (every state in view).</p>
+
+  <h3>The details tabs</h3>
+  <table>
+    <thead><tr><th>Tab</th><th>What it holds</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">⬡</span></td><td>The picked state, by name (the tab says <code>⬡ chase</code>). Its fields, then <b>❓ go to … when all of …</b> (its transitions, each with conditions, and <span class="ui">+ transition</span>), then <b>▶ at tick … do …</b> (its sequence, with <span class="ui">add step</span>).</td></tr>
+      <tr><td><span class="ui">🧠 brain</span></td><td>The monster's own fields: <span class="ui">initial state</span>, health, turn speed, sight and the rest. Then <b>💢 the flinch</b> and <b>🎁 drops</b>.</td></tr>
+      <tr><td><span class="ui">🌀 swing</span></td><td>The claw as a swept collider. <span class="ui">+ swing</span> adds one.</td></tr>
+      <tr><td><span class="ui">👤 body</span></td><td>The body that draws it: <span class="ui">radius</span>, <span class="ui">height</span>, <span class="ui">scale</span>, <span class="ui">speed</span>, <span class="ui">solid</span>, the <span class="ui">sprite sheet</span>, and which animation each of the five states 0–4 plays.</td></tr>
+      <tr><td><span class="ui"># vars</span></td><td>The brain's own counters, such as the <code>ready</code> cooldown. <span class="ui">+ var</span> adds one.</td></tr>
+      <tr><td><span class="ui">☄ missiles</span></td><td>The module's missiles, shared by every monster: speed, gravity, life, and what happens <code>on_hit</code> and <code>on_expire</code>. <span class="ui">+ missile</span> adds one.</td></tr>
+    </tbody>
+  </table>
+  <p>Every field has an <b>ⓘ</b> with the runtime's own description.</p>
+
+  <h3>The flinch and the drops</h3>
+  <ul>
+    <li><b>💢 the flinch.</b> With a state called <code>pain</code>, <span class="ui">a bigger hit, a longer flinch</span> adds a share of each hit's damage to the pain state's ticks, up to a cap. The tab spells out how long a 10-, 50- and 100-point hit makes it flinch.</li>
+    <li><b>🎁 drops.</b> What the monster leaves where it dies. <span class="ui">+ drop</span> adds an item it always drops. <span class="ui">+ weighted choice</span> turns a drop into one of several; a choice with no item means "nothing", which is how you make a drop a chance.</li>
+  </ul>
+
+  <h3>The swing</h3>
+  <p>A swing is a collider that sweeps through an arc over several ticks, so a player who steps aside is missed. The preview <em>plays</em> it on a loop at the game's tick rate: from above for its reach and arc, from the side for its pitch, with the part already covered and the cooldown between swings. A monster's claw and the player's fist use the same swing, edited the same way.</p>
+
+  <ol class="steps">
+    <li><p>Open <b>☠ Monsters</b> and press <span class="ui">+ new monster</span>. Call it <code>grunt</code>.</p></li>
+    <li><p>On <span class="ui">👤 body</span>, choose its <span class="ui">sprite sheet</span> and check each state 0–4 plays the right animation. The preview's state chips play each one.</p></li>
+    <li><p>Tap the <code>attack</code> state. On <span class="ui">⬡ attack</span>, find the <code>melee</code> step under <b>▶ at tick … do …</b> and raise its damage to 12.</p></li>
+    <li><p>On <span class="ui">🧠 brain</span>, add a drop with <span class="ui">+ drop</span>.</p></li>
+    <li><p>Place a <code>grunt</code> on a map (<a href="03-placing-things.html">Placing things</a>) and press <span class="ui">▶ Play</span> to meet it.</p></li>
+  </ol>
+
+  <h2>Weapons</h2>
+  <p>A weapon is a <b>phase machine</b>: the same graph as a monster's brain, with phases in place of states. Automatic fire, a charge, a combo and an alt-fire are shapes you draw rather than flags you tick. <span class="ui">+ new weapon</span> starts one with two phases: <code>ready</code>, which goes to <code>fire</code> when the button is pressed, and <code>fire</code>, which shoots a 10-damage hitscan and returns to <code>ready</code> after 12 ticks.</p>
+  <table>
+    <thead><tr><th>Tab</th><th>What it holds</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">⬡</span></td><td>The picked phase: its fields, transitions and sequence, as for a state. A phase can carry <b>its own swing</b>, replacing the weapon's while it is in that phase. That is what makes a combo's third blow different from its first.</td></tr>
+      <tr><td><span class="ui">🔫 weapon</span></td><td>The weapon's own fields (label, order, which ammunition pool it uses …), <b>🔊 heard at once by the one firing</b> (<span class="ui">+ predicted sound</span>: played by the player's own client at once, rather than a round trip later), and <b>🎒 what its own pickup grants</b>.</td></tr>
+      <tr><td><span class="ui">🌀 swing</span></td><td>The weapon's swing, for every phase that has none of its own.</td></tr>
+      <tr><td><span class="ui"># vars</span></td><td>The weapon's own counters.</td></tr>
+      <tr><td><span class="ui">🎒 arsenal</span></td><td>Shared by every weapon: <b>🔢 ammunition</b> pools (<span class="ui">+ ammunition pool</span>), <b>❤ health</b> ceilings, and <b>📦 pickups</b> (<span class="ui">+ pickup</span>).</td></tr>
+    </tbody>
+  </table>
+  <p>The weapons run once for the whole game, not per level, so a player keeps what they hold from map to map.</p>
+
+  <h2>Player</h2>
+  <figure class="shot" data-src="../assets/shots/studio-player.png" data-alt="The player window with its tabs and the every map / only this map switch">
+    <figcaption>The player: one for the module, with parts a map may override.</figcaption>
+  </figure>
+  <p>The player has no graph, because nothing about a player is a state machine. The window is a preview and five tabs: <span class="ui">🧍 skin</span>, <span class="ui">📏 size</span>, <span class="ui">🏃 moves</span>, <span class="ui">🎒 kit</span> and <span class="ui">🔊 sounds</span>.</p>
+
+  <h3>Every map, or only this map</h3>
+  <p>The player is set up once, for every map. A map that needs it different (a giant's level, a low-gravity one) overrides only the parts it names. The size, moves and kit tabs open with a switch:</p>
+  <ul>
+    <li><span class="ui">🌐 every map</span> edits the module's player.</li>
+    <li><span class="ui">🗺 only <i>map</i></span> edits the open map's override. Each part follows the module until you switch it to its own, and says what it follows.</li>
+  </ul>
+  <p>An override is part of the map, so it undoes with the map.</p>
+
+  <table>
+    <thead><tr><th>Tab</th><th>What it sets</th><th>Per map?</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">🧍 skin</span></td><td>Which of the module's props draws the player (<span class="ui">drawn by</span>), how big it is drawn (<span class="ui">drawn at (scale)</span>), a <span class="ui">cross-fade (s)</span> between animations, and which state each animation condition plays. The drawn scale changes nothing the game simulates.</td><td>no</td></tr>
+      <tr><td><span class="ui">📏 size</span></td><td>The body the player collides as: <span class="ui">radius</span> and <span class="ui">height</span>. It is part of each map's content, so changing it re-bakes every map that does not have its own.</td><td>yes: <span class="ui">own size on <i>map</i></span></td></tr>
+      <tr><td><span class="ui">🏃 moves</span></td><td>Every movement parameter, grouped: moving and turning, jumping, climbing, dashing, hovering and flight, the grapple, the bare-handed swing. Switch one on to set it; an unset one says what it is anyway (the engine's, or what first-person controls set).</td><td>yes: <span class="ui"><i>name</i> — own here</span></td></tr>
+      <tr><td><span class="ui">🎒 kit</span></td><td><b>❤ health</b> (<span class="ui">max</span>, <span class="ui">bonus max</span>), <b>🔢 ammunition carried at the start</b>, and <b>🔫 weapons in hand</b>. With <span class="ui">choose them</span> off, the player starts with the lowest-order weapon.</td><td>no: a player arrives holding what they held in the last map</td></tr>
+      <tr><td><span class="ui">🔊 sounds</span></td><td><b>🏃 moving</b> (jumping, landing hard), <b>💥 hurt</b> (hurt, dying) and <b>🎒 taking a pickup</b>, each picked from the module's sound packs with ▶ to hear it. <code>(none)</code> is silence.</td><td>no</td></tr>
+    </tbody>
+  </table>
+  <div class="callout tip"><p>The moves are written into <code>module.txt</code> as <code>player</code> lines, and the server builds each arriving player from them. A number is written as an exact decimal, so what you type is exactly what the server reads.</p></div>
+
+  <ol class="steps">
+    <li><p>Open <b>🧍 Player</b>. On <span class="ui">🧍 skin</span>, choose a prop under <span class="ui">drawn by</span>.</p></li>
+    <li><p>On <span class="ui">🏃 moves</span>, with <span class="ui">🌐 every map</span>, switch on a jumping parameter and raise it a little.</p></li>
+    <li><p>Switch to <span class="ui">🗺 only <i>map</i></span>. Turn on <span class="ui"><i>the same parameter</i> — own here</span> and give this map a different value. The other maps keep the module's.</p></li>
+    <li><p>Press <span class="ui">▶ Play</span> and jump.</p></li>
+  </ol>
+
+  <h2 id="controls">Controls</h2>
+  <p><b>🎮 Controls</b> is the control mapper. At the top, <span class="ui">how it is played</span> chooses <code>platformer — third person</code> or <code>first person (fps)</code>. Below it are the module's own keys: actions such as reload, map or inventory, which graphs answer by name.</p>
+  <ul>
+    <li><span class="ui">+ key</span> adds a key called <code>action</code> and waits for you to press one: the button says <span class="ui">press a key… (Esc)</span>.</li>
+    <li>Each key is one line: its number, its name, <span class="ui">⌨ <i>key</i></span> (tap it and press a key), a list to choose the key from where there is no keyboard, and a <span class="ui">👆</span> touch label of up to 12 characters, with no spaces. An empty touch label means no touch button.</li>
+    <li><span class="ui">↑</span> moves a key up, and <span class="ui">✕</span> deletes it. The order matters: key <i>i</i> is bit <i>i</i> of what scripts see.</li>
+    <li>At most <b>8</b> keys. The section head counts them: <span class="ui">⌨ the module's own keys (3 of 8)</span>.</li>
+    <li>When a key has a touch label, <span class="ui">place the touch buttons…</span> opens Screens, where you place it beside the engine's buttons.</li>
+  </ul>
+  <p>Below the keys, <b>🎮 the engine's buttons</b> lists the buttons every module has and their keys, for reference: jump on Space, dash on Shift, use on E, attack on F or the left mouse button, and so on.</p>
+  <h3>Warnings and errors</h3>
+  <p>Controls warns, under the key's line, about:</p>
+  <ul>
+    <li>a key on one the engine already uses (E is use; Q and R turn the camera; W A S D move);</li>
+    <li>two keys on the same key;</li>
+    <li>a name one of the engine's buttons already has (a graph naming it would mean the engine's).</li>
+  </ul>
+  <p>What the server would refuse is an error, here and on Home.</p>
+  <p>Renaming a key renames it in every graph that answers it. Graphs answer keys with <code>when_button_pressed</code>, <code>when_button_released</code> and <code>button_held</code>: see <a href="06-graphs.html">Graphs</a>.</p>
+  <div class="callout soon"><p>Players cannot rebind keys yet. The module's list is the key map.</p></div>
+
+  <div class="quiz" data-answer="2">
+    <p class="q">You want a low-gravity moon level, with the player's jump higher only there. Where do you set it?</p>
+    <ul>
+      <li>In 🧠 brain of a monster called player</li>
+      <li>In 🏃 moves with 🌐 every map</li>
+      <li>In 🏃 moves with 🗺 only <i>moon</i>, switched to its own</li>
+    </ul>
+    <p class="why">A map overrides only the parts it switches to its own, and every other map keeps the module's values.</p>
+  </div>
+  <div class="quiz" data-answer="0">
+    <p class="q">Why is there no starting kit per map?</p>
+    <ul>
+      <li>The weapons run once for the whole game, so a player arrives holding what they held in the last map</li>
+      <li>Kits are set in each map's Map settings instead</li>
+      <li>Only the first map of a module may have weapons</li>
+    </ul>
+    <p class="why">The arsenal is a game script, run once for the game. A map has nothing to hand out on arrival.</p>
+  </div>
+  <div class="quiz" data-answer="1">
+    <p class="q">You add a ninth key in Controls. What happens?</p>
+    <ul>
+      <li>The first key is dropped to make room</li>
+      <li>It is an error: a game has 8 keys of its own at most, and the server ignores the rest</li>
+      <li>It works on keyboard only, with no touch button</li>
+    </ul>
+    <p class="why">Each key is one bit of the input frame, and there are 8. Controls says so in red, and so does Home.</p>
+  </div>
+</article>
+</body>
+</html>

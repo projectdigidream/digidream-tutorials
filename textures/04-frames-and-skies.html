@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Animation and skies · Digidream Studio tutorials</title>
+<meta name="description" content="Animate a texture in frames, turn it into a sprite sheet the game plays, paint skyboxes, and check everything in the 3D preview.">
+<link rel="stylesheet" href="../assets/site.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 16%22%3E%3Cpath d=%22M8 1l7 7-7 7-7-7z%22 fill=%22%235b8fd6%22/%3E%3C/svg%3E">
+<script defer src="../assets/nav.js"></script>
+<script defer src="../assets/shortcuts.js"></script>
+<script defer src="../assets/site.js"></script>
+</head>
+<body>
+<article>
+  <h1>Animation and skies</h1>
+  <p class="lede">A texture doesn't have to stand still. Lava can churn, water can ripple and a light can flicker, all from frames you paint in qPainter. qPainter also paints the sky in the engine's own formats, and its 3D preview shows the texture on a wall, a model or all round you.</p>
+  <div class="goal">
+    <b>You'll learn</b><span>frames and playback, the <span class="ui">Export…</span> menu, how the studio cuts a sprite sheet and writes its <code>sheet</code> line, the three kinds of sky, and the 3D preview</span>
+    <b>Time</b><span>30 minutes</span>
+    <b>Needs</b><span>qPainter open on a texture, and for the studio parts a module open in the studio</span>
+  </div>
+
+  <h2>Frames</h2>
+  <p>Every texture can have several <b>frames</b>. A texture with one frame works as before. Frames share the layers: each layer has one image per frame, and a layer's visibility, opacity and order apply to all of its frames. Every tool paints on the <b>current frame</b>, and undo jumps back to the frame an edit was made in.</p>
+  <p>The <b>Frames</b> section of the side panel:</p>
+  <table>
+    <thead><tr><th>Control</th><th>Key</th><th>What it does</th></tr></thead>
+    <tbody>
+      <tr><td>The thumbnails</td><td></td><td>Click one to edit that frame. The current frame is outlined.</td></tr>
+      <tr><td><span class="ui">‹</span> <span class="ui">›</span></td><td><kbd>,</kbd> <kbd>.</kbd></td><td>Previous and next frame. They wrap round at the ends.</td></tr>
+      <tr><td><span class="ui">▶</span></td><td><kbd>F</kbd></td><td>Play and pause. The canvas and the 3D preview both animate. Tapping the canvas stops playback, so you never paint on a moving frame.</td></tr>
+      <tr><td><span class="ui">FPS</span></td><td></td><td>The playback speed, 1 to 60 frames a second. It is saved with the texture.</td></tr>
+      <tr><td><span class="ui">+</span> <span class="ui">⧉</span> <span class="ui">−</span></td><td></td><td>A new blank frame after this one, a duplicate of this one, or delete this one.</td></tr>
+      <tr><td><span class="ui">←</span> <span class="ui">→</span></td><td></td><td>Move the current frame earlier or later.</td></tr>
+      <tr><td><span class="ui">Onion skin</span></td><td></td><td>Shows the previous frame faintly over the current one. Frame 1 shows the last frame, since animations loop.</td></tr>
+      <tr><td><span class="ui">Split sheet…</span></td><td></td><td>Cuts a sprite-sheet picture into frames. You give the number of frames; a tall picture is split top to bottom, a wide one left to right.</td></tr>
+    </tbody>
+  </table>
+  <p>On a phone, <span class="ui">‹</span>, the frame number, <span class="ui">›</span> and <span class="ui">▶</span> are also in the thin bar under the top bar.</p>
+  <div class="callout tip"><p>For a smooth loop, <b>duplicate</b> the first frame, change it a little, duplicate again, and so on. Keep <span class="ui">Onion skin</span> on. Set the 3D shape to <span class="ui">wall</span> with <span class="ui">Wrap</span> on to watch the animation tile. A liquid also has to tile in <em>time</em>: the last frame must lead back into the first.</p></div>
+
+  <h2>The Export… menu</h2>
+  <p><span class="ui">Export…</span> writes a copy of the texture without changing which file it is linked to. Inside the studio it downloads the file.</p>
+  <table>
+    <thead><tr><th>Choice</th><th>Result</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">PNG 1×</span> … <span class="ui">PNG 16×</span></td><td>The current frame, scaled with hard pixel edges (1×, 2×, 4×, 8× or 16×). In an animation the file name gets <code>-frame2</code> and so on.</td></tr>
+      <tr><td><span class="ui">Sprite sheet ↓ (vertical)</span></td><td>All frames stacked top to bottom. This is the layout the game uses.</td></tr>
+      <tr><td><span class="ui">Sprite sheet → (horizontal)</span></td><td>All frames side by side.</td></tr>
+      <tr><td><span class="ui">Animated PNG 1×</span> / <span class="ui">Animated PNG 4×</span></td><td>A looping animated PNG at the current FPS. It plays in browsers and most image viewers, which makes it handy for showing work.</td></tr>
+    </tbody>
+  </table>
+  <p>Standalone, <span class="ui">Save as…</span> → <span class="ui">PNG (flattened)…</span> on an animated texture also writes the vertical sheet. Opening a PNG that is exactly <i>N</i> times taller than it is wide asks whether to open it as an <i>N</i>-frame animation, so a sheet goes round the trip intact.</p>
+
+  <h2 id="sheets">Animated textures in the game</h2>
+  <p>The game plays an animated wall or floor from one picture holding every frame, a <b>sprite sheet</b>. A line in the module's <code>assets/animations.txt</code> says how to cut it:</p>
+<pre><code>sheet LAVA1 vertical 4 fps 10</code></pre>
+  <ul>
+    <li><code>LAVA1</code> is the texture the map uses, <code>assets/textures/LAVA1.png</code>.</li>
+    <li><code>vertical</code> or <code>horizontal</code> is how the frames are laid out.</li>
+    <li><code>4</code> is the number of frames, 2 to 256. The frames are equal: the picture's height (or width) divided by that number.</li>
+    <li><code>fps 10</code> is the speed. It is optional; without it the speed is 8 frames a second. The animation always loops.</li>
+  </ul>
+  <p>Each frame tiles across a wall exactly as an ordinary texture of the frame's size would. A 64×256 sheet of 4 frames tiles like a 64×64 texture.</p>
+  <p>You don't write these lines yourself. The studio writes <code>animations.txt</code> from the module's textures, in one of two ways.</p>
+  <h3>A texture painted in qPainter</h3>
+  <p>When you go back to the studio with an animated texture, the studio bakes it as a vertical sheet, sets it to play at the texture's <span class="ui">FPS</span>, and writes its line. You only paint the frames and set the speed.</p>
+  <h3>A sheet you import or set by hand</h3>
+  <p>On a texture's card, a still picture shows <span class="ui">animate…</span>, and an animated one shows <span class="ui">cut &amp; speed…</span>. <span class="ui">+ import texture (PNG)</span> opens the same dialog, with the name editable and <span class="ui">import</span> in place of <span class="ui">save</span>. The dialog has:</p>
+  <ul>
+    <li><span class="ui">cut</span>: <span class="ui">a still picture</span>, <span class="ui">frames stacked ↓ (vertical)</span> or <span class="ui">frames side by side → (horizontal)</span>. When the picture's shape suggests a sheet, for example one exactly four squares tall, the dialog proposes it.</li>
+    <li><span class="ui">frames</span>, or <span class="ui">each frame, px</span>: set either one, and the other follows.</li>
+    <li><span class="ui">frames a second</span>.</li>
+    <li>Two previews: <span class="ui">the picture, cut</span>, with yellow cut lines and the frame being shown outlined, and <span class="ui">a frame, tiled as on a wall</span>, which plays.</li>
+    <li>A warning in red when the picture doesn't divide into that many equal frames. The pixels left over are shaded red and are not shown in the game.</li>
+    <li><span class="ui">cancel</span>, and <span class="ui">save</span> (or <span class="ui">import</span>).</li>
+  </ul>
+  <p>Try it on a small lava sheet drawn right here. It is 16 pixels wide and four frames tall. The line under the previews is the one the studio would write. It leaves <code>fps</code> out when the speed is the default, 8.</p>
+  <div class="widget" data-widget="sheet-cutter" data-title="Cut a sheet"></div>
+  <ol class="steps">
+    <li><p>Leave the cut on <b>frames stacked ↓ (vertical)</b> with 4 frames. The tile on the right churns, and the line reads <code>sheet LAVA1 vertical 4</code>.</p></li>
+    <li><p>Move <b>frames a second</b> to 12. The line gains <code>fps 12</code>.</p></li>
+    <li><p>Set <b>frames</b> to 3. The 64 pixels don't divide by 3, so the last pixel row is shaded red and the warning says so. Each "frame" now cuts across two of the real ones, and the tile stutters. Set it back to 4.</p></li>
+    <li><p>Try <b>frames side by side → (horizontal)</b>. The frames become 4-pixel strips: the wrong cut for this sheet. Then choose <b>a still picture</b>: there is no line, and the game would show the whole sheet, standing still.</p></li>
+  </ol>
+  <div class="callout"><p>The card says what a texture is: <em>a still picture</em>, or for example <em>🎞 animated: 4 frames stacked, 8 a second</em>. Only the map's own textures animate. A picture put up later by a switch or a graph is cut too, but does not move.</p></div>
+
+  <h2 id="skies">Skyboxes</h2>
+  <figure class="shot" data-src="../assets/shots/texture-skybox.png" data-alt="qPainter painting a cube sky, with the 3D preview inside it">
+    <figcaption>A cube sky laid out as a cross, and the preview from inside it.</figcaption>
+  </figure>
+  <p>qPainter paints skies in exactly the formats and orientation the engine uses. What its 3D preview shows is what the game draws.</p>
+  <table>
+    <thead><tr><th>Kind</th><th>The picture</th><th>Settings</th></tr></thead>
+    <tbody>
+      <tr><td><b>Strip</b> (DOOM's sky)</td><td>One picture of any size, wrapped round the horizon. DOOM's are 256×128. The left edge is at north, and it runs clockwise. The horizon is 100/128 of the way down.</td><td><span class="ui">Repeat</span> (copies round the horizon, default 4), <span class="ui">Height</span> (default 0.625, about 32° up), <span class="ui">Yaw</span></td></tr>
+      <tr><td><b>Panorama</b></td><td>One 2:1 equirectangular picture. The centre column faces north, east is at 3/4, west at 1/4, and south is at both edges.</td><td><span class="ui">Yaw</span></td></tr>
+      <tr><td><b>Cube</b></td><td>Six square faces, edited as a cross: east, south, west and north across the middle, up above south and down below it. Each face is upright as seen from inside, facing it.</td><td><span class="ui">Yaw</span></td></tr>
+    </tbody>
+  </table>
+  <p><span class="ui">Yaw</span> turns the sky, in turns: 0.25 is a quarter turn anticlockwise, seen from above.</p>
+
+  <h3>Starting a sky</h3>
+  <ul>
+    <li><b>In the studio</b>: <span class="ui">+ new texture</span>, then in the <b>New texture</b> dialog pick <span class="ui">Skybox: strip (DOOM sky)</span>, <span class="ui">Skybox: panorama (2:1)</span> or <span class="ui">Skybox: cube (six faces)</span>. You give the width for a strip or panorama (the height is half), or the face size for a cube (the cross is 4×3 faces). The size must be even.</li>
+    <li><b>Standalone</b>: <span class="ui">New…</span> → <span class="ui">Strip — DOOM sky…</span>, <span class="ui">Panorama (2:1)…</span> or <span class="ui">Cube (six faces)…</span>.</li>
+    <li><b>From a picture you have</b>: open it, then choose the kind in <b>3D preview</b> → <span class="ui">Skybox</span>. A cube must already be a 4×3 cross of square faces.</li>
+    <li><b>From six face pictures</b>: <span class="ui">Import faces…</span> (shown for cube skies) builds the cross from six PNGs named <code>…_east</code>, <code>_west</code>, <code>_north</code>, <code>_south</code>, <code>_up</code>, <code>_down</code>, or three.js's <code>px nx py ny pz nz</code>.</li>
+  </ul>
+
+  <h3>Painting a sky</h3>
+  <ul>
+    <li><b>Guides</b> mark the way: cube faces are outlined and labelled EAST … DOWN, a panorama shows its horizon and compass lines, and a strip shows its horizon and where north, east, south and west fall.</li>
+    <li><b>Cube edges are seamless.</b> A stroke that crosses a face's edge continues on the face next to it on the cube, turned the right way, even if that face sits elsewhere in the cross. Paint in the unused corners of the cross is dropped.</li>
+    <li><b>Strips and panoramas wrap</b> left to right. On a panorama, painting over the top or bottom continues over the pole.</li>
+    <li>Symmetry works on strips and panoramas, and is off for cubes.</li>
+    <li>A strip fades, above and below the picture, into the average colour of its top and bottom 8 rows. Keep those rows calm.</li>
+  </ul>
+  <p>For a sky, the 3D preview puts you at its centre. Drag to look round, and use the wheel to zoom. Tick <span class="ui">Paint</span> to paint straight onto the sky where you are looking. This is the easiest way to work across cube edges or near the poles.</p>
+
+  <h3>Getting the sky into the game</h3>
+  <p><b>Standalone</b>, <span class="ui">Export to engine…</span> asks for a texture name and the level the sky is for: a level name such as <code>map12</code>, or <code>default</code> for every level without a sky of its own. Then it asks for a folder:</p>
+  <ul>
+    <li>Pick the <b>module's folder</b>, the one with <code>module.txt</code>. The pictures go into <code>assets/textures/</code>, a cube's as <code>NAME_east.png</code> … <code>NAME_down.png</code>. <code>module.txt</code> gets the matching line, for example <code>sky map12 strip NAME repeat 2</code>. A <code>sky</code> line for that level is replaced; nothing else changes.</li>
+    <li>Pick <b>any other folder</b>, and only the pictures are written. qPainter shows the line for you to add.</li>
+  </ul>
+  <p>Only the current frame is exported, since skies don't animate. Settings are written only where they differ from the engine's defaults.</p>
+  <p><b>In the studio</b>, a strip or panorama you paint is an ordinary module texture. Open <b>🌌 Sky</b>, pick the kind, and type the texture's name. See <a href="../studio/08-look-and-feel.html">Sky, screens and weather</a>.</p>
+  <div class="callout warn"><p>The studio's Sky page takes a cube as six separate textures, one per face. qPainter keeps a cube as one cross. For a cube, use standalone qPainter's <span class="ui">Export to engine…</span>, which writes six face pictures, then import them into the module or name them in <b>🌌 Sky</b>.</p></div>
+
+  <h2>The 3D preview</h2>
+  <p>The preview at the bottom of the side panel updates as you paint. Drag to orbit; scroll or pinch to zoom.</p>
+  <table>
+    <thead><tr><th>Control</th><th>What it does</th></tr></thead>
+    <tbody>
+      <tr><td>Shape</td><td><span class="ui">cube</span>, <span class="ui">pyramid</span>, <span class="ui">sphere</span>, <span class="ui">cylinder</span>, <span class="ui">torus</span>, <span class="ui">plane</span>, <span class="ui">wall</span>, or <span class="ui">custom</span> once you have loaded a model.</td></tr>
+      <tr><td>Repeat</td><td>Tiles the texture <span class="ui">1×</span> to <span class="ui">4×</span> across the surface.</td></tr>
+      <tr><td><span class="ui">Nearest</span></td><td>Crisp pixels. Off, the texture is smoothed.</td></tr>
+      <tr><td><span class="ui">Lit</span></td><td>Directional light. Off, flat colours.</td></tr>
+      <tr><td><span class="ui">Spin</span></td><td>Turns the shape slowly.</td></tr>
+      <tr><td><span class="ui">Paint</span></td><td>Paint on the shape with the current tool. Left-drag (one finger) paints; right-drag (two fingers) turns the view.</td></tr>
+      <tr><td><span class="ui">Model…</span></td><td>Loads your own <code>.glb</code>, single-file <code>.gltf</code> or <code>.obj</code>. It must have UV coordinates.</td></tr>
+      <tr><td>Colour box</td><td>The background colour.</td></tr>
+    </tbody>
+  </table>
+  <ul>
+    <li>The cube and the pyramid show the whole texture on every face. The sphere repeats it twice round the equator, so the pixels stay square.</li>
+    <li>The <span class="ui">wall</span> is a large plane tiled 3×3: the best check for seams and for animated textures.</li>
+    <li>When painting on a model, a stroke that crosses a seam in the model's UVs is split, instead of drawing a line across the texture. Brushes and dither work best; shapes and selections are meant for the flat canvas.</li>
+  </ul>
+
+  <h2>Exercise: an animated lava floor</h2>
+  <ol class="steps">
+    <li><p>Make a <b>32 × 32</b> texture called <code>LAVA1</code>, and turn on <span class="ui">Wrap</span>.</p></li>
+    <li><p>Build a hot ramp with <span class="ui">Hue-shift</span> around an orange. Fill with the middle colour, then add blobs of the lighter colours with <kbd>N</kbd> and the pencil.</p></li>
+    <li><p>Press <span class="ui">⧉</span> three times for four frames. On each frame, shift the blobs a little, using the Move tool (<kbd>V</kbd>) with nothing selected to drag the whole layer a pixel or two.</p></li>
+    <li><p>Set <span class="ui">FPS</span> to 6, set the 3D shape to <span class="ui">wall</span>, and press <kbd>F</kbd>. Fix any frame that jumps, using <span class="ui">Onion skin</span>.</p></li>
+    <li><p>Press <span class="ui">← studio</span>. On <code>LAVA1</code>'s card, check that it says <em>🎞 animated: 4 frames stacked, 6 a second</em>. Put it on a floor and press <span class="ui">▶ Play</span>.</p></li>
+  </ol>
+
+  <h2>Check yourself</h2>
+  <div class="quiz" data-answer="1">
+    <p class="q">A 32 × 128 picture holds four 32 × 32 frames, one above the other, to play at 8 frames a second. Which line does the studio write?</p>
+    <ul>
+      <li><code>sheet NAME horizontal 4</code></li>
+      <li><code>sheet NAME vertical 4</code></li>
+      <li><code>sheet NAME vertical 128 fps 8</code></li>
+    </ul>
+    <p class="why">The frames are stacked, so the layout is vertical, and the count is the number of frames, not pixels. 8 is the default speed, so <code>fps</code> is left out.</p>
+  </div>
+  <div class="quiz" data-answer="0">
+    <p class="q">In a strip sky, where is north?</p>
+    <ul>
+      <li>At the picture's left edge, with the picture running clockwise</li>
+      <li>In the centre column</li>
+      <li>At both edges</li>
+    </ul>
+    <p class="why">A strip starts at north on its left edge. The centre column is north on a panorama, whose edges are south.</p>
+  </div>
+  <div class="quiz" data-answer="2">
+    <p class="q">Which 3D preview shape is the best check that an animated texture tiles?</p>
+    <ul>
+      <li><span class="ui">sphere</span></li>
+      <li><span class="ui">cube</span></li>
+      <li><span class="ui">wall</span></li>
+    </ul>
+    <p class="why">The wall is tiled 3×3 in perspective, so you see seams in space and, while it plays, in time.</p>
+  </div>
+</article>
+</body>
+</html>

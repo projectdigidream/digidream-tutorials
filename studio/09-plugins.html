@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Plugins · Digidream Studio tutorials</title>
+<meta name="description" content="The editors that run inside the studio: opening a document in one, going back or discarding, drafts, installing and switching plugins, and how sources are baked.">
+<link rel="stylesheet" href="../assets/site.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 16%22%3E%3Cpath d=%22M8 1l7 7-7 7-7-7z%22 fill=%22%235b8fd6%22/%3E%3C/svg%3E">
+<script defer src="../assets/nav.js"></script>
+<script defer src="../assets/shortcuts.js"></script>
+<script defer src="../assets/site.js"></script>
+</head>
+<body>
+<article>
+  <h1>Plugins</h1>
+  <p class="lede">Plugins are other editors that run inside the studio: ThreeSprite for sprites, qPainter for textures, DigidreamSound for sound packs, DigidreamSynth for music, Code for scripts, and the Packager as a page of its own. Each edits one of the module's files and hands it back when you return to the studio.</p>
+  <div class="goal">
+    <b>You'll learn</b><span>how to open a file in a plugin and come back, what drafts are, how to install, switch off or uninstall a plugin, and how sources are baked into what the game loads</span>
+    <b>Time</b><span>15 minutes</span>
+    <b>Needs</b><span>the studio, in a browser or the app (<a href="01-getting-started.html">Getting started</a>)</span>
+  </div>
+
+  <h2>The bundled plugins</h2>
+  <p>Every build of the studio comes with these:</p>
+  <table>
+    <thead><tr><th>Plugin</th><th>Edits</th><th>Opened from</th></tr></thead>
+    <tbody>
+      <tr><td>ThreeSprite</td><td>sprite projects (<code>.tsprite</code>)</td><td>🎞 Sprites: <span class="ui">+ new sprite</span>, or a sheet's <span class="ui">✎ edit in ThreeSprite</span></td></tr>
+      <tr><td>qPainter</td><td>textures</td><td>🧱 Textures: <span class="ui">+ new texture</span>, or <span class="ui">✎ edit in qPainter</span></td></tr>
+      <tr><td>DigidreamSound</td><td>sound packs (<code>.sfxproj</code>)</td><td>🔊 Sounds: <span class="ui">+ new sound pack</span>, or a pack's <span class="ui">✎ edit in DigidreamSound</span></td></tr>
+      <tr><td>DigidreamSynth</td><td>music projects (<code>.msproj</code>); it also brings a <b>baker</b> that turns them into tracks</td><td>♪ Music: <span class="ui">+ new track</span>, <span class="ui">✎ edit in DigidreamSynth</span>, <span class="ui">bake now</span></td></tr>
+      <tr><td>Code</td><td>the module's Lua scripts</td><td>📜 Scripts: <span class="ui">open with…</span></td></tr>
+      <tr><td>Packager</td><td>nothing: it is a page of the rail, <span class="ui">📦 Package</span></td><td>the rail (see <a href="10-play-and-export.html#package">Play, export, snapshots</a>)</td></tr>
+    </tbody>
+  </table>
+  <p>The studio's own pages that edit a kind of file count as editors too: the Scripts page, the Textures page, the Sounds page and the Monsters workshop. A plugin is offered beside them and never replaces them. Code, for example, has the lowest priority, so the Scripts page stays the default for a script until you choose Code.</p>
+  <h3>✎ edit in, and open with…</h3>
+  <ul>
+    <li><span class="ui">✎ edit in <i>plugin</i></span> opens the file in the first plugin that edits it.</li>
+    <li><span class="ui">open with…</span> appears when more than one editor can open the file. It asks <em>"Open <i>name</i> with…"</em>, lists the editors (the studio's own marked <code>(the studio)</code>), and remembers your choice on this device.</li>
+  </ul>
+
+  <h2>Inside a plugin: ← studio and ✕</h2>
+  <p>A plugin opens over the whole studio. The studio draws one slim bar above it, the same for every plugin:</p>
+  <table>
+    <thead><tr><th>Button</th><th>What it does</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">← studio</span></td><td>Back to the studio, <b>saving</b>. The studio asks the plugin for its document. If nothing changed, nothing happens. Otherwise it checks the document and puts it in the module as <b>one undo step</b>. If the document is refused, the plugin stays open and the bar says why.</td></tr>
+      <tr><td><span class="ui">✕</span></td><td>Back <b>without saving</b>. If there are changes, it asks first: <span class="ui">keep editing</span> or <span class="ui">throw them away</span>.</td></tr>
+    </tbody>
+  </table>
+  <p>Between them, the bar names the plugin and the file, and says <em>changed</em>, <em>saving…</em> or a problem.</p>
+  <p>Leaving any other way, by the rail or the phone's back button, asks: <span class="ui">save and go</span>, <span class="ui">discard</span> or <span class="ui">stay</span>.</p>
+  <p>Opening a file in a plugin is an address of its own, so reloading the page comes back to the plugin.</p>
+
+  <h3>Drafts</h3>
+  <p>A phone often closes an app that is in the background. So while a plugin works, it sends the studio a <b>draft</b> every couple of seconds, and the studio also asks for one when the app goes to the background. Drafts are kept on the device, by file, not by plugin.</p>
+  <p>When you open a file that has a draft, the studio asks:</p>
+  <ul>
+    <li><span class="ui">go on with it</span>: open the draft, marked as unsaved work.</li>
+    <li><span class="ui">start from the saved one</span>: throw the draft away and open the file as it was saved.</li>
+  </ul>
+  <p>Back or discard clears the draft. Drafts that are left over are listed on the Plugins page.</p>
+
+  <ol class="steps">
+    <li><p>Open <b>🧱 Textures</b>, tap a texture, and press <span class="ui">✎ edit in qPainter</span>.</p></li>
+    <li><p>Paint a few pixels. The bar says <em>changed</em>.</p></li>
+    <li><p>Press <span class="ui">✕</span>, then <span class="ui">keep editing</span>.</p></li>
+    <li><p>Press <span class="ui">← studio</span>. The texture's thumbnail shows your change.</p></li>
+    <li><p>Press <kbd>⌘Z</kbd>. The whole edit is undone in one step.</p></li>
+  </ol>
+
+  <h2>The Plugins page</h2>
+  <figure class="shot" data-src="../assets/shots/studio-plugins.png" data-alt="The Plugins page: one card per plugin with its switch">
+    <figcaption>The Plugins page: what the studio has besides itself.</figcaption>
+  </figure>
+  <p>Home's <span class="ui">🧩 plugins</span> opens it. It shows:</p>
+  <ul>
+    <li><span class="ui">+ install a plugin (.dnpplugin)</span> at the top.</li>
+    <li>A card per plugin: its name and version, <code>bundled</code> or <code>installed</code>, what it brings (<em>edits …</em>, <em>bakes …</em>, <em>the … page</em>), and an <span class="ui">on</span> switch. An installed plugin also has <span class="ui">uninstall</span>.</li>
+    <li>Any plugin the studio refused, in red, with the reason: for example a plugin made for a newer studio.</li>
+    <li><b>opens in</b>: for each kind of file with more than one editor, which one it opens in.</li>
+    <li><b>unsaved work</b>: drafts left behind, each with <span class="ui">open</span> and <span class="ui">throw away</span>.</li>
+  </ul>
+  <h3>Installing a plugin</h3>
+  <p>A plugin comes as a <code>.dnpplugin</code> file: a zip with a <code>plugin.json</code> at its root. Press <span class="ui">+ install a plugin (.dnpplugin)</span> and pick the file. The studio checks the package first, then asks once, naming the plugin, its version, its author and what it brings.</p>
+  <div class="callout warn"><p>A plugin runs inside the studio with the same access as the studio. It can read and change every module on the device. Install only plugins you trust.</p></div>
+  <p>Once installed, its editors are offered at once, and a rail page appears if it brings one. It is still there after a reload. The studio refuses a plugin that is older than, or the same version as, one it comes with.</p>
+  <p><span class="ui">uninstall</span> deletes its files and reloads the studio. Unsaved work it left stays, for another editor to pick up. The <span class="ui">on</span> switch turns any plugin, bundled or installed, off on this device only.</p>
+  <table>
+    <thead><tr><th>Where</th><th>Install plugins?</th></tr></thead>
+    <tbody>
+      <tr><td>A browser, through the dev server</td><td>✓</td></tr>
+      <tr><td>The desktop app</td><td>✓</td></tr>
+      <tr><td>Android</td><td>✗ — bundled plugins work</td></tr>
+      <tr><td>iOS</td><td>✗ — there is no iOS build yet</td></tr>
+    </tbody>
+  </table>
+  <p>Where installing is not possible, the page says <em>"Installing plugins needs a service worker, which this window does not have; the bundled ones work."</em></p>
+  <div class="callout soon"><p>Installing on Android (and later iOS) needs the app to serve installed plugins itself. Until then, only the bundled plugins are available there.</p></div>
+
+  <h2>Sources and baking</h2>
+  <p>The module keeps the <b>sources</b>: the plugins' own project files, in <code>sources/</code>. The game cannot read those. <b>Baking</b> turns each source into the files the game loads, in <code>assets/</code>.</p>
+  <div class="diagram">
+    <svg viewBox="0 0 660 250" role="img" aria-label="Sources in sources/ are baked into assets/">
+      <text x="20" y="22" font-size="13" font-weight="700">sources/</text>
+      <text x="470" y="22" font-size="13" font-weight="700">assets/</text>
+      <rect class="box" x="20" y="34" width="200" height="40" rx="6"/>
+      <text x="32" y="58" font-size="12">textures/NAME.texproj.json</text>
+      <rect class="box" x="20" y="94" width="200" height="40" rx="6"/>
+      <text x="32" y="118" font-size="12">sprites/NAME.tsprite</text>
+      <rect class="box" x="20" y="154" width="200" height="40" rx="6"/>
+      <text x="32" y="178" font-size="12">music/NAME.msproj</text>
+      <rect class="acc" x="270" y="34" width="120" height="160" rx="8"/>
+      <text x="330" y="106" font-size="14" font-weight="700" text-anchor="middle">bake</text>
+      <text x="330" y="126" font-size="11" class="dim" text-anchor="middle">same bytes in</text>
+      <text x="330" y="140" font-size="11" class="dim" text-anchor="middle">a page or node</text>
+      <rect class="box" x="440" y="34" width="200" height="40" rx="6"/>
+      <text x="452" y="58" font-size="12">textures/NAME.png</text>
+      <rect class="box" x="440" y="94" width="200" height="40" rx="6"/>
+      <text x="452" y="118" font-size="12">sprites/NAME.json + .png</text>
+      <rect class="box" x="440" y="154" width="200" height="40" rx="6"/>
+      <text x="452" y="178" font-size="12">music/NAME.mstk</text>
+      <path class="arrow" d="M220 54 H262"/><path class="arrow" d="M256 49 L264 54 L256 59"/>
+      <path class="arrow" d="M220 114 H262"/><path class="arrow" d="M256 109 L264 114 L256 119"/>
+      <path class="arrow" d="M220 174 H262"/><path class="arrow" d="M256 169 L264 174 L256 179"/>
+      <path class="arrow" d="M390 54 H432"/><path class="arrow" d="M426 49 L434 54 L426 59"/>
+      <path class="arrow" d="M390 114 H432"/><path class="arrow" d="M426 109 L434 114 L426 119"/>
+      <path class="arrow" d="M390 174 H432"/><path class="arrow" d="M426 169 L434 174 L426 179"/>
+      <text x="20" y="226" font-size="11" class="dim">A PNG imported as it is counts as its own source. Sound packs (sources/sounds/) are merged into</text>
+      <text x="20" y="242" font-size="11" class="dim">assets/sounds/bank.sfxproj when the module is written, rather than baked.</text>
+    </svg>
+  </div>
+  <h3>When it bakes</h3>
+  <ul>
+    <li><b>On the way back.</b> <span class="ui">← studio</span> with a texture or sprite bakes it at once, and the result is part of the same undo step.</li>
+    <li><b>Music is the exception.</b> A track is baked at Play and Export, or by hand with <span class="ui">bake now</span> on the Music page, not every time you come back from DigidreamSynth.</li>
+    <li><b>Before Play and Export</b>, the studio bakes every <b>stale</b> source: one whose bytes changed (an imported pack, say), whose baker changed version, or that was never baked. A source with no baker available stops Play and says which.</li>
+  </ul>
+  <p>Bakes are cached on the device, so undoing an edit, or baking the same source again, costs nothing.</p>
+  <p>On a workstation, you can run the studio's own bakers by hand. The tool prints each file it makes with its SHA-256, and makes the same bytes the studio does:</p>
+<pre><code>node studio/tools/bake.mjs modules/mymod/sources/textures/brick.texproj.json -o /tmp/baked</code></pre>
+  <p>It works for textures (<code>.texproj.json</code>) and sprites (<code>.tsprite</code>), guessing the kind from the extension. <code>-o</code> writes the files to a folder; without it, it only prints them.</p>
+
+  <h2>Writing your own plugin</h2>
+  <p>A plugin is a folder with a <code>plugin.json</code> and its pages. It can bring three things: <b>editors</b> (a page that edits one document and hands it back), <b>bakers</b> (a function from a source to what the game loads), and <b>sections</b> (a page in the rail). Here is the bundled Code plugin's manifest:</p>
+<pre><code>{
+  "id": "code",
+  "name": "Code",
+  "version": "0.1.0",
+  "protocol": 1,
+  "suite": "&gt;=0.1.0",
+  "description": "A Lua editor for the module's own scripts: line numbers, highlighting, and blocks checked as you type. …",
+  "editors": [
+    { "id": "lua", "entry": "index.html", "kinds": ["record:script"], "label": "Code", "priority": 0 }
+  ]
+}</code></pre>
+  <ul>
+    <li><code>id</code>, <code>name</code>, <code>version</code>, <code>description</code>: who it is.</li>
+    <li><code>protocol</code> and <code>suite</code>: the editor protocol it speaks, and the studio versions it works with (<code>&gt;=x.y.z</code>, <code>^x.y.z</code>, an exact version, or <code>*</code>).</li>
+    <li><code>editors</code>: each with an <code>entry</code> page, the <code>kinds</code> of document it edits (<code>file:texture</code>, <code>file:tsprite</code>, <code>file:msproj</code>, <code>file:sfxproj</code>, <code>record:script</code>, <code>record:mob</code>), a <code>label</code>, and a <code>priority</code>.</li>
+    <li><code>bakers</code> and <code>sections</code>, when it has them. The Packager's manifest, for example, has one section: <code>{ "id": "package", "label": "Package", "icon": "📦" }</code>.</li>
+  </ul>
+  <p>The full guide, with the message protocol and the smallest working editor (<code>studio/plugins/_echo/</code>, a text box in about 30 lines), is <code>docs/PLUGINS.md</code> in the repository.</p>
+
+  <div class="quiz" data-answer="1">
+    <p class="q">You've painted in qPainter for ten minutes and press <span class="ui">✕</span>. What happens?</p>
+    <ul>
+      <li>The texture is saved and the plugin closes</li>
+      <li>The studio asks whether to keep editing or throw the changes away</li>
+      <li>The changes are kept as a draft and the plugin closes without asking</li>
+    </ul>
+    <p class="why">✕ is discard. It asks first whenever there is anything to lose. ← studio is the way back that saves.</p>
+  </div>
+  <div class="quiz" data-answer="2">
+    <p class="q">You edit a song in DigidreamSynth and press ← studio. When does the game's track change?</p>
+    <ul>
+      <li>At once, as for a texture</li>
+      <li>Never, until you re-import the .mstk</li>
+      <li>At the next Play or Export, or when you press bake now</li>
+    </ul>
+    <p class="why">Music takes a while to bake, so it is baked at Play and Export (or by hand), not on every return.</p>
+  </div>
+  <div class="quiz" data-answer="0">
+    <p class="q">Where can you install a .dnpplugin?</p>
+    <ul>
+      <li>In a browser through the dev server, and in the desktop app</li>
+      <li>Everywhere, including Android</li>
+      <li>Only on Android</li>
+    </ul>
+    <p class="why">Installed plugins are served by a service worker, which the Android and iOS shells do not pass requests through yet. Bundled plugins work everywhere.</p>
+  </div>
+</article>
+</body>
+</html>

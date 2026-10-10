@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Graphs · Digidream Studio tutorials</title>
+<meta name="description" content="Script a map or the whole game with Blueprint-style graphs: nodes, links, variables, notes, scenes, keys, and the module's own Lua.">
+<link rel="stylesheet" href="../assets/site.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 16%22%3E%3Cpath d=%22M8 1l7 7-7 7-7-7z%22 fill=%22%235b8fd6%22/%3E%3C/svg%3E">
+<script defer src="../assets/nav.js"></script>
+<script defer src="../assets/shortcuts.js"></script>
+<script defer src="../assets/site.js"></script>
+</head>
+<body>
+<article>
+  <h1>Graphs</h1>
+  <p class="lede">A graph is Blueprint-style scripting: nodes joined by links. A map can carry graphs that run in its level, and the module can carry graphs that run once for the whole game. You draw them on a board, and the studio checks them as you draw.</p>
+  <div class="goal">
+    <b>You'll learn</b><span>where graphs live, how to add and link nodes, how variables, notes and scenes work, how to answer a key, and when to write Lua instead</span>
+    <b>Time</b><span>25 minutes</span>
+    <b>Needs</b><span>a module with at least one map (<a href="02-first-map.html">Your first map</a>); triggers help (<a href="04-triggers.html">Triggers</a>)</span>
+  </div>
+
+  <h2>What a graph is</h2>
+  <p>A graph uses the same words as trigger cards. Its events, conditions and actions are the trigger vocabulary's, run by the same code, so a door a graph opens is the same door a trigger opens. On top of that, a graph adds:</p>
+  <ul>
+    <li><b>Flow:</b> <code>branch</code>, <code>sequence</code>, <code>delay</code>, <code>once</code>.</li>
+    <li><b>Data:</b> variables, literals, comparisons, arithmetic, logic and random numbers.</li>
+    <li><b>Plain nodes for common jobs</b>, such as <code>open_door</code>, <code>teleport</code>, <code>damage</code>, <code>play_sound</code> or <code>set_sky</code>, which need no knowledge of the map's numbers.</li>
+    <li><b>Calls</b> between a level's graphs and the game's.</li>
+  </ul>
+  <p>Links come in two kinds:</p>
+  <ul>
+    <li><b>Exec links</b> say what happens next. The board draws them white.</li>
+    <li><b>Data links</b> carry a value from one node to another. The board draws them green.</li>
+  </ul>
+  <p>A run starts at a <b>start node</b> (a <em>when …</em> node) and follows the exec links node by node. A run is at most 256 steps, so a loop drawn by mistake cannot stall the game.</p>
+
+  <h2>Try it: link and run</h2>
+  <p>This toy board has four real nodes. <code>when_button_pressed</code> fires when a player presses a button (here <code>use</code>). <code>once</code> lets the run through the first time only. <code>open_door</code> raises a door, and <code>play_sound</code> plays a sound from an entity.</p>
+  <div class="widget" data-widget="graph-toy" data-title="A tiny graph board"></div>
+  <ol class="steps">
+    <li><p>Drag from <b>then</b> on <code>when_button_pressed</code> to <b>in</b> on <code>once</code>. While you drag, every input the link can reach lights up.</p></li>
+    <li><p>Link <code>once</code>'s <b>then</b> to <code>open_door</code>'s <b>in</b>, and <code>open_door</code>'s <b>then</b> to <code>play_sound</code>'s <b>in</b>.</p></li>
+    <li><p>Press <span class="ui">▶ run</span> and watch the run follow the exec links. Press it again: <code>once</code> stops the second run.</p></li>
+    <li><p>Drag the green <b>entity</b> pin of <code>when_button_pressed</code> to the <b>entity</b> pin of <code>play_sound</code>. This is a data link. Run again (after <span class="ui">reset</span>), and read what the sound now plays from.</p></li>
+    <li><p>Drag <code>when_button_pressed</code>'s <b>then</b> straight to <code>open_door</code>'s <b>in</b>. The old link from <b>then</b> disappears, because an exec output goes to one place only.</p></li>
+  </ol>
+  <div class="callout tip"><p>Unlinked, <code>play_sound</code>'s <code>entity</code> input is the event's own entity. Most nodes work this way: you only need a data link when you mean <em>another</em> entity, such as a monster that a <code>spawn</code> has just made.</p></div>
+
+  <h2>Where graphs live: the Graphs section</h2>
+  <figure class="shot" data-src="../assets/shots/studio-graph.png" data-alt="The graph window: the bar, the board with linked nodes, and the side panel">
+    <figcaption>The graph window: its bar, the board, and the side panel.</figcaption>
+  </figure>
+  <p>The rail's <b>◇ Graphs</b> lists every graph of the module, in two groups:</p>
+  <ul>
+    <li><span class="ui">🌐 the game's graphs</span>, with <span class="ui">+ new graph for the game</span> below them.</li>
+    <li>One group per map, headed <span class="ui">🗺 <i>map</i></span>, with <span class="ui">+ new graph on <i>map</i></span>.</li>
+  </ul>
+  <p>Each row shows how many nodes the graph has, what it <b>calls</b> and what it <b>answers</b>. An empty graph says <em>"empty -- not written until it has a node"</em>. A row also shows the graph's first problem, and if a graph calls a name that no graph answers, a warning says so below the list. Tap a row to open the graph. A map's graph opens with its map, because its places are picked on that map.</p>
+  <p>You can also open a map's graph from inside the map editor, with the <b>Graph</b> tool in its toolbar.</p>
+
+  <h3>A map's graphs and the game's graphs</h3>
+  <table>
+    <thead><tr><th></th><th>A map's graph</th><th>The game's graph</th></tr></thead>
+    <tbody>
+      <tr><td>Runs</td><td>in that map's level</td><td>once, for the whole game, not in any level</td></tr>
+      <tr><td>Hears</td><td>everything a level has: rooms, walls, things, triggers</td><td>players arriving and leaving, every tick, panels</td></tr>
+      <tr><td>Variables</td><td>start again when the level does</td><td>kept from level to level, and saved with the game</td></tr>
+      <tr><td>Costs</td><td>one of the map's 16 script slots</td><td>no map slot</td></tr>
+      <tr><td>Node menu</td><td>everything</td><td>only what works without a level</td></tr>
+    </tbody>
+  </table>
+  <p>A map and the module can each hold as many graphs as you like: one for the doors, one for the shop, one for the boss. The name is the graph's identity, so names must be unique within a map, and within the game. A level's graph and a game graph may share a name, because they run in different places.</p>
+  <p>To do something in a level from the game's graph, such as move a lift, use a <code>call</code> node with <code>to: level</code>. It starts the <code>on_call</code> nodes of the same name in the graph of the level the entity is in. A level reaches the game the same way, with <code>to: game</code>.</p>
+
+  <h2>The graph window</h2>
+  <p>Along the top of the window:</p>
+  <ul>
+    <li>The title: <span class="ui">◇ <i>map</i></span> for a map's graph, or <span class="ui">◇ the game</span>.</li>
+    <li>A list of this map's (or the game's) graphs, to switch between them. Its last entry, <span class="ui">+ new graph…</span>, makes a new one.</li>
+    <li><span class="ui">+ node…</span>, which opens the node menu.</li>
+    <li><span class="ui">▶ scene</span>, once the graph has nodes (see <a href="#scene">Playing a scene</a>).</li>
+    <li>A count of problems, in red, when there are any.</li>
+    <li>The way back: <span class="ui">‹ map</span> for a map's graph, <span class="ui">‹ graphs</span> for the game's.</li>
+  </ul>
+  <p>On a phone, the bar also has tabs to switch between the board, the details and <span class="ui">𝑥</span> (the variables).</p>
+
+  <h3>The board</h3>
+  <ul>
+    <li><b>Link:</b> drag from a pin on the right of a node to one on the left of another. While you drag, every input the link can reach lights up.</li>
+    <li><b>Replace:</b> an exec output goes to one place and a data input takes one value, so a new link replaces the one it would break.</li>
+    <li><b>Zoom:</b> pinch, use the wheel, or use the bar in the corner: <span class="ui">−</span>, the zoom level, <span class="ui">+</span>, and <span class="ui">⤢</span>, which puts every node in view.</li>
+    <li><b>Delete a node:</b> the small <span class="ui">✕</span> in its header deletes it and its links. Undo brings it back.</li>
+  </ul>
+
+  <h3>The node menu</h3>
+  <p><span class="ui">+ node…</span> opens a searchable menu. Type a word or two (<code>fog</code>, <code>open</code>, <code>shop buy</code>) and it narrows to the entries whose name, group or description has them all, names first. Each entry shows the first line of its description.</p>
+  <ul>
+    <li><kbd>Enter</kbd> adds the first match.</li>
+    <li><kbd>Esc</kbd> closes the menu.</li>
+  </ul>
+  <p>With nothing typed, it lists everything, by group:</p>
+  <table>
+    <thead><tr><th>Group</th><th>Examples</th></tr></thead>
+    <tbody>
+      <tr><td>when …</td><td>a prop used, a sector entered, a floor stood on, near a spot, every N seconds, a monster's death, a button pressed, <code>on_call</code>, every tick</td></tr>
+      <tr><td>do to a thing</td><td><code>teleport</code>, <code>push</code>, <code>damage</code>, <code>heal</code>, <code>spawn</code>, <code>play_sound</code></td></tr>
+      <tr><td>move the map</td><td>doors, floors, ceilings, lifts, sliding and spinning sectors, a wall's texture, a sector's pictures, its light, its weather or fog</td></tr>
+      <tr><td>🎬 cutscene · 🎥 camera</td><td><code>start_cinematic</code>, <code>subtitle</code>, <code>fade</code>; <code>camera_flythrough</code>, <code>camera_track</code>, <code>camera_shake</code></td></tr>
+      <tr><td>🚪 maps</td><td><code>change_map</code></td></tr>
+      <tr><td>read</td><td><code>position_of</code>, <code>health_of</code>, <code>distance</code>, <code>nearest_player</code>, <code>sector_of</code></td></tr>
+      <tr><td>flow · data</td><td><code>branch</code>, <code>sequence</code>, <code>delay</code>, <code>once</code>, <code>call</code>; <code>get_var</code>, <code>set_var</code>, <code>add_var</code>, <code>compare</code>, <code>math</code>, <code>random</code></td></tr>
+      <tr><td>🪟 panels</td><td>the module's panels one by one: <code>open shop</code>, <code>close shop</code>, and per widget <code>when shop › buy is pressed</code></td></tr>
+      <tr><td>📝 board</td><td><code>a note</code></td></tr>
+      <tr><td>trigger words</td><td>every trigger event, condition and action by name: <code>if counter at least</code>, <code>do music</code></td></tr>
+    </tbody>
+  </table>
+  <p>A new node starts with sensible values: an option's first choice, a few seconds, the first monster.</p>
+
+  <h3>The side panel</h3>
+  <p>Tap a node to edit it in the side panel. A node shows its main arguments on the board, and the rest are in the side panel. Every field has an <b>ⓘ</b> that shows its own description, and so does the node's header.</p>
+  <ul>
+    <li><b>Places are picked on the map.</b> Tap a room for a sector or a tag, the floor for x/y/z, a placed thing for its name, or a wall for a side. The board steps aside while you tap.</li>
+    <li><b>Linked arguments:</b> a field with a link into it reads <code>← node.pin</code>, and asks for no value.</li>
+    <li><b>Optional arguments</b> stay off the node until they have a value or a link. <code>+ N more…</code> brings them on.</li>
+    <li><span class="ui">delete node</span> is at the bottom of a node's details.</li>
+  </ul>
+  <p>Tap a link to pick it. Its panel has <span class="ui">＋ bend</span>, which adds a point the link is drawn through so you can route it round other nodes, and <span class="ui">delete link</span>.</p>
+  <p>Below every selection, the panel shows the graph itself: its <span class="ui">name</span> (renaming it here), <span class="ui">+ new graph</span> and <span class="ui">delete graph</span>, which asks first.</p>
+
+  <h3>Notes</h3>
+  <p><code>a note</code> (in the <span class="ui">📝 board</span> group of the menu) is a labelled, coloured box on the board. If a node is picked, the note is placed round it. Drag its title and every node and bend inside moves with it. Drag its corner to resize it. Its text and colour are in the side panel under <span class="ui">📝 note</span>. Its <span class="ui">✕</span> removes the note and leaves the nodes.</p>
+  <p>Notes and bends are only for the board. They are saved with the graph, and the game never runs them.</p>
+
+  <h2>Variables</h2>
+  <p>Open <span class="ui">𝑥 variables…</span> in the side panel (on a phone, the <span class="ui">𝑥</span> tab). It lists two kinds of thing:</p>
+  <ul>
+    <li><b>This graph's own variables.</b> <span class="ui">+ variable</span> asks for a name (letters, digits, underscore) and adds one starting at 0. Set its start value in <span class="ui">starts at</span>; it can be a number, a word, or true and false. A map's variables start again when the level does. The game's are kept from level to level.</li>
+    <li><b>Every property of an entity</b>, such as <code>hp</code>, <code>alive</code>, <code>x</code>, <code>y</code>, <code>z</code>, <code>speed</code>, <code>grounded</code>, <code>facing</code> and <code>is_player</code>, plus all 45 movement rules. Each shows its type, whether a graph may set it, and what it is.</li>
+  </ul>
+  <p>Each row has get, set and add buttons that drop the node onto the board. The <code>get_var</code>, <code>set_var</code> and <code>add_var</code> nodes choose their <code>var</code> from a dropdown that offers only what that node may use: <code>set_var</code> offers only settable ones, and <code>add_var</code> only settable numbers. Their <code>entity</code> input says whose property is meant. Unlinked, it is the event's entity.</p>
+  <h3>A number from a variable</h3>
+  <p>A numeric field that has a data input has a small <b>𝑥</b> beside it. Tap it, and the field becomes a choice of the graph's variables and the entity's numeric properties. <span class="ui">✕</span> makes it a typed number again. A few fields have no 𝑥, such as a <code>sequence</code>'s count, because the engine cannot take them from a link.</p>
+  <div class="callout warn"><p>A variable may not have a property's name. The studio refuses <code>hp</code> as a variable name, because the engine would refuse the graph.</p></div>
+
+  <h2>Answering a key</h2>
+  <p>Three nodes listen for buttons:</p>
+  <ul>
+    <li><code>when_button_pressed</code> fires once, on the tick a player's button goes down.</li>
+    <li><code>when_button_released</code> fires on the tick it comes up.</li>
+    <li><code>button_held</code> reads whether it is down.</li>
+  </ul>
+  <p>Their <code>button</code> is a choice of the engine's buttons (<code>jump</code>, <code>dash</code>, <code>grab</code>, <code>hover</code>, <code>fly</code>, <code>grapple</code>, <code>use</code>, <code>attack</code>, <code>alt_attack</code>, <code>crouch</code>) and the module's own keys. <span class="ui">⌨</span> beside it opens Controls, where you make those keys (see <a href="07-workshops.html#controls">Controls</a>). A button that nobody has is a problem, because the server would refuse the graph.</p>
+  <ol class="steps">
+    <li><p>In <b>🎮 Controls</b>, press <span class="ui">+ key</span>. A key called <code>action</code> appears, waiting with <span class="ui">press a key… (Esc)</span>: press <kbd>T</kbd>. Then rename it <code>reload</code>. (Avoid <kbd>R</kbd>: the engine uses it to turn the camera, and Controls warns about it.)</p></li>
+    <li><p>Open <b>◇ Graphs</b> and press <span class="ui">+ new graph on <i>your map</i></span>. Name it <code>keys</code>.</p></li>
+    <li><p>Press <span class="ui">+ node…</span>, type <code>button pressed</code> and press <kbd>Enter</kbd>. Set its <code>button</code> to <code>reload</code>.</p></li>
+    <li><p>Add a <code>play_sound</code> node, pick a sound, and link the first node's <b>then</b> to its <b>in</b>.</p></li>
+    <li><p>Back in Controls, rename the key to <code>reload2</code>. Reopen the graph: the node now says <code>reload2</code>, because a rename follows into every graph that answers the key.</p></li>
+  </ol>
+
+  <h2 id="scene">Playing a scene</h2>
+  <p>The menu's <span class="ui">🎬 cutscene</span> group takes the controls and gives them back (<code>start_cinematic</code>, <code>end_cinematic</code>), shows lines at the bottom of the screen (<code>subtitle</code>, chained by their <code>done</code> exit), and fades. <span class="ui">🎥 camera</span> flies a camera path (<code>camera_flythrough</code>), rides one while tracking the player (<code>camera_track</code>), follows again, or shakes. A path is chosen from the map's camera paths by tag.</p>
+  <p><span class="ui">▶ scene</span> plays the run from the picked node, or else from the first start that reaches a cutscene or camera node, over the map. It is timed as the game times it: the bars, the fade, each subtitle, the camera on its curve, the shakes. Anything only the server does (a door, a call) appears as a line in the corner when it happens. <kbd>Esc</kbd> or <span class="ui">■</span> comes back.</p>
+  <p>See <a href="05-camera.html">Camera and cinematics</a> for drawing the paths.</p>
+
+  <h2>When the studio says no</h2>
+  <p>The studio names what the engine would refuse while you draw: a button nobody has, a map the module lacks, a path tag the map does not have, a variable named like a property. The problems show in red in the side panel, as a count in the window's bar, and on Home. Play refuses to start while a graph has problems.</p>
+
+  <h2>Scripts: the module's own Lua</h2>
+  <p>Most behaviour is written in the studio's own words: triggers, monster brains, weapons and graphs. For anything they cannot say yet, <b>📜 Scripts</b> holds the module's own Lua. A script there runs in <em>every level</em>, in its own scope, after the module's monsters are loaded. Hooks it defines (<code>on_tick</code>, <code>on_attack</code> …) run alongside every other script's, rather than replacing them.</p>
+  <ul>
+    <li><span class="ui">+ script</span> asks for a file name (it suggests <code>module_hooks.lua</code>) and opens it.</li>
+    <li>Tap a script to edit it in the text box. Below it: <span class="ui">rename</span> and <span class="ui">delete</span>. Deleting asks first, because every map stops declaring it.</li>
+    <li>With the <b>Code</b> plugin on, a script also has <span class="ui">✎ edit in Code</span> and <span class="ui">open with…</span>. Code is a Lua editor with line numbers, highlighting and blocks checked as you type. See <a href="09-plugins.html">Plugins</a>.</li>
+  </ul>
+  <div class="callout"><p>What should run once for the whole game, not once per level, belongs in the game's graph, not in a script.</p></div>
+
+  <div class="quiz" data-answer="1">
+    <p class="q">You want a score that survives from one level to the next. Where does the variable go?</p>
+    <ul>
+      <li>In a map's graph, with <span class="ui">+ variable</span></li>
+      <li>In a graph under 🌐 the game's graphs</li>
+      <li>In a script under 📜 Scripts</li>
+    </ul>
+    <p class="why">The game's graphs run once for the whole game, and their variables are kept from level to level and saved with the game. A map's variables start again with its level, and a script runs separately in every level.</p>
+  </div>
+  <div class="quiz" data-answer="2">
+    <p class="q"><code>when_button_pressed</code>'s <b>then</b> is linked to <code>once</code>. You drag a new link from the same <b>then</b> to <code>open_door</code>. What happens?</p>
+    <ul>
+      <li>Both links stay, and the run goes to both nodes</li>
+      <li>The studio refuses the new link</li>
+      <li>The new link replaces the old one</li>
+    </ul>
+    <p class="why">An exec output goes to one place. To do several things in a row, chain them, or use a <code>sequence</code> node, whose exits run one after another.</p>
+  </div>
+  <div class="quiz" data-answer="0">
+    <p class="q">In the node menu you type <code>fog</code>. What does <kbd>Enter</kbd> do?</p>
+    <ul>
+      <li>Adds the first entry that matches</li>
+      <li>Closes the menu</li>
+      <li>Opens the fog settings of the picked room</li>
+    </ul>
+    <p class="why"><kbd>Enter</kbd> adds the first match; <kbd>Esc</kbd> closes the menu.</p>
+  </div>
+</article>
+</body>
+</html>

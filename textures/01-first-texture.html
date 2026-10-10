@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Your first texture · Digidream Studio tutorials</title>
+<meta name="description" content="Make a new texture in qPainter, from the studio or on its own, find your way around it, and learn its sixteen tools and their keys.">
+<link rel="stylesheet" href="../assets/site.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 16%22%3E%3Cpath d=%22M8 1l7 7-7 7-7-7z%22 fill=%22%235b8fd6%22/%3E%3C/svg%3E">
+<script defer src="../assets/nav.js"></script>
+<script defer src="../assets/shortcuts.js"></script>
+<script defer src="../assets/site.js"></script>
+</head>
+<body>
+<article>
+  <h1>Your first texture</h1>
+  <p class="lede">qPainter is the studio's pixel texture painter. You paint walls, floors, animated liquids and skies pixel by pixel, with a palette, dithering and a live 3D preview. This page gets a texture open and walks you through the screen and the tools.</p>
+  <div class="goal">
+    <b>You'll learn</b><span>how to start a texture from the studio or from qPainter on its own, how the screen is laid out, and the sixteen tools with their keys</span>
+    <b>Time</b><span>15 minutes</span>
+    <b>Needs</b><span>the studio (see <a href="../studio/01-getting-started.html">Getting started</a>), or a checkout of qPainter with Node.js 20.19 or newer</span>
+  </div>
+
+  <h2>Two ways to run qPainter</h2>
+  <p>qPainter is the same app in both places. What changes is who owns the file.</p>
+  <table>
+    <thead><tr><th></th><th>Inside the studio</th><th>On its own</th></tr></thead>
+    <tbody>
+      <tr><td>Where the texture lives</td><td>in the module: <code>sources/textures/NAME.texproj.json</code>, baked to <code>assets/textures/NAME.png</code></td><td>in its <span class="ui">Recent</span> list, and in any file you <span class="ui">Save</span> to</td></tr>
+      <tr><td><span class="ui">New…</span> <span class="ui">Open</span> <span class="ui">Recent</span> <span class="ui">Save</span> <span class="ui">Save as…</span></td><td>hidden: the studio hands the texture in and takes it back</td><td>✓</td></tr>
+      <tr><td><span class="ui">Export…</span></td><td>✓ (downloads a PNG)</td><td>✓</td></tr>
+      <tr><td>How you finish</td><td><span class="ui">← studio</span> saves and goes back; <span class="ui">✕</span> goes back without saving</td><td><span class="ui">Save</span> (<kbd>⌘S</kbd>), or just close: every change is autosaved to <span class="ui">Recent</span></td></tr>
+    </tbody>
+  </table>
+
+  <h3>From the studio</h3>
+  <figure class="shot" data-src="../assets/shots/studio-textures-page.png" data-alt="The studio's Textures page">
+    <figcaption>The Textures page: the module's own textures, then the app's.</figcaption>
+  </figure>
+  <p>Open <b>🧱 Textures</b> from the rail or from Home. The page has two lists:</p>
+  <ul>
+    <li><b><span class="ui">🧱 the module's own (N)</span></b>: the textures that belong to this module and travel in its pack.</li>
+    <li><b><span class="ui">the app's (N)</span></b>: the textures that come with the engine build. A map may use any of them, but they are not yours to edit. The box under the heading filters them by name.</li>
+  </ul>
+  <p>Above them are two buttons:</p>
+  <ul>
+    <li><span class="ui">+ new texture</span> asks for a name and opens qPainter on an empty texture. A name is capital letters, digits and <code>_</code>, up to 24 characters. Anything else is dropped, so <code>my wall-2</code> becomes <code>MYWALL2</code>.</li>
+    <li><span class="ui">+ import texture (PNG)</span> brings in a PNG you already have.</li>
+  </ul>
+  <p>Click one of the module's own textures to open its card. The card shows the size and where the texture is used, and has <span class="ui">✎ edit in qPainter</span>, <span class="ui">rename</span> and <span class="ui">delete</span>. A rename follows the texture onto every map surface that uses it.</p>
+
+  <figure class="shot" data-src="../assets/shots/texture-new.png" data-alt="qPainter's New texture dialog inside the studio">
+    <figcaption>The <b>New texture</b> dialog that qPainter shows when the studio opens it on an empty texture.</figcaption>
+  </figure>
+  <p>On a new texture qPainter shows a <b>New texture</b> dialog. You can't close it without choosing, because the studio is waiting for a texture.</p>
+  <ul>
+    <li><span class="ui">Kind</span>: <span class="ui">Texture</span>, <span class="ui">Skybox: strip (DOOM sky)</span>, <span class="ui">Skybox: panorama (2:1)</span> or <span class="ui">Skybox: cube (six faces)</span>. Skies are covered in <a href="04-frames-and-skies.html#skies">Animation and skies</a>.</li>
+    <li><span class="ui">Size</span>: a square from <span class="ui">16 × 16</span> to <span class="ui">1024 × 1024</span> (64 is chosen first), or <span class="ui">W × H…</span> for any width and height.</li>
+    <li><span class="ui">Create</span> makes it.</li>
+  </ul>
+  <p>Two messages can stop <span class="ui">Create</span>. <em>"Sizes go from 1 to 4096."</em> means a side is out of range. <em>"Use an even size."</em> appears for a sky whose size is odd.</p>
+
+  <h3>On its own</h3>
+  <p>From a checkout of qPainter:</p>
+<pre><code>./start.sh          # dev server on port 5173, opens your browser
+./start.sh prod     # production build with offline support</code></pre>
+  <p>The script also prints a <b>Network</b> URL, such as <code>http://192.168.1.20:5173/</code>. Open it on a phone on the same Wi-Fi to paint with touch or a stylus. <code>./build-apk.sh</code> builds an Android app, <code>qPainter.apk</code>, which you can copy to the phone and install. qPainter also installs as a web app from any HTTPS host.</p>
+  <p>On its own, qPainter starts with the texture you had open last. The <span class="ui">New…</span> menu in the top bar offers the square sizes 16 to 1024, <span class="ui">W×H…</span> for any size up to 4096, and three skyboxes. A new texture keeps your palette, ramps and settings.</p>
+  <div class="callout tip"><p>Standalone qPainter saves every change to its <span class="ui">Recent</span> list about a second after you make it. <span class="ui">Recent</span> lives in the browser's storage, though, so clearing site data loses it. <span class="ui">Save</span> anything you want to keep to a file.</p></div>
+
+  <h2>The screen</h2>
+  <figure class="shot" data-src="../assets/shots/texture-editor.png" data-hotspots='[{"x": 12.5, "y": 5.8, "t": "Export…", "d": "PNG at 1×–16×, sprite sheets, animated PNG"}, {"x": 28.5, "y": 5.8, "t": "Wrap and Tiles", "d": "paint across edges; show the texture tiled"}, {"x": 36, "y": 5.8, "t": "Offset ½", "d": "bring the seams to the middle"}, {"x": 42, "y": 5.8, "t": "Symmetry", "d": "No sym, Mirror X/Y/XY, Diagonal, Radial (S)"}, {"x": 51, "y": 5.8, "t": "Lock", "d": "snap colours to the palette — nearest or dithered"}, {"x": 1.7, "y": 40, "t": "Tools", "d": "16 tools, each with a key"}, {"x": 41, "y": 50, "t": "The canvas", "d": ""}, {"x": 85, "y": 25, "t": "Palette", "d": "swatches, ramps, import and export"}, {"x": 82, "y": 47, "t": "Frames", "d": "animation frames and FPS"}, {"x": 82, "y": 68.5, "t": "Layers", "d": "composited bottom-up when baked"}, {"x": 90, "y": 94, "t": "3D preview", "d": "the texture on a cube, wall, sphere or your own model"}]' data-alt="qPainter with a texture open">
+    <figcaption>The top bar, the tool bar down the left, the canvas, and the side panel with the 3D preview.</figcaption>
+  </figure>
+  <p>qPainter has three parts around the canvas.</p>
+  <h3>The top bar</h3>
+  <p>From left to right:</p>
+  <ul>
+    <li><b>File actions</b> (standalone only): <span class="ui">New…</span>, <span class="ui">Open</span>, <span class="ui">Recent</span>, the texture's name (click it to rename; a <b>•</b> after it means unsaved changes), <span class="ui">Save</span> and <span class="ui">Save as…</span>.</li>
+    <li><span class="ui">Export…</span>, then <span class="ui">↶</span> and <span class="ui">↷</span> for undo and redo (200 steps).</li>
+    <li><b>Seams</b>: <span class="ui">Wrap</span>, <span class="ui">Tiles</span>, <span class="ui">Offset ½</span>, and the symmetry menu (<span class="ui">No sym</span> to start with). See <a href="02-seamless.html">Seamless tiling</a>.</li>
+    <li><b>Palette lock</b>: <span class="ui">Lock</span> and <span class="ui">snap nearest</span> / <span class="ui">snap dither</span>. See <a href="03-palettes-layers.html">Palettes, dither, layers</a>.</li>
+    <li><b>View</b>: <span class="ui">Grid</span>, the tile grid (<span class="ui">no tile grid</span>, 4 to 64), <span class="ui">Fit</span> and <span class="ui">☰</span>.</li>
+  </ul>
+  <p>On a narrow screen the top bar scrolls sideways.</p>
+  <h3>The tool bar</h3>
+  <p>The tool bar holds the sixteen tools, one button each. Hover a button to see its name and key.</p>
+  <h3>The side panel</h3>
+  <p>The side panel shows, from the top:</p>
+  <ul>
+    <li><b>Tool options</b> for the current tool. Only the controls that tool uses are shown.</li>
+    <li><b>Palette</b>, then <b>Frames</b>, then <b>Layers</b>.</li>
+    <li><b>3D preview</b>: your texture on a cube, a wall or your own model, updated as you paint.</li>
+  </ul>
+  <p><kbd>Tab</kbd> or <span class="ui">☰</span> hides and shows the panel. On a phone, the tool bar moves to the bottom. A thin bar under the top bar keeps <span class="ui">↶</span> <span class="ui">↷</span>, the frame controls and <span class="ui">☰</span> in reach. <span class="ui">☰</span> opens the panel over the canvas, and <span class="ui">✕ Close</span>, a swipe right, the back gesture or a tap outside closes it.</p>
+
+  <h2>Moving around the canvas</h2>
+  <table>
+    <thead><tr><th>To</th><th>Mouse and keyboard</th><th>Touch</th></tr></thead>
+    <tbody>
+      <tr><td>Zoom</td><td>the wheel or a trackpad pinch, or <kbd>+</kbd> / <kbd>−</kbd></td><td>pinch</td></tr>
+      <tr><td>Pan</td><td><kbd>Space</kbd> + drag, or drag with the middle button</td><td>drag with two fingers</td></tr>
+      <tr><td>Fit the texture to the window</td><td><kbd>0</kbd> or <span class="ui">Fit</span></td><td><span class="ui">Fit</span></td></tr>
+    </tbody>
+  </table>
+  <p>Grid lines appear by themselves once you zoom in to 8× or more. <span class="ui">Grid</span> turns them off. The tile grid draws a guide every 4 to 64 pixels, which helps when you lay out an atlas.</p>
+
+  <h2>Colours</h2>
+  <p>Every tool paints the <b>primary</b> colour with the left button and the <b>secondary</b> colour with the right.</p>
+  <ul>
+    <li>Click a swatch in the palette to make it primary. Right-click it, or long-press it on touch, to make it secondary.</li>
+    <li>The two colour boxes at the top of the palette open the system colour picker.</li>
+    <li><span class="ui">⇄</span> or <kbd>X</kbd> swaps primary and secondary.</li>
+    <li>The small checkered strip beside them shows the two colours mixed in a 50% dither, so you can judge the blend before you paint it.</li>
+    <li>The <b>eyedropper</b> is <kbd>I</kbd>. You can also hold <kbd>Alt</kbd> with any tool except Move. It samples what you see, all visible layers together. Right-click picks into the secondary colour.</li>
+  </ul>
+
+  <h2>The sixteen tools</h2>
+  <p>Every tool honours <b>Wrap</b>, <b>symmetry</b>, the selection and <b>Lock</b>. You don't switch these on per tool.</p>
+  <table>
+    <thead><tr><th>Tool</th><th>Key</th><th>What it does</th></tr></thead>
+    <tbody>
+      <tr><td>✏️ Pencil</td><td><kbd>P</kbd></td><td>Hard-edged pixels. <span class="ui">Pixel-perfect</span> (at size 1) removes the extra "elbow" pixel on diagonals.</td></tr>
+      <tr><td>🖌️ Soft brush</td><td><kbd>B</kbd></td><td>A soft round brush with <span class="ui">Hardness</span> and <span class="ui">Opacity</span>.</td></tr>
+      <tr><td>🧽 Eraser</td><td><kbd>E</kbd></td><td>Erases to transparent, soft or hard.</td></tr>
+      <tr><td>▦ Dither brush</td><td><kbd>D</kbd></td><td>Paints a pattern of primary and secondary: checker, Bayer, lines, diagonal or your own.</td></tr>
+      <tr><td>◐ Ramp shade brush</td><td><kbd>H</kbd></td><td>Moves each pixel one step lighter along its ramp. Right-click or <kbd>Shift</kbd> makes it darker.</td></tr>
+      <tr><td>⁘ Noise / scatter</td><td><kbd>N</kbd></td><td>Sprinkles random pixels at a <span class="ui">Density</span>, for grain, dirt and stone.</td></tr>
+      <tr><td>⇄ Replace color brush</td><td><kbd>R</kbd></td><td>Recolours only the colour under the start of the stroke.</td></tr>
+      <tr><td>≈ Smooth / AA helper</td><td><kbd>A</kbd></td><td>Hand anti-aliasing: each pixel becomes the palette colour nearest to the average of it and its neighbours.</td></tr>
+      <tr><td>╱ Line</td><td><kbd>L</kbd></td><td>A straight line. <kbd>Shift</kbd> snaps it to 0°, 45° or 90°.</td></tr>
+      <tr><td>▭ Rectangle</td><td><kbd>U</kbd></td><td>An outline, or <span class="ui">Filled</span>. <kbd>Shift</kbd> makes a square.</td></tr>
+      <tr><td>◯ Ellipse</td><td><kbd>C</kbd></td><td>An outline, or <span class="ui">Filled</span>. <kbd>Shift</kbd> makes a circle.</td></tr>
+      <tr><td>🪣 Fill</td><td><kbd>G</kbd></td><td>Flood fill, with <span class="ui">Tolerance</span>, <span class="ui">Contiguous</span> and <span class="ui">Fill with pattern</span>.</td></tr>
+      <tr><td>▤ Dithered gradient</td><td><kbd>J</kbd></td><td>Drag from start to end for a gradient that only uses the colours it blends between.</td></tr>
+      <tr><td>💧 Eyedropper</td><td><kbd>I</kbd> or hold <kbd>Alt</kbd></td><td>Picks a colour.</td></tr>
+      <tr><td>⬚ Select</td><td><kbd>M</kbd></td><td>A rectangular selection. While one exists, painting only changes what is inside it.</td></tr>
+      <tr><td>✥ Move</td><td><kbd>V</kbd> or <kbd>O</kbd></td><td>Moves the selection. With nothing selected, it drags the whole layer, wrapping at the edges.</td></tr>
+    </tbody>
+  </table>
+  <p>Line, Rectangle and Ellipse show a live preview while you drag, and commit when you let go. The ramp, dither and gradient tools get a page of their own: <a href="03-palettes-layers.html">Palettes, dither, layers</a>.</p>
+
+  <h3>Brush size</h3>
+  <p><kbd>[</kbd> and <kbd>]</kbd> change the size, from 1 to 64. The <span class="ui">Size</span> slider in the tool options does the same. Each tool remembers its own size: the soft brush starts at 8, the eraser at 4, and the rest at 1. A pen's pressure can drive size or opacity (<span class="ui">Pressure → size</span>, <span class="ui">Pressure → opacity</span>). A mouse or finger always paints at full pressure.</p>
+
+  <h3>Selections</h3>
+  <ul>
+    <li><kbd>⌘A</kbd> selects everything. <kbd>Esc</kbd> deselects.</li>
+    <li>With the Move tool, drag inside a selection to lift its pixels as a <b>floating selection</b>. Hold <kbd>Alt</kbd> as you start the drag to copy them instead of cutting.</li>
+    <li><kbd>Enter</kbd> puts the floating pixels down. <kbd>Esc</kbd> puts everything back where it was.</li>
+    <li>The Select and Move tools show <span class="ui">Copy</span>, <span class="ui">Cut</span>, <span class="ui">Paste</span>, <span class="ui">Delete</span>, <span class="ui">Flip ↔</span>, <span class="ui">Flip ↕</span>, <span class="ui">Rotate ⟳</span>, <span class="ui">All</span> and <span class="ui">None</span>.</li>
+  </ul>
+  <div class="callout warn"><p><b>Painting does nothing?</b> A selection is probably active, and you are painting outside it. Press <kbd>Esc</kbd>. Also check that the active layer is visible.</p></div>
+
+  <h2>Exercise: a first brick</h2>
+  <ol class="steps">
+    <li><p>In the studio, open <b>🧱 Textures</b>, press <span class="ui">+ new texture</span> and type <code>BRICK1</code>. In the <b>New texture</b> dialog, keep <span class="ui">Texture</span>, choose <span class="ui">32 × 32</span> and press <span class="ui">Create</span>. Standalone, choose <span class="ui">32</span> from <span class="ui">New…</span> instead.</p></li>
+    <li><p>Press <kbd>0</kbd> to fit the canvas. Pick a dark red as primary and a darker one as secondary, then press <kbd>G</kbd> and click the canvas to fill it.</p></li>
+    <li><p>Press <kbd>X</kbd> to swap the colours. Press <kbd>L</kbd> and draw the mortar lines, holding <kbd>Shift</kbd> to keep them straight: two horizontal rows, with the vertical joints staggered between them.</p></li>
+    <li><p>Press <kbd>N</kbd> for Noise. Set <span class="ui">Density</span> low and scatter a little grain over the bricks.</p></li>
+    <li><p>Press <kbd>Tab</kbd> twice to hide and bring back the side panel. Then look at the cube in the <b>3D preview</b>.</p></li>
+    <li><p>In the studio, press <span class="ui">← studio</span>. The texture is saved as a project and baked to <code>assets/textures/BRICK1.png</code>, and its card appears under <span class="ui">🧱 the module's own (N)</span>. Standalone, press <kbd>⌘S</kbd> and pick where to save it.</p></li>
+  </ol>
+  <div class="callout"><p>The studio always keeps what qPainter returns as a <b>project</b>, <code>sources/textures/NAME.texproj.json</code>, with its layers and frames, and bakes the PNG from it. The PNG is a composite of the visible layers. A texture that started as an imported PNG becomes a project the first time you edit it in qPainter.</p></div>
+
+  <h2>Practise the keys</h2>
+  <p>The trainer names a tool, and you press its key.</p>
+  <div class="widget trainer" data-tool="textures"></div>
+
+  <h2>Check yourself</h2>
+  <div class="quiz" data-answer="1">
+    <p class="q">You opened a texture from the studio and want to keep your changes. Where is <span class="ui">Save</span>?</p>
+    <ul>
+      <li>In the top bar, as always</li>
+      <li>There is none in the studio: <span class="ui">← studio</span> saves and goes back</li>
+      <li>Under <span class="ui">Export…</span></li>
+    </ul>
+    <p class="why">Inside the studio, qPainter is a guest. The texture belongs to the module, so the file buttons are hidden, and going back to the studio is what saves it.</p>
+  </div>
+  <div class="quiz" data-answer="2">
+    <p class="q">Which key gives you the Dithered gradient?</p>
+    <ul>
+      <li><kbd>G</kbd></li>
+      <li><kbd>D</kbd></li>
+      <li><kbd>J</kbd></li>
+    </ul>
+    <p class="why"><kbd>G</kbd> is Fill and <kbd>D</kbd> is the Dither brush. The gradient is <kbd>J</kbd>.</p>
+  </div>
+  <div class="quiz" data-answer="0">
+    <p class="q">You type <code>moss wall</code> as the name of a new texture in the studio. What is it called?</p>
+    <ul>
+      <li><code>MOSSWALL</code></li>
+      <li><code>moss_wall</code></li>
+      <li>Nothing: the studio refuses the name</li>
+    </ul>
+    <p class="why">The name is turned to capitals, and anything other than A–Z, 0–9 and <code>_</code> is dropped, up to 24 characters.</p>
+  </div>
+</article>
+</body>
+</html>

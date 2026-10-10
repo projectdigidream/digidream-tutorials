@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Seamless tiling · Digidream Studio tutorials</title>
+<meta name="description" content="Paint textures that repeat without a visible seam, with Wrap, Tiles, Offset ½ and symmetry.">
+<link rel="stylesheet" href="../assets/site.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 16%22%3E%3Cpath d=%22M8 1l7 7-7 7-7-7z%22 fill=%22%235b8fd6%22/%3E%3C/svg%3E">
+<script defer src="../assets/nav.js"></script>
+<script defer src="../assets/shortcuts.js"></script>
+<script defer src="../assets/site.js"></script>
+</head>
+<body>
+<article>
+  <h1>Seamless tiling</h1>
+  <p class="lede">A wall in the game repeats its texture over and over. If the right edge doesn't match the left, every repeat shows a line. qPainter's seam tools let you paint across the edges as if they weren't there, and check the result while you work.</p>
+  <div class="goal">
+    <b>You'll learn</b><span>Wrap, Tiles and Offset ½; the six symmetry modes; a full seamless stone tile; and what <em>cut out</em> does in the studio</span>
+    <b>Time</b><span>20 minutes</span>
+    <b>Needs</b><span>qPainter open on a texture (see <a href="01-first-texture.html">Your first texture</a>)</span>
+  </div>
+
+  <h2>Why seams show</h2>
+  <p>A texture tiles by placing copies side by side. The last column of one copy touches the first column of the next, and the bottom row touches the top row. A crack that runs off the right edge has to come back in on the left edge, or the wall gets a cut in it every 32 or 64 pixels. Seams are hard to see on the single picture you are painting, and easy to see on a wall in the game.</p>
+
+  <h2>The three seam controls</h2>
+  <p>They sit together in the top bar.</p>
+  <ul>
+    <li><b><span class="ui">Wrap</span></b> (<kbd>W</kbd>) makes every tool wrap round the edges. A stroke that leaves the right edge continues from the left, and one that leaves the bottom continues from the top. This applies to brushes, lines, shapes, fills, dither patterns, moved selections and symmetry copies.</li>
+    <li><b><span class="ui">Tiles</span></b> shows the texture repeated 3×3 around the real one while Wrap is on. The copies are dimmed, so you can tell which is the real one. You see seams as you paint.</li>
+    <li><b><span class="ui">Offset ½</span></b> shifts the current layer by half its width and half its height. The four edges then meet in the middle of the canvas, where you can paint over them. Press it again to shift back. It can be undone like any edit.</li>
+  </ul>
+  <p>Two more things help:</p>
+  <ul>
+    <li>The <b>Move</b> tool with nothing selected drags the whole layer, wrapping at the edges. It is a free-form Offset ½.</li>
+    <li>In the <b>3D preview</b>, the <span class="ui">wall</span> shape is a large plane tiled 3×3 in perspective. It is the closest thing to a wall in the game.</li>
+  </ul>
+
+  <h3>Try it here</h3>
+  <p>This is a 16×16 tile with the 3×3 repeat beside it. The stones in it stop short of the edges, so the repeat looks fine at the start.</p>
+  <ol class="steps">
+    <li><p>Turn <b>Wrap</b> off. Pick the lightest grey, size 2, and draw a crack from the middle out past the right edge. In the repeat, the crack stops dead at the tile's edge.</p></li>
+    <li><p>Press <b>↶ Undo</b>, turn <b>Wrap</b> on and draw the same crack. It comes back in on the left, and in the repeat it runs on unbroken.</p></li>
+    <li><p>Press <b>Offset ½</b>. The tile's corners are now in the middle. Paint a stone right across the centre, then press <b>Offset ½</b> again. The stone is split across all four edges, and the repeat joins it back up.</p></li>
+  </ol>
+  <div class="widget" data-widget="tile-painter" data-title="Wrap and Offset ½"></div>
+  <div class="callout tip"><p>The dither brush in the demo paints a checker that is anchored to the canvas, not to the stroke. qPainter's patterns are anchored the same way, so they line up across the seam. A pattern can't tile cleanly if its size doesn't divide the texture's, and qPainter shows a ⚠ beside the pattern when that happens. On power-of-two textures (16, 32, 64…), use the 2, 4 or 8 px patterns.</p></div>
+
+  <h2>Symmetry</h2>
+  <p>The menu after <span class="ui">Offset ½</span> picks a symmetry mode. <kbd>S</kbd> steps through them in this order:</p>
+  <table>
+    <thead><tr><th>Mode</th><th>What you get</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">No sym</span></td><td>One stroke, where you paint it.</td></tr>
+      <tr><td><span class="ui">Mirror X</span></td><td>A mirror copy, left ↔ right.</td></tr>
+      <tr><td><span class="ui">Mirror Y</span></td><td>A mirror copy, top ↔ bottom.</td></tr>
+      <tr><td><span class="ui">Mirror XY</span></td><td>Four-way: both mirrors at once.</td></tr>
+      <tr><td><span class="ui">Diagonal</span></td><td>A copy mirrored across the diagonal.</td></tr>
+      <tr><td><span class="ui">Radial</span></td><td>2 to 12 rotated copies. Set the count in the number box beside the menu.</td></tr>
+    </tbody>
+  </table>
+  <ul>
+    <li>The axes are drawn as dashed pink lines.</li>
+    <li><kbd>⌘</kbd>+click (<kbd>Ctrl</kbd>+click on Windows and Linux) moves the symmetry centre. It snaps to pixel edges and pixel centres. <span class="ui">⊕</span> puts it back in the middle.</li>
+    <li>Symmetry works with every painting tool, fills and shapes included, and together with Wrap. The Dithered gradient ignores it.</li>
+  </ul>
+  <div class="callout"><p>Symmetry and Wrap work together. With <span class="ui">Mirror X</span> and Wrap on, a mirrored stroke that runs off one edge wraps too. That makes it quick to paint ornaments, grates and floor tiles that are symmetric <em>and</em> seamless.</p></div>
+
+  <h2>Exercise: a seamless stone tile</h2>
+  <p>This is qPainter's own worked example, step by step.</p>
+  <ol class="steps">
+    <li><p>Make a <b>32 × 32</b> texture. Turn on <span class="ui">Wrap</span> (<kbd>W</kbd>) and check <span class="ui">Tiles</span> is on. In the <b>3D preview</b>, set the shape to <span class="ui">wall</span>.</p></li>
+    <li><p>Pick a mid-grey as primary. In the palette panel, press <span class="ui">Hue-shift</span> to build a five-colour ramp around it (2 steps each side), then click the ramp to make it active.</p></li>
+    <li><p><kbd>G</kbd>: fill the canvas with the middle colour of the ramp.</p></li>
+    <li><p><kbd>N</kbd>: Noise with <span class="ui">Use active ramp</span> on, at about 30% density. Scatter texture over everything.</p></li>
+    <li><p><kbd>P</kbd>: pencil the cracks and stone outlines. Paint across the edges freely. The 3×3 tiles and the wall show any seam at once.</p></li>
+    <li><p><kbd>H</kbd>: the Shade brush. Drag to light the stone tops, and <kbd>Shift</kbd>-drag to darken the edges below them.</p></li>
+    <li><p>Press <span class="ui">Offset ½</span>. Fix anything that looks wrong in the middle, where the edges now meet. Press <span class="ui">Offset ½</span> again.</p></li>
+    <li><p>Standalone, choose <span class="ui">Export…</span> → <span class="ui">PNG 1×</span>. In the studio, press <span class="ui">← studio</span>.</p></li>
+  </ol>
+
+  <h2>Cut out: holes in a texture</h2>
+  <p>A texture can have transparent pixels: the gaps in a grate, a fence or a window frame. By default the game ignores transparency and draws those pixels solid, not as holes. On the texture's card in the studio's <b>🧱 Textures</b> page, turn on <span class="ui">cut out (see-through where transparent)</span>, and the game lets you see through every pixel that is less than half opaque.</p>
+  <ul>
+    <li>Paint the holes with the <b>Eraser</b> (<kbd>E</kbd>) at full hardness. A pixel is either a hole or solid, so a feathered edge only turns ragged.</li>
+    <li>Leave <b>cut out</b> off for ordinary solid walls and floors.</li>
+  </ul>
+  <div class="callout tip"><p>A grate is usually symmetric and must tile. Use <span class="ui">Mirror XY</span> with <span class="ui">Wrap</span> on, and erase one quarter of the holes. The other three quarters appear by themselves.</p></div>
+
+  <h2>Check yourself</h2>
+  <div class="quiz" data-answer="1">
+    <p class="q">You want to repaint the seam of a finished tile where the edges meet. What is the quickest way?</p>
+    <ul>
+      <li>Turn on <span class="ui">Tiles</span> and paint on the dimmed copies</li>
+      <li><span class="ui">Offset ½</span>, paint over the middle, then <span class="ui">Offset ½</span> again</li>
+      <li>Export at <span class="ui">PNG 2×</span> and crop the middle</li>
+    </ul>
+    <p class="why">Offset ½ brings the four edges into the centre of the canvas. Pressing it a second time puts everything back, and the repair is now on the edges.</p>
+  </div>
+  <div class="quiz" data-answer="2">
+    <p class="q">You press <kbd>S</kbd> while the symmetry menu says <span class="ui">Mirror XY</span>. What do you get?</p>
+    <ul>
+      <li><span class="ui">No sym</span></li>
+      <li><span class="ui">Radial</span></li>
+      <li><span class="ui">Diagonal</span></li>
+    </ul>
+    <p class="why">The order is No sym, Mirror X, Mirror Y, Mirror XY, Diagonal, Radial, and then back to No sym.</p>
+  </div>
+  <div class="quiz" data-answer="0">
+    <p class="q">You painted a fence with transparent gaps, but in the game the gaps are drawn solid. What do you change?</p>
+    <ul>
+      <li>Turn on <span class="ui">cut out (see-through where transparent)</span> on the texture's card in the studio</li>
+      <li>Turn on <span class="ui">Lock</span> in qPainter</li>
+      <li>Erase the gaps again with a softer eraser</li>
+    </ul>
+    <p class="why">Transparency only becomes holes in the game when the texture is marked cut out. That setting belongs to the module, so it is on the studio's card, not in qPainter.</p>
+  </div>
+</article>
+</body>
+</html>

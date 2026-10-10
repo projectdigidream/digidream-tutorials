@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Designing patches · Digidream Studio tutorials</title>
+<meta name="description" content="Shape the synth's instruments in the patch editor: oscillators, envelopes, filters, LFOs and the mod matrix, then save banks and kits.">
+<link rel="stylesheet" href="../assets/site.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 16%22%3E%3Cpath d=%22M8 1l7 7-7 7-7-7z%22 fill=%22%235b8fd6%22/%3E%3C/svg%3E">
+<script defer src="../assets/nav.js"></script>
+<script defer src="../assets/shortcuts.js"></script>
+<script defer src="../assets/site.js"></script>
+</head>
+<body>
+<article>
+  <h1>Designing patches</h1>
+  <p class="lede">A <em>patch</em> is one instrument: up to four layers, each an oscillator shaped by envelopes, a filter and modulation. The <b>Synth</b> tab edits the patch the selected track plays, and you hear every change in the song as you make it.</p>
+  <div class="goal">
+    <b>You'll learn</b><span>how the patch editor picks what it edits, the oscillator, envelope, filter, LFO and mod-matrix controls, how to audition, and how banks and kits are stored</span>
+    <b>Time</b><span>25 minutes</span>
+    <b>Needs</b><span>the DAW running with a track that has a few notes (see <a href="02-piano-roll.html">Piano roll and recording</a>)</span>
+  </div>
+
+  <h2>Where the patch editor is</h2>
+  <p>The same editor appears in two places:</p>
+  <ul>
+    <li>the DAW's <span class="ui">Synth</span> tab, editing the project's own bank and kit;</li>
+    <li>the stand-alone tool at <a href="http://localhost:8930/tool/">localhost:8930/tool/</a>, which plays test songs and edits a bank or kit file directly.</li>
+  </ul>
+  <figure class="shot" data-src="../assets/shots/synth-synth.png" data-alt="The Synth tab: the list of tracks and their instruments on the left, the patch editor on the right">
+    <figcaption>Synth: who plays what on the left, the patch editor on the right.</figcaption>
+  </figure>
+  <p>On the Synth tab, the left column lists every track with its program. Click one to edit the instrument it plays. A green dot lights on a track while the engine is sounding it. The line above the list names the patch you are editing and which tracks play it. When <b>no</b> track plays it, the line turns amber: you can still audition it from the keyboard, but you will not hear the edit in the song.</p>
+  <div class="callout tip"><p>Two tracks on the same program share one patch. An edit to the patch changes both.</p></div>
+
+  <h2>The top rows</h2>
+  <ul>
+    <li><b>The target row.</b> The first list switches between <code>melodic program</code> and <code>drum note</code>; the second picks which program (or the <code>fallback</code> patch) or which drum note. Picking a program here makes the selected track play it.</li>
+    <li><span class="ui">↶ Undo</span> and <span class="ui">↷ Redo</span> undo patch edits. While the Synth tab is open, <kbd>⌘Z</kbd> works on the patch, not on the project.</li>
+    <li><span class="ui">Store B</span> keeps a copy of the patch as it is now. <span class="ui">A⇄B</span> swaps the working patch with that copy, so you can flip between two versions and compare.</li>
+    <li><span class="ui">Init</span> resets the patch to a plain starting patch.</li>
+    <li><span class="ui">name</span>. For a drum note, also <span class="ui">oneShot</span> (the sound plays to its end and ignores note-off) and <span class="ui">choke</span> (a group number: a new hit in the group cuts the others off, like a closed hi-hat cutting an open one; -1 is none).</li>
+  </ul>
+  <p>Under them, <b>Layer mix</b> draws how the layers combine and their amp envelopes, and a row of tabs picks <span class="ui">Layer 1</span> to <span class="ui">Layer 4</span>. <span class="ui">＋</span> adds a layer (up to four) and <span class="ui">×</span> removes the current one. Everything below the tabs belongs to the selected layer.</p>
+
+  <h2>Oscillator</h2>
+  <p>The first list is the source:</p>
+  <ul>
+    <li><code>wavetable</code>: a waveform, built by a generator, that can morph across frames.</li>
+    <li><code>noise</code>: noise, for snares, wind and breath. Shape it with the filter.</li>
+    <li><code>metal</code>: six detuned square waves at a classic drum machine's ratios. Bandpass it high for hi-hats and cymbals.</li>
+  </ul>
+  <p>For a wavetable, <span class="ui">classic</span> gives quick starting points (<code>sine</code>, <code>triangle</code>, <code>saw</code>, <code>square</code>, <code>pulse 25%</code>, <code>pulse 12%</code>). The generator list holds the rest:</p>
+  <table>
+    <thead><tr><th>Generator</th><th>Makes</th></tr></thead>
+    <tbody>
+      <tr><td><code>custom (draw)</code></td><td>One cycle you draw with the mouse.</td></tr>
+      <tr><td><code>additive</code></td><td>A harmonic series with a falloff (saw, square, triangle, flat), from one harmonic count to another across the frames.</td></tr>
+      <tr><td><code>pulse (PWM)</code></td><td>A pulse whose width sweeps across the frames.</td></tr>
+      <tr><td><code>drawbar organ</code></td><td>Nine drawbars, 16′ to 1′.</td></tr>
+      <tr><td><code>waveshaper</code></td><td>A sine, triangle or saw bent through soft, hard, fold, crush or stairs.</td></tr>
+      <tr><td><code>chebyshev</code></td><td>A transfer curve you shape by dragging points.</td></tr>
+      <tr><td><code>harmonics</code></td><td>The levels of harmonics 1 to 32, drawn as bars.</td></tr>
+      <tr><td><code>hard sync</code></td><td>A synced saw or pulse, the ratio sweeping across the frames.</td></tr>
+      <tr><td><code>FM 2-op</code></td><td>Two-operator FM, the index sweeping across the frames.</td></tr>
+    </tbody>
+  </table>
+  <p><span class="ui">frames</span> sets how many steps the wavetable has (1 to 32). With more than one, <span class="ui">morph preview</span> scrubs through them; a <b>WtPos</b> envelope or the mod matrix moves through them while a note plays.</p>
+
+  <h2>Mix &amp; pitch</h2>
+  <ul>
+    <li><span class="ui">gain</span> and <span class="ui">pan</span>: the layer's level and place. Layers add up, so a patch with several layers usually keeps each one between 0.3 and 0.6.</li>
+    <li><span class="ui">detune ¢</span>: cents added to the pitch. ±5–10 thickens; 1200 adds an octave.</li>
+    <li><span class="ui">delay ms</span>: the layer speaks this much later. Three layers at 0, 12 and 25 ms make a hand clap.</li>
+    <li><span class="ui">vel curve</span> and <span class="ui">vel</span> low–high: how velocity maps to level, and a velocity window (a soft layer for 1–90, a bright one for 91–127).</li>
+    <li><span class="ui">fixed pitch (note#)</span>: the layer always sounds at this note. −1 follows the played note. Drum layers nearly always set it.</li>
+    <li><span class="ui">unison</span> (1–7 voices), its <span class="ui">detune ¢</span> and <span class="ui">spread</span>: a stack of detuned copies, the supersaw sound.</li>
+    <li><span class="ui">ring ×</span> and <span class="ui">amt</span>: ring modulation against a sine at that ratio of the pitch (0 is off).</li>
+    <li><span class="ui">rel-vel</span>: how much the key-release speed changes the release time. <span class="ui">RR</span>: a round-robin group; layers in the same group take turns, one per note.</li>
+    <li><span class="ui">sends</span> <span class="ui">rev</span>, <span class="ui">cho</span>, <span class="ui">dly</span>: per-layer effect sends. Blank means "use the channel's CC". Useful on drums, where every drum shares one channel.</li>
+  </ul>
+
+  <h2>Envelopes</h2>
+  <p>Each layer has four envelopes, on sub-tabs: <span class="ui">Amp</span> (loudness), <span class="ui">Filter</span> (cutoff), <span class="ui">Pitch</span> and <span class="ui">WtPos</span> (wavetable position). A dot after a name means that envelope is not in use yet. Drag the handles on the drawing, or type the times:</p>
+  <table>
+    <thead><tr><th>Field</th><th>Stage</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">dly</span></td><td>Delay: wait this many ms before the attack starts.</td></tr>
+      <tr><td><span class="ui">A</span></td><td>Attack: ms to rise to full.</td></tr>
+      <tr><td><span class="ui">H</span></td><td>Hold: ms to stay at full.</td></tr>
+      <tr><td><span class="ui">D</span></td><td>Decay: ms to fall to the sustain level.</td></tr>
+      <tr><td><span class="ui">S</span></td><td>Sustain: the level held while the key is down, 0 to 1. It is a level, not a time.</td></tr>
+      <tr><td><span class="ui">R</span></td><td>Release: ms to fall to silence after the key is let go.</td></tr>
+    </tbody>
+  </table>
+  <ul>
+    <li><span class="ui">loop</span> cycles attack and decay while the key is held, a pulsing pad without an LFO.</li>
+    <li><span class="ui">curves</span> sets the shape of attack, decay and release: <code>linear</code>; <code>exp</code> (fast start, natural tail); <code>expAttack</code> (slow start, a swell); <code>sCurve</code> (soft at both ends).</li>
+    <li>The Filter, Pitch and WtPos envelopes have a depth: <span class="ui">depth ±1</span> of the cutoff range, <span class="ui">semis</span> of pitch, or <span class="ui">depth 0-1</span> of the frames.</li>
+  </ul>
+  <p>Try it here. The demo below is a plain WebAudio sketch of the same idea, not the engine, so it sounds simpler, but the envelope shapes are the same.</p>
+  <div class="widget" data-widget="adsr" data-title="Envelope and filter"></div>
+  <div class="callout tip"><p>A kick drum is mostly a <b>Pitch</b> envelope: attack 0, decay about 45 ms, sustain 0, and a depth of about 24 semitones. The note starts high and drops into a thump.</p></div>
+
+  <h2>Filter</h2>
+  <ul>
+    <li>Modes: <code>bypass</code>, <code>lowpass</code>, <code>bandpass</code>, <code>highpass</code>, <code>notch</code>, <code>comb</code> (a tuned resonator; noise through it sounds plucked) and <code>formant</code> (vowels: pick a <span class="ui">vowel</span> and an end vowel the filter envelope morphs to).</li>
+    <li><span class="ui">cutoff</span> (up to 12 kHz; use <code>bypass</code> for a fully open sound), <span class="ui">resonance</span> (0.2–0.4 is character, 0.6 and up squelches) and <span class="ui">keytrack</span> (the cutoff follows the note, so high notes are not duller).</li>
+    <li><span class="ui">slope</span> 12 or 24 dB; <span class="ui">drive</span> saturates before the filter, <span class="ui">post</span> after it.</li>
+    <li><span class="ui">filter 2</span>: a second filter with its own mode, <span class="ui">cutoff</span> and <span class="ui">res</span>, in <code>serial</code> or <code>parallel</code>. Tick <span class="ui">static</span> to keep its corner fixed while filter 1 sweeps.</li>
+  </ul>
+  <p>The curve under the controls draws the filter's response.</p>
+
+  <h2 id="mod">LFOs and the mod matrix</h2>
+  <p>Each layer has four LFOs. Tick <span class="ui">LFO1</span> to <span class="ui">LFO4</span> to turn one on, then pick its shape (<code>sine</code>, <code>triangle</code>, <code>saw</code>, <code>square</code>, <code>sampleHold</code>), <span class="ui">rate Hz</span>, a tempo <span class="ui">sync</span> (<code>free</code>, or <code>1/1</code> to <code>1/16</code> with triplets) and a <span class="ui">delay ms</span> before it fades in.</p>
+  <p>An LFO does nothing on its own. The <b>Mod matrix</b> connects it: <span class="ui">+ routing</span> adds a row with a source, a destination and an amount, and <span class="ui">×</span> removes one.</p>
+  <table>
+    <thead><tr><th>Sources</th><th>Destinations</th></tr></thead>
+    <tbody>
+      <tr><td><code>LFO1</code>–<code>LFO4</code>, <code>AmpEnv</code>, <code>FilterEnv</code>, <code>PitchEnv</code>, <code>WtPosEnv</code>, <code>Velocity</code>, <code>KeyTrack</code>, <code>ModWheel</code>, <code>ChannelAftertouch</code>, <code>PolyAftertouch</code></td>
+          <td><code>Pitch</code>, <code>FilterCutoff</code>, <code>FilterRes</code>, <code>Amplitude</code>, <code>WtPosition</code>, <code>Pan</code>, <code>FilterDrive</code>, <code>PostDrive</code></td></tr>
+    </tbody>
+  </table>
+  <p>An amount of 1 on <code>Pitch</code> is a whole octave, so vibrato is tiny: 0.003 to 0.008. On <code>FilterCutoff</code>, 0.1 to 0.5 gives a wobble.</p>
+  <ol class="steps">
+    <li><p>On the Synth tab, pick a lead or pad track. Press <span class="ui">Store B</span> so you can get back.</p></li>
+    <li><p>Tick <span class="ui">LFO1</span>, shape <code>sine</code>, <span class="ui">rate Hz</span> 5, <span class="ui">delay ms</span> 300.</p></li>
+    <li><p>Press <span class="ui">+ routing</span>. Leave it at <code>LFO1</code> → <code>Pitch</code> and set the amount to 0.005.</p></li>
+    <li><p>Hold <kbd>A</kbd>. The note starts straight and the vibrato fades in. Press <span class="ui">A⇄B</span> to hear the patch without it, and again to come back.</p></li>
+  </ol>
+
+  <h2>Audition</h2>
+  <p>The <b>Audition</b> box at the bottom plays the edited patch:</p>
+  <ul>
+    <li><kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd> <kbd>F</kbd> <kbd>G</kbd> <kbd>H</kbd> <kbd>J</kbd> <kbd>K</kbd> are the white keys; <kbd>W</kbd> <kbd>E</kbd> <kbd>T</kbd> <kbd>Y</kbd> <kbd>U</kbd> the black ones; <kbd>Z</kbd> and <kbd>X</kbd> move an octave down and up (octaves 2 to 6).</li>
+    <li><span class="ui">velocity</span>, <span class="ui">sustain</span>, and <span class="ui">mod</span> and <span class="ui">bend</span> sliders to try the mod wheel and pitch bend.</li>
+    <li>In <code>drum note</code> mode the keyboard becomes pads, one per drum, and the letter keys hit them.</li>
+  </ul>
+  <div class="callout"><p>On the Synth tab, <kbd>S</kbd>, <kbd>D</kbd> and <kbd>E</kbd> play notes; they only switch piano-roll tools on the Track tab. <kbd>R</kbd> does not record on the Synth tab either.</p></div>
+
+  <h2>JSON, banks and kits</h2>
+  <ul>
+    <li><span class="ui">Export patch</span> saves this one patch as JSON.</li>
+    <li><span class="ui">Export bank</span> (or <span class="ui">Export kit</span> in drum mode) saves the whole document. <span class="ui">import</span> loads one. In the DAW, the File menu has the same for the project's bank and kit.</li>
+    <li><span class="ui">JSON ▾</span> opens the patch as text. Edit it and press <span class="ui">Apply JSON</span>; the fields and the text stay in step both ways.</li>
+  </ul>
+  <p>A <b>bank</b> holds the melodic patches by General MIDI program number, plus a <code>fallback</code> for any program it does not have, so an unknown program always makes some sound:</p>
+<pre><code>{
+  "version": 1,
+  "fallback": { …a patch… },
+  "programs": {
+    "0":  { …a patch… },
+    "48": { …a patch… }
+  }
+}</code></pre>
+  <p>A <b>kit</b> holds drum patches by MIDI note number. The General MIDI drums are notes 35 to 81 (the format accepts 27 to 87). Unlike a bank, a note the kit does not have is <b>silent</b>.</p>
+<pre><code>{
+  "version": 1,
+  "notes": {
+    "36": { …kick… },
+    "42": { …closed hi-hat… }
+  }
+}</code></pre>
+  <p>The shipped files are <code>midisynth/content/patches/gm_bank.json</code> and <code>midisynth/content/drums/gm_kit.json</code>. A new project starts from them. When a track is baked, only the programs and drum notes the song actually plays are kept in the <code>.mstk</code>.</p>
+
+  <h2 id="fit">Fit: a patch from a recording</h2>
+  <p>The <span class="ui">Fit</span> tab searches for a patch that sounds like a short recorded sample:</p>
+  <ol class="steps">
+    <li><p>Under <b>Target</b>, load a <span class="ui">sample</span>: a single hit, or a single held note. A phrase of several notes cannot be matched by one note.</p></li>
+    <li><p>Under <b>Architecture</b>, pick a <span class="ui">preset</span>: <code>kick</code>, <code>snare</code>, <code>hat</code> or <code>bass</code> for drums, or <code>piano</code>, <code>strings</code>, <code>pad</code>, <code>organ</code>, <code>brass</code>, <code>pluck</code>, <code>bell</code>, <code>lead</code> for melodic sounds. Keep <span class="ui">window ms</span> short so the room's echo in the recording is left out.</p></li>
+    <li><p>Under <b>Likelihood</b>, pick one of the weight presets (<span class="ui">balanced</span>, <span class="ui">spectral only</span>, <span class="ui">tonal balance</span>, <span class="ui">percussive</span>). Then press <span class="ui">Fit</span>.</p></li>
+    <li><p>Compare with <span class="ui">audition fit</span> and <span class="ui">audition target</span>. If you like it, choose <span class="ui">add as</span> <code>bank program</code> or <code>kit note</code> and press <span class="ui">Add to instruments</span>. It lands in the project's bank or kit as one undoable step.</p></li>
+  </ol>
+  <div class="callout tip"><p>More <span class="ui">restarts</span> help more than more <span class="ui">iters</span>: the search stops improving after about 20 steps, but a fresh start can find a better place.</p></div>
+
+  <div class="quiz" data-answer="1">
+    <p class="q">You edit program 33 on the Synth tab and the hint line is amber. Why do you hear nothing change in the song?</p>
+    <ul>
+      <li>Edits only apply after a bake</li>
+      <li>No track plays program 33, so the song never uses that patch</li>
+      <li>The Synth tab edits a copy until you press Apply JSON</li>
+    </ul>
+    <p class="why">Edits apply live, but only to the patch you are editing. Click a track in the list on the left to edit the patch it plays.</p>
+  </div>
+  <div class="quiz" data-answer="2">
+    <p class="q">In the envelope row, S is set to 0.7. What does that mean?</p>
+    <ul>
+      <li>The sustain lasts 0.7 seconds</li>
+      <li>The sustain lasts 0.7 ms</li>
+      <li>While the key is held, the envelope stays at 70% of full</li>
+    </ul>
+    <p class="why">Delay, attack, hold, decay and release are times in ms. Sustain is a level from 0 to 1.</p>
+  </div>
+  <div class="quiz" data-answer="0">
+    <p class="q">A song plays drum note 52 and your kit has no patch for 52. What do you hear?</p>
+    <ul>
+      <li>Nothing, for that note</li>
+      <li>The kit's fallback patch</li>
+      <li>The nearest drum note the kit has</li>
+    </ul>
+    <p class="why">A bank falls back so a melody is never silent, but a kit does not: a drum the kit lacks is silent by design.</p>
+  </div>
+</article>
+</body>
+</html>

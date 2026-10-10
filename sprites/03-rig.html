@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rig, bones and parts · Digidream Studio tutorials</title>
+<meta name="description" content="Build a 3D skeleton in ThreeSprite, hang parts and variants off its bones, bend parts with skinning, order layers per view, and model with solids.">
+<link rel="stylesheet" href="../assets/site.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 16%22%3E%3Cpath d=%22M8 1l7 7-7 7-7-7z%22 fill=%22%235b8fd6%22/%3E%3C/svg%3E">
+<script defer src="../assets/nav.js"></script>
+<script defer src="../assets/shortcuts.js"></script>
+<script defer src="../assets/site.js"></script>
+</head>
+<body>
+<article>
+  <h1>Rig, bones and parts</h1>
+  <p class="lede">The art is 2D, but the skeleton is 3D. Bones live in the character's own space and are projected into every view, so one rig and one set of keys move all the views at once. This page builds a rig, hangs parts on it, and covers skinning, layer order and solids.</p>
+  <div class="goal">
+    <b>You'll learn</b><span>how bones and parts fit together, every field in the Inspector, the canvas gestures, variants, skinning, per-view layer order, and solids</span>
+    <b>Time</b><span>25 minutes</span>
+    <b>Needs</b><span>a sprite with something drawn in it (see <a href="02-drawing.html">Drawing</a>)</span>
+  </div>
+
+  <figure class="shot" data-src="../assets/shots/sprite-rig.png" data-alt="ThreeSprite's Rig tab with a skeleton drawn over the sprite">
+    <figcaption>The Rig tab: bones over the canvas; the Bones, Inspector and Parts panels on the right.</figcaption>
+  </figure>
+
+  <h2>Bones and parts</h2>
+  <ul>
+    <li>A <b>bone</b> has a position, a rotation and a length in 3D. Its axes are the character's: <b>right</b>, <b>up</b> and <b>forward</b>, in canvas pixels, with the origin at the feet. A bone with no rotation points straight up. A child bone's position is measured in its parent's frame.</li>
+    <li>A <b>part</b> is a picture, one per view, that hangs off one bone. When the bone turns, the part turns with it in every view.</li>
+  </ul>
+  <p>Because the bones are 3D, an arm that sticks out sideways in the front view points at the camera in the side view. With <b>Foreshorten with the bone</b> on, the part's picture is squashed along the bone when the bone points towards the camera.</p>
+  <p>A new sprite starts with one bone, <code>body</code>, standing at the feet, and one part, also <code>body</code>, hanging from it.</p>
+
+  <h2>The Bones panel</h2>
+  <p>The Bones panel lists the skeleton as a tree, with children indented under their parents and a count of the parts each bone carries. Its header has three buttons:</p>
+  <ul>
+    <li><b>The pencil</b> (Rig tab only): draw a new bone on the canvas. Press at the bone's root and drag to its tip. The new bone is a child of the selected one. <kbd>Esc</kbd> cancels.</li>
+    <li><b>+</b> <span class="ui">Add child bone</span>: adds a child at the tip of the selected bone, 70% of its length.</li>
+    <li><b>Trash</b> <span class="ui">Delete bone</span>: its children and parts move to its parent, and the parts stay where they are on screen. A rig needs at least one bone.</li>
+  </ul>
+
+  <h2>Gestures on the canvas</h2>
+  <table>
+    <thead><tr><th>Gesture</th><th>Does</th></tr></thead>
+    <tbody>
+      <tr><td>Drag a bone's <b>root</b></td><td>Moves the bone, in the plane of the current view; it keeps its depth. In Rig this changes the rest pose. In Animate it sets a move key.</td></tr>
+      <tr><td>Drag a bone's <b>tip</b></td><td>Rotates the bone in the plane of the current view.</td></tr>
+      <tr><td><kbd>Shift</kbd> + drag the tip</td><td>Changes the bone's length instead.</td></tr>
+      <tr><td>Drag the <b>pink cross</b></td><td>Moves where the selected part hangs on its bone (rest pose only).</td></tr>
+      <tr><td>The pencil in the Bones panel</td><td>Draws a new bone: press at the root, drag to the tip.</td></tr>
+    </tbody>
+  </table>
+  <div class="callout tip"><p>To lean a bone forward or back, rotate it from a <em>side</em> view. From the front, the same drag swings it sideways. The view you drag in decides the plane.</p></div>
+
+  <h2>The Inspector</h2>
+  <h3>Bone</h3>
+  <table>
+    <thead><tr><th>Field</th><th>Meaning</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">Name</span></td><td>The bone's name. It shows in the timeline too.</td></tr>
+      <tr><td><span class="ui">Parent</span></td><td>Another bone, or <span class="ui">(none — root)</span>.</td></tr>
+      <tr><td><span class="ui">Pos right</span> · <span class="ui">Pos up</span> · <span class="ui">Pos forward</span></td><td>Where its root is, in the parent's frame (from the feet, for a root bone).</td></tr>
+      <tr><td><span class="ui">Rot yaw</span> · <span class="ui">Rot pitch</span> · <span class="ui">Rot roll</span></td><td>Degrees. Yaw turns about the up axis (positive is anticlockwise seen from above). Pitch tilts about the right axis. Roll rotates about the forward axis, which is in the plane of the front view.</td></tr>
+      <tr><td><span class="ui">Length</span></td><td>In pixels, at least 1.</td></tr>
+    </tbody>
+  </table>
+  <h3>Part</h3>
+  <table>
+    <thead><tr><th>Field</th><th>Meaning</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">Bone</span></td><td>The bone it hangs from. Changing it keeps the part where it is in the current view.</td></tr>
+      <tr><td><span class="ui">Offset along</span> · <span class="ui">Offset across</span></td><td>Where it hangs, along the projected bone and across it. The pink cross sets these.</td></tr>
+      <tr><td><span class="ui">Rotation</span></td><td>Degrees, on top of the bone's.</td></tr>
+      <tr><td><span class="ui">Pivot X</span> · <span class="ui">Pivot Y</span></td><td>The point of the picture that sits on the bone.</td></tr>
+      <tr><td><span class="ui">Foreshorten with the bone</span></td><td>Squash the picture along the bone when the bone points towards the camera.</td></tr>
+      <tr><td><span class="ui">Make upright (front view)</span></td><td>Turns the part so it stands upright in view 1, whatever the bone's angle.</td></tr>
+      <tr><td><span class="ui">Pivot at feet</span></td><td>Puts the pivot at the bottom centre of the picture.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>The Parts panel</h2>
+  <p>The Parts panel lists the parts in painting order: the one at the top is drawn in front. A part made of solids has a <b>⬡</b> after its name.</p>
+  <ul>
+    <li><b>+</b> <span class="ui">Add part on the selected bone</span>. The new part has a canvas-sized picture in view 1, stands upright in the front view, has its pivot at the bottom centre, and foreshortens. Double-click a part to rename it.</li>
+    <li>Under the list: the name, <b>Bring forward</b>, <b>Send backward</b> and <b>Delete part</b>.</li>
+  </ul>
+  <h3>Variants</h3>
+  <p>A <b>variant</b> is a second set of pictures for the same part: an open and a closed hand, a mouth shut and shouting. Every part starts with one called <code>default</code>. Under the part's name, the <b>Variant</b> drop-down chooses which one you are drawing. <b>+</b> asks for a name (for example <i>open hand</i>), and <b>×</b> deletes the selected variant (a part keeps at least one). An animation switches between variants with variant keys. See <a href="04-animate.html#parts-in-the-timeline">Animating</a>.</p>
+
+  <h3 id="layer-order">Layer order, per view</h3>
+  <p>Normally every view stacks its parts the same way. But an arm in front of the body from one side is behind it from the other. The chip in the Parts header sets the <b>layer order scope</b>:</p>
+  <ul>
+    <li><span class="ui">All views</span>: the shared order. Bringing a part forward changes every view.</li>
+    <li>Click it, and it reads <span class="ui">View N</span>: this view now keeps its own order, and bringing a part forward changes it here only. Click again to follow the shared order.</li>
+  </ul>
+  <p>The view strip marks views with their own order (the tooltip ends with <em>own layer order</em>). A flipped view uses the order of the view it is flipped from.</p>
+
+  <h2>Skinning: bending one picture between bones</h2>
+  <p>A part normally follows one bone rigidly. With <b>Skin (bend between bones)</b>, it follows several. Tick the other bones that should pull on it. The picture is then cut into a grid, and each point of the grid follows the bones near it, so one arm picture bends at the elbow, stretches when a bone moves away, and twists between bones. At rest it still draws pixel for pixel as you painted it.</p>
+  <ul>
+    <li><span class="ui">Influence radius</span> (px): a point farther than this from a bone ignores it. Larger gives softer bends.</li>
+    <li><span class="ui">Grid cell</span> (px, 1–64): the grid's size. Smaller is smoother.</li>
+  </ul>
+
+  <h2>Exercise: an arm that bends</h2>
+  <ol class="steps">
+    <li><p>Open the <span class="ui">Rig</span> tab and select <code>body</code> in the Bones panel. Press <b>+</b> twice to add a chain of two child bones. Name them <code>upper</code> and <code>lower</code> in the Inspector.</p></li>
+    <li><p>Drag the tip of <code>upper</code> so it points out to the side, at shoulder height. Hold <kbd>Shift</kbd> and drag its tip again to shorten it.</p></li>
+    <li><p>Select <code>upper</code>, go back to <span class="ui">Draw</span>, and press <b>+</b> in Parts. Name the new part <code>arm</code> and draw a straight arm in view 1, as long as the two bones together.</p></li>
+    <li><p>Back in <span class="ui">Rig</span>, with <code>arm</code> selected, drag the pink cross until the arm's top sits on the shoulder.</p></li>
+    <li><p>In the Inspector's <b>Skin</b> list, tick <code>lower</code>. Now drag the tip of <code>lower</code>: the arm bends at the elbow.</p></li>
+    <li><p>Press <kbd>.</kbd> to view 2, then 3. The bones follow in every view. Draw the arm in view 3, then use the chip in the Parts header to give view 3 its own order and send the arm backward there.</p></li>
+  </ol>
+
+  <h2>Solids: modelling with shapes</h2>
+  <p>Instead of drawing a part in every view, you can build it from 3D shapes. A <b>solids part</b> is rendered into every view from the same description, with shared depth, stepped pixel-art shading and an outline. It animates with the rig in 3D. The <b>Solids</b> panel is in the Draw tab (and beside the 3D view).</p>
+  <ol class="steps">
+    <li><p>Select a bone, then in the Solids panel press <span class="ui">Add a solids part on “…”</span>. A new part appears in Parts with ⬡.</p></li>
+    <li><p>Pick a colour, then press <span class="ui">+ Cube</span>, <span class="ui">+ Sphere</span>, <span class="ui">+ Cylinder</span>, <span class="ui">+ Cone</span> or <span class="ui">+ Pyramid</span>. The shape takes the primary colour, and the Move tool is chosen.</p></li>
+    <li><p>Drag the shape on the canvas: it moves in the plane of that view. Switch view and drag again to place it in depth.</p></li>
+  </ol>
+  <p>For the selected shape, the panel has a name, <b>Move up</b>, <b>Move down</b>, <b>Duplicate</b> and <b>Delete</b>; <span class="ui">Visible</span>; <span class="ui">Kind</span>; <span class="ui">Use primary colour</span>; position (<span class="ui">Pos right</span>, <span class="ui">Pos up</span>, <span class="ui">Pos forward</span>, in the bone's frame), size (<span class="ui">Width</span>, <span class="ui">Height</span>, <span class="ui">Depth</span>) and rotation (<span class="ui">Yaw</span>, <span class="ui">Pitch</span>, <span class="ui">Roll</span>). Under <b>Shading</b>: <span class="ui">Tones</span> (2 to 6), <span class="ui">Outline</span>, and <span class="ui">Light</span>, either <i>fixed to the viewer</i> or <i>turns with the character</i>.</p>
+  <p><span class="ui">Bake</span> in the panel header keeps the rendered pixels and drops the shapes. The views become ordinary pictures you can paint over. It is undoable.</p>
+  <div class="callout tip"><p>Block out a body with solids to get the proportions right in every view, then bake and paint the details on top.</p></div>
+
+  <div class="quiz" data-answer="2">
+    <p class="q">You want an arm to swing towards the camera. Which view do you drag its tip in?</p>
+    <ul>
+      <li>View 1, the front</li>
+      <li>Any view: the drag rotates it in 3D the same way</li>
+      <li>A side view, such as view 3 of 8</li>
+    </ul>
+    <p class="why">A tip drag rotates the bone in the plane of the current view. Towards the camera is the forward axis, which only lies in the screen's plane when you look from the side.</p>
+  </div>
+  <div class="quiz" data-answer="0">
+    <p class="q">The shield must be in front of the body from the left and behind it from the right. How?</p>
+    <ul>
+      <li>Give the right-side views their own layer order with the Parts header chip, and send the shield backward there</li>
+      <li>Make a second shield part for those views</li>
+      <li>Use a variant with an empty picture</li>
+    </ul>
+    <p class="why">Per-view layer order lets a view stack its parts its own way, with the same parts and pictures.</p>
+  </div>
+  <div class="quiz" data-answer="1">
+    <p class="q">You delete a bone that carries two parts. What happens to them?</p>
+    <ul>
+      <li>They are deleted with it</li>
+      <li>They move to its parent bone and stay where they are on screen</li>
+      <li>They jump to the root bone's position</li>
+    </ul>
+    <p class="why">Deleting a bone re-hangs its children and parts on its parent without moving them on screen. It is undoable.</p>
+  </div>
+</article>
+</body>
+</html>

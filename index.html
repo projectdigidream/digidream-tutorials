@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Digidream Studio tutorials</title>
+<meta name="description" content="Hands-on tutorials for Digidream Studio and its editors: maps, sprites, textures, music and sound effects.">
+<link rel="stylesheet" href="assets/site.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 16%22%3E%3Cpath d=%22M8 1l7 7-7 7-7-7z%22 fill=%22%235b8fd6%22/%3E%3C/svg%3E">
+<script defer src="assets/nav.js"></script>
+<script defer src="assets/shortcuts.js"></script>
+<script defer src="assets/site.js"></script>
+<style>
+  .paths { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; margin: 16px 0; }
+  .path { padding: 14px 16px; border-radius: var(--r-card); background: var(--panel); border: 1px solid var(--line-soft); }
+  .path h3 { margin: 0 0 6px; font-size: 15px; }
+  .path ol { margin: 0; padding-left: 18px; font-size: 14px; color: var(--text-2); }
+  .track .bar { margin-top: 4px; }
+</style>
+</head>
+<body>
+<article>
+  <section class="hero">
+    <h1>Make a game in Digidream Studio</h1>
+    <p class="lede">The studio is the editor that ships inside the game. It covers maps, monsters, weapons, cameras and graphs. Four editors run inside it as plugins: <b>ThreeSprite</b> for sprites, <b>qPainter</b> for textures, <b>DigidreamSynth</b> for music and <b>DigidreamSound</b> for sound effects. These tutorials take you through all five, step by step.</p>
+  </section>
+
+  <figure class="shot" data-src="assets/shots/studio-home.png" data-alt="The studio's Home page"
+    data-hotspots='[{"x":7,"y":3.5,"t":"The module","d":"its name; every section of the module is listed down the rail"},{"x":20.5,"y":21.5,"t":"Play and Export","d":"Play needs the app; Export writes a pack the engine loads"},{"x":24,"y":38,"t":"Maps","d":"a thumbnail of each map — open one to edit it"},{"x":17,"y":52,"t":"What is wrong","d":"every problem in the module, each a link to where it is"},{"x":42,"y":62,"t":"The sections","d":"monsters, player, weapons, textures, music, sounds…"},{"x":60,"y":21.5,"t":"Plugins","d":"the editors installed in the studio"}]'>
+    <figcaption>The studio's Home page. Click the numbered dots to see what each part does.</figcaption>
+  </figure>
+
+  <h2>Pick a track</h2>
+  <div class="tracks" id="tracks"></div>
+
+  <h2>Learning paths</h2>
+  <p>You don't have to read in order. These paths take you to something playable quickly.</p>
+  <div class="paths">
+    <div class="path"><h3>🏃 A room you can walk in (30 min)</h3><ol>
+      <li><a href="studio/01-getting-started.html">Getting started</a></li>
+      <li><a href="studio/02-first-map.html">Your first map</a></li>
+      <li><a href="studio/03-placing-things.html">Placing things</a></li>
+      <li><a href="studio/10-play-and-export.html">Play and export</a></li></ol></div>
+    <div class="path"><h3>🎨 Your own look (1 h)</h3><ol>
+      <li><a href="textures/01-first-texture.html">Your first texture</a></li>
+      <li><a href="textures/02-seamless.html">Seamless tiling</a></li>
+      <li><a href="sprites/01-first-sprite.html">Your first sprite</a></li>
+      <li><a href="studio/08-look-and-feel.html">Sky, screens, weather</a></li></ol></div>
+    <div class="path"><h3>🔊 Sound and music (1 h)</h3><ol>
+      <li><a href="sounds/01-first-sound.html">Your first sound</a></li>
+      <li><a href="sounds/04-mix-and-ship.html">Ship it to the game</a></li>
+      <li><a href="music/01-daw-tour.html">A tour of the DAW</a></li>
+      <li><a href="music/05-loops-and-cues.html">Loops and cues</a></li></ol></div>
+    <div class="path"><h3>🧠 Make it react (45 min)</h3><ol>
+      <li><a href="studio/04-triggers.html">Triggers</a></li>
+      <li><a href="studio/06-graphs.html">Graphs</a></li>
+      <li><a href="studio/05-camera.html">Camera and cinematics</a></li>
+      <li><a href="studio/07-workshops.html">Monsters, weapons, player</a></li></ol></div>
+  </div>
+
+  <h2>How the pieces fit</h2>
+  <p>Each editor saves a <b>source</b>, a project you can open and edit again, into the module's <code>sources/</code> folder. The studio <b>bakes</b> each source into what the game loads, in <code>assets/</code>. <a href="reference/files.html">Files and baking</a> covers this in detail.</p>
+  <div class="diagram">
+    <svg viewBox="0 0 760 250" role="img" aria-label="Editors write sources, the studio bakes them into assets, the game loads assets">
+      <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" style="fill:var(--text-dim)"/></marker></defs>
+      <g font-size="13">
+        <rect class="box" x="10" y="10" width="170" height="44" rx="8"/><text x="95" y="37" text-anchor="middle">🎞 ThreeSprite</text>
+        <rect class="box" x="10" y="68" width="170" height="44" rx="8"/><text x="95" y="95" text-anchor="middle">🧱 qPainter</text>
+        <rect class="box" x="10" y="126" width="170" height="44" rx="8"/><text x="95" y="153" text-anchor="middle">♪ DigidreamSynth</text>
+        <rect class="box" x="10" y="184" width="170" height="44" rx="8"/><text x="95" y="211" text-anchor="middle">🔊 DigidreamSound</text>
+
+        <rect class="box" x="240" y="10" width="190" height="218" rx="10"/>
+        <text x="335" y="34" text-anchor="middle" font-weight="700">sources/</text>
+        <text x="335" y="62" text-anchor="middle" class="dim" font-size="12">sprites/NAME.tsprite</text>
+        <text x="335" y="120" text-anchor="middle" class="dim" font-size="12">textures/NAME.texproj.json</text>
+        <text x="335" y="178" text-anchor="middle" class="dim" font-size="12">music/NAME.msproj</text>
+        <text x="335" y="210" text-anchor="middle" class="dim" font-size="12">sounds/ID.sfxproj</text>
+
+        <rect class="acc" x="470" y="90" width="80" height="58" rx="10"/><text x="510" y="116" text-anchor="middle" font-weight="700">bake</text><text x="510" y="134" text-anchor="middle" class="dim" font-size="11">studio</text>
+
+        <rect class="box" x="590" y="10" width="160" height="218" rx="10"/>
+        <text x="670" y="34" text-anchor="middle" font-weight="700">assets/</text>
+        <text x="670" y="62" text-anchor="middle" class="dim" font-size="12">sprites/NAME.json+png</text>
+        <text x="670" y="120" text-anchor="middle" class="dim" font-size="12">textures/NAME.png</text>
+        <text x="670" y="178" text-anchor="middle" class="dim" font-size="12">music/NAME.mstk</text>
+        <text x="670" y="210" text-anchor="middle" class="dim" font-size="12">sounds/bank.sfxproj</text>
+
+        <path class="arrow" d="M180 32H240" marker-end="url(#ah)"/><path class="arrow" d="M180 90H240" marker-end="url(#ah)"/>
+        <path class="arrow" d="M180 148H240" marker-end="url(#ah)"/><path class="arrow" d="M180 206H240" marker-end="url(#ah)"/>
+        <path class="arrow" d="M430 119H470" marker-end="url(#ah)"/><path class="arrow" d="M550 119H590" marker-end="url(#ah)"/>
+      </g>
+    </svg>
+  </div>
+
+  <h2>Before you start</h2>
+  <ul>
+    <li>Everything here runs from a checkout of the repository with Node.js, or from a built <b>Digidream Studio</b> app for macOS, Windows, Linux or Android.</li>
+    <li>Every editor can also run on its own, outside the studio. Each track explains how.</li>
+    <li>Your progress (ticked steps) is kept in this browser only.</li>
+    <li>Press <kbd>/</kbd> anywhere to search.</li>
+  </ul>
+</article>
+<script>
+  // Track cards with progress, built from the same table of contents as the sidebar.
+  document.addEventListener('DOMContentLoaded', () => {
+    const box = document.getElementById('tracks');
+    const get = k => { try { return JSON.parse(localStorage.getItem('dnp-tut:' + k)); } catch { return null; } };
+    (window.DNP_NAV || []).filter(t => t.id !== 'reference').forEach(t => {
+      const done = t.pages.filter(p => get('done:' + p.file)).length;
+      const a = document.createElement('a');
+      a.className = 'track'; a.href = t.pages[0].file;
+      a.innerHTML = `<span class="ic">${t.icon}</span><h3>${t.title}</h3><p>${t.blurb}</p>
+        <div class="meta"><span>${t.pages.length} lessons</span><span>${done ? done + ' done' : 'start →'}</span></div>
+        <div class="progress bar"><i style="width:${100 * done / t.pages.length}%"></i></div>`;
+      box.append(a);
+    });
+    const ref = (window.DNP_NAV || []).find(t => t.id === 'reference');
+    if (ref) {
+      const a = document.createElement('a');
+      a.className = 'track'; a.href = ref.pages[0].file;
+      a.innerHTML = `<span class="ic">${ref.icon}</span><h3>${ref.title}</h3><p>${ref.blurb}</p><div class="meta"><span>shortcuts · files · glossary</span><span>open →</span></div>`;
+      box.append(a);
+    }
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Play, export, snapshots · Digidream Studio tutorials</title>
+<meta name="description" content="Play-test a map, read the Play log, export and import packs, go back with snapshots, set the module up, and turn it into an app with the Packager.">
+<link rel="stylesheet" href="../assets/site.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 16%22%3E%3Cpath d=%22M8 1l7 7-7 7-7-7z%22 fill=%22%235b8fd6%22/%3E%3C/svg%3E">
+<script defer src="../assets/nav.js"></script>
+<script defer src="../assets/shortcuts.js"></script>
+<script defer src="../assets/site.js"></script>
+</head>
+<body>
+<article>
+  <h1>Play, export, snapshots</h1>
+  <p class="lede">This page covers how a module leaves the editor: play-testing it, reading why a play-test did not start, sharing it as a pack, going back to an earlier version, and building it into a game people can install.</p>
+  <div class="goal">
+    <b>You'll learn</b><span>what Play does and where its logs are, how export and import work, how snapshots are kept and restored, what Settings controls, and how the Packager makes an app</span>
+    <b>Time</b><span>20 minutes</span>
+    <b>Needs</b><span>a module with a map; the app for Play (<a href="01-getting-started.html">Getting started</a>)</span>
+  </div>
+
+  <h2>Play</h2>
+  <p><span class="ui">▶ Play</span> is at the foot of the rail, on Home as <span class="ui">▶ play</span>, and in the map editor's toolbar. It play-tests the map you have open. In order, it:</p>
+  <ol>
+    <li><b>bakes</b> every stale source (a texture, sprite or track changed since its last bake; see <a href="09-plugins.html">Plugins</a>);</li>
+    <li><b>writes</b> the module into the game's files on the device;</li>
+    <li><b>launches</b> the game on that map. The server starts every other map of the module too, so a graph's <code>change_map</code> finds the map it names.</li>
+  </ol>
+  <p>If the module does not bake, nothing is launched, and the status line says why. Play also refuses to start while a graph has problems.</p>
+  <div class="callout warn"><p>Play needs the app. In a browser it answers <em>"Play needs the app. In a browser, export a pack and run it with the engine."</em></p></div>
+  <h3>Coming back</h3>
+  <p>The game's <b>◀ Studio</b> link returns you to the map you were testing, with the view as you left it. The studio remembers where you were for an hour; after that it opens on Home as usual.</p>
+
+  <h3>The Play log</h3>
+  <p>On a phone there is no console, so a play-test that does not start says why in the studio. Each Play starts three log files afresh, in the game's <code>logs/</code> folder:</p>
+  <table>
+    <thead><tr><th>File</th><th>What is in it</th></tr></thead>
+    <tbody>
+      <tr><td><code>play-studio.log</code></td><td>the studio's side: the map, <code>module.txt</code>, the scripts the map declares, what the bake warned about, and the launch's own answer</td></tr>
+      <tr><td><code>play-server.log</code></td><td>every line the game server says</td></tr>
+      <tr><td><code>play-game.log</code></td><td>the game page's console, uncaught errors included</td></tr>
+    </tbody>
+  </table>
+  <p>The <b>Play log</b> page (Home's <span class="ui">📋 play log</span>, or the map editor's <b>⋯ → Play log…</b>) reads them back:</p>
+  <ul>
+    <li>First, <span class="ui">✖ what looks wrong</span>: the lines that look like a failure, from all three files, in red. When there are none it says <em>"✔ nothing in the logs looks like a failure"</em>.</li>
+    <li>Then each file in full.</li>
+    <li>At the top: <span class="ui">↻ read again</span>, <span class="ui">share the log</span> (all three as one text file, for a bug report) and <span class="ui">▶ play again</span>.</li>
+  </ul>
+  <p>The page opens by itself when a launch fails. The way back from a play-test also says when the log has failures.</p>
+  <div class="callout soon"><p>The iOS shell does not write the logs yet, and there is no iOS build of the studio.</p></div>
+
+  <ol class="steps">
+    <li><p>In the app, open a map and press <span class="ui">▶ Play</span>. Walk around, then use <b>◀ Studio</b> to come back. You land on the same map, with the same view.</p></li>
+    <li><p>Open <span class="ui">📋 play log</span> from Home. Read the head of <code>play-studio.log</code>: it names the map you tested.</p></li>
+    <li><p>Press <span class="ui">share the log</span> to see how you would send it with a bug report.</p></li>
+  </ol>
+
+  <h2>Export and import</h2>
+  <p><span class="ui">⇪ export</span> bakes the module and writes it as a <b>pack</b>: a zip of the module's folder, named <code><i>id</i>.zip</code>. In a browser it downloads; in the app it is shared or saved. The status line says how to run it: unzip it into <code>modules/</code> and start the engine with <code>--module <i>id</i></code>.</p>
+<pre><code>unzip starter.zip -d modules/
+./engine/scripts/run_stack.sh --module starter</code></pre>
+  <p>A pack holds every map of the module and everything it uses. The engine loads it unchanged.</p>
+  <p><span class="ui">⇩ import pack</span> opens a pack someone exported. Only packs the studio wrote can be opened (they carry the module's studio documents). If a module with the same id is already here, the pack <b>replaces</b> it, and the studio takes a snapshot of the old one first.</p>
+
+  <h2 id="snapshots">Snapshots</h2>
+  <p>Undo is for the last few minutes. For anything older, the studio keeps <b>snapshots</b>: copies of the module kept on the device. Open them from Home's <span class="ui">🕘 snapshots</span>, or from Settings.</p>
+  <h3>When one is taken</h3>
+  <ul>
+    <li>When the module is opened, if the last snapshot is half an hour old or more.</li>
+    <li>Every ten minutes while you edit.</li>
+    <li>Before anything that replaces work: a pack imported over the module, a map deleted, a studio update changing it, a restore.</li>
+    <li>By hand: <span class="ui">＋ snapshot now</span> asks for an optional name.</li>
+  </ul>
+  <p>A snapshot that would be the same as the latest is not taken.</p>
+  <h3>Which are kept</h3>
+  <p>The newest 20, then the first of each day for two weeks.</p>
+  <h3>Restoring</h3>
+  <p>Each snapshot shows when and why it was taken, its maps and its size, and <em>"the same as now"</em> if nothing has changed since.</p>
+  <ul>
+    <li><span class="ui">restore</span> brings back the whole module as it was.</li>
+    <li><span class="ui">▾ maps</span> lists its maps against the module now: <em>the same as now</em>, <em>changed since</em>, <em>deleted since</em>, or <em>made since</em>. A changed or deleted map has <span class="ui">restore <i>map</i></span>, which brings back that map alone.</li>
+    <li><span class="ui">✕</span> forgets a snapshot.</li>
+  </ul>
+  <p>A restore takes a snapshot of the module as it is first, so you can always undo a restore.</p>
+  <div class="callout warn"><p>Imported pictures, sounds and fonts are <b>not</b> copied into snapshots: megabytes every ten minutes would fill a phone. A snapshot lists their paths, and a restore tells you which of them are gone.</p></div>
+  <ol class="steps">
+    <li><p>Open <span class="ui">🕘 snapshots</span> and press <span class="ui">＋ snapshot now</span>. Name it <code>before the boss</code>.</p></li>
+    <li><p>Open a map and delete a room.</p></li>
+    <li><p>Back in snapshots, open <span class="ui">▾ maps</span> on <code>before the boss</code>. The map says <em>changed since</em>. Press <span class="ui">restore <i>map</i></span>.</p></li>
+    <li><p>Notice the new snapshot at the top, taken just before the restore.</p></li>
+  </ol>
+
+  <h2>Settings</h2>
+  <p><b>⚙ Settings</b> (the sheet is titled <em>Module settings</em>) holds what <code>module.txt</code> says about the module:</p>
+  <table>
+    <thead><tr><th>Setting</th><th>What it does</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">id</span></td><td>the module's folder name and identity: lowercase letters, digits, <code>_</code> and <code>-</code></td></tr>
+      <tr><td><span class="ui">name</span>, <span class="ui">about</span></td><td>its name and a description</td></tr>
+      <tr><td><span class="ui">controls</span></td><td><code>platformer — third person</code> or <code>first person (fps)</code>. First person puts the camera at the eyes and aims where the player looks. The module decides, not the player.</td></tr>
+      <tr><td><span class="ui">show the debug overlay in the game</span></td><td>the engine's numbers in the corner (tick, fps, position, prediction), the controls legend, and the swing and facing drawings. On unless you turn it off, which a shipped game wants.</td></tr>
+      <tr><td><span class="ui">when I press Play</span></td><td>this device's choice for play-tests: <code>as the module says</code>, <code>always show it</code> or <code>never show it</code>. An exported pack always says what the module says.</td></tr>
+      <tr><td><span class="ui">levels keep their state</span>, <span class="ui">save and load games</span>, <span class="ui">survive a server restart</span></td><td>which kinds of saving the module wants</td></tr>
+    </tbody>
+  </table>
+  <p>At the bottom, <span class="ui">🕘 snapshots: the module as it was…</span> opens the snapshots.</p>
+
+  <h2 id="package">The Packager: an app from the module</h2>
+  <p>The rail's <span class="ui">📦 Package</span> page is the Packager, a bundled plugin. It turns the module into a game people can install: an app for Android, Windows, macOS or Linux. It builds the app in the page itself, from prebuilt <b>engine kits</b>, so the device needs no SDK, compiler or Docker. Nothing is uploaded.</p>
+  <p>The page opens with your module already in it: the studio bakes and packs it first. Then you work down its steps:</p>
+  <ol>
+    <li><b>Platform.</b> Choose the target. For the desktops, the <span class="ui">Desktop shell</span> is Electron (self-contained) or Tauri (small, using the system's own web view). <span class="ui">Load a kit file</span> adds a kit the page does not have.</li>
+    <li><b>The game.</b> Its <span class="ui">Name</span>, <span class="ui">Package id (Android) / bundle id (macOS)</span> and <span class="ui">Version</span>; for Android, a <span class="ui">Version code (must grow with every update)</span> and the map it <span class="ui">Starts on</span>. <span class="ui">Studio</span> chooses <code>Game only</code> or <code>Game + studio</code>, and <span class="ui">Log file</span> whether it writes one. An icon: <span class="ui">Choose picture</span> or <span class="ui">Use the engine's</span>.</li>
+    <li><b>Signing key</b> for Android: <span class="ui">New key</span>, <span class="ui">Back up key</span>, <span class="ui">Restore key</span>. Keep the key: an update must be signed with the same one.</li>
+    <li><b>Build.</b> The finished game is saved as a download.</li>
+  </ol>
+  <p>The studio app carries the small kits: Android and the four Tauri desktops. The large Electron kits are not included, so on the studio's Package page the desktops build with Tauri unless you load an Electron kit.</p>
+  <table>
+    <thead><tr><th>Platform</th><th>What you get</th></tr></thead>
+    <tbody>
+      <tr><td>Android</td><td>a signed APK</td></tr>
+      <tr><td>Linux</td><td>a <code>.tar.gz</code>: unpack and run</td></tr>
+      <tr><td>Windows</td><td>a <code>.zip</code> with the game's <code>.exe</code>; not yet tested on real Windows</td></tr>
+      <tr><td>macOS</td><td>a <code>.zip</code> with the <code>.app</code>, signed ad hoc</td></tr>
+    </tbody>
+  </table>
+  <div class="callout soon"><p>iOS is not a target yet.</p></div>
+  <p>The Packager also runs on its own, outside the studio. Its guide is <code>packager/README.md</code> in the repository.</p>
+
+  <h2>Building the studio itself</h2>
+  <p>To get Play, you need the studio as an app. From a checkout:</p>
+<pre><code>./engine/scripts/make_app.sh --module starter --studio    # desktop
+./engine/scripts/build_apk.sh --module starter --studio   # Android</code></pre>
+  <p>For every platform at once, with the plugins and the Package page's kits, <code>packager/scripts/release_studio.sh</code> writes ready-made builds to <code>builds/</code> at the repository's root.</p>
+  <div class="callout warn"><p>The macOS app is signed ad hoc and not notarized, so on another Mac the first launch needs <b>right-click → Open</b>.</p></div>
+
+  <div class="quiz" data-answer="2">
+    <p class="q">A play-test on your phone shows a black screen and nothing happens. Where do you look first?</p>
+    <ul>
+      <li>The browser console</li>
+      <li>The engine's source code</li>
+      <li>The Play log page, starting with ✖ what looks wrong</li>
+    </ul>
+    <p class="why">A phone has no console. The Play log collects the studio's, the server's and the game's logs, and puts the lines that look like failures first.</p>
+  </div>
+  <div class="quiz" data-answer="1">
+    <p class="q">You restore a snapshot from yesterday, then realise you wanted today's work after all. What now?</p>
+    <ul>
+      <li>It's gone: a restore cannot be undone</li>
+      <li>Restore the snapshot taken just before the restore</li>
+      <li>Import the last exported pack</li>
+    </ul>
+    <p class="why">A restore snapshots the module as it is first, named <em>before restoring …</em>, so it can always be taken back.</p>
+  </div>
+  <div class="quiz" data-answer="0">
+    <p class="q">You turn the debug overlay off in Settings, but set <span class="ui">when I press Play</span> to <code>always show it</code>. What does an exported pack do?</p>
+    <ul>
+      <li>Launches clean, with no overlay: a pack says what the module says</li>
+      <li>Shows the overlay, because your device says always</li>
+      <li>Asks the player</li>
+    </ul>
+    <p class="why">The Play choice is only for your own play-tests on this device. The module's setting is what ships.</p>
+  </div>
+</article>
+</body>
+</html>

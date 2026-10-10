@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Placing things · Digidream Studio tutorials</title>
+<meta name="description" content="Put spawns, lights, monsters and props on a map with the Place palette, and set which way each thing faces.">
+<link rel="stylesheet" href="../assets/site.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 16%22%3E%3Cpath d=%22M8 1l7 7-7 7-7-7z%22 fill=%22%235b8fd6%22/%3E%3C/svg%3E">
+<script defer src="../assets/nav.js"></script>
+<script defer src="../assets/shortcuts.js"></script>
+<script defer src="../assets/site.js"></script>
+</head>
+<body>
+<article>
+  <h1>Placing things</h1>
+  <p class="lede">Rooms are empty until you put something in them. The <span class="ui">✦ Place</span> tool drops spawn points, lights, monsters and props on the floor you tap. Each placed thing then has a small form: its height, whether a monster sleeps, and which way it faces.</p>
+  <div class="goal">
+    <b>You'll learn</b><span>how to use the Place palette, set a spawn's tag, shape a light, and set a thing's facing</span>
+    <b>Time</b><span>15 minutes</span>
+    <b>Needs</b><span>a map with at least one room (see <a href="02-first-map.html">Your first map</a>)</span>
+  </div>
+
+  <h2>The Place palette</h2>
+  <figure class="shot" data-src="../assets/shots/studio-map-place.png" data-alt="The Place palette open beside the map">
+    <figcaption>The Place palette: one chip for each thing you can put down.</figcaption>
+  </figure>
+  <p>Choose <span class="ui">✦ Place</span> (key <kbd>3</kbd>). A sheet titled <b>Place</b> opens. It says: <em>"Tap one, then tap the floor to place it. Tap it again to stop placing."</em></p>
+  <p>The chips are, in order:</p>
+  <ul>
+    <li><span class="ui">spawn: start</span>: where players appear.</li>
+    <li><span class="ui">light</span>: a coloured point light.</li>
+    <li><b>Each monster</b> the module defines, by name. You make monsters in the rail's <b>☠ Monsters</b> section.</li>
+    <li><b>Each prop</b>: the module's own props first, then the ones the app ships.</li>
+  </ul>
+  <p>Below the chips, <span class="ui">✎ props…</span> opens the <b>📦 Props</b> section.</p>
+  <p>Tap a chip to <em>arm</em> it. The status line says <em>"tap the floor to place …"</em>. Every tap on the floor now places one, at the height of the floor you tapped. It stays armed, so you can place several. Tap the chip again to stop.</p>
+  <div class="callout"><p>If you tap the floor with nothing armed, the studio says <em>"pick something to place first"</em> and opens the palette.</p></div>
+  <p>A thing you have placed is selected straight away, and its form opens. Later, tap it with <span class="ui">⌖ Select</span> to open its form again, or drag it to move it. <kbd>Delete</kbd> removes it, as does the <span class="ui">delete</span> button in its form.</p>
+
+  <h2>Spawns</h2>
+  <p>A spawn's form has two fields:</p>
+  <ul>
+    <li><span class="ui">tag</span>: the server spawns players at the tag <code>start</code>. Other tags are for teleports and scripts. An empty tag goes back to <code>start</code>.</li>
+    <li><span class="ui">height</span>: −32 to 64.</li>
+  </ul>
+  <div class="callout warn"><p>A map with no <code>start</code> spawn has nowhere to put the player. Place one before you press <span class="ui">▶ Play</span>.</p></div>
+
+  <h2>Lights</h2>
+  <p>A light is placed 2 units above the floor you tap. Its form has:</p>
+  <ul>
+    <li><span class="ui">colour</span>: a colour picker.</li>
+    <li><span class="ui">radius</span>: how far it reaches, 1 to 48.</li>
+    <li><span class="ui">intensity</span>: how bright it is, 0 to 4.</li>
+    <li><span class="ui">height</span>: −32 to 64.</li>
+  </ul>
+  <p>A room also has its own <span class="ui">light</span> level, in the room form. Use that for how bright the room is overall, and a placed light for a lamp, a fire or a glow.</p>
+
+  <h2>Monsters and props</h2>
+  <p>A placed monster's form is titled <b>Monster</b> and its name; a prop's is titled <b>Prop</b> and its name. The fields are:</p>
+  <table>
+    <thead><tr><th>Field</th><th>What it does</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">name</span></td><td>Which monster or prop this is.</td></tr>
+      <tr><td><span class="ui">kind</span></td><td><em>monster</em> or <em>prop</em>.</td></tr>
+      <tr><td><span class="ui">dormant</span></td><td>Monsters only. The monster starts asleep.</td></tr>
+      <tr><td><span class="ui">height</span></td><td>−32 to 64. A thing you drag onto a floor sits on that floor.</td></tr>
+      <tr><td><span class="ui">facing (°)</span></td><td>Which way it faces when the level starts (see below).</td></tr>
+      <tr><td><span class="ui">edit this prop…</span></td><td>Props only. Opens the prop in the Props section.</td></tr>
+      <tr><td><span class="ui">delete</span></td><td>Removes it from the map.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Facing</h2>
+  <p><span class="ui">facing (°)</span> is a slider from 0 to 355 in steps of 5. The map draws it as an arrow at the thing's foot.</p>
+  <ul>
+    <li><b>0</b> points along <b>+x</b> (east, to the right on an unrotated plan).</li>
+    <li>Angles go <b>counter-clockwise</b>, like the engine's. So 90 points up the plan, 180 left and 270 down.</li>
+  </ul>
+  <div class="diagram"><svg viewBox="0 0 220 160" width="220" height="160" role="img" aria-label="0 degrees points right, 90 up, 180 left, 270 down">
+    <circle class="box" cx="110" cy="80" r="10"/>
+    <line class="arrow" x1="120" y1="80" x2="172" y2="80" style="stroke:var(--accent);stroke-width:3"/>
+    <polygon points="182,80 170,74 170,86" style="fill:var(--accent)"/>
+    <line class="arrow" x1="110" y1="70" x2="110" y2="24" stroke-dasharray="4 4"/>
+    <line class="arrow" x1="100" y1="80" x2="44" y2="80" stroke-dasharray="4 4"/>
+    <line class="arrow" x1="110" y1="90" x2="110" y2="136" stroke-dasharray="4 4"/>
+    <text x="186" y="85" style="fill:var(--accent);font-weight:700">0°</text>
+    <text x="98" y="16">90°</text>
+    <text x="4" y="85">180°</text>
+    <text x="94" y="154">270°</text>
+  </svg></div>
+  <div class="callout soon"><p><b>Monsters do not turn yet.</b> The studio stores a monster's facing and writes it into the map, but the engine still ignores it: every placed monster starts facing 0. The engine change is proposed (<code>docs/MOB_FACING.md</code>, status <em>proposed</em>). When it lands, maps you have already made take their monsters' facings without being exported again. <b>Props do turn now.</b></p></div>
+
+  <p>Try it. The room is already drawn; tap inside it to place a thing, then move the slider.</p>
+  <div class="widget" data-widget="room-draw" data-mode="place" data-title="Place and face"></div>
+  <ol class="steps">
+    <li><p>In the demo, tap the floor of the room. A thing appears with an arrow pointing right: facing 0.</p></li>
+    <li><p>Move <span class="ui">facing (°)</span> to 90. The arrow points up. Move it to 180: it points left.</p></li>
+    <li><p>Place a second thing, then tap the first one to pick it again. The slider shows the first thing's facing.</p></li>
+    <li><p>Tap outside the room. Nothing is placed: things go on a floor.</p></li>
+  </ol>
+
+  <h2>Exercise: a start, a light and a guard</h2>
+  <ol class="steps">
+    <li><p>Open your map and choose <span class="ui">✦ Place</span>. Tap <span class="ui">spawn: start</span>, then tap the floor of the first room. Tap the chip again to stop.</p></li>
+    <li><p>Tap <span class="ui">light</span> and place it in the second room. Set its <span class="ui">radius</span> to 10 and pick a warm colour.</p></li>
+    <li><p>Tap a monster's chip and place it in the second room. In its form, turn on <span class="ui">dormant</span> and set <span class="ui">facing (°)</span> to 180, so its arrow points back at the door.</p></li>
+    <li><p>Place a prop beside it and set its facing too. A prop takes its facing in the game now.</p></li>
+    <li><p>Choose <span class="ui">⌖ Select</span> and drag the monster somewhere else. Then press <kbd>⌘Z</kbd> to put it back.</p></li>
+  </ol>
+
+  <h2>Props and particles, in short</h2>
+  <p>Monsters, props and particles are defined for the whole module, in the rail. A map only places them.</p>
+  <ul>
+    <li><b>📦 Props</b> are bodies without a brain: a barrel, a torch, a tree. <span class="ui">+ new prop</span> makes one. A prop has a <span class="ui">name</span>, a <span class="ui">radius</span> and <span class="ui">height</span> (the body it collides as), a <span class="ui">scale</span>, and <span class="ui">solid</span> and <span class="ui">usable</span> toggles. Its form says how many times it is placed across the module, and has <span class="ui">place it</span> to start placing it.</li>
+    <li><b>✨ Particles</b> are bursts and tracers: <span class="ui">+ particles</span> and <span class="ui">+ tracer</span> make a kind of your own. A kind is a number that anything can name: a swing's hit, a monster's blood, a missile on impact. They are drawn by the game client only. You do not place them on a map.</li>
+  </ul>
+  <p>Monsters are covered in <a href="07-workshops.html">Monsters, weapons, player</a>.</p>
+
+  <div class="quiz" data-answer="2">
+    <p class="q">You set a monster's facing to 90°. Which way does its arrow point on the plan?</p>
+    <ul>
+      <li>Right</li>
+      <li>Down</li>
+      <li>Up</li>
+    </ul>
+    <p class="why">0 is +x (right), and angles go counter-clockwise, so 90 is up.</p>
+  </div>
+  <div class="quiz" data-answer="1">
+    <p class="q">You placed a monster facing 180° and a barrel facing 180°. What happens when you play?</p>
+    <ul>
+      <li>Both face 180°</li>
+      <li>The barrel faces 180°; the monster still starts facing 0°</li>
+      <li>Neither turns: facing is only drawn in the editor</li>
+    </ul>
+    <p class="why">Props take their facing now. Monsters do not yet: the engine ignores a monster's start facing until the proposed change lands.</p>
+  </div>
+  <div class="quiz" data-answer="0">
+    <p class="q">Players do not appear where you expect. What is the first thing to check?</p>
+    <ul>
+      <li>That the map has a spawn with the tag start</li>
+      <li>That a light is near the spawn</li>
+      <li>That the spawn's height is 0</li>
+    </ul>
+    <p class="why">The server spawns players at the tag <code>start</code>. Other tags are for teleports and scripts.</p>
+  </div>
+</article>
+</body>
+</html>

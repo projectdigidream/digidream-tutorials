@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mix, test and ship · Digidream Studio tutorials</title>
+<meta name="description" content="Set up groups, effects and the master chain, test the bank under load in the real engine, match a recording, and get your sounds into the game.">
+<link rel="stylesheet" href="../assets/site.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 16%22%3E%3Cpath d=%22M8 1l7 7-7 7-7-7z%22 fill=%22%235b8fd6%22/%3E%3C/svg%3E">
+<script defer src="../assets/nav.js"></script>
+<script defer src="../assets/shortcuts.js"></script>
+<script defer src="../assets/site.js"></script>
+</head>
+<body>
+<article>
+  <h1>Mix, test and ship</h1>
+  <p class="lede">A sound on its own is half the job. This page covers the other half: the settings the whole bank shares, a stress test in the real engine, matching a recording, and getting the sounds into a module where scripts, monsters and weapons can call them by name.</p>
+  <div class="goal">
+    <b>You'll learn</b><span>what Mix &amp; test holds, how to flood the engine and read its refusals, how Match a recording works, how sound packs merge in the studio, and how to play a sound from Lua</span>
+    <b>Time</b><span>25 minutes</span>
+    <b>Needs</b><span>a bank with a few sounds, from the earlier pages, and a module open in the studio for the last part</span>
+  </div>
+
+  <h2>Mix &amp; test</h2>
+  <p>Press <span class="ui">Mix &amp; test</span> in the top bar. The library, the sound and In the game give way to four cards for the <b>whole bank</b>: Groups, Effects, Master and Test in the engine. Press <span class="ui">Sounds</span> to go back.</p>
+  <figure class="shot" data-src="../assets/shots/sound-mix.png" data-alt="The Mix and test view with the group cards, the effects and the live engine">
+    <figcaption>Mix &amp; test: groups, effects, the master chain and the live engine.</figcaption>
+  </figure>
+
+  <h3 id="groups">Groups</h3>
+  <p>One card per group (a bus). Each card has the group's name and how many sounds use it, then:</p>
+  <ul>
+    <li><span class="ui">Volume</span> — the group's level, −40 to +12 dB;</li>
+    <li><span class="ui">At most, at once</span> — how many sounds of this group may play together, 1 to 48;</li>
+    <li><span class="ui">Placed in the world</span> — on, its sounds get quieter with distance and use the Distance settings; off, they play at the same level wherever the listener is;</li>
+    <li><span class="ui">Room</span>, <span class="ui">Chorus</span>, <span class="ui">Echo</span> — how much the group sends to each effect.</li>
+  </ul>
+  <p>Rename a group by editing its name, and its sounds follow. <span class="ui">Remove group</span> is greyed out while sounds still use it: move them first. <span class="ui">＋ Add a group</span> adds one, up to eight.</p>
+  <div class="callout tip"><p>A group's limit and a sound's limit both apply. The example bank's <b>ui</b> group allows 4 at once, so a menu that plays six clicks in a burst will lose two however the clicks are set up.</p></div>
+
+  <h3>Effects</h3>
+  <ul>
+    <li><b>Room (reverb)</b>: size, darkness, width, level, gap before, cut lows.</li>
+    <li><b>Chorus</b>: speed, depth, level. It thickens and blurs; good on engines and magic.</li>
+    <li><b>Echo (delay)</b>: time, repeats, level, ping-pong, and <span class="ui">Echo time as a beat</span> if you want it in note values.</li>
+  </ul>
+  <div class="callout warn"><p>An effect is heard only when its <b>level</b> is above zero <b>and</b> a group sends into it. If you hear no reverb, check both.</p></div>
+
+  <h3>Master</h3>
+  <p>A mastering chain on everything: EQ (three bands), Compressor, Colour and width (saturation, stereo width, output gain), and a look-ahead Limiter. It is off by default, and off means the output is exactly the unmastered engine. Turn it on with <span class="ui">Mastering on</span>.</p>
+
+  <h2 id="test">Test in the engine</h2>
+  <p>Everything else in the editor shows what a sound <em>is</em>. This card shows what a bank <em>does</em>: limits, gaps, group budgets, cutting and importance only exist once sounds compete in real time. It runs the real engine with the whole bank, as the game runs it.</p>
+  <ul>
+    <li><b>Engine</b>: <span class="ui">Start the engine</span>, then <span class="ui">Reload bank</span> after edits and <span class="ui">Stop everything</span> to silence it.</li>
+    <li><b>Trigger</b>: pick a sound, then <span class="ui">Play once</span>, or <span class="ui">Hold to flood</span> to fire it again and again at the <b>rate</b> you set (per second, 20 by default). <b>random sound each trigger</b> picks a different sound each time; <b>from random positions</b> scatters the triggers around the listener.</li>
+    <li><b>World</b>: a view from above. Drag in it to move the listener. Each dot is a trigger, where it fired, fading as it ages; the wedge is the way the listener faces.</li>
+    <li><b>Load</b>: instances, synth voices and peaks, with how many were played and cut.</li>
+    <li><b>Refusals</b>: every sound that was not played, counted by reason, each with what to change.</li>
+  </ul>
+  <table>
+    <thead><tr><th>Refusal</th><th>Means</th><th>Change</th></tr></thead>
+    <tbody>
+      <tr><td>cooldown</td><td>the trigger came within the Minimum gap</td><td>lower <span class="ui">Minimum gap</span></td></tr>
+      <tr><td>instance cap</td><td>the sound's own At most, at once was full</td><td>raise it, or choose <span class="ui">Cut the oldest</span></td></tr>
+      <tr><td>bus budget</td><td>the group's At most, at once was full</td><td>raise the group's limit</td></tr>
+      <tr><td>outranked</td><td>a more important sound was playing</td><td>raise <span class="ui">Importance</span></td></tr>
+      <tr><td>no voices</td><td>the engine ran out of synth voices</td><td>use fewer layers, or let more sounds be cached (not live)</td></tr>
+      <tr><td>unknown sound</td><td>the name did not resolve</td><td>check the name</td></tr>
+    </tbody>
+  </table>
+  <div class="callout"><p><b>Refusing politely is the design.</b> The alternative is stealing a sound the player was listening to, or running out of voices mid-explosion. Refusals are not faults. The number that would be a fault is a <b>dropped</b> command, shown in red under Load.</p></div>
+  <ol class="steps">
+    <li><p>Press <span class="ui">Mix &amp; test</span>, open <span class="ui">Test in the engine</span> and press <span class="ui">Start the engine</span>. Wait for it to say <em>Engine running</em>.</p></li>
+    <li><p>Pick the chaingun from <a href="03-takes-and-in-game.html">the previous page</a>, set the rate to 40, and hold <span class="ui">Hold to flood</span> for a few seconds.</p></li>
+    <li><p>Read <b>Refusals</b>. Most will be <em>cooldown</em>: the 60 ms gap is doing its job. Go back to <span class="ui">Sounds</span>, set the gap to 0, return, press <span class="ui">Reload bank</span> and flood again. Now they are <em>instance cap</em>, and the sound is denser.</p></li>
+    <li><p>Tick <b>from random positions</b>, choose a sound in the <b>world</b> group, flood it, and drag the listener away in the World view. The sound fades and dulls with distance.</p></li>
+  </ol>
+
+  <h2 id="match">Match a recording</h2>
+  <p>Give the editor a recording and it finds a recipe that sounds like it. Press <span class="ui">🎙 Match a recording…</span> in <span class="ui">Start from</span>. A sheet opens with three steps:</p>
+  <ol>
+    <li><b>The recording.</b> Drop a WAV, or click to choose one. Press <span class="ui">▶ Play it</span>. Drag across the waveform to match <b>one part</b> — a real sound is often a crack and then a tail, and each matches better on its own — or press <span class="ui">Use all of it</span>. Then <span class="ui">Next ›</span>.</li>
+    <li><b>What it is.</b> Pick the kind, or <span class="ui">Not sure</span> (it tries every recipe briefly, then refines the best). Choose an <span class="ui">Effort</span>: <span class="ui">Quick</span>, <span class="ui">Good</span> or <span class="ui">Best</span>, with an estimate of the time. Then <span class="ui">Find a match ›</span>.</li>
+    <li><b>The match.</b> Progress, then <span class="ui">▶ Recording</span> and <span class="ui">▶ Match</span> side by side, and how close it got: <em>very close</em>, <em>close</em>, <em>rough</em> or <em>loose</em>. <span class="ui">Use it for take A</span> writes it into the selected take; <span class="ui">‹ Try another kind</span> goes back.</li>
+  </ol>
+  <p>The result is a recipe, so its knobs are in Shape straight away, and Vary works on it. The sound remembers which file it was matched to; the card says <em>matched to shotgun.wav</em>.</p>
+  <div class="callout warn"><p><b>The recording itself is never saved.</b> Only numbers reach the bank. Use your own recordings, or ones you are allowed to use.</p></div>
+  <p>A match in the browser takes about a minute. For many references, the command-line fitter is several times faster:</p>
+<pre><code>./build/dsound_fit --list
+./build/dsound_fit reference.wav --arch gunshot --out patch.json --wav compare.wav</code></pre>
+  <p><em>Advanced</em> in step 2 sets how much the match cares about the spectrum, the loudness over time and the balance between octaves. Leave it unless you know why; a zero switches one off.</p>
+
+  <h2>Saving and exporting</h2>
+  <table>
+    <thead><tr><th>Action</th><th>Writes</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">Save</span> <kbd>⌘S</kbd> / <span class="ui">Save as…</span> <kbd>⇧⌘S</kbd></td><td>the <code>.sfxproj</code>: the editable bank, as JSON. <b>Keep this one.</b></td></tr>
+      <tr><td><span class="ui">⋯</span> → <span class="ui">Export for the game (.sfxb)</span></td><td>the <code>.sfxb</code>: a sealed binary bank for a game that embeds the DigidreamSound engine</td></tr>
+      <tr><td><span class="ui">⋯</span> → <span class="ui">Export this sound as WAV</span></td><td>the selected take, 48 kHz stereo</td></tr>
+      <tr><td>Library <span class="ui">⋯</span> → <span class="ui">Even out the levels of all sounds…</span></td><td>asks for a target (−6 dB by default) and sets every sound's volume so its loudest moment lands on it</td></tr>
+    </tbody>
+  </table>
+  <p>Anything that loads a <code>.sfxb</code> also loads a <code>.sfxproj</code>. The project is slower to load, because every wavetable is rebuilt from its recipe, but it means nothing has to be baked to be heard. This game uses that: <b>a module's sounds are the <code>.sfxproj</code> itself</b>, and the studio hides the <code>.sfxb</code> export. You need the <code>.sfxb</code> only for another game that embeds the engine.</p>
+  <p>The same jobs are available from the command line, built in <code>sound/build/</code>:</p>
+<pre><code>./build/dsound_bake bank.sfxproj bank.sfxb            # bake
+./build/dsound_render bank.sfxproj script.sfxscript out.wav
+./build/dsound_score reference.wav before.sfxproj after.sfxproj weapon.shotgun.fire</code></pre>
+
+  <h2 id="packs">Sound packs in the studio</h2>
+  <p>In the studio, a module's sounds come in <b>packs</b>. A pack is a DigidreamSound project (<code>.sfxproj</code>). A module can hold several — DOOM's monsters, a UI set, your own — and the studio merges them into the one bank the game plays.</p>
+  <figure class="shot" data-src="../assets/shots/studio-sounds-page.png" data-alt="The studio's Sounds page with two packs and the list of sounds">
+    <figcaption>The Sounds page: packs, highest first, then every sound with a ▶.</figcaption>
+  </figure>
+  <p>Open <span class="ui">🔊 Sounds</span> from the rail or Home. The page has:</p>
+  <ul>
+    <li><span class="ui">+ new sound pack</span> — asks for a name, then opens DigidreamSound on the new pack;</li>
+    <li><span class="ui">+ import sound packs (.sfxproj)</span> — takes one or more project files. Each is checked by the sound engine's own loader first, so a file that parses but would not play is refused;</li>
+    <li>the packs, <b>highest first</b>, each with <span class="ui">✎ edit in DigidreamSound</span>, <span class="ui">↑</span> and <span class="ui">↓</span> to change its priority, <span class="ui">✕</span> to remove it, an <b>in the game</b> switch to leave it out without removing it, and how many sounds it has (and how many of them a pack above already gives);</li>
+    <li>every sound, grouped by pack, with who uses it and a <span class="ui">▶</span> to hear it.</li>
+  </ul>
+  <div class="diagram"><svg viewBox="0 0 560 130" font-size="13" role="img" aria-label="Packs in sources/sounds are merged in priority order into assets/sounds/bank.sfxproj">
+    <rect class="acc" x="10" y="10" width="200" height="30" rx="6"/><text x="110" y="30" text-anchor="middle">sources/sounds/mine.sfxproj</text>
+    <rect class="box" x="10" y="50" width="200" height="30" rx="6"/><text x="110" y="70" text-anchor="middle">sources/sounds/doom.sfxproj</text>
+    <rect class="box" x="10" y="90" width="200" height="30" rx="6"/><text x="110" y="110" text-anchor="middle">sources/sounds/ui.sfxproj</text>
+    <text class="dim" x="220" y="30">1st</text><text class="dim" x="220" y="70">2nd</text><text class="dim" x="220" y="110">3rd</text>
+    <path class="arrow" d="M250 25 L300 65 M250 65 L300 65 M250 105 L300 65"/>
+    <rect class="box" x="300" y="45" width="60" height="40" rx="6"/><text x="330" y="70" text-anchor="middle">merge</text>
+    <path class="arrow" d="M360 65 L385 65"/>
+    <rect class="acc" x="385" y="45" width="165" height="40" rx="6"/><text x="467" y="70" text-anchor="middle">assets/sounds/bank.sfxproj</text>
+  </svg></div>
+  <p>Each pack is kept as the file it was imported as, in <code>sources/sounds/&lt;id&gt;.sfxproj</code>. When the module is written, the packs are merged in order into <code>assets/sounds/bank.sfxproj</code>, the bank the game loads:</p>
+  <ul>
+    <li>sounds are put together; a name a <b>higher pack</b> already gave is dropped, never renamed. The page reports it: <em>In more than one pack -- the higher one's is kept: …</em>;</li>
+    <li>groups are joined by name; the same name with different settings keeps the first and says so;</li>
+    <li>the room reverb is the first pack's that has one.</li>
+  </ul>
+  <div class="callout tip"><p>Priority is how you override. To replace DOOM's pistol without touching DOOM's pack, make your own pack with a sound named <code>weapon.pistol.fire</code> and move it above with <span class="ui">↑</span>.</p></div>
+  <p>A sound that a monster or weapon names but no pack has is silent in the game. The Sounds page says <em>Named but in no pack (silent in the game)</em> with who uses it, and Home lists it under what is wrong.</p>
+
+  <h2>Calling sounds from the game</h2>
+  <p>There are no <code>module.txt</code> lines for sounds. A sound is addressed by its name, from three places.</p>
+  <h3>From a script</h3>
+<pre><code>dnp.sound("world.door.open", sector:center())        -- at a place
+dnp.sound("monster.imp.sight", e)                     -- from a thing, following it
+dnp.sound("player.death", e, { follow = false })      -- from a thing, staying put
+dnp.sound("weapon.pistol.fire", e, { predicted = true })  -- e's client already played it</code></pre>
+  <p>Everyone within earshot hears it (64 world units).</p>
+  <h3>From a monster</h3>
+  <p>In a monster's sequence, the action is <code>sound</code>. <code>from</code> says where it is heard from: <code>"self"</code> (the default, following the monster), <code>"target"</code>, or <code>"impact"</code> for a missile's burst. It is <code>from</code>, not <code>at</code>, because in a sequence <code>at</code> is <em>when</em>.</p>
+<pre><code>sequence = {
+  { at = 0, action = "sound", name = "monster.imp.sight", from = "self" },
+}
+-- in a missile's on_hit:
+{ action = "sound", name = "missile.fireball.burst", from = "impact" }</code></pre>
+  <h3>From a weapon</h3>
+  <p>In a weapon phase's sequence, the sound comes from the player and moves with them. Mark the shot <code>predicted</code>: the player's own client already played it the moment they pressed fire (from the weapon's <code>predict</code> entry), so it drops the server's copy instead of hearing the shot twice. Everyone else hears it.</p>
+<pre><code>sequence = {
+  { at = 0, action = "sound", name = "weapon.shotgun.fire", predicted = true },
+}</code></pre>
+  <div class="callout warn"><p>A sound may be dropped — by distance, by a limit, by the network. Never make it the only sign of anything. A door that opens should also move; a hit should also flash.</p></div>
+  <ol class="steps">
+    <li><p>In the studio, open <span class="ui">🔊 Sounds</span> and press <span class="ui">+ new sound pack</span>. Call it <code>mine</code>.</p></li>
+    <li><p>In DigidreamSound, make <code>world.door.open</code> from <span class="ui">🚪 Door / mechanism</span>, on the <b>world</b> group. Press <span class="ui">← studio</span>.</p></li>
+    <li><p>If the module has another pack with the same name, move <code>mine</code> to the top with <span class="ui">↑</span> and check the report says yours is kept.</p></li>
+    <li><p>Press <span class="ui">▶</span> beside <code>world.door.open</code> to hear it from the merged bank. Then play the module and open a door.</p></li>
+  </ol>
+
+  <h2>File formats</h2>
+  <table>
+    <thead><tr><th>File</th><th>What it is</th></tr></thead>
+    <tbody>
+      <tr><td><code>.sfxproj</code></td><td>the authoring document: JSON, readable and diff-friendly. A bank's <code>buses</code> (groups), <code>fx</code>, <code>master</code> and <code>sounds</code>; each sound's in-game settings and its <code>variants</code> (takes). Defaults are not written. Full reference: <code>sound/docs/SFX_FORMAT.md</code></td></tr>
+      <tr><td><code>.sfxb</code></td><td>the baked bank: sealed binary with a SHA-256, made by <code>dsound_bake</code>. Tags are stripped</td></tr>
+      <tr><td><code>sources/sounds/&lt;id&gt;.sfxproj</code></td><td>a pack in a module, as imported</td></tr>
+      <tr><td><code>assets/sounds/bank.sfxproj</code></td><td>the module's merged bank, which the game loads</td></tr>
+    </tbody>
+  </table>
+  <p>A bank never holds audio samples, only recipes. A matched sound keeps only the name of the file it was matched to.</p>
+
+  <div class="quiz" data-answer="1">
+    <p class="q">You flood a sound and Refusals says <em>38 cooldown, 2 instance cap</em>. What is mostly stopping it?</p>
+    <ul>
+      <li>The group's limit</li>
+      <li>The sound's Minimum gap</li>
+      <li>A more important sound</li>
+    </ul>
+    <p class="why">Cooldown refusals come from the Minimum gap. The group's limit shows as bus budget, and importance as outranked.</p>
+  </div>
+  <div class="quiz" data-answer="0">
+    <p class="q">Two packs both have <code>ui.select</code>. Which one plays?</p>
+    <ul>
+      <li>The one in the higher pack; the other is dropped and reported</li>
+      <li>Both, mixed together</li>
+      <li>The lower pack's, renamed to ui.select-2</li>
+    </ul>
+    <p class="why">The merge keeps a name from the highest pack that gives it, and never renames: a sound is its name.</p>
+  </div>
+  <div class="quiz" data-answer="2">
+    <p class="q">A weapon's phase plays <code>weapon.shotgun.fire</code>, and the shooter hears every shot twice, a moment apart. What is missing?</p>
+    <ul>
+      <li>from = "self" on the sound action</li>
+      <li>Repeats until stopped</li>
+      <li>predicted = true on the sound action</li>
+    </ul>
+    <p class="why">The shooter's client already played the shot from the weapon's predict entry. predicted = true makes it drop the server's copy.</p>
+  </div>
+</article>
+</body>
+</html>

@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A tour of the DAW · Digidream Studio tutorials</title>
+<meta name="description" content="Start DigidreamSynth, find your way around the header, the File menu, the transport and the tabs, and bring in a MIDI file.">
+<link rel="stylesheet" href="../assets/site.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 16%22%3E%3Cpath d=%22M8 1l7 7-7 7-7-7z%22 fill=%22%235b8fd6%22/%3E%3C/svg%3E">
+<script defer src="../assets/nav.js"></script>
+<script defer src="../assets/shortcuts.js"></script>
+<script defer src="../assets/site.js"></script>
+</head>
+<body>
+<article>
+  <h1>A tour of the DAW</h1>
+  <p class="lede">DigidreamSynth is the module's music tool: a small DAW built on the same synth engine the game runs. What you hear while you edit is exactly what the game will play, because the file you hand the game is made by that engine too.</p>
+  <div class="goal">
+    <b>You'll learn</b><span>how to start the DAW, what the header, the File menu and the transport do, how the tabs are laid out, how Arrange works, and which file is which</span>
+    <b>Time</b><span>15 minutes</span>
+    <b>Needs</b><span>a checkout of the repository with Node.js (and Emscripten once, to build the engine), or the studio with the DigidreamSynth plugin</span>
+  </div>
+
+  <h2>Four ways to run it</h2>
+  <p>The DAW is one web page, <code>midisynth/tool/daw.html</code>. The same page ships in four shells:</p>
+  <table>
+    <thead><tr><th>Where</th><th>How</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td>Browser</td><td><code>node tool/serve.js</code>, then <a href="http://localhost:8930/tool/daw.html">localhost:8930/tool/daw.html</a></td><td>Needs a click on <span class="ui">Start audio</span> before anything sounds.</td></tr>
+      <tr><td>Desktop app</td><td><code>cd midisynth/electron &amp;&amp; npm install</code> once, then <code>npm start</code></td><td>Native menus and dialogs, file associations, no Start-audio click.</td></tr>
+      <tr><td>Android</td><td><code>./scripts/package_android.sh</code> builds an APK</td><td>Saved files land in <code>Documents/</code>. A WebView has no Web MIDI, so no MIDI keyboard.</td></tr>
+      <tr><td>Inside the studio</td><td>the <b>♪ Music</b> page, <span class="ui">✎ edit in DigidreamSynth</span></td><td>The same DAW as a plugin. See <a href="05-loops-and-cues.html#studio">Loops, cuts and cues</a>.</td></tr>
+    </tbody>
+  </table>
+  <p>The same server also hosts two smaller tools: the stand-alone patch editor at <code>/tool/</code> and the track cutter at <code>/tool/cutter.html</code>. The DAW has both inside it, as the <b>Synth</b> and <b>Cut &amp; Loop</b> tabs.</p>
+
+  <ol class="steps">
+    <li><p>Build the engine once. The DAW plays through a WebAssembly build of the synth, and this script makes it (it needs Emscripten):</p>
+<pre><code>cd midisynth
+./scripts/build_wasm.sh</code></pre></li>
+    <li><p>Start the static server and open the DAW:</p>
+<pre><code>node tool/serve.js
+# http://localhost:8930/tool/daw.html</code></pre></li>
+    <li><p>Press <span class="ui">Start audio</span>. Browsers only allow sound after a click, so the page waits for one. A progress bar shows the boot stages, and the log at the bottom ends with <em>"DAW ready — draw notes in Track, record with ● Rec, bake in File › Bake .mstk"</em>.</p></li>
+  </ol>
+
+  <h2>The header</h2>
+  <p>Everything along the top applies to the whole project, whatever tab you are on.</p>
+  <ul>
+    <li><span class="ui">File</span> and <span class="ui">Edit</span> menus. <span class="ui">Edit</span> holds <span class="ui">Undo</span>, <span class="ui">Redo</span> and a <b>history</b> list of the edits you made.</li>
+    <li>The project name (<code>untitled</code> at first). It becomes the file name when you save.</li>
+    <li><span class="ui">↶</span> and <span class="ui">↷</span>: undo and redo, also <kbd>⌘Z</kbd> and <kbd>⇧⌘Z</kbd>.</li>
+    <li>The transport (below), then <b>voices</b>, a count of the synth voices sounding, and the MIDI state.</li>
+    <li>A volume slider at the far right. It changes what you hear, not what you export.</li>
+  </ul>
+  <div class="callout tip"><p>On a phone, or in any window under 700 px wide or 520 px tall, the header collapses to one line with play, stop and the position. Tap <span class="ui">▾</span> to open it.</p></div>
+
+  <h3>The File menu</h3>
+  <table>
+    <thead><tr><th>Item</th><th>What it does</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">New project</span></td><td>An empty project. It asks first if you have unsaved edits.</td></tr>
+      <tr><td><span class="ui">Open .msproj…</span> · <span class="ui">Save .msproj</span></td><td>The project file. It holds everything: tracks, tempo, loop, bank, kit, effects, mastering, slices and cue rules. <kbd>⌘S</kbd> saves and <kbd>⇧⌘S</kbd> saves as.</td></tr>
+      <tr><td><span class="ui">Import .mid / .mstk…</span></td><td>Brings in a song. See <a href="#import">Importing a MIDI file</a>.</td></tr>
+      <tr><td><span class="ui">Import bank.json…</span> · <span class="ui">Import kit.json…</span> · <span class="ui">Import fx.json…</span> · <span class="ui">Import master.json…</span></td><td>Replaces that one part of the project: the melodic patches, the drum kit, the send effects, or the mastering chain.</td></tr>
+      <tr><td><span class="ui">Export .mid</span></td><td>A Standard MIDI File: a tempo track plus one track per channel, with the loop as <code>loopStart</code>/<code>loopEnd</code> markers.</td></tr>
+      <tr><td><span class="ui">Bake .mstk (with mastering)</span></td><td>The file the game plays. Notes, patches, kit, effects and mastering in one sealed file.</td></tr>
+      <tr><td><span class="ui">Render .wav</span></td><td>An audio render, with the same effects and mastering. A toast at the bottom right shows the percentage and can cancel it.</td></tr>
+      <tr><td><span class="ui">Export slices (.mstk)</span> · <span class="ui">Export cues.json</span></td><td>The pieces cut in <b>Cut &amp; Loop</b>, and the rules set in <b>Cues</b>. See <a href="05-loops-and-cues.html">Loops, cuts and cues</a>.</td></tr>
+      <tr><td><span class="ui">Export bank.json</span> · <span class="ui">Export kit.json</span> · <span class="ui">Export fx.json</span> · <span class="ui">Export master.json</span></td><td>Each part on its own, to reuse in another project.</td></tr>
+    </tbody>
+  </table>
+  <p>You can also drag any of these files onto the page. A <code>.msproj</code> opens, a <code>.mid</code> or <code>.mstk</code> imports, and a <code>.json</code> is recognised as a bank, kit, fx or master file by what is in it.</p>
+
+  <h2>The transport</h2>
+  <table>
+    <thead><tr><th>Control</th><th>What it does</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">▶</span></td><td>Play from the playhead. <kbd>Space</kbd> plays and stops.</td></tr>
+      <tr><td><span class="ui">⏹</span></td><td>Stop and return to the start.</td></tr>
+      <tr><td><span class="ui">● Rec</span></td><td>Record from a MIDI keyboard onto the armed track, with a count-in. <kbd>R</kbd> does the same. See <a href="02-piano-roll.html#record">Recording</a>.</td></tr>
+      <tr><td>Position</td><td><code>1.1.000</code> is bar 1, beat 1, tick 0. Beside it, the time in minutes and seconds.</td></tr>
+      <tr><td><span class="ui">bpm</span></td><td>Tempo, 20 to 400.</td></tr>
+      <tr><td><span class="ui">sig</span></td><td>Time signature: beats per bar, and the note value of a beat (2, 4, 8 or 16).</td></tr>
+      <tr><td><span class="ui">loop</span></td><td>Play the loop region over and over. On by default.</td></tr>
+      <tr><td><span class="ui">click</span></td><td>The metronome. It plays on the drum channel during playback and is never exported.</td></tr>
+      <tr><td><span class="ui">count-in</span></td><td>Bars of click before recording starts, 0 to 8.</td></tr>
+      <tr><td><span class="ui">snap</span></td><td>The grid notes snap to: <code>1/1</code> to <code>1/32</code>, the triplets <code>1/8T</code> and <code>1/16T</code>, or <code>off</code>.</td></tr>
+      <tr><td><span class="ui">swing</span></td><td>A grid (<code>1/8</code>, <code>1/16</code>, <code>1/32</code>) and a percentage. Every second note on that grid is played late; 100% is a full triplet shuffle.</td></tr>
+    </tbody>
+  </table>
+  <div class="callout"><p>Swing never moves your notes. They stay where you drew them, and the delay is added when the song is played or baked. Set swing back to 0 and you have the straight pattern again.</p></div>
+
+  <h2>The tabs</h2>
+  <p>Under the header are seven tabs: <span class="ui">Arrange</span> · <span class="ui">Track</span> · <span class="ui">Synth</span> · <span class="ui">Master</span> · <span class="ui">Cut &amp; Loop</span> · <span class="ui">Cues</span> · <span class="ui">Fit</span>.</p>
+  <table>
+    <thead><tr><th>Tab</th><th>What it is for</th><th>Tutorial</th></tr></thead>
+    <tbody>
+      <tr><td>Arrange</td><td>The tracks and an overview of all their notes.</td><td>this page</td></tr>
+      <tr><td>Track</td><td>The piano roll for one track, controller lanes, and recording.</td><td><a href="02-piano-roll.html">Piano roll and recording</a></td></tr>
+      <tr><td>Synth</td><td>The patch editor for the instrument the selected track plays.</td><td><a href="03-patches.html">Designing patches</a></td></tr>
+      <tr><td>Master</td><td>Mastering, per-channel EQ and the send effects.</td><td><a href="04-mastering.html">Mastering</a></td></tr>
+      <tr><td>Cut &amp; Loop</td><td>Bake the project and cut it into looping pieces.</td><td><a href="05-loops-and-cues.html">Loops, cuts and cues</a></td></tr>
+      <tr><td>Cues</td><td>Try how pieces follow each other, as the game would switch them.</td><td><a href="05-loops-and-cues.html#cues">Loops, cuts and cues</a></td></tr>
+      <tr><td>Fit</td><td>Search for a patch that sounds like a recorded sample.</td><td><a href="03-patches.html#fit">Designing patches</a></td></tr>
+    </tbody>
+  </table>
+
+  <h2>Arrange</h2>
+  <figure class="shot" data-src="../assets/shots/synth-arrange.png" data-hotspots='[{"x": 14.5, "y": 2.3, "t": "File", "d": "open, import .mid, bake .mstk, render .wav, export"}, {"x": 42.5, "y": 2.3, "t": "Transport", "d": "play (Space) and stop"}, {"x": 49.5, "y": 2.3, "t": "● Rec", "d": "record from a MIDI keyboard (R)"}, {"x": 66, "y": 2.3, "t": "Tempo and metre", "d": "bpm and time signature"}, {"x": 82, "y": 2.3, "t": "Loop, click, count-in", "d": "loop playback of the loop region; metronome"}, {"x": 25, "y": 11, "t": "Tabs", "d": "Arrange · Track · Synth · Master · Cut & Loop · Cues · Fit"}, {"x": 3, "y": 16, "t": "＋ track", "d": "add a track"}, {"x": 6, "y": 24, "t": "A track", "d": "name, MIDI channel and instrument (program)"}, {"x": 15.3, "y": 23.5, "t": "M S R", "d": "mute, solo, arm for recording"}, {"x": 50, "y": 19.6, "t": "The ruler", "d": "drag on it to set the loop region"}, {"x": 65, "y": 31, "t": "Note lanes", "d": "double-click a lane to open it in the piano roll"}]' data-alt="The Arrange tab: the track list on the left, note lanes and the bar ruler on the right">
+    <figcaption>Arrange: one row per track, one lane of notes per row, the bar ruler on top.</figcaption>
+  </figure>
+  <p>One track is one MIDI channel, so a project has at most 16 tracks. Channel 10 is always the drum kit. Each row in the track list has:</p>
+  <ul>
+    <li>a colour swatch and the track's name, which you can edit in place;</li>
+    <li><span class="ui">M</span> mute, <span class="ui">S</span> solo, <span class="ui">R</span> arm for recording;</li>
+    <li><span class="ui">♪</span>, which opens this track's instrument in the <b>Synth</b> tab;</li>
+    <li><span class="ui">×</span>, which deletes the track;</li>
+    <li>the MIDI channel (<code>ch 10 (drums)</code> is the kit) and the GM program it plays. The program list is greyed out on channel 10.</li>
+  </ul>
+  <p><span class="ui">＋ track</span> adds a track on the first free channel, skipping 10, playing program 0. A lit dot beside a track means the engine is playing a note on it right now.</p>
+  <h3>In the lanes</h3>
+  <ul>
+    <li><b>Click a lane</b> to move the playhead there and select that track.</li>
+    <li><b>Double-click a lane</b> (or a row of the track list) to open it in the <b>Track</b> tab.</li>
+    <li><b>Drag on the ruler</b> to set the loop region. It snaps to whole bars and turns <span class="ui">loop</span> on.</li>
+    <li><kbd>⌘</kbd> + wheel zooms; the <span class="ui">zoom</span> slider does the same. The wheel alone scrolls through time.</li>
+  </ul>
+  <div class="callout tip"><p>You can edit while the song plays. Every change goes to the engine at once, keeping the playhead where it is: a deleted note releases normally, and a new note under the playhead is struck.</p></div>
+
+  <ol class="steps">
+    <li><p>Press <span class="ui">＋ track</span> twice. In the second row, open the channel list and choose <code>ch 10 (drums)</code>.</p></li>
+    <li><p>Drag on the ruler from bar 1 to bar 5. The region shows on the ruler, and <span class="ui">loop</span> is ticked.</p></li>
+    <li><p>Double-click the first lane. The <b>Track</b> tab opens on that track. Draw a few notes (the next page explains how), go back to <b>Arrange</b> and press <kbd>Space</kbd>.</p></li>
+    <li><p>While it plays, press <span class="ui">M</span> on the track, then <span class="ui">S</span>. Then press <kbd>⌘S</kbd> to save the project as a <code>.msproj</code>.</p></li>
+  </ol>
+
+  <h2 id="import">Importing a MIDI file</h2>
+  <p>Drag a <code>.mid</code> onto the page, or use <span class="ui">Import .mid / .mstk…</span>. What changes:</p>
+  <ul>
+    <li><b>Replaced:</b> the tracks, the tempo map, the time signatures and the loop. If the file has <code>loopStart</code> and <code>loopEnd</code> markers, they become the loop region; if not, the loop is the whole song.</li>
+    <li><b>Kept:</b> the project's bank, kit, effects and mastering. Your patches survive a re-import.</li>
+  </ul>
+  <p>Importing a <code>.mstk</code> works the same way for the notes, but the baked track also carries its own bank, kit, effects and mastering, and those come in with it.</p>
+  <div class="callout warn"><p>Import replaces every track. Save first if the project has work you want to keep, or use <span class="ui">Edit</span> › <span class="ui">Undo</span> after.</p></div>
+
+  <ol class="steps">
+    <li><p>Drag a <code>.mid</code> file onto the DAW. The log says how many tracks and notes came in.</p></li>
+    <li><p>Check the track list. Each MIDI channel of the file is now one track, with the program the file chose.</p></li>
+  </ol>
+
+  <h2>Which file is which</h2>
+  <table>
+    <thead><tr><th>File</th><th>What it is</th><th>Who reads it</th></tr></thead>
+    <tbody>
+      <tr><td><code>.msproj</code></td><td>The project: everything you edit, as JSON.</td><td>the DAW; the studio keeps it as <code>sources/music/NAME.msproj</code></td></tr>
+      <tr><td><code>.mstk</code></td><td>A baked track: pre-parsed notes, only the patches the song plays, effects, mastering, and a seal that rejects a damaged file.</td><td>the game</td></tr>
+      <tr><td><code>.mid</code></td><td>A Standard MIDI File. Notes only, no sounds.</td><td>any DAW</td></tr>
+      <tr><td><code>.wav</code></td><td>Rendered audio.</td><td>anything</td></tr>
+      <tr><td><code>bank.json</code> · <code>kit.json</code></td><td>Melodic patches by GM program; drum patches by MIDI note.</td><td>the DAW, the patch editor</td></tr>
+      <tr><td><code>fx.json</code> · <code>master.json</code></td><td>Reverb, chorus and delay settings; the mastering chain.</td><td>the DAW</td></tr>
+      <tr><td><code>cues.json</code></td><td>Pieces and the rules for which follows which.</td><td>written by the Cues tab</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Keys</h2>
+  <div class="widget trainer" data-tool="music"></div>
+
+  <div class="quiz" data-answer="1">
+    <p class="q">You tuned a lead patch for an hour, then import a new version of the song as a .mid. What happens to your patch?</p>
+    <ul>
+      <li>It is replaced by the General MIDI default</li>
+      <li>It stays: importing a .mid replaces tracks, tempo and loop, but keeps the bank, kit, effects and mastering</li>
+      <li>It is saved into the .mid file</li>
+    </ul>
+    <p class="why">A MIDI file has no sounds in it, so the project keeps its own. Only a .mstk import brings sounds with it.</p>
+  </div>
+  <div class="quiz" data-answer="2">
+    <p class="q">Which file does the game play?</p>
+    <ul>
+      <li>The .msproj</li>
+      <li>The .mid with a bank.json beside it</li>
+      <li>The .mstk</li>
+    </ul>
+    <p class="why">The .mstk is the baked track: notes, sounds, effects and mastering in one file, checked when it is made.</p>
+  </div>
+  <div class="quiz" data-answer="0">
+    <p class="q">You drag across the ruler from the middle of bar 2 to the middle of bar 4. What is the loop region?</p>
+    <ul>
+      <li>Whole bars, snapped to the nearest bar lines</li>
+      <li>Exactly where you started and stopped</li>
+      <li>Snapped to the snap grid in the header</li>
+    </ul>
+    <p class="why">The ruler always snaps the loop to bars, whatever the snap setting, because a loop that does not end on a bar line stumbles when it repeats.</p>
+  </div>
+</article>
+</body>
+</html>

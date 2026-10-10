@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Palettes, dither, layers · Digidream Studio tutorials</title>
+<meta name="description" content="Keep a texture inside a palette with Lock, shade it with ramps, blend it with dither, and work in layers.">
+<link rel="stylesheet" href="../assets/site.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 16%22%3E%3Cpath d=%22M8 1l7 7-7 7-7-7z%22 fill=%22%235b8fd6%22/%3E%3C/svg%3E">
+<script defer src="../assets/nav.js"></script>
+<script defer src="../assets/shortcuts.js"></script>
+<script defer src="../assets/site.js"></script>
+</head>
+<body>
+<article>
+  <h1>Palettes, dither, layers</h1>
+  <p class="lede">Retro textures look right because they use a few colours and use them well. qPainter keeps you inside a palette, shades along ramps, blends with dither instead of new colours, and lets you build a texture in layers.</p>
+  <div class="goal">
+    <b>You'll learn</b><span>the palette panel, <span class="ui">Lock</span> and its two snaps, ramps and the Shade brush, the Dither brush and Dithered gradient, Replace, palette files, layers, and how to recolour a texture to a fixed palette</span>
+    <b>Time</b><span>25 minutes</span>
+    <b>Needs</b><span>qPainter open on a texture (see <a href="01-first-texture.html">Your first texture</a>)</span>
+  </div>
+
+  <h2>The palette panel</h2>
+  <p>qPainter starts with <b>Sweetie 16</b>, a 16-colour palette. At the top of the panel are the primary and secondary colour boxes, the 50% dither preview, and <span class="ui">⇄</span>. Below the swatches is a row of buttons:</p>
+  <table>
+    <thead><tr><th>Button</th><th>What it does</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">+</span></td><td>Adds the primary colour to the palette.</td></tr>
+      <tr><td><span class="ui">−</span></td><td>Removes the primary colour from the palette.</td></tr>
+      <tr><td><span class="ui">Sort</span></td><td>Sorts the swatches from dark to light.</td></tr>
+      <tr><td><span class="ui">Import…</span></td><td><span class="ui">Replace palette…</span> or <span class="ui">Add to palette…</span> from a file. Adding skips colours already there.</td></tr>
+      <tr><td><span class="ui">Export…</span></td><td>Saves the <b>Whole palette</b>, or only the <b>Colours used in the texture</b>.</td></tr>
+      <tr><td><span class="ui">Extract</span></td><td>Replaces the palette with this texture's own colours, reduced to the number you ask for.</td></tr>
+      <tr><td><span class="ui">Remap…</span></td><td>Converts the active layer to the palette: <span class="ui">nearest</span>, <span class="ui">ordered dither</span> or <span class="ui">Floyd–Steinberg</span>.</td></tr>
+    </tbody>
+  </table>
+  <ul>
+    <li>Drag a swatch onto another to reorder the palette.</li>
+    <li>The line under the palette counts the colours the image uses, the colours in the palette, and the pixels that are <b>off-palette</b>. Before you ship a texture, off-palette should be 0.</li>
+  </ul>
+
+  <h2>Lock</h2>
+  <p><span class="ui">Lock</span> in the top bar restricts all painting to the palette. Any colour a tool makes is snapped to a palette colour, and a half-transparent result becomes fully opaque or fully transparent. The menu beside it decides what happens to soft blends, such as the edge of a soft brush:</p>
+  <ul>
+    <li><span class="ui">snap nearest</span>: each blended pixel becomes the closest palette colour. You get hard bands.</li>
+    <li><span class="ui">snap dither</span>: each blended pixel alternates between its two closest palette colours in a Bayer pattern. You get a dithered gradient, as if you had dithered it by hand.</li>
+  </ul>
+  <div class="callout warn"><p><b>Colours change as you paint?</b> Lock is on, and your colour isn't in the palette. Add it with <span class="ui">+</span>, or turn Lock off.</p></div>
+
+  <h2>Ramps and the Shade brush</h2>
+  <p>A <b>ramp</b> is a row of colours ordered from dark to light. Ramps drive three things: the Shade brush, Noise with <span class="ui">Use active ramp</span>, and the Dithered gradient with <span class="ui">Use active ramp</span>.</p>
+  <p>You build a ramp from the row that starts with <span class="ui">Ramp</span>, under the palette buttons:</p>
+  <ul>
+    <li><span class="ui">Hue-shift</span> builds a ramp around the primary colour. The first number is how many steps on each side, so 2 makes five colours. The second is the hue shift per step, in degrees. Darker steps drift toward blue and lighter ones toward yellow, which keeps shading from looking flat.</li>
+    <li><span class="ui">Lerp</span> builds a straight blend from primary to secondary, with 2 × <i>steps</i> + 1 colours.</li>
+    <li>New ramp colours are added to the palette for you.</li>
+    <li>Click a ramp to make it the <b>active ramp</b>; it is highlighted. <span class="ui">×</span> deletes it.</li>
+  </ul>
+  <p>The <b>◐ Ramp shade brush</b> (<kbd>H</kbd>) moves each pixel it touches one step lighter along its ramp. Right-click or <kbd>Shift</kbd> moves it one step darker. Each pixel changes at most once per stroke, so you build shading up with repeated strokes. A pixel whose colour isn't in any ramp is left alone, which is why the brush seems to do nothing on a texture with no ramps.</p>
+
+  <h2>Dither</h2>
+  <p>Dithering blends two colours by arranging pixels of both, instead of inventing a colour in between. qPainter has two tools for it.</p>
+  <h3>The Dither brush</h3>
+  <p>The <b>▦ Dither brush</b> (<kbd>D</kbd>) paints a pattern of primary and secondary. Its options:</p>
+  <ul>
+    <li><span class="ui">Pattern</span>: <span class="ui">Checker 50%</span>, <span class="ui">Bayer 2×2</span>, <span class="ui">Bayer 4×4</span>, <span class="ui">Bayer 8×8</span>, <span class="ui">Lines —</span>, <span class="ui">Lines |</span>, <span class="ui">Diagonal</span>, or <span class="ui">Custom (click to edit)</span>. For Custom, click the cells of the 8×8 preview to toggle them.</li>
+    <li><span class="ui">Density</span>: how much of the pattern is primary. The Bayer patterns go smoothly from 0 to 100%.</li>
+    <li><span class="ui">Paint 2nd color too</span>: off, only the primary pixels are painted and the art underneath shows through the gaps. On, the gaps get the secondary colour.</li>
+    <li><span class="ui">Offset X</span> and <span class="ui">Offset Y</span> (0–7) shift the pattern. A checker at Offset X 1 is the exact inverse of the checker at 0.</li>
+  </ul>
+  <p>Patterns are anchored to the canvas, not to the stroke. Overlapping strokes, symmetry copies and wrapped edges all line up. <span class="ui">Fill with pattern</span> on the Fill tool uses the same pattern settings.</p>
+  <h3>The Dithered gradient</h3>
+  <p>The <b>▤ Dithered gradient</b> (<kbd>J</kbd>) fills from where you start dragging to where you stop. It goes from primary to secondary, or through the whole active ramp with <span class="ui">Use active ramp</span>. <span class="ui">Radial</span> makes it round, and a right-drag reverses it. It is always dithered with the current pattern, so it only uses the palette colours it blends between.</p>
+
+  <h3>Replace and Smooth</h3>
+  <ul>
+    <li>The <b>⇄ Replace color brush</b> (<kbd>R</kbd>) recolours only the colour under the start of the stroke, and leaves every other colour alone. <span class="ui">Tolerance</span> widens what counts as the same colour. It is the quickest way to recolour one material, such as the moss on a stone wall.</li>
+    <li>The <b>≈ Smooth / AA helper</b> (<kbd>A</kbd>) replaces each pixel with the palette colour nearest to the average of it and its four neighbours. Run it lightly along a jagged edge.</li>
+  </ul>
+
+  <h3>Exercise: a two-tone transition</h3>
+  <ol class="steps">
+    <li><p>Pick two neighbouring colours of a ramp as primary and secondary. Press <kbd>D</kbd> and choose <span class="ui">Bayer 4×4</span>, with <span class="ui">Paint 2nd color too</span> off.</p></li>
+    <li><p>Fill a band with the secondary colour. Set <span class="ui">Density</span> to 25% and paint across the band.</p></li>
+    <li><p>Set <span class="ui">Offset X</span> to 1 and paint the same band again at 25%. The second pass lands on a different set of dots, and together they make a 50% band.</p></li>
+    <li><p>Undo both passes, press <kbd>J</kbd> and drag across the band. The gradient does in one drag what the two passes did by hand.</p></li>
+  </ol>
+
+  <h2>Palette files</h2>
+  <p><span class="ui">Import…</span> and <span class="ui">Export…</span> read and write these formats:</p>
+  <table>
+    <thead><tr><th>Format</th><th>Export</th><th>Import</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td><code>.gpl</code></td><td>✓</td><td>✓</td><td>GIMP palette; also read by Aseprite, Krita and Inkscape.</td></tr>
+      <tr><td><code>.hex</code></td><td>✓</td><td>✓</td><td>One <code>rrggbb</code> per line: Lospec's download format.</td></tr>
+      <tr><td><code>.pal</code></td><td>✓</td><td>✓</td><td>JASC-PAL: Aseprite, Paint Shop Pro and many pixel-art tools.</td></tr>
+      <tr><td><code>.png</code></td><td>✓ (swatches)</td><td>✓</td><td>A strip with one pixel per colour. On import, any image works: its colours in order, exact up to 256.</td></tr>
+      <tr><td><code>.texproj.json</code></td><td>—</td><td>✓</td><td>Takes the palette of another qPainter project.</td></tr>
+      <tr><td><code>.aseprite</code> / <code>.ase</code></td><td>—</td><td>✓</td><td>Takes the Aseprite file's palette.</td></tr>
+    </tbody>
+  </table>
+  <p>Exporting <b>Colours used in the texture</b> looks at every layer and every frame, and skips hidden layers and transparent pixels. Palettes hold opaque colours only.</p>
+  <div class="callout tip"><p><b>Import</b> reads <em>another</em> file. <b>Extract</b> takes the colours of <em>this</em> texture's current frame. Any palette on <a href="https://lospec.com/palette-list">Lospec</a> downloads as <code>.hex</code> and imports as it is.</p></div>
+
+  <h3>One palette for a set of textures</h3>
+  <ol class="steps">
+    <li><p>Finish your first texture. Choose palette <span class="ui">Export…</span> → <b>Colours used in the texture</b> → <span class="ui">.gpl (GIMP, Aseprite)</span>.</p></li>
+    <li><p>In each new texture, choose <span class="ui">Import…</span> → <span class="ui">Replace palette…</span> with that file, and turn on <span class="ui">Lock</span>.</p></li>
+    <li><p>For a texture that needs a few extra shades, use <span class="ui">Import…</span> → <span class="ui">Add to palette…</span>. It merges the shared colours in without duplicates.</p></li>
+    <li><p>Before shipping, check the line under the palette: no off-palette pixels.</p></li>
+  </ol>
+  <div class="callout soon"><p>A palette shared by the whole module, kept in the module and picked from the studio, is planned but not started. For now, carry a palette between textures with palette files, as above.</p></div>
+
+  <h2>Layers</h2>
+  <p>The <b>Layers</b> section of the side panel works like layers anywhere:</p>
+  <ul>
+    <li><span class="ui">+</span> new layer, <span class="ui">⧉</span> duplicate, <span class="ui">−</span> delete, <span class="ui">↑</span> <span class="ui">↓</span> reorder, <span class="ui">⤓</span> merge down.</li>
+    <li>The checkbox shows or hides a layer. The slider on the active layer sets its opacity. Double-click a layer to rename it.</li>
+    <li>Tools paint on the <b>active</b> (highlighted) layer. Fill, Replace and Remap only look at the active layer. The eyedropper and the 3D preview see all visible layers together.</li>
+  </ul>
+  <p>A useful split for a wall is a base layer (stone and noise), a detail layer (cracks, moss) and a light layer (highlights from the Shade brush). You can then hide the moss, or redo the lighting, without touching the stone.</p>
+  <div class="callout warn"><p>When the studio bakes a texture, it composites the <b>visible</b> layers only. A layer you hid while working is left out of the game's picture. Show it again before you go back to the studio.</p></div>
+
+  <h2>Recolour an existing texture</h2>
+  <p>Turn a photo or someone else's texture into one that matches your palette.</p>
+  <ol class="steps">
+    <li><p>Open the texture: <span class="ui">✎ edit in qPainter</span> on its card in the studio, or <span class="ui">Open</span> standalone.</p></li>
+    <li><p>Palette <span class="ui">Import…</span> → <span class="ui">Replace palette…</span>, and pick the target palette: a <code>.hex</code> from Lospec, a <code>.gpl</code>, a <code>.pal</code> or a swatch PNG.</p></li>
+    <li><p><span class="ui">Remap…</span>: <span class="ui">Floyd–Steinberg</span> for photos and gradients, <span class="ui">ordered dither</span> for a retro look, <span class="ui">nearest</span> for flat art. With <span class="ui">Wrap</span> on, Floyd–Steinberg carries its error across the edges, so the result still tiles.</p></li>
+    <li><p>Turn on <span class="ui">Lock</span>, so any touch-ups stay in the palette.</p></li>
+  </ol>
+
+  <h2>Check yourself</h2>
+  <div class="quiz" data-answer="1">
+    <p class="q">You drag the Shade brush over your texture and nothing changes. Why?</p>
+    <ul>
+      <li><span class="ui">Lock</span> is off</li>
+      <li>The pixels' colours aren't in any ramp</li>
+      <li>The brush only works with <span class="ui">Wrap</span> on</li>
+    </ul>
+    <p class="why">The Shade brush steps a colour along its ramp. A colour that is in no ramp has nowhere to step to. Build a ramp with <span class="ui">Hue-shift</span> or <span class="ui">Lerp</span> first.</p>
+  </div>
+  <div class="quiz" data-answer="2">
+    <p class="q">With <span class="ui">Lock</span> on, you want a soft brush to leave a dithered gradient rather than hard bands. What do you pick?</p>
+    <ul>
+      <li><span class="ui">snap nearest</span></li>
+      <li><span class="ui">Pixel-perfect</span></li>
+      <li><span class="ui">snap dither</span></li>
+    </ul>
+    <p class="why">snap dither turns each blended pixel into a Bayer mix of its two nearest palette colours. snap nearest picks one colour, which gives bands.</p>
+  </div>
+  <div class="quiz" data-answer="0">
+    <p class="q">You want to hand a friend exactly the colours a finished texture uses. Which export?</p>
+    <ul>
+      <li><span class="ui">Export…</span> → Colours used in the texture</li>
+      <li><span class="ui">Export…</span> → Whole palette</li>
+      <li><span class="ui">Extract</span></li>
+    </ul>
+    <p class="why">Colours used in the texture looks at every layer and frame, and writes only what is there. Extract changes your own palette; it doesn't write a file.</p>
+  </div>
+</article>
+</body>
+</html>

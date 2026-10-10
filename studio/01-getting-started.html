@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Getting started · Digidream Studio tutorials</title>
+<meta name="description" content="Launch the studio, find your way around Home and the rail, and learn what undo applies to.">
+<link rel="stylesheet" href="../assets/site.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 16%22%3E%3Cpath d=%22M8 1l7 7-7 7-7-7z%22 fill=%22%235b8fd6%22/%3E%3C/svg%3E">
+<script defer src="../assets/nav.js"></script>
+<script defer src="../assets/shortcuts.js"></script>
+<script defer src="../assets/site.js"></script>
+</head>
+<body>
+<article>
+  <h1>Getting started</h1>
+  <p class="lede">The studio is a module editor that ships inside the game. A <em>module</em> is a whole game: its maps, monsters, weapons, textures, music, sounds and screens. You edit it on a desktop or a phone, press Play to walk through it, and export it as a pack the engine loads unchanged.</p>
+  <div class="goal">
+    <b>You'll learn</b><span>how to launch the studio, how Home and the rail are laid out, and what undo applies to</span>
+    <b>Time</b><span>10 minutes</span>
+    <b>Needs</b><span>a checkout of the repository with Node.js, or a built Digidream Studio app</span>
+  </div>
+
+  <h2>Two ways to run it</h2>
+  <p>The studio is a web app served at <code>/studio/</code>. The same app runs in two places, and they differ in one thing: whether you can press Play.</p>
+  <table>
+    <thead><tr><th></th><th>In a browser (dev server)</th><th>In the app (desktop or Android)</th></tr></thead>
+    <tbody>
+      <tr><td>Edit everything</td><td>✓</td><td>✓</td></tr>
+      <tr><td>Export a pack</td><td>✓ (downloads a .zip)</td><td>✓</td></tr>
+      <tr><td><span class="ui">▶ Play</span></td><td>✗ — needs a game server</td><td>✓</td></tr>
+      <tr><td>Install plugins</td><td>✓</td><td>desktop ✓, Android ✗</td></tr>
+    </tbody>
+  </table>
+
+  <h3>In a browser</h3>
+  <ol class="steps">
+    <li><p>From the repository root, start the dev server:</p>
+<pre><code>node engine/tools/devserver.js --module starter</code></pre>
+      <p>It listens on port 8080. Set <code>DNP_HTTP_PORT</code> to use another port.</p></li>
+    <li><p>Open <a href="http://localhost:8080/studio/">http://localhost:8080/studio/</a>. While it loads, a log under the progress bar says what it is doing. If it gets stuck, the log shows the stage and the error in red, and <span class="ui">copy this</span> copies the log for a bug report.</p></li>
+    <li><p>Press <span class="ui">▶ Play</span>. In a browser it answers <em>"Play needs the app. In a browser, export a pack and run it with the engine."</em> This is expected. To play-test in a browser, export the pack and run it with the engine:</p>
+<pre><code>unzip starter.zip -d modules/
+./engine/scripts/run_stack.sh --module starter</code></pre></li>
+  </ol>
+
+  <h3>As an app (Play works)</h3>
+  <p>A build that opens straight into the studio:</p>
+<pre><code>./engine/scripts/make_app.sh --module starter --studio    # desktop
+./engine/scripts/build_apk.sh --module starter --studio   # Android</code></pre>
+  <p>Ready-made builds for every platform, plugins included, are written to <code>builds/</code> by <code>packager/scripts/release_studio.sh</code>.</p>
+  <div class="callout warn"><p>The macOS app is signed ad hoc and not notarized, so on another Mac the first launch needs <b>right-click → Open</b>.</p></div>
+  <div class="callout soon"><p>There is no iOS build yet.</p></div>
+
+  <h2>Home</h2>
+  <figure class="shot" data-src="../assets/shots/studio-home.png" data-alt="The studio's Home page">
+    <figcaption>Home: the module, its maps, what is wrong, and every section.</figcaption>
+  </figure>
+  <p>The studio opens on the module's <b>Home</b> page. Along the top are the actions that apply to the whole module:</p>
+  <ul>
+    <li><span class="ui">▶ play</span> and <span class="ui">⇪ export</span>.</li>
+    <li><span class="ui">⇩ import pack</span>, which brings in a pack someone exported.</li>
+    <li><span class="ui">+ new module</span>, which starts a new module as a copy of the starter template.</li>
+    <li><span class="ui">🕘 snapshots</span>, <span class="ui">🧩 plugins</span> and <span class="ui">📋 play log</span>.</li>
+  </ul>
+  <p>Below them are three things:</p>
+  <ul>
+    <li><b><span class="ui">🗺 maps</span></b>: a thumbnail of each map, its rooms drawn from above in their floor textures.</li>
+    <li><b>What is wrong</b>: every problem the studio can find in any map, trigger, graph, monster or weapon. Each problem links to where it is. When there are none, the list says <em>"✔ nothing wrong that the studio can see"</em>.</li>
+    <li><b>The sections</b>, one tile each.</li>
+  </ul>
+
+  <h2>The rail</h2>
+  <p>On a wide or landscape screen, a <b>rail</b> down the left lists the sections. Each one shows a count of its problems. The rail's foot holds <span class="ui">↶ Undo</span>, <span class="ui">↷ Redo</span>, <span class="ui">▶ Play</span> and <span class="ui">⇪ Export</span>.</p>
+  <table>
+    <thead><tr><th>Section</th><th>What it holds</th><th>Tutorial</th></tr></thead>
+    <tbody>
+      <tr><td>🗺 Maps</td><td>the maps (open, <span class="ui">+ new map</span>, delete) and the <span class="ui">▦ metamap</span></td><td><a href="02-first-map.html">Your first map</a></td></tr>
+      <tr><td>☠ Monsters · 🧍 Player · 🔫 Weapons</td><td>the workshops: brains, swings, bodies, the player's moves and kit</td><td><a href="07-workshops.html">Workshops</a></td></tr>
+      <tr><td>🎮 Controls</td><td>how the module is played, and its own keys</td><td><a href="07-workshops.html#controls">Workshops</a></td></tr>
+      <tr><td>📦 Props · ✨ Particles</td><td>bodies without a brain; bursts and tracers</td><td><a href="03-placing-things.html">Placing things</a></td></tr>
+      <tr><td>🎞 Sprites</td><td>sprite sheets, edited in ThreeSprite</td><td><a href="../sprites/01-first-sprite.html">Sprites track</a></td></tr>
+      <tr><td>🧱 Textures</td><td>the module's own textures and the app's, edited in qPainter</td><td><a href="../textures/01-first-texture.html">Textures track</a></td></tr>
+      <tr><td>♪ Music</td><td>tracks, and each map's cues, edited in DigidreamSynth</td><td><a href="../music/01-daw-tour.html">Music track</a></td></tr>
+      <tr><td>🔊 Sounds</td><td>sound packs, edited in DigidreamSound</td><td><a href="../sounds/01-first-sound.html">Sounds track</a></td></tr>
+      <tr><td>▣ Screens · ▢ Panels · 🎨 Style</td><td>HUD, touch controls, panels, fonts</td><td><a href="08-look-and-feel.html">Sky, screens and weather</a></td></tr>
+      <tr><td>🌌 Sky</td><td>the module's sky and each map's own</td><td><a href="08-look-and-feel.html">Sky, screens and weather</a></td></tr>
+      <tr><td>📜 Scripts · ◇ Graphs</td><td>Lua for the module; Blueprint-style graphs</td><td><a href="06-graphs.html">Graphs</a></td></tr>
+      <tr><td>⚙ Settings</td><td>id, name, about, controls, the debug overlay</td><td><a href="10-play-and-export.html">Play and export</a></td></tr>
+    </tbody>
+  </table>
+  <div class="callout tip"><p><b>On a phone held upright</b> there is no rail. Home is the list of sections, and every page has a way back: <span class="ui">‹ module</span> on a page, and <span class="ui">‹</span> beside undo in the map editor.</p></div>
+
+  <h2>Every place has an address</h2>
+  <p>The address bar always says where you are, for example <code>#/monsters/imp</code> or <code>#/map/first</code>. Reloading the page brings you back to the same place. Coming back from Play returns you to the map you were testing, with the view as you left it.</p>
+
+  <h2>What undo applies to</h2>
+  <p>Undo has two scopes:</p>
+  <ul>
+    <li><b>In the map editor</b>, it undoes changes to <em>that map</em>.</li>
+    <li><b>On a page</b> (Monsters, Textures, Settings…), it undoes changes to <em>the module</em>.</li>
+  </ul>
+  <p>The keys are <kbd>⌘Z</kbd> to undo, and <kbd>⇧⌘Z</kbd> or <kbd>⌘Y</kbd> to redo. On Windows and Linux, use Ctrl in place of ⌘.</p>
+  <div class="callout"><p>Undo is for the last few minutes. For anything older, the studio keeps <b>snapshots</b> of the module on the device. It takes one when the module is opened, every ten minutes while you edit, and before anything that replaces work. See <a href="10-play-and-export.html#snapshots">Snapshots</a>.</p></div>
+
+  <ol class="steps">
+    <li><p>Open <b>Settings</b> (⚙) and give the module a <span class="ui">name</span> and an <span class="ui">about</span> line.</p></li>
+    <li><p>Press <kbd>⌘Z</kbd>. The name goes back, because a page undoes changes to the module.</p></li>
+    <li><p>Press <kbd>⇧⌘Z</kbd> to bring the name back. Then reload the page and check you land on Settings again.</p></li>
+  </ol>
+
+  <div class="quiz" data-answer="2">
+    <p class="q">You're in a plain browser at localhost:8080/studio/ and want to play-test. What do you do?</p>
+    <ul>
+      <li>Press ▶ Play — it starts a local server</li>
+      <li>Open /index.html?studio=1 in another tab</li>
+      <li>⇪ Export the pack, unzip it into modules/, and run it with run_stack.sh — or use the app</li>
+    </ul>
+    <p class="why">Play needs a shell with a game server in it, and the desktop and Android apps have one. In a browser, the studio can only edit and export.</p>
+  </div>
+  <div class="quiz" data-answer="1">
+    <p class="q">You rename a monster on the Monsters page, then open a map and press ⌘Z. What is undone?</p>
+    <ul>
+      <li>The monster's rename</li>
+      <li>The last change to that map</li>
+      <li>Nothing, because undo is off in the map editor</li>
+    </ul>
+    <p class="why">Inside the map editor, undo applies to the map. Go back to a page to undo changes to the module.</p>
+  </div>
+</article>
+</body>
+</html>
