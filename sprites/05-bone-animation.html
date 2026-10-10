@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bone animation · Digidream Studio tutorials</title>
+<meta name="description" content="Animate a rigged sprite with bones in ThreeSprite: a looping walk cycle, an overhead swing and a death, with the rules that decide every in-between frame.">
+<link rel="stylesheet" href="../assets/site.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 16%22%3E%3Cpath d=%22M8 1l7 7-7 7-7-7z%22 fill=%22%235b8fd6%22/%3E%3C/svg%3E">
+<script defer src="../assets/nav.js"></script>
+<script defer src="../assets/shortcuts.js"></script>
+<script defer src="../assets/site.js"></script>
+</head>
+<body>
+<article>
+  <h1>Bone animation: walk, swing, fall</h1>
+  <p class="lede">With a rig, you don't redraw a character for every frame. You turn its bones on a few key frames, and ThreeSprite works out the frames in between, in every view. This lesson builds the three animations a monster needs most: a walk that loops, an attack swing, and a death.</p>
+  <div class="goal">
+    <b>You'll learn</b><span>how a bone's turn travels down to its children; which view to pose in; how ThreeSprite fills the frames between keys; how to make a loop with no hitch; and how to time an attack and a fall</span>
+    <b>Time</b><span>40 minutes</span>
+    <b>Needs</b><span>a rigged sprite with a pelvis, torso, head, arms, thighs and shins (see <a href="03-rig.html">Rig, bones and parts</a>), and the timeline basics from <a href="04-animate.html">Animating</a></span>
+  </div>
+
+  <h2>Try it first</h2>
+  <p>The demo below is a stand-in for ThreeSprite's Animate tab: a side view of a small rig, with a key grid underneath. It works out the in-between frames with the same rules as ThreeSprite. Drag a bone's tip to turn it, and the turn is keyed on the current frame. Load the <b>walk</b> example and press Play, then try the others.</p>
+  <div class="widget" data-widget="bone-anim" data-title="Pose and key a rig" data-preset="walk"></div>
+  <div class="callout"><p>The demo is a flat side view, so each bone has one angle. In ThreeSprite each bone has three (<span class="ui">Rot yaw</span>, <span class="ui">Rot pitch</span>, <span class="ui">Rot roll</span>), and the rig is drawn from every view. The rules for keys and in-betweens are the same.</p></div>
+
+  <h2>How a bone moves</h2>
+  <p>Every bone has a <b>rest pose</b>, the one you set in the Rig tab. An animation never changes the rest pose. It stores <b>offsets</b> on top of it, per frame:</p>
+  <table>
+    <thead><tr><th>Track</th><th>Inspector fields</th><th>What it does</th></tr></thead>
+    <tbody>
+      <tr><td>rotation</td><td><span class="ui">Rot yaw</span> · <span class="ui">Rot pitch</span> · <span class="ui">Rot roll</span></td><td>Turns the bone about its root, added to its rest angles. This is almost all of animation.</td></tr>
+      <tr><td>move</td><td><span class="ui">Move right</span> · <span class="ui">Move up</span> · <span class="ui">Move forward</span></td><td>Shifts the bone's root. Use it on the root bone, to bob the body or drop it to the floor.</td></tr>
+      <tr><td>scale</td><td><span class="ui">Scale right</span> · <span class="ui">Scale up</span> · <span class="ui">Scale forward</span></td><td>Stretches what hangs on the bone, for squash and stretch or a puff of breath.</td></tr>
+    </tbody>
+  </table>
+  <p>The three angles are about the character's own axes:</p>
+  <ul>
+    <li><b>yaw</b> turns about the up axis, like shaking your head;</li>
+    <li><b>pitch</b> tilts about the right axis, like nodding or swinging a leg forward;</li>
+    <li><b>roll</b> rotates in the front view's plane, like raising an arm sideways.</li>
+  </ul>
+
+  <h3>Children follow their parents</h3>
+  <p>A bone's turn carries everything below it in the tree. Turn the torso and the head and arms go with it. Turn the thigh and the shin and foot go with it. Each child's own angle is measured from its parent. This is called <em>forward kinematics</em>, and it decides the order you pose in:</p>
+  <ol>
+    <li><b>Root first.</b> Where is the body: higher, lower, leaning?</li>
+    <li><b>Then down each chain</b>: torso, then head; thigh, then shin; upper arm, then forearm.</li>
+    <li><b>Small things last</b>: a hand, a weapon, a tail tip.</li>
+  </ol>
+  <p>If you pose a shin and then turn its thigh, the shin keeps its angle to the thigh and goes along. That is usually what you want. Pose the other way round and you'll find yourself fixing the shin again after every thigh change.</p>
+
+  <h2>Pose in the right view</h2>
+  <p>The Animate tab's hint says it: <em>drag bone handles on the canvas to key them (rotating in the plane of the current view), or type values here.</em> A drag can only turn a bone across your screen. So the view you drag in decides which of the three angles changes:</p>
+  <table>
+    <thead><tr><th>Motion</th><th>Angle</th><th>Pose it in</th></tr></thead>
+    <tbody>
+      <tr><td>legs stepping, arms swinging, a nod, an overhead chop</td><td>pitch</td><td>a side view: view 3, <b>Left side</b>, in an 8-view sprite</td></tr>
+      <tr><td>arms raised sideways, leaning left or right, a sideways sweep</td><td>roll</td><td>the front view: view 1</td></tr>
+      <tr><td>turning the head or the hips to look round</td><td>yaw</td><td>no view shows it as a turn on screen, so type it in <span class="ui">Rot yaw</span></td></tr>
+    </tbody>
+  </table>
+  <p>The signs, so typed values do what you expect:</p>
+  <ul>
+    <li><b>positive pitch</b> swings a hanging bone's tip <b>forward</b> (a leg, an arm) and tips an upright bone <b>back</b> (the torso, the head);</li>
+    <li><b>positive roll</b> turns a bone counter-clockwise on screen in the front view.</li>
+  </ul>
+  <p>Press <kbd>,</kbd> and <kbd>.</kbd> to change view at any time. The pose is the same 3D pose in every view, so a stride you set in the side view is already right in the other seven.</p>
+  <div class="callout warn"><p><b>Shift-dragging a tip changes the bone's length, and this is not keyed.</b> The new length belongs to the rig, so it changes every animation and the rest pose too. In Animate, drag without Shift. To stretch something over time, key <span class="ui">Scale</span>.</p></div>
+
+  <h2>What happens between keys</h2>
+  <p>You set a few keys, and ThreeSprite computes every other frame. Four rules decide the result:</p>
+  <ol>
+    <li><b>The key at the start of a stretch decides its ease.</b> With <span class="ui">linear</span> the bone moves evenly. With <span class="ui">easeInOut</span> it starts slowly, speeds up, and slows into the next key. With <span class="ui">step</span> it holds its pose, then jumps on the next key.</li>
+    <li><b>Before the first key</b>, a bone holds the first key's pose.</li>
+    <li><b>After the last key</b>, it holds the last key's pose.</li>
+    <li><b>A bone with no keys</b> stays at rest.</li>
+  </ol>
+  <p>A diamond in the timeline stands for <em>all</em> of that bone's keys on that frame (rotation, move and scale). The <span class="ui">Ease</span> you pick for it applies to all three. <span class="ui">Key all</span> keys the bone's three tracks as they are now, which is a quick way to pin a pose before you change it later.</p>
+
+  <h3 id="the-loop-seam">The loop seam</h3>
+  <p>Rule 3 has a catch. When an animation loops, playback jumps from the last frame back to frame 1, but the in-betweens do <em>not</em> wrap round. Nothing blends from the last key back to frame 1, so how the loop joins is up to you:</p>
+  <ul>
+    <li><b>If the last key comes before the last frame</b>, the remaining frames hold that pose, and the cycle stalls before it restarts.</li>
+    <li><b>If the last frame is a copy of frame 1</b>, the same pose shows twice in a row, and the cycle hitches. The demo warns about this one.</li>
+    <li><b>The fix:</b> make the last frame <em>the step before frame 1</em>, a pose halfway between the frame before it and frame 1. The walk below does this on frame 8.</li>
+  </ul>
+
+  <h2>Exercise: a walk cycle</h2>
+  <p>A walk is two steps, and the second is the first with the legs swapped. Eight frames at 10 fps make a brisk stride:</p>
+  <table>
+    <thead><tr><th>Frame</th><th>Pose</th><th>Near leg</th><th>Far leg</th><th>Body</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td><b>contact</b>: near heel lands</td><td>forward, straight</td><td>back</td><td>low</td></tr>
+      <tr><td>3</td><td><b>passing</b>: far leg swings past</td><td>under the body, nearly straight</td><td>knee bent, foot lifted</td><td>high</td></tr>
+      <tr><td>5</td><td><b>contact</b>, the other side</td><td>back</td><td>forward, straight</td><td>low</td></tr>
+      <tr><td>7</td><td><b>passing</b>, the other side</td><td>knee bent, foot lifted</td><td>under the body</td><td>high</td></tr>
+      <tr><td>8</td><td>the step back into frame 1</td><td colspan="3">halfway between 7 and 1</td></tr>
+    </tbody>
+  </table>
+  <ol class="steps">
+    <li><p>In <span class="ui">Animate</span>, add an animation named <b>walk</b>. Set <span class="ui">frames</span> to 8 and <span class="ui">fps</span> to 10, and tick <span class="ui">loop</span>. The name matters: the studio's monster card picks an animation whose name contains <i>walk</i>, <i>run</i> or <i>move</i> for walking.</p></li>
+    <li><p>Press <kbd>.</kbd> until the canvas shows the side view (view 3 in an 8-view sprite). You'll pose all the pitch here.</p></li>
+    <li><p><b>Frame 1, contact.</b> Drag the near thigh's tip forward, to about <span class="ui">Rot pitch</span> 25, and the far thigh back, to about −25. Leave the near shin straight and bend the far shin a touch, about −5. Swing the near arm back and the far arm forward: arms go against the legs.</p></li>
+    <li><p><b>Frame 3, passing.</b> Press <kbd>]</kbd> twice. Bring the near thigh under the body (about 0). Swing the far thigh forward a little (about 5) and bend its shin hard (about −45), so the foot clears the floor. Arms at about 0. Select the root bone and type <span class="ui">Move up</span> 1: the body rises as it passes over the planted leg.</p></li>
+    <li><p><b>Frame 5, contact again.</b> Copy frame 1's diamonds (click them in the timeline, Shift-click to add more, press <kbd>⌘C</kbd>), go to frame 5 and press <kbd>⌘V</kbd>. Then swap the sides by hand: the near leg takes the far leg's numbers and the far leg the near's. Do the same for the arms.</p></li>
+    <li><p><b>Frame 7, passing again.</b> Copy frame 3 to frame 7, then swap the legs and arms the same way. Keep <span class="ui">Move up</span> 1 on the root.</p></li>
+    <li><p><b>Frame 8, the seam.</b> Key every moving bone halfway between its frame 7 and frame 1 values. For example, the near thigh goes from 5 at frame 7 to 25 at frame 1, so 15 at frame 8. The root's Move up is 0.5.</p></li>
+    <li><p>Press <kbd>Space</kbd>. Watch for a stall or a hitch where the loop joins. Then turn on the onion skin, pause, and step with <kbd>[</kbd> and <kbd>]</kbd>. Each frame should move the feet about the same distance.</p></li>
+    <li><p>Press <kbd>.</kbd> while it plays and walk round the views. The front and back views show the arms and legs swinging towards and away from you. If the sprite has <span class="ui">Depth scaling</span> on, the near foot grows a little as it comes forward.</p></li>
+  </ol>
+  <div class="callout tip"><p><b>The feet slide.</b> A sprite walks on the spot, and the game moves it across the floor. If its feet seem to skate, the stride and the monster's speed don't match. Shorten or lengthen the stride (the thigh angles), or change the fps, rather than fixing it in the game.</p></div>
+
+  <h2>Exercise: an overhead swing</h2>
+  <p>An attack reads well with three beats. First a slow <b>wind-up</b> the player can see coming, then a <b>strike</b> so fast it nearly isn't drawn, then a <b>recovery</b>. You make those beats with the ease of each key, not with more frames. Load <b>overhead swing</b> in the demo above to see the finished version.</p>
+  <ol class="steps">
+    <li><p>Add an animation named <b>attack</b> with 7 frames at 10 fps, and untick <span class="ui">loop</span>. An attack plays once.</p></li>
+    <li><p><b>Frame 1</b>: select the arm and the torso and press <span class="ui">Key all</span> on each, to pin the start pose. Set both keys' <span class="ui">Ease</span> to <span class="ui">easeInOut</span>, so the wind-up starts slowly.</p></li>
+    <li><p><b>Frame 3, wind-up</b>: swing the arm up and back over the head, and lean the torso back. In the side view that is about −150 and 10 of pitch. Set these keys to <span class="ui">step</span>, then key the same pose again on frame 4. The pose now <em>holds</em> on frames 3 and 4. This is anticipation: the moment the player reads "it's coming".</p></li>
+    <li><p><b>Frame 5, strike</b>: whip the arm down and forward (about 70) and throw the torso forward (about −18). Because frame 4's key is <span class="ui">linear</span> and only one frame away, the strike is a single frame of motion. Set frame 5 to <span class="ui">step</span> and key frame 6 with the same pose: the follow-through holds.</p></li>
+    <li><p><b>Frame 6 → 7, recover</b>: set frame 6 to <span class="ui">easeInOut</span>, and on frame 7 bring the arm and torso most of the way back to rest.</p></li>
+    <li><p>Play it. Then try frame 4 at <span class="ui">easeInOut</span> in place of <span class="ui">linear</span>, and see how a soft strike loses its punch.</p></li>
+  </ol>
+  <p>For a flash on the strike frame, key a part's <span class="ui">Visible</span> on frame 5 only. See <a href="04-animate.html#parts-in-the-timeline">Parts in the timeline</a>.</p>
+
+  <h2>Exercise: a death that stays down</h2>
+  <p>A death plays once and must <b>end on the floor</b>. The rules work for you here: after the last key the pose holds, so the body stays down for as long as the game shows it. Load <b>death</b> in the demo to see it.</p>
+  <ol class="steps">
+    <li><p>Add an animation named <b>death</b>, 8 frames at 8 fps, <span class="ui">loop</span> unticked.</p></li>
+    <li><p><b>Frame 1</b>: <span class="ui">Key all</span> on the root, the torso, the arm and the legs, with <span class="ui">easeInOut</span>, so the hit starts with a jolt and then gives.</p></li>
+    <li><p><b>Frame 3</b>: the knees buckle. Bend the thighs forward and the shins back, and lean the torso back. Key the root's <span class="ui">Move up</span> down a few pixels.</p></li>
+    <li><p><b>Frame 6</b>: lying down. The torso is nearly flat (about 85 of pitch, back), the legs are straight out, and the root is lowered until the body touches the floor line.</p></li>
+    <li><p><b>Frames 7 and 8</b>: a small bounce. Key the root up a pixel on frame 7 and back down on frame 8. Weight is in the settle.</p></li>
+    <li><p>Play it. When it reaches frame 8 it stops there, because a non-looping animation holds its last frame.</p></li>
+  </ol>
+  <div class="callout"><p>The studio guesses the <b>death</b> state from a name containing <i>death</i> or <i>die</i>, and <b>pain</b> from <i>pain</i> or <i>hurt</i>. A good pain animation is the first two frames of the death with a quick recovery, 3 or 4 frames long.</p></div>
+
+  <h2>Before you go back to the studio</h2>
+  <ul>
+    <li><b>Look at every view.</b> In the <span class="ui">3D</span> tab, turn up <span class="ui">Spread</span> to see every view at once while the animation plays. A pose that reads from the side can hide a limb from the front.</li>
+    <li><b>Check the layer order.</b> When an arm swings in front of the body in one view and behind it in another, set the part's order in that view's own scope. See <a href="03-rig.html#layer-order">Layer order, per view</a>.</li>
+    <li><b>Count the frames.</b> Every frame of every animation becomes a frame in the baked atlas, in every authored view. Eight frames are often plenty, and a 4-frame idle is fine.</li>
+    <li>Press <span class="ui">← studio</span>. The sprite is baked, and the monster's body card can pick idle, walk, attack, pain and death from your names.</li>
+  </ul>
+
+  <div class="quiz" data-answer="2">
+    <p class="q">You pose a walk in the front view by dragging the thighs, but the legs only splay sideways. Why?</p>
+    <ul>
+      <li>The thighs have no keys yet</li>
+      <li>The animation needs more frames</li>
+      <li>A drag turns a bone in the plane of the current view; a stride is pitch, so pose it in a side view</li>
+    </ul>
+    <p class="why">In the front view a drag changes roll, a sideways turn. Stepping forward and back is pitch, which only shows as a turn on screen in a side view.</p>
+  </div>
+  <div class="quiz" data-answer="1">
+    <p class="q">Your 8-frame walk has keys on frames 1, 3, 5 and 7, and loop is on. What happens on frame 8?</p>
+    <ul>
+      <li>It blends from frame 7 back towards frame 1</li>
+      <li>It holds frame 7's pose, so the cycle stalls for a frame</li>
+      <li>It shows frame 1's pose</li>
+    </ul>
+    <p class="why">After the last key a bone holds that key's pose, and looping doesn't wrap the in-betweens. Key frame 8 yourself, halfway between 7 and 1.</p>
+  </div>
+  <div class="quiz" data-answer="0">
+    <p class="q">The wind-up pose is on frames 3 and 4, and the strike is on frame 5. Which ease on frame 4's key gives the hardest hit?</p>
+    <ul>
+      <li>linear: one even frame of motion, straight into the strike</li>
+      <li>easeInOut: it slows into the strike</li>
+      <li>step: frame 4 holds, then frame 5 jumps</li>
+    </ul>
+    <p class="why">Step would work too, but it skips the motion entirely. Linear over one frame gives a fast, readable strike, and easeInOut softens the arrival, which is what you don't want in a hit.</p>
+  </div>
+  <div class="quiz" data-answer="2">
+    <p class="q">In the Animate tab you Shift-drag the arm's tip to make a punch reach further. What changed?</p>
+    <ul>
+      <li>A scale key on this frame</li>
+      <li>A move key on this frame</li>
+      <li>The arm bone's length, in every animation and the rest pose</li>
+    </ul>
+    <p class="why">Length belongs to the rig, not to an animation. Undo it, and key Scale up on the arm for a stretch over time.</p>
+  </div>
+</article>
+</body>
+</html>

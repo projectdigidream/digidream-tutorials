@@ -24,7 +24,8 @@ window.DNP_NAV = [
       { file: 'sprites/02-drawing.html', title: 'Drawing', kw: 'pencil eraser dither fill pick select move pan symmetry dim parts grid' },
       { file: 'sprites/03-rig.html', title: 'Rig, bones and parts', kw: 'bone part variant skin pivot foreshorten upright layer order' },
       { file: 'sprites/04-animate.html', title: 'Animating', kw: 'timeline keyframe onion fps loop ease key all' },
-      { file: 'sprites/05-preview-palettes-bake.html', title: '3D preview, palettes, baking', kw: '3d facing spread palette recolour export atlas bake world height solids' },
+      { file: 'sprites/05-bone-animation.html', title: 'Bone animation: walk, swing, fall', kw: 'bone animation walk cycle attack swing death pose keyframe contact passing hierarchy rotation pitch roll yaw loop seam ease' },
+      { file: 'sprites/06-preview-palettes-bake.html', title: '3D preview, palettes, baking', kw: '3d facing spread palette recolour export atlas bake world height solids' },
     ],
   },
   {
