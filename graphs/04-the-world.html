@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Talking to the world · Digidream Studio tutorials</title>
+<meta name="description" content="What a graph can do to the world: entities and their properties, sectors, lights, weather and the sky, sounds and music, cutscenes and the camera, panels and the HUD, and the player's keys.">
+<link rel="stylesheet" href="../assets/site.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 16%22%3E%3Cpath d=%22M8 1l7 7-7 7-7-7z%22 fill=%22%235b8fd6%22/%3E%3C/svg%3E">
+<script defer src="../assets/nav.js"></script>
+<script defer src="../assets/shortcuts.js"></script>
+<script defer src="../assets/site.js"></script>
+</head>
+<body>
+<article>
+  <h1>Talking to the world</h1>
+  <p class="lede">Variables are a graph's memory. This page is about its hands: the nodes that move, hurt, light, play, film and show things. Each section names the nodes, says what they act on, and points out what they cannot do.</p>
+  <div class="goal">
+    <b>You'll learn</b><span>how to act on entities and read them, move and restyle sectors, play sounds and change the music, run a cutscene and preview it with ▶ scene, open and answer panels, write HUD values, and answer the player's keys</span>
+    <b>Time</b><span>40 minutes</span>
+    <b>Needs</b><span><a href="01-thinking-in-graphs.html">Thinking in graphs</a> and <a href="02-variables-and-numbers.html">Variables, numbers and saving</a>; camera paths (<a href="../studio/05-camera.html">Camera and cinematics</a>) and panels (<a href="../studio/08-look-and-feel.html">Sky, screens and weather</a>) for those sections</span>
+  </div>
+
+  <h2>Entities: doing things to them</h2>
+  <p>An entity is anything with a body: a player, a monster, a prop. The menu's <span class="ui">do to a thing</span> group acts on one. Each node has an <code>entity</code> pin: unlinked, it is the event's entity; linked, it is that one; linked to nothing, the node does nothing.</p>
+  <table>
+    <thead><tr><th>Node</th><th>What it does</th><th>Defaults</th></tr></thead>
+    <tbody>
+      <tr><td><a href="../reference/graph-nodes.html#damage"><code>damage</code></a></td><td>Hurts it as a weapon does. A monster feels pain, dies, and drops what it carries.</td><td>amount 10</td></tr>
+      <tr><td><a href="../reference/graph-nodes.html#heal"><code>heal</code></a></td><td>Gives health back, up to <code>max</code>.</td><td>amount 25, max 100</td></tr>
+      <tr><td><a href="../reference/graph-nodes.html#kill"><code>kill</code></a></td><td>Kills it outright, as if shot.</td><td></td></tr>
+      <tr><td><a href="../reference/graph-nodes.html#remove"><code>remove</code></a></td><td>Takes it out of the world, with no death.</td><td></td></tr>
+      <tr><td><a href="../reference/graph-nodes.html#teleport"><code>teleport</code></a></td><td>Puts it at a spawn point (by tag), onto the entity linked to <code>to</code>, or at x, y, z. An axis you leave out stays as it is.</td><td></td></tr>
+      <tr><td><a href="../reference/graph-nodes.html#push"><code>push</code></a></td><td>A shove it slides from: <code>forward</code>, <code>backward</code>, <code>away</code> or <code>toward</code> the entity linked to <code>from</code>, <code>up</code>, or at an <code>angle</code> (0 is east, 90 north).</td><td>strength 10 units a second</td></tr>
+      <tr><td><a href="../reference/graph-nodes.html#stop"><code>stop</code></a></td><td>Takes all its velocity away.</td><td></td></tr>
+      <tr><td><a href="../reference/graph-nodes.html#speed_up"><code>speed_up</code></a></td><td>Faster or slower for a while: 2 is twice as fast, 0.5 half.</td><td>factor 2, 5 seconds</td></tr>
+      <tr><td><a href="../reference/graph-nodes.html#spawn"><code>spawn</code></a></td><td>Brings a monster or a catalogue prop into the world, at the entity linked to <code>at</code>, or at x, y, z. Its <code>entity</code> output is what appeared, or nil.</td><td></td></tr>
+      <tr><td><a href="../reference/graph-nodes.html#play_sound"><code>play_sound</code></a></td><td>A sound, from the entity.</td><td></td></tr>
+    </tbody>
+  </table>
+  <p>A <a href="../reference/graph-nodes.html#teleport"><code>teleport</code></a> lands at the end of the tick, like every change to the world. A <a href="../reference/graph-nodes.html#position_of"><code>position_of</code></a> later in the same run still reads the old place.</p>
+
+  <h3>Reading entities</h3>
+  <p>The <span class="ui">read</span> group has pure nodes that give values:</p>
+  <ul>
+    <li><a href="../reference/graph-nodes.html#position_of"><code>position_of</code></a>: <code>x</code>, <code>y</code>, <code>z</code>, in map units.</li>
+    <li><a href="../reference/graph-nodes.html#health_of"><code>health_of</code></a>: its health.</li>
+    <li><a href="../reference/graph-nodes.html#distance"><code>distance</code></a>: how far apart the entities linked to <code>a</code> and <code>b</code> are.</li>
+    <li><a href="../reference/graph-nodes.html#nearest_player"><code>nearest_player</code></a>: the player nearest the entity linked to <code>to</code> (the event's, when nothing is), or nil.</li>
+    <li><a href="../reference/graph-nodes.html#sector_of"><code>sector_of</code></a>: the sector it stands in. Link it into a door's <code>sector</code> to open "the door the player is at".</li>
+  </ul>
+  <p>And through <a href="../reference/graph-nodes.html#get_var"><code>get_var</code></a>, <a href="../reference/graph-nodes.html#set_var"><code>set_var</code></a> and <a href="../reference/graph-nodes.html#add_var"><code>add_var</code></a>, every property: <a href="../reference/graph-nodes.html#prop.hp"><code>hp</code></a>, <a href="../reference/graph-nodes.html#prop.alive"><code>alive</code></a>, <a href="../reference/graph-nodes.html#prop.grounded"><code>grounded</code></a>, <a href="../reference/graph-nodes.html#prop.facing"><code>facing</code></a>, <a href="../reference/graph-nodes.html#prop.is_player"><code>is_player</code></a>, <a href="../reference/graph-nodes.html#prop.name"><code>name</code></a>, and the 45 movement rules. See <a href="02-variables-and-numbers.html">Variables, numbers and saving</a>.</p>
+  <div class="callout tip"><p>To give a player a temporary power, set a movement rule and set it back later: <a href="../reference/graph-nodes.html#set_var"><code>set_var</code></a> <a href="../reference/graph-nodes.html#prop.jump_impulse"><code>jump_impulse</code></a> to 20, a <a href="../reference/graph-nodes.html#delay"><code>delay</code></a> of 600 ticks, then <a href="../reference/graph-nodes.html#set_var"><code>set_var</code></a> it back to the module's value. On a player this is an effect, and a later set replaces it.</p></div>
+
+  <h2>Sectors: doors, floors, lifts</h2>
+  <p>The <span class="ui">move the map</span> group moves sectors. Each node acts on a sector in one of three ways: <code>sector</code> <em>picked</em> on the map, a <code>sector</code> pin linked (from <a href="../reference/graph-nodes.html#sector_of"><code>sector_of</code></a>), or a <code>tag</code>, which means every sector carrying that tag. Speeds are <code>slow</code>, <code>normal</code> or <code>fast</code>.</p>
+  <table>
+    <thead><tr><th>Node</th><th>Moves</th></tr></thead>
+    <tbody>
+      <tr><td><a href="../reference/graph-nodes.html#open_door"><code>open_door</code></a>, <a href="../reference/graph-nodes.html#close_door"><code>close_door</code></a></td><td>A DOOM door: the ceiling rises to just under the lowest ceiling beside it, or comes down to the floor. <code>close_after</code> shuts it again after some seconds.</td></tr>
+      <tr><td><a href="../reference/graph-nodes.html#move_floor"><code>move_floor</code></a>, <a href="../reference/graph-nodes.html#move_ceiling"><code>move_ceiling</code></a></td><td>Up or down by an <code>amount</code>, to the next floor up, the lowest or highest one beside it, or back where it started (<code>original</code>).</td></tr>
+      <tr><td><a href="../reference/graph-nodes.html#lift"><code>lift</code></a></td><td>A DOOM lift: down to the lowest floor beside it, a <code>wait</code> (3 seconds), and back up.</td></tr>
+      <tr><td><a href="../reference/graph-nodes.html#slide_sector"><code>slide_sector</code></a></td><td>The whole sector sideways by <code>dx</code>, <code>dy</code>; <code>back_and_forth</code> keeps it going.</td></tr>
+      <tr><td><a href="../reference/graph-nodes.html#spin_sector"><code>spin_sector</code></a></td><td>Turns it about its middle, 360° by default; <code>forever</code> keeps it turning.</td></tr>
+      <tr><td><a href="../reference/graph-nodes.html#stop_sector"><code>stop_sector</code></a></td><td>Stops it where it is.</td></tr>
+    </tbody>
+  </table>
+  <p>These are the trigger runtime's own sector moves underneath. The server sends a move once, and every player's machine computes the rest, so a graph's door costs no more than a trigger's and moves just as smoothly.</p>
+  <div class="callout warn"><p>A door you can press again while it moves will restart halfway. A trigger door guards against that with the condition <code>sector_at_rest</code>. In a graph, use the same condition from <span class="ui">trigger words</span> (<span class="ui">if sector at rest</span>) before the move.</p></div>
+
+  <h3>Looks: pictures, light, weather, the sky</h3>
+  <table>
+    <thead><tr><th>Node</th><th>Changes</th></tr></thead>
+    <tbody>
+      <tr><td><a href="../reference/graph-nodes.html#set_floor_texture"><code>set_floor_texture</code></a>, <a href="../reference/graph-nodes.html#set_ceiling_texture"><code>set_ceiling_texture</code></a></td><td>A sector's floor or ceiling picture. <code>F_SKY1</code> on a ceiling opens it to the sky.</td></tr>
+      <tr><td><a href="../reference/graph-nodes.html#set_sector_light"><code>set_sector_light</code></a></td><td>Its light, 0 (dark) to 255 (full), at once or fading over <code>seconds</code>.</td></tr>
+      <tr><td><a href="../reference/graph-nodes.html#set_sector_effect"><code>set_sector_effect</code></a></td><td><code>rain</code>, <code>snow</code>, <code>dust</code>, <code>embers</code> or <code>fog</code>; <code>on</code> or off, with a <code>density</code> and a <code>color</code> (#rrggbb).</td></tr>
+      <tr><td><a href="../reference/graph-nodes.html#set_wall_texture"><code>set_wall_texture</code></a></td><td>What one wall shows: its <code>upper</code>, <code>middle</code> (the default) or <code>lower</code> part. A switch flipped, a screen lit.</td></tr>
+      <tr><td><a href="../reference/graph-nodes.html#set_sky"><code>set_sky</code></a></td><td>The level's sky: <code>strip</code>, <code>panorama</code>, <code>cube</code>, or <code>default</code> to go back to the module's.</td></tr>
+    </tbody>
+  </table>
+  <p>The server keeps these looks like a thrown switch. A player who arrives later sees them as they are, and they are saved with the level. They are looks only: nothing in the simulation reads them, so fog does not hide you from a monster and a dark room does not slow you down.</p>
+
+  <h2>Sounds and music</h2>
+  <ul>
+    <li><a href="../reference/graph-nodes.html#play_sound"><code>play_sound</code></a> plays one of the module's sounds from an entity, so it is heard from where that entity is. Its <code>sound</code> is chosen from the module's <b>Sounds</b> (see <a href="../sounds/03-takes-and-in-game.html">Takes and in-game rules</a>). In a run with no entity (<code>every</code>, <code>after</code>, <code>when_level_starts</code>), link one in, or nothing plays.</li>
+    <li>The music is the trigger action <code>music</code>: in the node menu, <span class="ui">do music</span> in the <span class="ui">trigger words</span> group. It switches the map's soundtrack to another cue.</li>
+  </ul>
+  <table>
+    <thead><tr><th>Field</th><th>Meaning</th></tr></thead>
+    <tbody>
+      <tr><td><code>cue</code></td><td>A cue of this map's soundtrack, by name. <code>default</code> is the one the map starts with.</td></tr>
+      <tr><td><code>fade</code></td><td>Milliseconds of crossfade; 800 when empty.</td></tr>
+      <tr><td><code>at</code></td><td>When it lands: <code>next_bar</code> (the default), <code>loop_end</code>, or <code>now</code>.</td></tr>
+      <tr><td><code>everyone</code></td><td>Every player in the level, not just the event's.</td></tr>
+    </tbody>
+  </table>
+  <p>The change is not remembered: a player who joins later hears <code>default</code>. To keep a boss theme for latecomers, also play it from <a href="../reference/graph-nodes.html#when_player_arrives"><code>when_player_arrives</code></a> while a <code>boss_awake</code> variable is true. Cues are named in the <b>♪ Music</b> section; see <a href="../music/05-loops-and-cues.html">Loops, cuts and cues</a>.</p>
+
+  <h2>Cutscenes and the camera</h2>
+  <p>A cutscene is a chain of plain nodes, from the menu's <span class="ui">cutscene</span> and <span class="ui">camera</span> groups. Each acts on the event's player, or on every player in the level with <code>everyone</code> ticked. In a run with no player (<code>every</code>, <code>after</code>, <code>when_level_starts</code>) and nothing linked to <code>entity</code>, they act on every player too.</p>
+  <table>
+    <thead><tr><th>Node</th><th>Does</th><th>Exits</th></tr></thead>
+    <tbody>
+      <tr><td><a href="../reference/graph-nodes.html#start_cinematic"><code>start_cinematic</code></a></td><td>Takes the controls (no move, jump, dash, use or attack) and brings in the letterbox bars: 0.12 of the screen, over 0.5 seconds.</td><td>then</td></tr>
+      <tr><td><a href="../reference/graph-nodes.html#end_cinematic"><code>end_cinematic</code></a></td><td>Gives it all back: the controls, the camera following the player, the subtitle off.</td><td>then</td></tr>
+      <tr><td><a href="../reference/graph-nodes.html#subtitle"><code>subtitle</code></a></td><td>A line at the bottom, with an optional <code>speaker</code>. It stays <code>seconds</code>, or long enough to read (1.5 s plus 0.05 s a letter, at most 8).</td><td>then, done</td></tr>
+      <tr><td><a href="../reference/graph-nodes.html#clear_subtitle"><code>clear_subtitle</code></a></td><td>Takes the line off now.</td><td>then</td></tr>
+      <tr><td><a href="../reference/graph-nodes.html#fade"><code>fade</code></a></td><td>To <code>black</code> or back to <code>clear</code>, over 1 second by default.</td><td>then, done</td></tr>
+      <tr><td><a href="../reference/graph-nodes.html#camera_flythrough"><code>camera_flythrough</code></a></td><td>Flies the camera along a camera path, picked by its tag, looking where the path looks. 6 units a second, easing on over 1 second.</td><td>then, done</td></tr>
+      <tr><td><a href="../reference/graph-nodes.html#camera_track"><code>camera_track</code></a></td><td>Rides a path but keeps looking at the player: a dolly down a corridor.</td><td>then</td></tr>
+      <tr><td><a href="../reference/graph-nodes.html#camera_follow"><code>camera_follow</code></a></td><td>Back to following the player, from a <code>distance</code>, <code>height</code> and <code>angle</code>; <code>lock</code> holds them.</td><td>then</td></tr>
+      <tr><td><a href="../reference/graph-nodes.html#camera_shake"><code>camera_shake</code></a></td><td>A shake: 0.3 strength for 0.5 seconds by default.</td><td>then</td></tr>
+    </tbody>
+  </table>
+  <p>Chain the <b>done</b> exits, not the <b>then</b> ones, when the next step should wait:</p>
+  <pre><code>when_level_starts → start_cinematic → camera_flythrough ─done→ subtitle "…" ─done→ end_cinematic</code></pre>
+  <div class="callout tip"><p><a href="../reference/graph-nodes.html#start_cinematic"><code>start_cinematic</code></a> blocks every engine button, but the module's own keys still reach graphs. Make a <code>skip</code> key in <b>Controls</b> and answer it with <a href="../reference/graph-nodes.html#when_button_pressed"><code>when_button_pressed</code></a> → <a href="../reference/graph-nodes.html#end_cinematic"><code>end_cinematic</code></a>.</p></div>
+  <h3>Previewing with ▶ scene</h3>
+  <p>Once a graph has nodes, the window's bar has <span class="ui">▶ scene</span>. It plays the run from the picked node, or else from the first start node that reaches a cutscene or camera node, over the map, with the game's own timings: the bars, the fades, each subtitle as the HUD draws it, the camera on its curve, the shakes. Things only the server does (a door, a log line, a call) appear as a line in the corner when they happen. <kbd>Esc</kbd> or <span class="ui">■</span> comes back, and <span class="ui">↻</span> plays it again.</p>
+  <p>The preview has no game state to decide by, so every <a href="../reference/graph-nodes.html#branch"><code>branch</code></a> takes <b>true</b>, and it says so. It stops after 256 steps or two minutes.</p>
+
+  <h2>Panels and the HUD</h2>
+  <p>Panels are the module's library of small windows (a shop, a terminal, a main menu), designed in the <b>Panels</b> section (see <a href="../studio/08-look-and-feel.html">Sky, screens and weather</a>). A graph opens, fills and answers them <b>by name</b>. The menu's <span class="ui">panels</span> group has entries per panel and per widget, already filled in: <span class="ui">open shop</span>, <span class="ui">close shop</span>, <span class="ui">when shop is closed</span>, <span class="ui">is shop open?</span>, <span class="ui">when shop › buy is pressed</span>, <span class="ui">set shop › volume</span>, <span class="ui">show shop › sell</span>.</p>
+  <table>
+    <thead><tr><th>Node</th><th>What it does</th></tr></thead>
+    <tbody>
+      <tr><td><a href="../reference/graph-nodes.html#open_panel"><code>open_panel</code></a></td><td>Shows the panel to the player. Opened again, it replaces itself.</td></tr>
+      <tr><td><a href="../reference/graph-nodes.html#close_panel"><code>close_panel</code></a></td><td>Takes it away, if this player has it open.</td></tr>
+      <tr><td><a href="../reference/graph-nodes.html#when_panel_used"><code>when_panel_used</code></a></td><td>A button pressed, a toggle flipped, a slider moved, an option chosen. Gives <code>widget</code> (its name) and <code>value</code>. Leave <code>widget</code> empty to hear them all.</td></tr>
+      <tr><td><a href="../reference/graph-nodes.html#when_panel_closed"><code>when_panel_closed</code></a></td><td>The player closed it with its ×. Not fired by <code>close_panel</code>.</td></tr>
+      <tr><td><a href="../reference/graph-nodes.html#panel_is_open"><code>panel_is_open</code></a></td><td>Whether the player has it open.</td></tr>
+      <tr><td><a href="../reference/graph-nodes.html#set_widget"><code>set_widget</code></a></td><td>What a toggle (0 or 1), slider (position) or select (index) shows.</td></tr>
+      <tr><td><a href="../reference/graph-nodes.html#show_element"><code>show_element</code></a>, <a href="../reference/graph-nodes.html#hide_element"><code>hide_element</code></a></td><td>Shows or hides one widget, or one decor element of the panel's template. Hidden is not gone: a slider keeps its value.</td></tr>
+      <tr><td><a href="../reference/graph-nodes.html#set_hud"><code>set_hud</code></a></td><td>Writes a HUD value. A panel's changing text (gold, a timer) is a template text with <code>{hud.gold}</code> in it, and a decor bar can follow a HUD value too.</td></tr>
+    </tbody>
+  </table>
+  <ul>
+    <li><b>A panel is answered where it was opened.</b> A panel the game's graph opened is answered by the game's graphs, and stays open from level to level. A level's panel is answered by that level's graphs, and closes when the player leaves.</li>
+    <li><a href="../reference/graph-nodes.html#set_hud"><code>set_hud</code></a> goes to the event's player by default. In a run with no player, set <code>to</code> to <code>everyone</code>, or it reaches nobody.</li>
+    <li>The older way still works: the trigger words <span class="ui">open a panel</span> (<code>ui_open</code>), and <span class="ui">when a panel is used</span> with <span class="ui">if it was this widget …</span> (<code>on_ui_event</code> and <code>widget_is</code>). That event's data outputs are numbers: <code>ui_id</code> and <code>widget_id</code>. Prefer the panel nodes, which name things.</li>
+  </ul>
+  <p>A graph that names a panel it does not carry, or a widget the panel lacks, is refused when it loads. The studio says so first, in red.</p>
+
+  <h2>The player's keys</h2>
+  <ul>
+    <li><a href="../reference/graph-nodes.html#when_button_pressed"><code>when_button_pressed</code></a> fires once, on the tick the button goes down.</li>
+    <li><a href="../reference/graph-nodes.html#when_button_released"><code>when_button_released</code></a> fires on the tick it comes up.</li>
+    <li><a href="../reference/graph-nodes.html#button_held"><code>button_held</code></a> reads whether it is down now (link the player into its <code>entity</code>).</li>
+  </ul>
+  <p>A <code>button</code> is one of the engine's (<code>jump</code>, <code>dash</code>, <code>grab</code>, <code>hover</code>, <code>fly</code>, <code>grapple</code>, <code>use</code>, <code>attack</code>, <code>alt_attack</code>, <code>crouch</code>) or one of the module's own keys, made in <b>Controls</b> (<a href="../studio/07-workshops.html#controls">Controls</a>). A module key can have a touch button too. A button nobody has is a problem: <em>no button or key called …</em></p>
+  <p>The weapon nodes follow the same pattern: act (<a href="../reference/graph-nodes.html#give_weapon"><code>give_weapon</code></a>, <a href="../reference/graph-nodes.html#take_weapon"><code>take_weapon</code></a>, <a href="../reference/graph-nodes.html#select_weapon"><code>select_weapon</code></a>, <a href="../reference/graph-nodes.html#give_ammo"><code>give_ammo</code></a>, <a href="../reference/graph-nodes.html#set_ammo"><code>set_ammo</code></a>), read (<a href="../reference/graph-nodes.html#held_weapon"><code>held_weapon</code></a>, <a href="../reference/graph-nodes.html#has_weapon"><code>has_weapon</code></a>, <a href="../reference/graph-nodes.html#ammo_of"><code>ammo_of</code></a>) and start (<a href="../reference/graph-nodes.html#when_weapon_changed"><code>when_weapon_changed</code></a>, <a href="../reference/graph-nodes.html#when_fired"><code>when_fired</code></a>, <a href="../reference/graph-nodes.html#when_out_of_ammo"><code>when_out_of_ammo</code></a>). See the <a href="../weapons/04-ammo-and-pickups.html">Weapons</a> track.</p>
+
+  <h2>Exercise: a power cut</h2>
+  <p>A switch kills the lights, fog rolls in, the music turns tense, and a ten-second cutscene shows the danger.</p>
+  <ol class="steps">
+    <li><p>Give the rooms you want darkened a tag, say <code>5</code>, in their room settings. Draw a camera path over them with tag <code>1</code> (<a href="../studio/05-camera.html">Camera and cinematics</a>).</p></li>
+    <li><p>Make a graph <code>power</code>. Add <a href="../reference/graph-nodes.html#when_wall_used"><code>when_wall_used</code></a> and pick the switch wall. Link it to a <a href="../reference/graph-nodes.html#once"><code>once</code></a>.</p></li>
+    <li><p>Then a <a href="../reference/graph-nodes.html#set_sector_light"><code>set_sector_light</code></a>: tag <code>5</code>, light <code>40</code>, seconds <code>2</code>. Then a <a href="../reference/graph-nodes.html#set_sector_effect"><code>set_sector_effect</code></a>: tag <code>5</code>, effect <code>fog</code>.</p></li>
+    <li><p>Then <span class="ui">do music</span> with cue set to one of your map's cues, <code>at</code> <code>now</code> and <code>everyone</code> on.</p></li>
+    <li><p>Then <a href="../reference/graph-nodes.html#start_cinematic"><code>start_cinematic</code></a> → <a href="../reference/graph-nodes.html#camera_flythrough"><code>camera_flythrough</code></a> (path <code>1</code>). From its <b>done</b>, a <a href="../reference/graph-nodes.html#subtitle"><code>subtitle</code></a> <code>Something is moving in the dark.</code>, and from the subtitle's <b>done</b>, <a href="../reference/graph-nodes.html#end_cinematic"><code>end_cinematic</code></a>.</p></li>
+    <li><p>Pick the <code>when_wall_used</code> node and press <span class="ui">▶ scene</span>. Watch the light and music lines go by in the corner, then the flight and the line. Press <kbd>Esc</kbd>.</p></li>
+  </ol>
+
+  <div class="quiz" data-answer="1">
+    <p class="q">A graph sets a room's light to 40. A second player joins a minute later. What do they see?</p>
+    <ul>
+      <li>The room at its original light</li>
+      <li>The room at 40: the server keeps sector looks and sends them to newcomers</li>
+      <li>A fade from the original light to 40</li>
+    </ul>
+    <p class="why">Pictures, light and effects are kept by the server like a thrown switch, and saved with the level. The music is the one that is not remembered.</p>
+  </div>
+  <div class="quiz" data-answer="0">
+    <p class="q">During a cutscene started with <code>start_cinematic</code>, the player presses your module's <code>skip</code> key. Does a <code>when_button_pressed skip</code> node fire?</p>
+    <ul>
+      <li>Yes: the module's own keys still reach graphs</li>
+      <li>No: every button is blocked until <code>end_cinematic</code></li>
+      <li>Only if the cutscene was started with <code>everyone</code></li>
+    </ul>
+    <p class="why">The cinematic takes the engine's buttons away, but leaves the module's keys to graphs, so a skip is possible.</p>
+  </div>
+  <div class="quiz" data-answer="2">
+    <p class="q">▶ scene plays a graph with a <code>branch</code> in it. Which way does the preview go?</p>
+    <ul>
+      <li>Both ways, one after the other</li>
+      <li>It stops at the branch</li>
+      <li>true, and it says so</li>
+    </ul>
+    <p class="why">The preview has no game state to decide by, so it takes true and notes it.</p>
+  </div>
+</article>
+</body>
+</html>

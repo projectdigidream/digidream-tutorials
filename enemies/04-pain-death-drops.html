@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pain, death and drops · Digidream Studio tutorials</title>
+<meta name="description" content="What happens when a monster is hit: hit points, the pain roll and flinch length, death and corpses, what it drops, its own vars, and the sounds it makes.">
+<link rel="stylesheet" href="../assets/site.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 16%22%3E%3Cpath d=%22M8 1l7 7-7 7-7-7z%22 fill=%22%235b8fd6%22/%3E%3C/svg%3E">
+<script defer src="../assets/nav.js"></script>
+<script defer src="../assets/shortcuts.js"></script>
+<script defer src="../assets/site.js"></script>
+</head>
+<body>
+<article>
+  <h1>Pain, death and drops</h1>
+  <p class="lede">A fight is mostly the player hitting things. How a monster answers a hit tells the player whether it worked: a flinch, a scream, a body on the floor, a medikit where it fell. This lesson covers everything that happens between the first hit and the last, plus the monster's own counters and its voice.</p>
+  <div class="goal">
+    <b>You'll learn</b><span>the order of events when a hit lands; how <code>pain_chance</code> and the flinch length work; how death, corpses and revival work; drops and weighted choices; the <span class="ui"># vars</span> tab; and how to give a monster sounds</span>
+    <b>Time</b><span>35 minutes</span>
+    <b>Needs</b><span>the <code>grunt</code> from the earlier lessons, a pickup prop in the module (a medikit, say), and a sound pack with a few monster sounds (<a href="../sounds/04-mix-and-ship.html">Mix, test and ship</a>)</span>
+  </div>
+
+  <h2>When a hit lands</h2>
+  <p>Hits do not wait for the monster's next decision. The moment one lands, the engine does this, in order:</p>
+  <ol>
+    <li><b>Take the hit points.</b> <a href="../reference/monster-vocab.html#mob_fields.hp"><code>hp</code></a> on <span class="ui">🧠 brain</span> is its starting health. The engine itself has no idea of health; this number belongs to the brain.</li>
+    <li><b>Dead?</b> At 0 or below, it dies at once. See <a href="#death">Death</a>.</li>
+    <li><b>Infighting.</b> If another monster did it and <code>infighting</code> is on, that monster becomes its target.</li>
+    <li><b>The pain roll.</b> It may flinch. See below.</li>
+  </ol>
+  <p>The hit is also remembered for the brain's own conditions: <a href="../reference/monster-vocab.html#was_hurt"><code>was_hurt</code></a> (something hurt it within the last few ticks), <a href="../reference/monster-vocab.html#hurt_by_mob"><code>hurt_by_mob</code></a> (another monster did) and <a href="../reference/monster-vocab.html#hp_below"><code>hp_below</code></a> (health under a percent of its start).</p>
+  <div class="callout tip"><p><b>Give <code>was_hurt</code> a window.</b> Its <code>within</code> defaults to 1 tick, and a monster only decides every 8, so with the default it almost never sees the hit. Set <code>within</code> to 8 or more.</p></div>
+
+  <figure class="shot" data-src="../assets/shots/enemy-brain.png" data-alt="The brain tab: initial state, hp, sight, pain_chance, turn_speed, jump_height, flying, hover_z, infighting, blood, corpse, mass, then the flinch" data-hotspots='[{"x":89,"y":28,"t":"hp","d":"Starting health. The engine has none of its own"},{"x":89,"y":40,"t":"pain_chance","d":"Out of 256: how often a hit makes it flinch"},{"x":89,"y":76,"t":"blood","d":"The particle kind it sprays when hurt, whatever hit it"},{"x":89,"y":82,"t":"corpse","d":"Whether the body stays after it dies"},{"x":83,"y":96,"t":"the flinch","d":"a bigger hit, a longer flinch"}]'>
+    <figcaption>The <span class="ui">🧠 brain</span> tab of the starter module's <code>spirit</code>, a flyer. Optional fields end in <b>?</b>.</figcaption>
+  </figure>
+  <h2>Pain: the flinch</h2>
+  <p>A flinch tells the player a hit landed, and gives them a moment. It happens only when <b>all</b> of these are true:</p>
+  <ul>
+    <li>the brain has a state called exactly <code>pain</code>;</li>
+    <li><a href="../reference/monster-vocab.html#mob_fields.pain_chance"><code>pain_chance</code></a> is set (empty means it never flinches);</li>
+    <li>the state it is in now does not have <code>interruptible</code> switched off;</li>
+    <li>a roll from 0 to 255 comes out below <code>pain_chance</code>.</li>
+  </ul>
+  <p>So <code>pain_chance</code> is out of 256. Doom's own numbers are good guides: an imp 200 (it flinches most of the time), a baron 50, a cyberdemon 20. 128 flinches half the time. Keep it well under 255 for a monster that matters: one that nearly always flinches can be held in pain forever by a fast weapon.</p>
+  <p>The <code>pain</code> state itself is a normal state: <code>move</code> stop, <code>anim</code> 3, a short <code>ticks</code>, and <code>next</code> back to <code>chase</code>. Hits do not care what the state does next, so a pain state can be smart: its <code>next</code> could be a <code>flee</code> state for a coward.</p>
+  <h3>Attacks that cannot be interrupted</h3>
+  <p>Switch <code>interruptible</code> off on an attack state, and a hit during it never causes a flinch. The monster finishes its blow. Use it for a big wind-up the player must dodge rather than stagger. Death still interrupts everything.</p>
+
+  <h3>💢 A bigger hit, a longer flinch</h3>
+  <p>By default every flinch lasts what the <code>pain</code> state's <code>ticks</code> says, whether a pistol or a rocket caused it. On <span class="ui">🧠 brain</span>, under <b>💢 the flinch</b>, the switch <span class="ui">a bigger hit, a longer flinch</span> adds a share of each hit's damage. Switching it on writes a <a href="../reference/monster-vocab.html#mob_fields.pain_time"><code>pain_time</code></a> with two fields:</p>
+  <table>
+    <thead><tr><th>Field</th><th>Starts at</th><th>What it does</th></tr></thead>
+    <tbody>
+      <tr><td><a href="../reference/monster-vocab.html#pain_time_fields.per_damage"><code>per_damage</code></a></td><td>0.5</td><td>Extra ticks per point of damage. 0.5 is one tick for every two points.</td></tr>
+      <tr><td><a href="../reference/monster-vocab.html#pain_time_fields.max"><code>max</code></a></td><td>40, or three times the pain ticks if that is more</td><td>The longest a flinch may last. Always keep one: without it, one big hit is a stun-lock.</td></tr>
+    </tbody>
+  </table>
+  <p>The flinch is the pain ticks, plus the damage times <code>per_damage</code> (rounded down), capped at <code>max</code>. The tab works it out for you: <em>"A flinch lasts 10 ticks (60 a second); a 10-point hit 15, a 50-point 35, a 100-point 40."</em> Without a <code>pain</code> state, the section says the monster never flinches, and offers nothing to switch.</p>
+  <div class="callout tip"><p>A graph can change a monster's base flinch while the game runs: <code>set_var</code> on its <code>pain_ticks</code> property. A boss that grows tougher as it is hurt can shorten its flinches this way. It applies from its next flinch.</p></div>
+
+  <h2 id="death">Death</h2>
+  <p>When <code>hp</code> reaches 0, these happen at once, not on the next decision:</p>
+  <ol>
+    <li>It stops being solid, so you can walk over it, and forgets its target.</li>
+    <li>It enters the state called <code>death</code>.</li>
+    <li>The steps of <code>death</code>'s sequence with <code>at</code> 0 run, once: a scream, a last burst, a final brood.</li>
+    <li>Its drops are rolled and placed.</li>
+    <li>With <a href="../reference/monster-vocab.html#mob_fields.corpse"><code>corpse</code></a> on, the body stays. With it off, the body is removed straight away.</li>
+  </ol>
+  <p><b>The dead do not think.</b> After that moment the monster never decides again. Steps of <code>death</code> at any later <code>at</code> never run, and its transitions are never tried. The new monster's <code>death</code> has <code>ticks</code> 100 and <code>next</code> death: a state that ends and stays. Keep that shape.</p>
+  <div class="callout warn"><p><b>Without <code>corpse</code>, there is no death animation to see.</b> The body is removed in the same moment it dies. Leave <code>corpse</code> on for anything with a death animation. The world keeps at most 32 corpses and recycles the oldest, so a long fight does not fill the map.</p></div>
+  <p>A corpse can come back. The action <a href="../reference/monster-vocab.html#revive"><code>revive</code></a>, run by another monster, puts corpses within a <code>radius</code> back on their feet, optionally only of one <code>mob</code> kind. A monster without <code>corpse</code> leaves nothing to revive. Use <a href="../reference/monster-vocab.html#mob_within"><code>mob_within</code></a> with <code>alive</code> off to find a corpse before starting the spell.</p>
+
+  <h2>🎁 Drops</h2>
+  <p>A drop is what a monster leaves where it dies. It is rolled on the server the moment it dies, so every player sees the same result. On <span class="ui">🧠 brain</span>, under <b>🎁 drops</b>:</p>
+  <ul>
+    <li><span class="ui">+ drop</span> adds an entry with an <code>item</code>: a catalogue name, dropped <b>every</b> time. <code>count</code> drops several, spread round the body.</li>
+    <li><span class="ui">+ weighted choice</span> turns the entry into <code>one_of</code>: a list of choices, each with an <code>item</code> and a <code>weight</code>. Exactly one choice drops. A choice with no item drops <b>nothing</b>, which is how you make a drop a chance.</li>
+    <li>Under the choices, the tab says how often something drops: <em>"Something drops 25% of the time."</em></li>
+  </ul>
+  <p>A medikit one time in four is two choices: <code>medikit</code> with weight 1, and nothing with weight 3.</p>
+  <pre><code>drops = {
+  { item = "ammo_clip" },                                    -- always
+  { one_of = { { item = "medikit", weight = 1 }, { weight = 3 } } },  -- one in four
+}</code></pre>
+  <p>An item is a <b>prop</b>, by name. To make it give the player something when they walk over it, it must also be a pickup: a pickup is named by a prop, and walking over that prop grants it. Pickups are set up in the weapons workshop's arsenal (<a href="../weapons/04-ammo-and-pickups.html">Ammo, pickups and the arsenal</a>). A dropped item works exactly like a placed one: a dropped clip gives a full clip.</p>
+  <div class="callout warn"><p>If the item's name is not in the catalogue, nothing drops, and the server prints once that the monster <em>could not drop</em> it. The <code>item</code> box suggests names as you type; use them, and check the spelling.</p></div>
+
+  <h2 id="vars"># Vars: the brain's own memory</h2>
+  <p>A var is a whole number each monster keeps for itself. Every monster of the kind gets its own copy when it spawns, starting at the value you give. The <span class="ui"># vars</span> tab shows them as chips, <code>ready = 0</code>:</p>
+  <ul>
+    <li><span class="ui">+ var</span> asks for a <em>"var name"</em>.</li>
+    <li>Tap a chip to set its starting value. Empty removes it.</li>
+  </ul>
+  <p>A var must be declared here before a condition or action can name it; the problem count says so if one is missing. Vars hold three kinds of thing:</p>
+  <table>
+    <thead><tr><th>Kind</th><th>Written by</th><th>Read by</th></tr></thead>
+    <tbody>
+      <tr><td>a <b>deadline</b> (a tick number)</td><td><a href="../reference/monster-vocab.html#set_cooldown"><code>set_cooldown</code></a></td><td><a href="../reference/monster-vocab.html#cooldown_ready"><code>cooldown_ready</code></a></td></tr>
+      <tr><td>a <b>count</b> or a <b>flag</b></td><td><a href="../reference/monster-vocab.html#set_var"><code>set_var</code></a>, <a href="../reference/monster-vocab.html#add_var"><code>add_var</code></a>, <a href="../reference/monster-vocab.html#var_random"><code>var_random</code></a></td><td><a href="../reference/monster-vocab.html#var_is"><code>var_is</code></a>, <a href="../reference/monster-vocab.html#var_at_least"><code>var_at_least</code></a></td></tr>
+      <tr><td>a <b>heading</b></td><td><a href="../reference/monster-vocab.html#set_angle"><code>set_angle</code></a></td><td>the <code>face</code> action, and <code>move</code> wander (the var called <code>wander</code>)</td></tr>
+    </tbody>
+  </table>
+  <p>Examples: a <code>shots</code> count that sends a gunner to reload after six; a <code>phase</code> flag for a boss; a <code>roll</code> from <code>var_random</code> 1–100 that three transitions read, so one roll picks one of three attacks.</p>
+
+  <h2>Sounds</h2>
+  <p>A monster speaks through the <a href="../reference/monster-vocab.html#sound"><code>sound</code></a> action, placed in a sequence like any other step. It has two arguments:</p>
+  <ul>
+    <li><code>name</code>: the sound's name in the module's sound bank, such as <code>monster.imp.sight</code>. The box is a picker grouped by sound pack, with ▶ to hear each one, and a red mark if no pack has the name.</li>
+    <li><code>from</code>: where it is heard from. <code>self</code>, the default, follows the monster as it moves. <code>target</code> plays at its target. <code>impact</code> is where a missile landed.</li>
+  </ul>
+  <p>Where each sound goes, the way the DOOM II module does it:</p>
+  <table>
+    <thead><tr><th>Sound</th><th>Where</th></tr></thead>
+    <tbody>
+      <tr><td>sight (a shout when it notices you)</td><td>A one-tick <code>alert</code> state between <code>look</code> and <code>chase</code>: <code>ticks</code> 1, <code>next</code> chase, and a <code>sound</code> at 0. <code>look</code> goes to <code>alert</code> instead of <code>chase</code>. The shout then plays once per noticing, not every time it returns to <code>chase</code>.</td></tr>
+      <tr><td>pain</td><td>At 0 of <code>pain</code>.</td></tr>
+      <tr><td>death</td><td>At 0 of <code>death</code>. It runs as the monster dies, the one time a death step runs.</td></tr>
+      <tr><td>an attack</td><td>At the same <code>at</code> as the blow or the shot, once per moment: three pellets are one bang.</td></tr>
+      <tr><td>a missile's launch and burst</td><td>The launch beside the <code>missile</code> step; the burst in the missile's <code>on_hit</code>, with <code>from</code> impact.</td></tr>
+    </tbody>
+  </table>
+  <div class="callout"><p>A sound may be dropped on a busy or distant client. So a sound is never the only sign of anything: a wind-up should also show in the animation, or a <code>telegraph</code>. Sound packs are made in the Sounds track; see <a href="../sounds/04-mix-and-ship.html">Mix, test and ship</a> for how a pack's names reach the game.</p></div>
+
+  <h2>Exercise: make the grunt feel hits</h2>
+  <ol class="steps">
+    <li><p>Pick <code>grunt</code> and open <span class="ui">🧠 brain</span>. Set <code>hp</code> to 60 and <code>pain_chance</code> to 160.</p></li>
+    <li><p>Under <b>💢 the flinch</b>, switch on <span class="ui">a bigger hit, a longer flinch</span>. Read what it says a 10-, 50- and 100-point hit do. Set <code>max</code> to 30 and read it again.</p></li>
+    <li><p>Tap the <code>attack</code> state and switch <code>interruptible</code> off. Your claw from the last lesson now always lands, if you stay in its way.</p></li>
+    <li><p>Back on <span class="ui">🧠 brain</span>, under <b>🎁 drops</b>, press <span class="ui">+ drop</span>. It starts with the first prop's name; type your medikit's name in <code>item</code> instead. Press <span class="ui">+ weighted choice</span>, type your medikit's name in the choice's <code>item</code>, weight 1. Press <span class="ui">+ weighted choice</span> again for a second choice, leave its <code>item</code> empty and set its weight to 2. The tab should say <em>"Something drops 33% of the time."</em></p></li>
+    <li><p>Tap <code>pain</code>. Use <span class="ui">add step</span> to add <code>sound</code> at 0, and pick a pain sound from the list. Do the same on <code>death</code> with a death sound.</p></li>
+    <li><p>Add a state <code>alert</code>: <code>anim</code> 1, <code>move</code> stop, <code>face</code> target, <code>ticks</code> 1, <code>next</code> chase, with a <code>sound</code> at 0. Point the transition that went into <code>chase</code> from your idle state (<code>wander</code> or <code>look</code>) at <code>alert</code> instead.</p></li>
+    <li><p>Check <em>"loads clean"</em>, then <span class="ui">▶ Play</span>. Kill three or four grunts. Listen for the shout, count the flinches, and see how often a medikit drops.</p></li>
+  </ol>
+
+  <div class="quiz" data-answer="1">
+    <p class="q">A monster has <code>pain_chance</code> 200 but no state called <code>pain</code>. What happens when you shoot it?</p>
+    <ul>
+      <li>It flinches with the default length</li>
+      <li>It never flinches: the pain roll needs a <code>pain</code> state</li>
+      <li>The server refuses the monster</li>
+    </ul>
+    <p class="why">The roll is only made when there is a <code>pain</code> state to enter, and the current state is interruptible. The 💢 section also says so.</p>
+  </div>
+  <div class="quiz" data-answer="2">
+    <p class="q">Your <code>death</code> state plays a scream at 0 and spawns a puff of smoke at 30. Only the scream happens. Why?</p>
+    <ul>
+      <li>Two steps in one death state is not allowed</li>
+      <li>The puff needs <code>corpse</code> on</li>
+      <li>The dead do not think: only the steps at 0 run, once, as it dies</li>
+    </ul>
+    <p class="why">A dead monster never decides again, so later steps of its death state never run. Put everything a death does at 0.</p>
+  </div>
+  <div class="quiz" data-answer="0">
+    <p class="q">One drop has <code>one_of</code>: <code>shells</code> weight 2, <code>medikit</code> weight 1, nothing weight 1. How often does a medikit drop?</p>
+    <ul>
+      <li>One time in four</li>
+      <li>One time in three</li>
+      <li>One time in two</li>
+    </ul>
+    <p class="why">The weights add up to 4, and exactly one choice drops. The medikit's share is 1 of 4. Something drops three times in four.</p>
+  </div>
+</article>
+</body>
+</html>

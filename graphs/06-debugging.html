@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Debugging graphs · Digidream Studio tutorials</title>
+<meta name="description" content="Find out why a graph does nothing: what the studio refuses and where it says so, the play log and the engine's graph messages, the debug overlay, a checklist, and the common mistakes.">
+<link rel="stylesheet" href="../assets/site.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 16%22%3E%3Cpath d=%22M8 1l7 7-7 7-7-7z%22 fill=%22%235b8fd6%22/%3E%3C/svg%3E">
+<script defer src="../assets/nav.js"></script>
+<script defer src="../assets/shortcuts.js"></script>
+<script defer src="../assets/site.js"></script>
+</head>
+<body>
+<article>
+  <h1>Debugging graphs</h1>
+  <p class="lede">A graph fails in one of two ways: it is refused, so it never loads, or it loads and quietly does something other than you meant. The studio catches most of the first kind before you press Play. For the second, you read the play log, and you narrow it down.</p>
+  <div class="goal">
+    <b>You'll learn</b><span>what the studio refuses and where it tells you, how to read the play log and the engine's <code>[graphs]</code> lines, how the debug overlay helps, a checklist for "my graph does nothing", and the mistakes almost everyone makes once</span>
+    <b>Time</b><span>25 minutes</span>
+    <b>Needs</b><span>the rest of this track; the app for Play (<a href="../studio/10-play-and-export.html">Play, export, snapshots</a>)</span>
+  </div>
+
+  <h2>What the studio refuses</h2>
+  <p>A graph the engine would refuse does not load at all, and the rest of the level runs without it. That is the worst kind of bug: nothing happens and nothing looks wrong. So the studio checks every graph as you draw, with the engine's own rules, and says what the engine would refuse.</p>
+  <h3>Where it says so</h3>
+  <ul>
+    <li><b>The graph window</b>: a count of problems in red in the bar, and the problems themselves in red in the side panel.</li>
+    <li><b>◇ Graphs</b>: each row shows how many problems its graph has, and the first one.</li>
+    <li><b>Home</b>: under <span class="ui">to fix (N)</span>, one line per problem in the whole module. Tap a line to go there. With none, Home says <em>nothing wrong that the studio can see</em>.</li>
+    <li><b>Play and Export</b> refuse to start while any graph has a problem. The status line names it: <em>first's graph doors: …</em>.</li>
+  </ul>
+  <h3>What it catches</h3>
+  <table>
+    <thead><tr><th>Problem</th><th>What the studio says (shortened)</th></tr></thead>
+    <tbody>
+      <tr><td>A required field empty and not linked</td><td><em>node 'x': needs `sector`</em></td></tr>
+      <tr><td>A door or floor with no sector</td><td><em>a open_door needs a sector -- picked on the map, linked from sector_of, or a tag</em></td></tr>
+      <tr><td>A variable named like a property</td><td><em>variable hp: an entity has a property called hp -- give the variable another name</em></td></tr>
+      <tr><td>Setting a read-only property</td><td><em>alive can only be read -- a graph cannot set it</em></td></tr>
+      <tr><td>A <code>var</code> that is neither</td><td><em>`speeed` is neither one of this graph's variables nor a property an entity has</em></td></tr>
+      <tr><td>A button nobody has</td><td><em>no button or key called reload -- … the module's keys are in Controls</em></td></tr>
+      <tr><td>A map the module lacks</td><td><em>no map called map09 in the module, and the server refuses a graph that goes to one it does not have</em></td></tr>
+      <tr><td>A camera path the map lacks</td><td><em>no camera path with tag 3 on this map (Camera → camera paths)</em></td></tr>
+      <tr><td>A level-only node in a game graph</td><td><em>a spawn acts on a level, and the game has none -- call the level's graph …</em></td></tr>
+      <tr><td>A game event in a map's graph</td><td><em>'on_player_enter' reaches only the game's graph</em></td></tr>
+      <tr><td>A player action in a run with no player</td><td><em>music acts on the run's player, and a run from 'tick' (every) has none -- it does nothing</em></td></tr>
+      <tr><td>A data loop</td><td><em>the data links form a cycle through 'x'</em></td></tr>
+      <tr><td>A number bound to a field with no input</td><td><em>`count` cannot be taken from a variable -- the engine gives it no input</em></td></tr>
+      <tr><td>A call nobody answers</td><td><em>… calls 'x' (to game), and no game graph has an on_call of that name</em> (a warning)</td></tr>
+      <tr><td>Panel names</td><td>a panel or widget that is not there, a decor id of the wrong form</td></tr>
+    </tbody>
+  </table>
+  <p>While you draw, the board refuses two links outright: an exec pin into a data pin (<em>exec links to exec, data to data</em>) and a node into itself (<em>a node cannot feed itself</em>). Everything else you can draw, and the list above tells you what is wrong with it.</p>
+  <div class="callout tip"><p>The problem list names nodes by id: <em>node 'open3'</em>. The id is in the side panel when you pick a node. If the list is long, fix the first problem first: one missing sector can cause several lines.</p></div>
+
+  <h2>The play log</h2>
+  <p>Some things only the running game knows: which way a branch went, whether a value fit. For those, read what the game said. Each Play leaves three logs, started afresh every time:</p>
+  <table>
+    <thead><tr><th>File</th><th>What it holds</th></tr></thead>
+    <tbody>
+      <tr><td><code>play-studio.log</code></td><td>what the studio wrote and launched: the module.txt, the scripts each map declares (your graph files among them), what the bake warned about</td></tr>
+      <tr><td><code>play-server.log</code></td><td>every line of the game server, including every line the graph runtime prints</td></tr>
+      <tr><td><code>play-game.log</code></td><td>the game page's console: uncaught errors, refused messages, failed downloads</td></tr>
+    </tbody>
+  </table>
+  <p>After a play-test, Home has a <span class="ui">play log (<i>map</i>)</span> button. The <b>Play log</b> sheet lists first the lines that look like a failure, under <span class="ui">what looks wrong (N)</span>, then each log in full. <span class="ui">↻ read again</span> reloads them, <span class="ui">share the log</span> hands all three over as one text file, and <span class="ui">play again</span> replays. The sheet opens by itself when a launch fails.</p>
+  <div class="callout soon"><p>Play, and its log, need the studio app. In a browser, the studio exports a pack instead, and you run it with the engine and read the server's own output.</p></div>
+
+  <h3>The engine's graph lines</h3>
+  <p>Every line the graph runtime prints starts with <code>[graphs]</code>. Search <code>play-server.log</code> for it. The lines you will meet:</p>
+  <table>
+    <thead><tr><th>Line</th><th>Means</th></tr></thead>
+    <tbody>
+      <tr><td><code>[graphs] doors: 12 nodes, 14 links</code></td><td>The graph loaded. If this line is missing for a graph, it was not loaded at all.</td></tr>
+      <tr><td><code>[graphs] doors: 3 problems -- the graph is not loaded</code></td><td>Refused. The lines just before it say why, by node id.</td></tr>
+      <tr><td><code>[graphs] doors: node 'm' was given 2.5 for 'height', which is not a fx -- skipped</code></td><td>A linked value did not fit a trigger verb's argument, so the verb was skipped (a condition takes <b>false</b>).</td></tr>
+      <tr><td><code>[graphs] intro: node 'say' (subtitle) acted on no player -- the event's entity is not a player; tick `everyone` to reach them all</code></td><td>A cutscene node had nobody to show to.</td></tr>
+      <tr><td><code>[graphs] doors: a run went past 256 steps at node 'x' and was stopped -- a loop?</code></td><td>An exec loop with no delay in it.</td></tr>
+      <tr><td><code>[graphs] a call to 'ping' is 4 deep -- stopped (calls that call each other?)</code></td><td>Calls that call each other in a ring.</td></tr>
+      <tr><td><code>[graphs] game: node 'go' calls a level with no entity to say which -- skipped</code></td><td>A game graph's call to a level, from a run with no player.</td></tr>
+      <tr><td><code>[graphs] records: could not save store 'records': …</code></td><td>A <code>save_vars</code> could not write.</td></tr>
+    </tbody>
+  </table>
+  <div class="callout warn"><p>The run-time lines (<em>skipped</em>, <em>acted on no player</em>, <em>stopped -- a loop?</em>) are said <b>once</b> per node, so the log is not flooded. They don't look like failures to the Play log sheet, so they may not appear under <span class="ui">what looks wrong</span>. Read the full <code>play-server.log</code>.</p></div>
+
+  <h3>Your own log lines</h3>
+  <p>The trigger action <code>log</code> writes a line of your own to the server log. In the node menu it is <span class="ui">do log</span>. Drop one onto a path to see whether a run gets there:</p>
+  <pre><code>when_dies → do log "a death" → add_var kills → branch ─true→ do log "enough" → …
+                                                      └false→ do log "not yet"</code></pre>
+  <p>It is printf debugging, and it works. Take the logs out when you are done, or they fill the server log on a busy map.</p>
+
+  <h2>The debug overlay</h2>
+  <p>The engine can draw its numbers in the top-left corner of the game: the tick, the frame rate, your position, and <b>the sector you stand in</b>. That last one is the quickest way to check a <a href="../reference/graph-nodes.html#when_sector_entered"><code>when_sector_entered</code></a>: walk into the room and read its number.</p>
+  <p>It is a module setting: in <b>Settings</b>, <span class="ui">show the debug overlay in the game</span> decides what the module ships. <span class="ui">when I press Play</span> overrides it for your own play-tests on this device: <span class="ui">always show it</span>, <span class="ui">never show it</span>, or as the module says.</p>
+
+  <h2>Checklist: my graph does nothing</h2>
+  <ol class="steps">
+    <li><p><b>Is it loaded?</b> Look for <code>[graphs] <i>name</i>: N nodes, M links</code> in <code>play-server.log</code>. If it is missing, look for <em>problems -- the graph is not loaded</em> just above. And check the graph has a node: an empty graph is not written.</p></li>
+    <li><p><b>Does the start node fire?</b> Put a <span class="ui">do log</span> straight after it. If its line never appears, check its filters: the picked <code>sector</code> or <code>side</code>, the <code>prop</code> or <code>kind</code> name, and <code>who</code> (players by default). For a wall, check the wall is the one the player presses, and mark it <span class="ui">usable</span>.</p></li>
+    <li><p><b>Does the run reach the action?</b> Move the log along the chain. A run stops where an exit has no link: is the <b>false</b> of a branch the one taken? Is a <a href="../reference/graph-nodes.html#once"><code>once</code></a> already passed (it is saved with the game)?</p></li>
+    <li><p><b>Is the branch deciding on what you think?</b> Put a <code>do log</code> on <i>both</i> of its exits, so the log says which way it went. (A <code>do log</code>'s <code>text</code> has a data pin, but it takes text only: a linked number would be skipped.) Remember: 0 is true, and a value read earlier in the same run is remembered.</p></li>
+    <li><p><b>Does the action reach the right thing?</b> An unlinked <code>entity</code> is the event's. A linked one that yields nil does nothing. A cutscene node with no player to show to says <em>acted on no player</em>.</p></li>
+    <li><p><b>Is it later than you think?</b> A delay's far side runs later, and pending delays are dropped by a save and a load.</p></li>
+    <li><p><b>Is it a cutscene?</b> Use <span class="ui">▶ scene</span> in the graph window to see the timing without playing.</p></li>
+  </ol>
+
+  <h2>Common mistakes</h2>
+  <table>
+    <thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+    <tbody>
+      <tr><td>Reading a variable, changing it, and reading the same <code>get_var</code> node again in one run</td><td>The second read gives the old value</td><td>Use a second <code>get_var</code> node after the change</td></tr>
+      <tr><td><code>branch</code> on a count</td><td>0 is true</td><td><code>compare</code> first</td></tr>
+      <tr><td>A decimal typed into <code>compare</code></td><td>Ordering against text is false</td><td>Keep compared numbers whole</td></tr>
+      <tr><td>A fraction from <code>math</code> into a trigger action's number</td><td>The action is skipped, said once</td><td>Round it, or use the world node (<code>teleport</code>, <code>move_floor</code> …)</td></tr>
+      <tr><td><code>play_sound</code> or <code>set_hud</code> after <code>every</code>, <code>after</code> or <code>when_level_starts</code></td><td>Nobody hears or sees it</td><td>Link an entity in, or <code>set_hud</code> <code>to: everyone</code></td></tr>
+      <tr><td>A cutscene node after <code>when_dies</code></td><td>The dead monster is not a player: acted on no player</td><td>Tick <code>everyone</code>, or link <code>by</code> (the killer)</td></tr>
+      <tr><td><code>remove</code> or <code>kill</code> after a touch, unlinked</td><td>It acts on the player who touched</td><td>Link the start node's <code>prop</code> (or the right entity)</td></tr>
+      <tr><td><code>when_dies</code> for an arena</td><td>Counts every death in the level</td><td>Guard with a flag, or set <code>kind</code></td></tr>
+      <tr><td>Expecting a variable per player</td><td>One player's key opens the door for everyone</td><td>Accept it, or keep it in Lua</td></tr>
+      <tr><td>A <code>delay</code> loop expected to survive a load</td><td>Pending delays are not saved</td><td>Restart it from <code>when_level_starts</code></td></tr>
+      <tr><td>Two start nodes for one event that depend on each other's order</td><td>They run in file order, which you may not expect</td><td>Join them into one chain, with a <code>sequence</code></td></tr>
+      <tr><td>A door node you can press while it moves</td><td>It restarts halfway</td><td><span class="ui">if sector at rest</span> before the move</td></tr>
+      <tr><td>Renaming a graph in a released game</td><td>Its saved state is kept under the old name, and is lost</td><td>Pick names early, and keep them</td></tr>
+    </tbody>
+  </table>
+
+  <div class="quiz" data-answer="1">
+    <p class="q">A graph file edited by hand outside the studio names a node type that does not exist. What does the engine do with that graph?</p>
+    <ul>
+      <li>Runs the parts that are fine</li>
+      <li>Refuses the whole graph; the rest of the level runs without it</li>
+      <li>Refuses to load the map</li>
+    </ul>
+    <p class="why">A graph that fails its checks does not load at all, and the server log lists the problems by node id. The level and its other graphs carry on.</p>
+  </div>
+  <div class="quiz" data-answer="0">
+    <p class="q">Your <code>when_sector_entered</code> never fires. Which is the quickest first check?</p>
+    <ul>
+      <li>A <code>do log</code> right after it, and the debug overlay's sector number as you walk in</li>
+      <li>Add a <code>once</code></li>
+      <li>Change <code>who</code> to <code>monsters</code></li>
+    </ul>
+    <p class="why">The log line tells you whether the start node fires, and the overlay tells you which sector you are really in.</p>
+  </div>
+  <div class="quiz" data-answer="2">
+    <p class="q">Where do the engine's <em>… -- skipped</em> lines appear?</p>
+    <ul>
+      <li>In red in the graph window</li>
+      <li>Only under "what looks wrong" in the Play log</li>
+      <li>In <code>play-server.log</code>, once per node, starting with <code>[graphs]</code></li>
+    </ul>
+    <p class="why">They are run-time messages, so only the running server knows them. The studio can't see them while you draw.</p>
+  </div>
+</article>
+</body>
+</html>

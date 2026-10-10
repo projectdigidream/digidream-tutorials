@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ammo, pickups and the arsenal · Digidream Studio tutorials</title>
+<meta name="description" content="Ammunition pools, health ceilings, pickups that grant weapons, ammo, health and armour, the arsenal's two orders, and giving or taking weapons and ammo from graphs.">
+<link rel="stylesheet" href="../assets/site.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 16%22%3E%3Cpath d=%22M8 1l7 7-7 7-7-7z%22 fill=%22%235b8fd6%22/%3E%3C/svg%3E">
+<script defer src="../assets/nav.js"></script>
+<script defer src="../assets/shortcuts.js"></script>
+<script defer src="../assets/site.js"></script>
+</head>
+<body>
+<article>
+  <h1>Ammo, pickups and the arsenal</h1>
+  <p class="lede">Weapons are only half the arsenal. The other half is what feeds them: ammunition pools, health ceilings, and the pickups lying around your maps. This lesson covers all three, the two orders that sort things, and how a graph can hand out or take away weapons and ammo.</p>
+  <div class="goal">
+    <b>You'll learn</b><span>how pools, <code>per</code> and <code>consume</code> fit together; the health ceilings; every pickup field and the "weapon once, ammo every time" rule; how a pickup finds its prop; the weapon order and the pool order; and the graph nodes for weapons and ammo</span>
+    <b>Time</b><span>30 minutes</span>
+    <b>Needs</b><span>a weapon (<a href="01-first-weapon.html">Your first weapon</a>), a map you can place props in (<a href="../studio/03-placing-things.html">Placing things</a>)</span>
+  </div>
+
+  <h2>The arsenal tab</h2>
+  <p>Open <b>🔫 Weapons</b> and the <span class="ui">🎒 arsenal</span> tab. It's the same for every weapon, because it belongs to the whole module. It has three sections: <b>🔢 ammunition</b>, <b>❤ health</b> and <b>📦 pickups</b>.</p>
+  <figure class="shot" data-src="../assets/shots/weapon-arsenal.png" data-alt="The arsenal tab: the bullets pool, the health ceilings, and a new pickup called clip" data-hotspots='[{"x":86,"y":24,"t":"A pool","d":"label, max, initial, order"},{"x":86,"y":57,"t":"+ ammunition pool","d":"asks for a name"},{"x":86,"y":74,"t":"health","d":"max and bonus_max"},{"x":86,"y":86,"t":"A pickup","d":"what walking over a prop of this name grants"},{"x":96,"y":9,"t":"1 problem(s)","d":"a new pickup starts with a bad ceiling; see below"}]'>
+    <figcaption>The arsenal: one pool, the health ceilings and a new pickup. The red count is the pickup's starting <code>ceiling</code>, explained below.</figcaption>
+  </figure>
+
+  <h2>Ammunition pools</h2>
+  <p>A <b>pool</b> is a kind of ammunition the player carries: bullets, shells, rockets, cells. Several weapons can eat from one pool. DOOM's pistol and chaingun both use bullets, so firing one empties the other.</p>
+  <table>
+    <thead><tr><th>Field</th><th>What it does</th></tr></thead>
+    <tbody>
+      <tr><td><a href="../reference/weapon-vocab.html#ammo_fields.label"><span class="ui">label?</span></a></td><td>What the panel and HUD call it. Defaults to its name.</td></tr>
+      <tr><td><a href="../reference/weapon-vocab.html#ammo_fields.max"><span class="ui">max</span></a></td><td>The most a player can hold. Pickups and graphs stop at it. Required.</td></tr>
+      <tr><td><a href="../reference/weapon-vocab.html#ammo_fields.initial"><span class="ui">initial?</span></a></td><td>What a player starts with. Default 0. The Player's <span class="ui">🎒 kit</span> edits the same number.</td></tr>
+      <tr><td><a href="../reference/weapon-vocab.html#ammo_fields.order"><span class="ui">order?</span></a></td><td>Where it sits in the read-out lists. As the tab says, <em>a pool with none can be carried, counted and capped and never appear on screen.</em></td></tr>
+    </tbody>
+  </table>
+  <p><span class="ui">+ ammunition pool</span> asks for a <em>pool name (letters, digits, underscore)</em>, suggesting <code>cells</code>. The new pool starts with its name as a label, <span class="ui">max</span> 200, <span class="ui">initial?</span> 0 and the next free order. <span class="ui">delete pool</span> asks first and warns that <em>weapons that eat it will name a pool that is gone</em>: those weapons then show a problem until you choose another pool. Up to 8 pools are predicted on the player's client; with more, the whole weapon set runs on the server only.</p>
+
+  <h3>How a weapon spends a pool</h3>
+  <p>Three things work together, and each one is needed:</p>
+  <ol>
+    <li>The weapon's <span class="ui">ammo?</span> names the pool (in <span class="ui">🔫 weapon</span>).</li>
+    <li>Its <span class="ui">per?</span> says what one shot costs. Default 1.</li>
+    <li>A <a href="../reference/weapon-vocab.html#consume"><code>consume</code></a> step in a phase takes it. Without one, the weapon never spends anything.</li>
+  </ol>
+  <p><code>consume</code> is an action, not automatic, on purpose. A charged shot can cost more (<code>consume</code> with <span class="ui">n?</span> 5), a phase that fires twice can pay twice, and a weapon can even take from another pool (<span class="ui">ammo?</span> on the step). And, as <a href="02-phases.html">the phase machine</a> showed, <code>consume</code> never stops a shot: the dry check in <code>ready</code> does that.</p>
+  <p>DOOM II's super shotgun has <span class="ui">per?</span> 2: each blast costs two shells, and <code>has_ammo</code> is false with one shell left, so it won't fire.</p>
+
+  <h2>Health</h2>
+  <p>Two ceilings, also on the Player's <span class="ui">🎒 kit</span>:</p>
+  <ul>
+    <li><a href="../reference/weapon-vocab.html#health_fields.max"><span class="ui">max</span></a>: the normal ceiling. 100 in DOOM.</li>
+    <li><a href="../reference/weapon-vocab.html#health_fields.bonus_max"><span class="ui">bonus_max?</span></a>: the ceiling a pickup with <code>ceiling</code> <code>bonus_max</code> may fill to. 200 in DOOM, for the little health bonuses that take you past 100.</li>
+  </ul>
+
+  <h2>Pickups</h2>
+  <p>A <b>pickup</b> is what a player gets for walking over a prop. The link is the <b>name</b>: a pickup called <code>clip</code> belongs to every prop called <code>clip</code> on every map. Make the prop in <b>📦 Props</b>, place it, and give the pickup the same name here.</p>
+  <table>
+    <thead><tr><th>Field</th><th>What it does</th></tr></thead>
+    <tbody>
+      <tr><td><a href="../reference/weapon-vocab.html#pickup_fields.weapon"><span class="ui">weapon?</span></a></td><td>Grants this weapon, <b>once</b>, and puts it in the player's hands. Its own <b>what its own pickup grants</b> ammunition (the weapon tab) comes with it <b>every time</b>.</td></tr>
+      <tr><td>ammunition it grants</td><td>One number per pool. Added every time, capped at each pool's <span class="ui">max</span>.</td></tr>
+      <tr><td><a href="../reference/weapon-vocab.html#pickup_fields.heal"><span class="ui">heal?</span></a></td><td>Adds health, up to the ceiling.</td></tr>
+      <tr><td><a href="../reference/weapon-vocab.html#pickup_fields.ceiling"><span class="ui">ceiling?</span></a></td><td><code>max</code> or <code>bonus_max</code>: which health ceiling it may fill to.</td></tr>
+      <tr><td><a href="../reference/weapon-vocab.html#pickup_fields.armour"><span class="ui">armour?</span></a></td><td>Sets armour to this, if it is higher. DOOM's green is 100, blue 200.</td></tr>
+      <tr><td><a href="../reference/weapon-vocab.html#pickup_fields.sound"><span class="ui">sound?</span></a></td><td>What taking it sounds like. Empty uses the module's default for what it gives, set in <b>🧍 Player</b> → <span class="ui">🔊 sounds</span> under <b>🎒 taking a pickup</b>.</td></tr>
+      <tr><td><a href="../reference/weapon-vocab.html#pickup_fields.not_yet"><span class="ui">not_yet?</span></a></td><td>Declares a pickup that does nothing yet, and names it. When walked over, the server logs that it isn't implemented and leaves it on the floor. Better than a pickup that silently does nothing, which looks like a bug.</td></tr>
+    </tbody>
+  </table>
+  <div class="callout warn"><p><b>A new pickup starts with a problem.</b> <span class="ui">+ pickup</span> (which suggests the name <code>medkit</code>) makes a pickup with <span class="ui">heal?</span> 25 and <code>ceiling</code> set to <code>normal</code>, which isn't one of the allowed values. The bar shows <em>pickup "medkit": `ceiling` should be one of max, bonus_max, got "normal"</em>, and the server would refuse the arsenal. Set <span class="ui">ceiling?</span> to <code>max</code> right away, or to <code>(default)</code> for a pickup that doesn't heal.</p></div>
+  <div class="callout soon"><p><b>Armour is counted but not used yet.</b> An <span class="ui">armour?</span> pickup raises the player's armour, and the number is saved with the game, but nothing reads it yet: damage isn't reduced, and the HUD isn't told. Use it for a pickup that should work later, or leave it out for now.</p></div>
+
+  <h3>The rules of taking</h3>
+  <ul>
+    <li><b>Players only.</b> Monsters walking over a medikit don't take it.</li>
+    <li><b>A weapon once, its ammunition every time.</b> That's why a second shotgun on a map is still worth walking over: you already have the gun, but you get its shells.</li>
+    <li><b>A refused pickup stays on the floor.</b> At full health, a medikit isn't used up. A full pool doesn't take more. The pickup only disappears if it gave something, and only then does it make its sound.</li>
+    <li><b>Which sound</b>, when the pickup has none of its own: weapon first, then armour, then health, then ammunition. A shotgun pickup that also gives shells sounds like a weapon.</li>
+  </ul>
+
+  <h2>The arsenal's two orders</h2>
+  <p>Two different <code>order</code> numbers sort two different things:</p>
+  <table>
+    <thead><tr><th></th><th>Weapon <span class="ui">order</span></th><th>Pool <span class="ui">order?</span></th></tr></thead>
+    <tbody>
+      <tr><td>Sorts</td><td>the weapons a player holds</td><td>the pools in read-outs</td></tr>
+      <tr><td>Used for</td><td>the number keys; the starting weapon (lowest); the weapon in hand when starting with several (highest); the fallback when one runs dry (highest with ammunition)</td><td>the weapon panel's list of what you carry</td></tr>
+      <tr><td>Rule of thumb</td><td>low for "always works" (fists), high for "best" (the rocket launcher)</td><td>the order a player should read them in</td></tr>
+    </tbody>
+  </table>
+  <p>The fallback is why the weapon order matters most. DOOM's order is fists 1, chainsaw 2, pistol 3, shotgun 4, super shotgun 5, chaingun 6, rocket launcher 7, plasma rifle 8. Run the shotgun dry and you drop to the highest weapon with ammunition, so the chaingun if you have bullets, never the fists while anything else can fire.</p>
+  <div class="callout tip"><p><b>Two weapons can share an order</b>; the tie is broken by name, so it is stable. Gaps don't matter either: the number keys count weapons held, not order values.</p></div>
+
+  <h2 id="graphs">Weapons and ammo from graphs</h2>
+  <p>Graphs can read and change a player's arsenal. Each of these nodes takes the player as its <b>entity</b> input, usually wired from the event that started the graph. The weapon and pool are written by name.</p>
+  <table>
+    <thead><tr><th>Node</th><th>Does</th></tr></thead>
+    <tbody>
+      <tr><td><a href="../reference/graph-nodes.html#give_weapon"><code>give_weapon</code></a></td><td>Gives a weapon. With <code>select</code>, puts it in their hands too.</td></tr>
+      <tr><td><a href="../reference/graph-nodes.html#take_weapon"><code>take_weapon</code></a></td><td>Takes one away. If it was in their hands, they switch to the best one left.</td></tr>
+      <tr><td><a href="../reference/graph-nodes.html#select_weapon"><code>select_weapon</code></a></td><td>Puts a weapon they have in their hands.</td></tr>
+      <tr><td><a href="../reference/graph-nodes.html#give_ammo"><code>give_ammo</code></a></td><td>Adds ammunition to a pool, up to its max.</td></tr>
+      <tr><td><a href="../reference/graph-nodes.html#set_ammo"><code>set_ammo</code></a></td><td>Sets a pool's count.</td></tr>
+      <tr><td><a href="../reference/graph-nodes.html#heal"><code>heal</code></a></td><td>Gives health back (<code>amount</code> default 25, not above <code>max</code>, default 100).</td></tr>
+      <tr><td><a href="../reference/graph-nodes.html#held_weapon"><code>held_weapon</code></a>, <a href="../reference/graph-nodes.html#has_weapon"><code>has_weapon</code></a>, <a href="../reference/graph-nodes.html#ammo_of"><code>ammo_of</code></a></td><td>Data: the weapon in hand, whether they have one, how much of a pool they carry (the held weapon's pool if none is named).</td></tr>
+      <tr><td><a href="../reference/graph-nodes.html#when_weapon_changed"><code>when_weapon_changed</code></a></td><td>Event: the weapon in hand changed, by choice, a pickup, or running dry.</td></tr>
+      <tr><td><a href="../reference/graph-nodes.html#when_fired"><code>when_fired</code></a></td><td>Event: a weapon shot a ray or a missile (optionally one weapon only). A melee swing isn't a shot.</td></tr>
+      <tr><td><a href="../reference/graph-nodes.html#when_out_of_ammo"><code>when_out_of_ammo</code></a></td><td>Event: the weapon in hand just used its last ammunition.</td></tr>
+    </tbody>
+  </table>
+  <p>A graph's change is a real change to the inventory: it is saved with the game, and the player's client takes it from the next update. The basics of building graphs are in <a href="../studio/06-graphs.html">Graphs</a>.</p>
+
+  <h2>Exercise: a cell rifle, a box of cells, and an armoury</h2>
+  <ol class="steps">
+    <li><p>On <span class="ui">🎒 arsenal</span>, press <span class="ui">+ ammunition pool</span> and keep <code>cells</code>. Set its <span class="ui">max</span> to <code>300</code>. Leave <span class="ui">initial?</span> at 0.</p></li>
+    <li><p>Make a weapon <code>cellrifle</code>. On <span class="ui">🔫 weapon</span>, set <span class="ui">ammo?</span> to <code>cells</code> and <span class="ui">order</span> to <code>8</code>. Under <b>what its own pickup grants</b>, set <code>cells</code> to <code>40</code>.</p></li>
+    <li><p>Give its <code>fire</code> a <code>consume</code> step at 0, and give its <code>ready</code> the dry check from <a href="02-phases.html">the phase machine</a> (<code>button_held</code> ∧ <code>no_ammo</code> → <code>dry</code>, first in the list).</p></li>
+    <li><p>Back on <span class="ui">🎒 arsenal</span>, press <span class="ui">+ pickup</span> and call it <code>w_cellrifle</code>. Set <span class="ui">weapon?</span> to <code>cellrifle</code>. Clear <span class="ui">heal?</span>, and set <span class="ui">ceiling?</span> to <code>(default)</code>: a rifle doesn't heal. The problem count goes away.</p></li>
+    <li><p>Add a second pickup, <code>cellpack</code>. Clear <span class="ui">heal?</span>, set <span class="ui">ceiling?</span> to <code>(default)</code>, and under <b>ammunition it grants</b> set <code>cells</code> to <code>100</code>.</p></li>
+    <li><p>In <b>📦 Props</b>, make sure the module has props called <code>w_cellrifle</code> and <code>cellpack</code>. Place one of each on your map, a few steps apart.</p></li>
+    <li><p>Play. Walk over the rifle: it's in your hands at once, with 40 cells. Fire some. Walk over the pack: +100. Walk over a second <code>w_cellrifle</code>: the rifle isn't given twice, but the 40 cells are. With a full pool, the pack stays on the floor.</p></li>
+    <li><p>Last, an armoury switch. Open the map's graph (<a href="../studio/06-graphs.html">Graphs</a>). Add <code>when_wall_used</code> on a switch wall. Wire its <code>then</code> into <code>give_ammo</code> with <code>ammo</code> <code>cells</code> and <code>amount</code> <code>50</code>, and wire the event's <code>entity</code> into the node's <code>entity</code>. Play and use the switch.</p></li>
+  </ol>
+
+  <div class="quiz" data-answer="2">
+    <p class="q">A player who already has the shotgun walks over another shotgun pickup. Their shells are at 10 of 50, and the shotgun's pickup grants 8. What happens?</p>
+    <ul>
+      <li>Nothing: they already have the weapon, so the pickup stays on the floor</li>
+      <li>They get a second shotgun in their inventory</li>
+      <li>Shells go to 18, and the pickup is used up</li>
+    </ul>
+    <p class="why">A weapon is granted once, but its ammunition every time. Something was given, so the pickup disappears.</p>
+  </div>
+  <div class="quiz" data-answer="0">
+    <p class="q">Your weapon has <span class="ui">ammo?</span> bullets and <span class="ui">per?</span> 1, but the count never goes down when you fire. What's missing?</p>
+    <ul>
+      <li>A <code>consume</code> step in the fire phase</li>
+      <li>An <span class="ui">order?</span> on the bullets pool</li>
+      <li>A <code>has_ammo</code> condition</li>
+    </ul>
+    <p class="why">Naming the pool and the price doesn't spend anything. The <code>consume</code> action does, when a phase runs it.</p>
+  </div>
+  <div class="quiz" data-answer="1">
+    <p class="q">A player at full health (100 of max 100) walks over a medikit that heals 25 up to <code>max</code>. What happens?</p>
+    <ul>
+      <li>The medikit is used up, and nothing changes</li>
+      <li>The medikit stays on the floor, and no sound plays</li>
+      <li>Health goes to 125</li>
+    </ul>
+    <p class="why">A pickup that gives nothing is refused and stays where it is, so it's still there when the player needs it.</p>
+  </div>
+</article>
+</body>
+</html>

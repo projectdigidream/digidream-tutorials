@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Map logic recipes · Digidream Studio tutorials</title>
+<meta name="description" content="Five complete map graphs, node by node: a key-locked door, a secret that counts, an ambush, an arena that opens when the last wave dies, and a timed two-switch puzzle.">
+<link rel="stylesheet" href="../assets/site.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 16%22%3E%3Cpath d=%22M8 1l7 7-7 7-7-7z%22 fill=%22%235b8fd6%22/%3E%3C/svg%3E">
+<script defer src="../assets/nav.js"></script>
+<script defer src="../assets/shortcuts.js"></script>
+<script defer src="../assets/site.js"></script>
+</head>
+<body>
+<article>
+  <h1>Map logic recipes</h1>
+  <p class="lede">Five graphs that most action maps need, wired node by node with nothing but real nodes. Build them as written, then bend them to your map.</p>
+  <div class="goal">
+    <b>You'll learn</b><span>how to build a key-locked door, a secret that counts, an ambush, a wave arena that opens its exit, and a timed switch puzzle, and the traps each one hides</span>
+    <b>Time</b><span>45 minutes</span>
+    <b>Needs</b><span>a map with a few rooms and a door (<a href="../studio/02-first-map.html">Your first map</a>), a monster (<a href="../enemies/01-first-monster.html">Your first monster</a>), and <a href="02-variables-and-numbers.html">Variables, numbers and saving</a></span>
+  </div>
+
+  <h2>How to read a recipe</h2>
+  <p>Each recipe has a table of nodes and a list of links. The <b>id</b> is a short name for the node in this page; the studio gives its own ids, and you can ignore them. <b>Fields</b> are what you set in the side panel. A field that says <em>picked</em> is tapped on the map: the board steps aside while you tap a room, a wall, or a spot on the floor.</p>
+  <p>Links are written <code>from.pin → to.pin</code>. White (exec) links come out of <b>then</b>, <b>true</b>, <b>false</b>, <b>0</b>, <b>1</b> … and go into <b>in</b>. Everything else is a data link.</p>
+  <div class="callout tip"><p>Put each recipe in its own graph: <span class="ui">+ new graph on <i>map</i></span> in <b>◇ Graphs</b>, named <code>keydoor</code>, <code>secrets</code> and so on. Each graph uses one of the map's script slots, so on a busy map you can also put two recipes in one graph. They don't interfere: each start node has its own runs.</p></div>
+
+  <h2>Warm-up: the shape of an ambush</h2>
+  <p>The lab is loaded with an ambush: entering sector 3 shuts the door behind you, sounds an alarm, and opens the door three seconds later. Press <b>🚶 player enters sector 3</b> twice. The second time, <code>once</code> stops the run at once.</p>
+  <div class="widget" data-widget="graph-lab" data-title="Graph lab: an ambush" data-preset="ambush"></div>
+
+  <h2 id="keydoor">Recipe 1: a key-locked door</h2>
+  <p>There are no key items in the graph vocabulary, so the graph keeps the key itself: a variable. Touching the key prop sets it and removes the prop. Using the door checks it.</p>
+  <p><b>Before you start:</b> in <b>Props</b>, press <span class="ui">+ new prop</span> and name it <code>red_key</code>. Turn <span class="ui">solid</span> off, so the player can walk into it. Place one in the map. Make the door a narrow room whose ceiling sits on its floor, as the <span class="ui">🚪 door</span> preset would, but don't use the preset.</p>
+  <p><b>Variables:</b> <code>has_red_key</code>, starts at <code>false</code>.</p>
+  <table>
+    <thead><tr><th>id</th><th>Node</th><th>Fields</th></tr></thead>
+    <tbody>
+      <tr><td>take</td><td><a href="../reference/graph-nodes.html#when_prop_touched"><code>when_prop_touched</code></a></td><td>prop: <code>red_key</code> · who: players</td></tr>
+      <tr><td>got</td><td><a href="../reference/graph-nodes.html#set_var"><code>set_var</code></a></td><td>var: <code>has_red_key</code> · value: <code>true</code></td></tr>
+      <tr><td>gone</td><td><a href="../reference/graph-nodes.html#remove"><code>remove</code></a></td><td>(entity linked)</td></tr>
+      <tr><td>ding</td><td><a href="../reference/graph-nodes.html#play_sound"><code>play_sound</code></a></td><td>sound: a pickup sound</td></tr>
+      <tr><td>tell</td><td><a href="../reference/graph-nodes.html#subtitle"><code>subtitle</code></a></td><td>text: <code>You have the red key.</code></td></tr>
+      <tr><td>press</td><td><a href="../reference/graph-nodes.html#when_wall_used"><code>when_wall_used</code></a></td><td>side: <em>picked</em>, the door's face on the near side</td></tr>
+      <tr><td>press2</td><td><a href="../reference/graph-nodes.html#when_wall_used"><code>when_wall_used</code></a></td><td>side: <em>picked</em>, the door's face on the far side</td></tr>
+      <tr><td>key</td><td><a href="../reference/graph-nodes.html#get_var"><code>get_var</code></a></td><td>var: <code>has_red_key</code></td></tr>
+      <tr><td>if</td><td><a href="../reference/graph-nodes.html#branch"><code>branch</code></a></td><td></td></tr>
+      <tr><td>open</td><td><a href="../reference/graph-nodes.html#open_door"><code>open_door</code></a></td><td>sector: <em>picked</em>, the door · close_after: <code>4</code></td></tr>
+      <tr><td>no</td><td><a href="../reference/graph-nodes.html#subtitle"><code>subtitle</code></a></td><td>text: <code>You need the red key.</code> · seconds: <code>2</code></td></tr>
+    </tbody>
+  </table>
+  <pre><code>take.then  → got.in
+got.then   → gone.in
+take.prop  → gone.entity        (data: remove the key, not the player)
+gone.then  → ding.in
+ding.then  → tell.in
+press.then → if.in
+press2.then → if.in             (an exec input takes many links)
+key.value  → if.cond
+if.true    → open.in
+if.false   → no.in</code></pre>
+  <ul>
+    <li><b>The data link into <code>gone.entity</code> matters.</b> Unlinked, <a href="../reference/graph-nodes.html#remove"><code>remove</code></a> would act on the event's entity: the player. The prop is a different output of the start node.</li>
+    <li><a href="../reference/graph-nodes.html#open_door"><code>open_door</code></a> with <code>close_after</code> shuts the door again after 4 seconds. Without it, the door stays open.</li>
+    <li>The key is the level's, not the player's: in co-op, once anyone has it, the door opens for all. It is also forgotten when the level starts again, unless the module keeps level state.</li>
+  </ul>
+  <div class="callout"><p>The DOOM modules carry keys of their own (<code>key_red</code> and friends), picked up and checked by their Lua. A graph can't see that inventory. This recipe is for your own keys in your own module.</p></div>
+
+  <h2 id="secret">Recipe 2: a secret that counts</h2>
+  <p>Walking into a hidden room counts once, says so, and shows the count on the HUD.</p>
+  <p><b>Variables:</b> <code>secrets</code>, starts at <code>0</code>.</p>
+  <table>
+    <thead><tr><th>id</th><th>Node</th><th>Fields</th></tr></thead>
+    <tbody>
+      <tr><td>found</td><td><a href="../reference/graph-nodes.html#when_sector_entered"><code>when_sector_entered</code></a></td><td>sector: <em>picked</em>, the secret room · who: players</td></tr>
+      <tr><td>first</td><td><a href="../reference/graph-nodes.html#once"><code>once</code></a></td><td></td></tr>
+      <tr><td>count</td><td><a href="../reference/graph-nodes.html#add_var"><code>add_var</code></a></td><td>var: <code>secrets</code> · value: <code>1</code></td></tr>
+      <tr><td>n</td><td><a href="../reference/graph-nodes.html#get_var"><code>get_var</code></a></td><td>var: <code>secrets</code></td></tr>
+      <tr><td>hud</td><td><a href="../reference/graph-nodes.html#set_hud"><code>set_hud</code></a></td><td>name: <code>secrets</code> · to: everyone</td></tr>
+      <tr><td>say</td><td><a href="../reference/graph-nodes.html#subtitle"><code>subtitle</code></a></td><td>text: <code>A secret!</code> · seconds: <code>2</code></td></tr>
+      <tr><td>chime</td><td><a href="../reference/graph-nodes.html#play_sound"><code>play_sound</code></a></td><td>sound: a chime</td></tr>
+    </tbody>
+  </table>
+  <pre><code>found.then → first.in
+first.then → count.in
+count.then → hud.in
+n.value    → hud.value
+hud.then   → say.in
+say.then   → chime.in</code></pre>
+  <ul>
+    <li>For a second secret, add another <a href="../reference/graph-nodes.html#when_sector_entered"><code>when_sector_entered</code></a> and another <a href="../reference/graph-nodes.html#once"><code>once</code></a>, and link that <code>once</code>'s <b>then</b> into the same <code>count.in</code>. Each secret has its own <code>once</code>; they share the counter.</li>
+    <li><a href="../reference/graph-nodes.html#set_hud"><code>set_hud</code></a> writes the HUD value <code>secrets</code>. It shows only where a layout or a panel has a text with <code>{hud.secrets}</code> in it. Add one in <b>Screens</b> (see <a href="../studio/08-look-and-feel.html">Sky, screens and weather</a>).</li>
+    <li>To count secrets across the whole game, add a <a href="../reference/graph-nodes.html#call"><code>call</code></a> after <code>count</code> (to: game, name: <code>secret_found</code>) and keep the total in a game graph. See <a href="05-game-graph-and-calls.html">The game graph, calls and maps</a>.</li>
+  </ul>
+
+  <h2 id="ambush">Recipe 3: an ambush</h2>
+  <p>The player walks into a room, the door slams behind them, and imps appear.</p>
+  <div class="callout"><p>There is no node that wakes a sleeping monster placed on the map. A <span class="ui">dormant</span> monster wakes by its own brain (see <a href="../enemies/02-the-brain.html">The brain</a>). A graph's ambush <b>spawns</b> its monsters instead; a spawned monster starts awake.</p></div>
+  <table>
+    <thead><tr><th>id</th><th>Node</th><th>Fields</th></tr></thead>
+    <tbody>
+      <tr><td>enter</td><td><a href="../reference/graph-nodes.html#when_sector_entered"><code>when_sector_entered</code></a></td><td>sector: <em>picked</em>, the trap room · who: players</td></tr>
+      <tr><td>first</td><td><a href="../reference/graph-nodes.html#once"><code>once</code></a></td><td></td></tr>
+      <tr><td>shut</td><td><a href="../reference/graph-nodes.html#close_door"><code>close_door</code></a></td><td>sector: <em>picked</em>, the door you came in by · speed: fast</td></tr>
+      <tr><td>boom</td><td><a href="../reference/graph-nodes.html#camera_shake"><code>camera_shake</code></a></td><td>strength: <code>0.4</code> · seconds: <code>0.5</code></td></tr>
+      <tr><td>three</td><td><a href="../reference/graph-nodes.html#sequence"><code>sequence</code></a></td><td>count: <code>3</code></td></tr>
+      <tr><td>a</td><td><a href="../reference/graph-nodes.html#spawn"><code>spawn</code></a></td><td>what: <code>imp</code> · x, y, z: <em>picked</em>, a dark corner</td></tr>
+      <tr><td>b</td><td><a href="../reference/graph-nodes.html#spawn"><code>spawn</code></a></td><td>what: <code>imp</code> · x, y, z: <em>picked</em>, another corner</td></tr>
+      <tr><td>yell</td><td><a href="../reference/graph-nodes.html#play_sound"><code>play_sound</code></a></td><td>sound: a roar · (entity linked)</td></tr>
+    </tbody>
+  </table>
+  <pre><code>enter.then → first.in
+first.then → shut.in
+shut.then  → boom.in
+boom.then  → three.in
+three.0    → a.in
+three.1    → b.in
+three.2    → yell.in
+b.entity   → yell.entity        (the roar comes from the second imp)</code></pre>
+  <ul>
+    <li><a href="../reference/graph-nodes.html#sequence"><code>sequence</code></a> runs <b>0</b>, then <b>1</b>, then <b>2</b>, in the same tick. By the time <b>2</b> runs, <code>b</code> has spawned, so its <code>entity</code> output is the new imp.</li>
+    <li>Give <a href="../reference/graph-nodes.html#spawn"><code>spawn</code></a> its <code>z</code>: picking a spot on the floor fills x, y and z. Without <code>z</code> it spawns at height 0, which may be inside the floor or the void.</li>
+    <li>If a spawn fails (no room), its <code>entity</code> is nil, and the linked <code>play_sound</code> does nothing rather than roaring from the player.</li>
+  </ul>
+
+  <h2 id="arena">Recipe 4: an arena that opens when all are dead</h2>
+  <p>Two waves of three. When the last monster of the last wave dies, the exit opens. This joins recipe 3 with a counter.</p>
+  <p><b>Variables:</b> <code>alive</code> (0), <code>wave</code> (0), <code>fighting</code> (<code>false</code>).</p>
+  <table>
+    <thead><tr><th>id</th><th>Node</th><th>Fields</th></tr></thead>
+    <tbody>
+      <tr><td>enter</td><td><a href="../reference/graph-nodes.html#when_sector_entered"><code>when_sector_entered</code></a></td><td>sector: <em>picked</em>, the arena</td></tr>
+      <tr><td>first</td><td><a href="../reference/graph-nodes.html#once"><code>once</code></a></td><td></td></tr>
+      <tr><td>lock</td><td><a href="../reference/graph-nodes.html#close_door"><code>close_door</code></a></td><td>sector: <em>picked</em>, the entrance</td></tr>
+      <tr><td>on</td><td><a href="../reference/graph-nodes.html#set_var"><code>set_var</code></a></td><td>var: <code>fighting</code> · value: <code>true</code></td></tr>
+      <tr><td>next</td><td><a href="../reference/graph-nodes.html#add_var"><code>add_var</code></a></td><td>var: <code>wave</code> · value: <code>1</code></td></tr>
+      <tr><td>spawn4</td><td><a href="../reference/graph-nodes.html#sequence"><code>sequence</code></a></td><td>count: <code>4</code></td></tr>
+      <tr><td>s1, s2, s3</td><td><a href="../reference/graph-nodes.html#spawn"><code>spawn</code></a> ×3</td><td>what: <code>imp</code> · x, y, z: <em>picked</em>, three spots</td></tr>
+      <tr><td>three</td><td><a href="../reference/graph-nodes.html#set_var"><code>set_var</code></a></td><td>var: <code>alive</code> · value: <code>3</code></td></tr>
+      <tr><td>dies</td><td><a href="../reference/graph-nodes.html#when_dies"><code>when_dies</code></a></td><td>what: monsters</td></tr>
+      <tr><td>isOn</td><td><a href="../reference/graph-nodes.html#get_var"><code>get_var</code></a></td><td>var: <code>fighting</code></td></tr>
+      <tr><td>mine</td><td><a href="../reference/graph-nodes.html#branch"><code>branch</code></a></td><td></td></tr>
+      <tr><td>down</td><td><a href="../reference/graph-nodes.html#add_var"><code>add_var</code></a></td><td>var: <code>alive</code> · value: <code>-1</code></td></tr>
+      <tr><td>left</td><td><a href="../reference/graph-nodes.html#get_var"><code>get_var</code></a></td><td>var: <code>alive</code></td></tr>
+      <tr><td>none</td><td><a href="../reference/graph-nodes.html#compare"><code>compare</code></a></td><td>op: <code>&lt;=</code> · b: <code>0</code></td></tr>
+      <tr><td>cleared</td><td><a href="../reference/graph-nodes.html#branch"><code>branch</code></a></td><td></td></tr>
+      <tr><td>w</td><td><a href="../reference/graph-nodes.html#get_var"><code>get_var</code></a></td><td>var: <code>wave</code></td></tr>
+      <tr><td>more</td><td><a href="../reference/graph-nodes.html#compare"><code>compare</code></a></td><td>op: <code>&lt;</code> · b: <code>2</code></td></tr>
+      <tr><td>again</td><td><a href="../reference/graph-nodes.html#branch"><code>branch</code></a></td><td></td></tr>
+      <tr><td>rest</td><td><a href="../reference/graph-nodes.html#delay"><code>delay</code></a></td><td>ticks: <code>120</code></td></tr>
+      <tr><td>off</td><td><a href="../reference/graph-nodes.html#set_var"><code>set_var</code></a></td><td>var: <code>fighting</code> · value: <code>false</code></td></tr>
+      <tr><td>exit</td><td><a href="../reference/graph-nodes.html#open_door"><code>open_door</code></a></td><td>sector: <em>picked</em>, the exit</td></tr>
+      <tr><td>win</td><td><a href="../reference/graph-nodes.html#subtitle"><code>subtitle</code></a></td><td>text: <code>The way is open.</code></td></tr>
+    </tbody>
+  </table>
+  <pre><code>enter.then   → first.in
+first.then   → lock.in
+lock.then    → on.in
+on.then      → next.in
+next.then    → spawn4.in
+spawn4.0     → s1.in
+spawn4.1     → s2.in
+spawn4.2     → s3.in
+spawn4.3     → three.in
+
+dies.then    → mine.in
+isOn.value   → mine.cond
+mine.true    → down.in
+down.then    → cleared.in
+left.value   → none.a
+none.value   → cleared.cond
+cleared.true → again.in
+w.value      → more.a
+more.value   → again.cond
+again.true   → rest.in
+rest.then    → next.in          (wave 2: back round to the spawns)
+again.false  → off.in
+off.then     → exit.in
+exit.then    → win.in</code></pre>
+  <ul>
+    <li><b>Why <code>fighting</code>?</b> <a href="../reference/graph-nodes.html#when_dies"><code>when_dies</code></a> fires for every monster that dies in the level. The flag makes the counter listen only while the arena is on. If the arena has its own monster, set <code>kind</code> on <code>dies</code> instead, or as well.</li>
+    <li><b>Why the delay loop is safe:</b> <code>rest.then → next.in</code> goes back up the chain, but each pass after a delay is a new run, so it never meets the 256-step limit. The <code>again</code> branch ends it.</li>
+    <li><b>Why <code>left</code> reads the new value:</b> the <code>cleared</code> branch pulls <code>left</code> after <code>down</code> has run, and nothing in this run read <code>alive</code> before.</li>
+    <li><b>Who sees the win line?</b> In a <a href="../reference/graph-nodes.html#when_dies"><code>when_dies</code></a> run, the event's entity is the monster that died, not a player. An unlinked <a href="../reference/graph-nodes.html#subtitle"><code>subtitle</code></a> would reach nobody, and the server log would say <em>acted on no player</em>. Tick <code>everyone</code> on <code>win</code>, or link <code>dies.by</code> (the killer) into its <code>entity</code>.</li>
+  </ul>
+
+  <h2 id="timed">Recipe 5: a timed two-switch puzzle</h2>
+  <p>Two switches, far apart. Each one lights up for five seconds when pressed. If both are lit at once, the vault opens.</p>
+  <p><b>Before you start:</b> pick two textures, one for an unlit switch and one for a lit switch. Mark both walls <span class="ui">usable</span> in their wall flags.</p>
+  <p><b>Variables:</b> <code>a_on</code> (<code>false</code>), <code>b_on</code> (<code>false</code>).</p>
+  <table>
+    <thead><tr><th>id</th><th>Node</th><th>Fields</th></tr></thead>
+    <tbody>
+      <tr><td>pressA</td><td><a href="../reference/graph-nodes.html#when_wall_used"><code>when_wall_used</code></a></td><td>side: <em>picked</em>, switch A</td></tr>
+      <tr><td>isLitA</td><td><a href="../reference/graph-nodes.html#get_var"><code>get_var</code></a></td><td>var: <code>a_on</code></td></tr>
+      <tr><td>guardA</td><td><a href="../reference/graph-nodes.html#branch"><code>branch</code></a></td><td></td></tr>
+      <tr><td>setA</td><td><a href="../reference/graph-nodes.html#set_var"><code>set_var</code></a></td><td>var: <code>a_on</code> · value: <code>true</code></td></tr>
+      <tr><td>lightA</td><td><a href="../reference/graph-nodes.html#set_wall_texture"><code>set_wall_texture</code></a></td><td>side: <em>picked</em>, switch A · texture: the lit one</td></tr>
+      <tr><td>seqA</td><td><a href="../reference/graph-nodes.html#sequence"><code>sequence</code></a></td><td>count: <code>2</code></td></tr>
+      <tr><td>waitA</td><td><a href="../reference/graph-nodes.html#delay"><code>delay</code></a></td><td>ticks: <code>300</code></td></tr>
+      <tr><td>clearA</td><td><a href="../reference/graph-nodes.html#set_var"><code>set_var</code></a></td><td>var: <code>a_on</code> · value: <code>false</code></td></tr>
+      <tr><td>darkA</td><td><a href="../reference/graph-nodes.html#set_wall_texture"><code>set_wall_texture</code></a></td><td>side: <em>picked</em>, switch A · texture: the unlit one</td></tr>
+      <tr><td colspan="3"><i>The same nine nodes again for switch B, with <code>b_on</code>.</i></td></tr>
+      <tr><td>chkA</td><td><a href="../reference/graph-nodes.html#get_var"><code>get_var</code></a></td><td>var: <code>a_on</code> (a <b>second</b> node, not isLitA)</td></tr>
+      <tr><td>chkB</td><td><a href="../reference/graph-nodes.html#get_var"><code>get_var</code></a></td><td>var: <code>b_on</code> (a second node, not isLitB)</td></tr>
+      <tr><td>both</td><td><a href="../reference/graph-nodes.html#logic"><code>logic</code></a></td><td>op: <code>and</code></td></tr>
+      <tr><td>check</td><td><a href="../reference/graph-nodes.html#branch"><code>branch</code></a></td><td></td></tr>
+      <tr><td>vault1</td><td><a href="../reference/graph-nodes.html#once"><code>once</code></a></td><td></td></tr>
+      <tr><td>vault</td><td><a href="../reference/graph-nodes.html#open_door"><code>open_door</code></a></td><td>sector: <em>picked</em>, the vault door · speed: slow</td></tr>
+    </tbody>
+  </table>
+  <pre><code>pressA.then  → guardA.in
+isLitA.value  → guardA.cond
+guardA.false → setA.in          (guardA.true unlinked: already lit, ignore)
+setA.then    → lightA.in
+lightA.then  → seqA.in
+seqA.0       → check.in         (B's seqB.0 links here too)
+seqA.1       → waitA.in
+waitA.then   → clearA.in
+clearA.then  → darkA.in
+
+chkA.value   → both.a
+chkB.value   → both.b
+both.value   → check.cond
+check.true   → vault1.in
+vault1.then  → vault.in</code></pre>
+  <ul>
+    <li><b>The guard</b> ignores a press on a switch that is already lit. Without it, a second press would start a second timer, and the first timer would put the light out early.</li>
+    <li><b>The sequence</b> does the check first (exit 0), then starts the timer (exit 1), both in the same tick.</li>
+    <li><b>Why chkA is a separate node:</b> in a run from switch A, <code>isLitA</code> was read at the guard, while <code>a_on</code> was still false. A pure node is worked out once per run, so reading <code>isLitA</code> again in the check would still say false. A fresh <code>get_var</code> reads the value <code>setA</code> just wrote.</li>
+    <li>Five seconds is 300 ticks. To make the window shorter for a harder puzzle, lower both delays.</li>
+  </ul>
+
+  <h2>Exercise: build the key door</h2>
+  <ol class="steps">
+    <li><p>Make the <code>red_key</code> prop in <b>Props</b> (<span class="ui">solid</span> off), and place it in a room away from the door.</p></li>
+    <li><p>In <b>◇ Graphs</b>, press <span class="ui">+ new graph on <i>your map</i></span> and name it <code>keydoor</code>. Add the variable <code>has_red_key</code> and set its <span class="ui">starts at</span> to <code>false</code>.</p></li>
+    <li><p>Build the pickup half: <code>take</code>, <code>got</code>, <code>gone</code>, <code>ding</code>, <code>tell</code>. Don't forget the data link <code>take.prop → gone.entity</code>.</p></li>
+    <li><p>Build the door half. For <code>press</code>, tap the door's face on the map when the side panel asks for the wall. Add <code>press2</code> for the other face.</p></li>
+    <li><p>Check that the window's bar shows no problem count. If it does, read the first line in the side panel.</p></li>
+    <li><p>Play. Press use on the door: the line says you need the key. Fetch it and try again.</p></li>
+  </ol>
+
+  <div class="quiz" data-answer="1">
+    <p class="q">In the key recipe, you forget the link <code>take.prop → gone.entity</code>. What does <code>remove</code> do?</p>
+    <ul>
+      <li>Removes the key: it is what was touched</li>
+      <li>Acts on the event's entity, the player who touched the key</li>
+      <li>Nothing</li>
+    </ul>
+    <p class="why">Unlinked, an <code>entity</code> input means the event's entity, and for a touch that is whoever walked in. The prop is a separate output.</p>
+  </div>
+  <div class="quiz" data-answer="0">
+    <p class="q">Why does the arena check <code>fighting</code> before counting a death?</p>
+    <ul>
+      <li>Because <code>when_dies</code> fires for every monster that dies anywhere in the level</li>
+      <li>Because a dead monster's entity is nil</li>
+      <li>Because <code>add_var</code> cannot go below zero</li>
+    </ul>
+    <p class="why">Without the flag, a monster killed elsewhere before or after the fight would change the count.</p>
+  </div>
+  <div class="quiz" data-answer="2">
+    <p class="q">In the switch puzzle, the check reads <code>isLitA</code> (the guard's own get_var) instead of a new <code>chkA</code>. Pressing B then A within five seconds…</p>
+    <ul>
+      <li>opens the vault</li>
+      <li>is refused by the studio</li>
+      <li>does not open the vault: in A's run, <code>isLitA</code> was already read as false at the guard</li>
+    </ul>
+    <p class="why">A pure node is worked out once per run. The read at the guard, before <code>setA</code>, is the value the whole run sees.</p>
+  </div>
+</article>
+</body>
+</html>

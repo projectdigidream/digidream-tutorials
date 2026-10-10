@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hitscan, missiles and swings · Digidream Studio tutorials</title>
+<meta name="description" content="The three ways a weapon hurts: instant rays with count and spread, missiles such as rockets and plasma, and swept melee swings; and what your own client predicts versus what the server decides.">
+<link rel="stylesheet" href="../assets/site.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 16%22%3E%3Cpath d=%22M8 1l7 7-7 7-7-7z%22 fill=%22%235b8fd6%22/%3E%3C/svg%3E">
+<script defer src="../assets/nav.js"></script>
+<script defer src="../assets/shortcuts.js"></script>
+<script defer src="../assets/site.js"></script>
+</head>
+<body>
+<article>
+  <h1>Hitscan, missiles and swings</h1>
+  <p class="lede">A weapon hurts things in one of three ways. A <b>hitscan</b> is an instant ray. A <b>missile</b> is a thing that flies. A <b>swing</b> is a volume that sweeps through an arc over a few ticks. This lesson covers each one's numbers, then what your own game client shows at once and what only the server decides.</p>
+  <div class="goal">
+    <b>You'll learn</b><span>every hitscan argument and how spread works per ray; how a weapon launches a missile and where its damage lives; blasts, recoil and warnings; the swing's fields and why it is a field and not an action; and the line between predicted and server-decided</span>
+    <b>Time</b><span>35 minutes</span>
+    <b>Needs</b><span>a weapon with phases (<a href="02-phases.html">The phase machine</a>); for missiles, the Monsters workshop's <span class="ui">☄ missiles</span> tab (<a href="../studio/07-workshops.html">Monsters, weapons, player</a>)</span>
+  </div>
+
+  <h2>Hitscan: an instant ray</h2>
+  <p><a href="../reference/weapon-vocab.html#hitscan"><code>hitscan</code></a> is a sequence step. On the tick it runs, the engine casts rays from the player and each ray stops at the first wall or body it meets. No travel time. The pistol, the shotgun, the chaingun and even DOOM's chainsaw are hitscans.</p>
+  <figure class="shot" data-src="../assets/shots/weapon-phase-fire.png" data-alt="The fire phase: anim, ticks 12, next ready, and a hitscan step with damage, range, count, spread, tracer and knockback" data-hotspots='[{"x":76,"y":59,"t":"at","d":"the tick after entering the phase when this step runs"},{"x":86,"y":65,"t":"damage","d":"per ray that hits"},{"x":86,"y":70,"t":"range","d":"world units; fractions like 2048/48 are fine"},{"x":81,"y":77,"t":"count?","d":"rays per shot"},{"x":81,"y":82,"t":"spread?","d":"degrees, rolled per ray"},{"x":81,"y":88,"t":"tracer?","d":"a tracer style, or none"}]'>
+    <figcaption>A <code>hitscan</code> step in the <code>fire</code> phase's sequence.</figcaption>
+  </figure>
+  <table>
+    <thead><tr><th>Argument</th><th>What it does</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">damage</span></td><td>What each ray that hits costs the target. A fixed number: there's no random roll.</td></tr>
+      <tr><td><span class="ui">range</span></td><td>How far the ray reaches, in world units. DOOM's guns reach 2048 of its map units; at 48 to a unit, that's <code>2048/48</code>, about 42.7.</td></tr>
+      <tr><td><span class="ui">count?</span></td><td>Rays in one shot. Default 1. DOOM's shotgun is 7, its super shotgun 20. Up to 32 are predicted; more, and the weapons run on the server only.</td></tr>
+      <tr><td><span class="ui">spread?</span></td><td>Degrees of random turn, <b>rolled for each ray</b>: each one is turned somewhere between −spread and +spread, sideways.</td></tr>
+      <tr><td><span class="ui">tracer?</span></td><td>A tracer style from the catalogue to draw, or <code>(none)</code>. No tracer is what makes a hitscan read as a punch.</td></tr>
+      <tr><td><span class="ui">knockback?</span>, <span class="ui">lift?</span></td><td>A shove for each ray that hits, away from the muzzle and upward, in world units per second. Seven pellets at point blank shove seven times.</td></tr>
+      <tr><td><span class="ui">slow?</span> with <span class="ui">slow_ticks?</span></td><td>Multiplies the target's speed (0.5 is half pace) for that many ticks. Needs both.</td></tr>
+      <tr><td><span class="ui">hit_vfx?</span>, <span class="ui">hit_vfx_radius?</span></td><td>A particle kind to burst where a ray lands, and how wide. Drawn by the client only.</td></tr>
+    </tbody>
+  </table>
+  <p>Numbers marked <i>fx</i> in the reference (range, knockback and the like) take a whole number, an exact decimal such as <code>0.25</code>, or a fraction such as <code>-4/48</code>. The field's placeholder says so: <em>e.g. 0.25 or -4/48</em>.</p>
+
+  <h3>Why spread is per ray</h3>
+  <p>Without a roll per ray, all seven of a shotgun's pellets would travel the same line, and a shotgun would be a pistol that hits seven times as hard at any distance. With it, the pellets fan out, and fewer of them land the further away the target is. That's the whole difference between DOOM's pistol (1 ray, spread 3) and its shotgun (7 rays, spread 14).</p>
+  <div class="widget" data-widget="phase-machine" data-title="Rays, count and spread" data-preset="shotgun"></div>
+  <ul>
+    <li>Set the target distance to 2 and fire the shotgun: about six of the seven rays land, 60 damage or so.</li>
+    <li>Move it to 20: about two land, most of them on the middle target.</li>
+    <li>Set <b>count</b> to 1 and <b>spread</b> to 0: a perfect rifle. Set count 20 and spread 26 for DOOM's super shotgun.</li>
+  </ul>
+  <p>The spread is only sideways. Up and down is handled by aiming, below.</p>
+
+  <h3>Aiming up and down</h3>
+  <p>In third person, a player's input has a heading but no pitch, so the engine aims for you vertically. It finds the nearest visible solid body inside a narrow cone around your facing (5.625° each way, DOOM's number) and aims at its middle. In first person, your shot follows the view's own pitch instead. Corpses and bodies a script made non-solid are not aimed at.</p>
+
+  <h2>Missiles: things that fly</h2>
+  <p><a href="../reference/weapon-vocab.html#launch"><code>launch</code></a> fires a missile. The missile itself is declared once for the module, in the <b>☠ Monsters</b> workshop's <span class="ui">☄ missiles</span> tab, and monsters and weapons share them. A rocket launcher and a cyberdemon can fire the same rocket.</p>
+  <table>
+    <thead><tr><th>Argument</th><th>What it does</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">missile</span></td><td>Which missile, chosen from the module's missiles.</td></tr>
+      <tr><td><span class="ui">count?</span>, <span class="ui">arc?</span></td><td>Several at once, <code>arc</code> degrees apart. A spread of fireballs.</td></tr>
+      <tr><td><span class="ui">offset?</span></td><td>How far in front of the body it appears. A rocket needs this, or it is born inside you and bursts at once. DOOM II uses <code>40/48</code>, under a unit.</td></tr>
+      <tr><td><span class="ui">angle?</span></td><td>Degrees off the aim, for a weapon that throws sideways.</td></tr>
+    </tbody>
+  </table>
+  <p><b>The missile, not the weapon, decides what a hit does.</b> In the <span class="ui">☄ missiles</span> tab each missile has its <code>speed</code>, <code>gravity</code>, <code>life</code> and the rest, and two action lists: <code>on_hit</code> and <code>on_expire</code>. DOOM's rocket, for example:</p>
+  <pre><code>rocket   speed 700/48 (about 14.6 units a second)   gravity 0   life 300
+         z_offset 32/48   anim_fly 0   anim_burst 1   burst_ticks 20
+on_hit   vfx (fireball) · vfx (smoke)
+         damage       amount 20                       the direct hit
+         damage_area  damage 128, radius 128/48, falloff on,
+                      hurts_owner off, shoves_owner on,
+                      knockback 560/48, lift 560/48   the blast</code></pre>
+  <p>A <code>gravity</code> above zero makes a grenade. A <code>life</code> stops a missile that never hits anything; without one, every shot into the sky would keep a slot forever. The missile is drawn by the catalogue record of its own name, unless its <code>prop</code> names another.</p>
+  <div class="callout tip"><p><b>Plasma</b> is a missile too: a fast one with a small hit and no blast, fired from an automatic <code>fire</code> phase only a few ticks long. DOOM II's plasma rifle fires every 5 ticks.</p></div>
+
+  <h2>Blasts, recoil and warnings</h2>
+  <p>Three more actions shape how a weapon feels.</p>
+  <h3><code>damage_area</code>: a blast from the weapon itself</h3>
+  <p><a href="../reference/weapon-vocab.html#damage_area"><code>damage_area</code></a> hurts everything inside a circle, once. Walls are <b>not</b> checked: it's a shockwave, not a ray. <span class="ui">offset?</span> moves the circle in front of you (0 is centred on you: a ground slam), and <span class="ui">height?</span> lifts it off the floor. <span class="ui">falloff?</span> makes the damage fall evenly to nothing at the edge. <span class="ui">hurts_owner?</span> is on unless you turn it off.</p>
+  <h3><code>impulse</code>: recoil and rocket jumps</h3>
+  <p><a href="../reference/weapon-vocab.html#impulse"><code>impulse</code></a> shoves the <em>shooter</em>, in world units a second. <span class="ui">towards?</span> <code>away</code> is recoil; add <span class="ui">vertical?</span> and it lifts you. DOOM II's super shotgun shoves you back with <code>140/48</code>; its rocket launcher with <code>100/48</code>.</p>
+  <h3><code>telegraph</code>: warn first, hit later</h3>
+  <p><a href="../reference/weapon-vocab.html#telegraph"><code>telegraph</code></a> draws a warning, a catalogue effect of a given <span class="ui">radius?</span>, saying the blow lands in <span class="ui">ticks?</span>. Put it at <span class="ui">at</span> 0 of a wind-up phase and the <code>damage_area</code> later in the same phase. The gap between them is the time others have to move. Match its <span class="ui">offset?</span> to the blast's, so the warning and the blast agree.</p>
+
+  <h2 id="swings">Swings: melee you can dodge</h2>
+  <p>A <b>swing</b> is a collider that sweeps through an arc over several ticks. A target that steps out of the way mid-swing is missed. It's the same thing a monster's claw uses, and it's edited the same way, in the <span class="ui">🌀 swing</span> tab.</p>
+  <figure class="shot" data-src="../assets/shots/weapon-swing.png" data-alt="The swing tab: an animated preview from above and from the side, then the swing fields" data-hotspots='[{"x":80,"y":29,"t":"From above","d":"reach and arc; the swing plays on a loop at the tick rate"},{"x":91,"y":29,"t":"From the side","d":"pitch; says no height check when half_pitch is empty"},{"x":81,"y":42,"t":"damage","d":"what a connected swing costs"},{"x":81,"y":54,"t":"half_arc / sweep","d":"turn fractions: 1/8 is 45°"},{"x":81,"y":78,"t":"ticks?","d":"how long the collider is live"}]'>
+    <figcaption>A new swing: a short jab. The preview plays it, so you see a volume moving through time.</figcaption>
+  </figure>
+  <p><span class="ui">+ swing</span> starts one shaped like a short jab: <span class="ui">damage</span> 10, <span class="ui">reach?</span> 1.5, <span class="ui">half_arc?</span> 1/8, <span class="ui">sweep_from?</span> −1/8 to <span class="ui">sweep_to?</span> 1/8, <span class="ui">ticks?</span> 12, <span class="ui">cooldown?</span> 20. <span class="ui">remove the swing</span> takes it away.</p>
+  <table>
+    <thead><tr><th>Field</th><th>What it does</th></tr></thead>
+    <tbody>
+      <tr><td><a href="../reference/weapon-vocab.html#swing_fields.damage"><span class="ui">damage</span></a></td><td>What a connected swing costs. Required.</td></tr>
+      <tr><td><a href="../reference/weapon-vocab.html#swing_fields.reach"><span class="ui">reach?</span></a>, <a href="../reference/weapon-vocab.html#swing_fields.min_reach"><span class="ui">min_reach?</span></a></td><td>How far it reaches, to the target's surface, not its centre. A <code>min_reach</code> above 0 makes a ring that misses anything pressed against you: a spear.</td></tr>
+      <tr><td><a href="../reference/weapon-vocab.html#swing_fields.half_arc"><span class="ui">half_arc?</span></a></td><td>How wide, each side of the aim. All angles are <b>turns</b>: <code>1/8</code> (0.125) is 45°.</td></tr>
+      <tr><td><a href="../reference/weapon-vocab.html#swing_fields.sweep_from"><span class="ui">sweep_from?</span></a>, <a href="../reference/weapon-vocab.html#swing_fields.sweep_to"><span class="ui">sweep_to?</span></a></td><td>Where the collider starts and ends, relative to the aim. The default sweeps right to left. Equal values make a thrust that doesn't turn.</td></tr>
+      <tr><td><a href="../reference/weapon-vocab.html#swing_fields.ticks"><span class="ui">ticks?</span></a></td><td>How long it is live. Longer is easier to see coming, and to dodge.</td></tr>
+      <tr><td><a href="../reference/weapon-vocab.html#swing_fields.pitch_from"><span class="ui">pitch_from?</span></a>, <a href="../reference/weapon-vocab.html#swing_fields.pitch_to"><span class="ui">pitch_to?</span></a>, <a href="../reference/weapon-vocab.html#swing_fields.half_pitch"><span class="ui">half_pitch?</span></a></td><td>The vertical sweep (0 level, 0.25 straight up). <b>Empty <code>half_pitch</code> means no height check at all</b>, which is right for a fist. Set it, and an overhead chop really misses what is at your feet.</td></tr>
+      <tr><td><a href="../reference/weapon-vocab.html#swing_fields.knockback"><span class="ui">knockback?</span></a>, <a href="../reference/weapon-vocab.html#swing_fields.lift"><span class="ui">lift?</span></a></td><td>How hard a hit throws the target, away and up. An uppercut is lift.</td></tr>
+      <tr><td><a href="../reference/weapon-vocab.html#swing_fields.slow"><span class="ui">slow?</span></a>, <a href="../reference/weapon-vocab.html#swing_fields.slow_ticks"><span class="ui">slow_ticks?</span></a></td><td>Slows what it hits. Hitting the same target again replaces the slow, it doesn't stack.</td></tr>
+      <tr><td><a href="../reference/weapon-vocab.html#swing_fields.hit_vfx"><span class="ui">hit_vfx?</span></a>, <a href="../reference/weapon-vocab.html#swing_fields.hit_vfx_radius"><span class="ui">hit_vfx_radius?</span></a></td><td>Particles where it lands.</td></tr>
+      <tr><td><a href="../reference/weapon-vocab.html#swing_fields.cooldown"><span class="ui">cooldown?</span></a></td><td>Ticks before another swing may start. At most 255.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>A field, not an action</h3>
+  <p>There's no "swing" step in a sequence. The swing is a <b>field</b> of the weapon (the <span class="ui">🌀 swing</span> tab), or of one phase (the phase tab's own <span class="ui">+ swing</span>). Here's why, and what it means for you:</p>
+  <ul>
+    <li><b>The swing starts when the attack button goes down</b>, on your own client and on the server alike, as long as its cooldown allows. It appears on the very tick you press, not a round trip later. The phase you are in decides the swing's <em>shape</em>: entering a phase with its own swing puts that shape in place.</li>
+    <li><b>A weapon without a swing does not swing.</b> Pressing fire with a shotgun produces no collider, on either side.</li>
+    <li><b>What a hit costs is decided by the server.</b> The shape is shared with your client; the <code>damage</code> is not.</li>
+    <li><b>One swing per phase.</b> DOOM II's fists are a three-blow combo (<code>jab1</code>, <code>jab2</code>, <code>hook</code>) where each phase has its own swing, so the third blow hits for 30 instead of 10 and knocks the target down. See <a href="05-recipes.html">Recipes</a>.</li>
+  </ul>
+  <div class="callout"><p>Behind the scenes, a player's swing is written through the world's effect stack, which has 256 slots shared by the whole world; a monster's swing goes into its own body instead, so a level of a hundred monsters doesn't use them up. You don't set anything for this. It is why switching weapons replaces the swing cleanly.</p></div>
+
+  <h2 id="prediction">What is instant, and what the server decides</h2>
+  <p>Your own weapon runs <b>twice</b>: on the server, and on your own client, which predicts it from the same weapon table and the same rules. When the two agree, which is almost always, you see your shot the moment you press. When they don't, your client is corrected to the server's version. Other players' weapons are never predicted: you see them as the server reports them.</p>
+  <table>
+    <thead><tr><th>Shown at once on your screen</th><th>Decided by the server, a moment later</th></tr></thead>
+    <tbody>
+      <tr><td>
+        <ul>
+          <li>the phase changes, the fire rate, combos, refire</li>
+          <li>the ammunition count, and switching weapons with the number keys</li>
+          <li>where every pellet goes: the spread is rolled the same way on both sides</li>
+          <li>the tracers, the muzzle effects, and the gun's kick</li>
+          <li>sounds marked <span class="ui">predicted?</span> (below)</li>
+          <li>recoil, and your rocket jump</li>
+          <li>the swing's collider</li>
+          <li>your own rocket's flight and burst, and the shove it gives the monsters near it (drawn only)</li>
+        </ul>
+      </td><td>
+        <ul>
+          <li>damage, pain and kills</li>
+          <li>what a missile really hit, and its blast's damage</li>
+          <li>a <code>damage_area</code>'s damage and knockback</li>
+          <li>pickups and the inventory a script changes</li>
+          <li>any weapon that uses a <code>lua</code> step or condition: the whole weapon set then runs on the server only, and the server says so when it loads</li>
+        </ul>
+      </td></tr>
+    </tbody>
+  </table>
+  <p><b>Lag compensation.</b> Your shot is judged against where <em>you saw</em> the others, up to 15 ticks (250 ms) back. If you saw the hit, it usually lands. Walls are not rewound: a door that has closed since still stops the shot.</p>
+
+  <h3>Why sounds have <code>predicted</code></h3>
+  <p>A <a href="../reference/weapon-vocab.html#sound"><code>sound</code></a> step plays a sound from the player, and everybody nearby hears it, sent by the server. But you, the shooter, can't wait a round trip to hear your own gun. So:</p>
+  <ul>
+    <li>Turn on <span class="ui">predicted?</span> on the <code>sound</code> step. Your own client plays it the moment it predicts the step, and drops the server's copy when it arrives. Everyone else hears the server's copy.</li>
+    <li>Leave it off, and you hear your own shot a round trip late, while everyone else hears it normally.</li>
+  </ul>
+  <p>The weapon tab's <b>🔊 heard at once by the one firing</b> list (<span class="ui">+ predicted sound</span>, with <span class="ui">on</span> <code>primary</code>, <code>primary_held</code>, <code>secondary</code>, <code>secondary_held</code> or <code>swing</code>, a sound, and <span class="ui">every (ticks)</span> for a held trigger) is the older way: a guess from the buttons alone. The client mutes it while it runs the weapon itself, which is whenever the weapon set doesn't use <code>lua</code>. It is still worth filling in for a weapon that does.</p>
+  <div class="callout warn"><p><b>A stale line in the vocabulary.</b> The <code>impulse</code> entry's own description (the <b>ⓘ</b>) still says it is <em>NOT PREDICTED</em>. That was true before the weapon machine moved into the shared core; recoil and rocket jumps are now predicted (docs/WEAPON_PREDICTION.md, phases A and G).</p></div>
+
+  <h2>Exercise: three ways to hurt</h2>
+  <ol class="steps">
+    <li><p>Make a weapon called <code>scatter</code>. On <span class="ui">⬡ fire</span>, set the hitscan's <span class="ui">count?</span> to <code>7</code>, <span class="ui">spread?</span> to <code>14</code> and <span class="ui">range</span> to <code>2048/48</code>. Set <span class="ui">ticks?</span> to <code>51</code>. Play: up close, a monster takes nearly all seven pellets.</p></li>
+    <li><p>Add a step <code>impulse</code> at 0 with <span class="ui">speed</span> <code>2</code> and <span class="ui">towards?</span> <code>away</code>. Fire while standing still: you slide back.</p></li>
+    <li><p>Add a step <code>sound</code> at 0, pick a sound, and turn <span class="ui">predicted?</span> on. Play and fire: the sound plays on the press.</p></li>
+    <li><p>In <b>☠ Monsters</b>, open <span class="ui">☄ missiles</span> and press <span class="ui">+ missile</span>. Keep <code>fireball</code>. A missile is drawn by the prop of its own name, so either the module has a prop called <code>fireball</code>, or you set the missile's <code>prop</code> to one it has. Back in <b>🔫 Weapons</b>, make a weapon <code>caster</code>. On its <code>fire</code>, delete the hitscan and add <code>launch</code> with <span class="ui">missile</span> <code>fireball</code> and <span class="ui">offset?</span> <code>0.8</code>. Play: the shot flies, and only does its 10 damage when it arrives.</p></li>
+    <li><p>Make a weapon <code>blade</code>. Delete the hitscan from its <code>fire</code>. On <span class="ui">🌀 swing</span>, press <span class="ui">+ swing</span>. Watch the preview: the arc sweeps right to left over 12 ticks. Change <span class="ui">sweep_from?</span> and <span class="ui">sweep_to?</span> both to <code>0</code> and <span class="ui">min_reach?</span> to <code>1</code>: now it's a spear thrust that misses anything right against you.</p></li>
+    <li><p>Play with the blade and step back from a monster as it closes. Then swing just as it reaches you. The swing hits on the tick you press; the monster's health drops when the server's answer arrives.</p></li>
+  </ol>
+
+  <div class="quiz" data-answer="1">
+    <p class="q">A shotgun has <span class="ui">count?</span> 7 and <span class="ui">spread?</span> 0. What does it do?</p>
+    <ul>
+      <li>Fans its pellets evenly over 7°</li>
+      <li>Sends all seven rays down the same line: a pistol that hits seven times as hard at any range</li>
+      <li>Fires one ray for 70 damage that ignores walls</li>
+    </ul>
+    <p class="why">Spread is rolled per ray. With 0, every ray takes the same line, so distance makes no difference to how many land.</p>
+  </div>
+  <div class="quiz" data-answer="0">
+    <p class="q">You want a rocket's explosion to do more damage. Where do you change it?</p>
+    <ul>
+      <li>In the missile's <code>on_hit</code> list, on its <code>damage_area</code>, in the Monsters workshop's ☄ missiles tab</li>
+      <li>On the weapon's <code>launch</code> step</li>
+      <li>In the weapon's 🔫 weapon tab</li>
+    </ul>
+    <p class="why">The weapon only launches the missile. What a hit does belongs to the missile, which monsters and weapons share.</p>
+  </div>
+  <div class="quiz" data-answer="2">
+    <p class="q">Your tracer appears the moment you press, but you hear your own shot a moment later. Everyone else hears it fine. What's missing?</p>
+    <ul>
+      <li>A <code>consume</code> step</li>
+      <li>The weapon's <span class="ui">aim_snap?</span></li>
+      <li><span class="ui">predicted?</span> on the <code>sound</code> step, so your client drops the server's copy</li>
+    </ul>
+    <p class="why">Without it you only hear the server's copy, a round trip late. Marked predicted, your client plays the step itself at once and skips the server's copy, so you never hear it twice.</p>
+  </div>
+</article>
+</body>
+</html>

@@ -57,10 +57,44 @@ window.DNP_NAV = [
     ],
   },
   {
+    id: 'enemies', title: 'Enemies', icon: '☠', blurb: 'Monsters from body to brain: states, senses, attacks, missiles, pain, death and drops.',
+    pages: [
+      { file: 'enemies/01-first-monster.html', title: 'Your first monster', kw: 'monster workshop body sprite height speed radius place dormant spawn' },
+      { file: 'enemies/02-the-brain.html', title: 'The brain: states and transitions', kw: 'brain state transition condition see target chase wander idle think ticks' },
+      { file: 'enemies/03-attacks.html', title: 'Attacks: swings and missiles', kw: 'swing melee reach hitscan bullets missile projectile fire spread cooldown' },
+      { file: 'enemies/04-pain-death-drops.html', title: 'Pain, death and drops', kw: 'hp health pain flinch pain time death drops gib corpse sounds vars' },
+      { file: 'enemies/05-recipes.html', title: 'Recipes: five enemies', kw: 'imp charger turret sniper boss phases recipe' },
+    ],
+  },
+  {
+    id: 'weapons', title: 'Weapons', icon: '🔫', blurb: 'Guns and blades: phases, hitscan, missiles, swings, ammo, pickups and the arsenal.',
+    pages: [
+      { file: 'weapons/01-first-weapon.html', title: 'Your first weapon', kw: 'weapon workshop arsenal kit slot select view model' },
+      { file: 'weapons/02-phases.html', title: 'The phase machine', kw: 'phase ticks ready fire refire cooldown condition always held released' },
+      { file: 'weapons/03-hitscan-missiles-swings.html', title: 'Hitscan, missiles and swings', kw: 'hitscan rays count spread missile rocket swing melee chainsaw damage range' },
+      { file: 'weapons/04-ammo-and-pickups.html', title: 'Ammo, pickups and the arsenal', kw: 'ammo pool max pickup grant health armor arsenal order' },
+      { file: 'weapons/05-recipes.html', title: 'Recipes: five weapons', kw: 'pistol shotgun chaingun rocket launcher chainsaw charge recipe prediction' },
+    ],
+  },
+  {
+    id: 'graphs', title: 'Graph scripting', icon: '◇', blurb: 'Make maps and games react: events, flow, data, variables, the world, scenes and debugging.',
+    pages: [
+      { file: 'graphs/01-thinking-in-graphs.html', title: 'Thinking in graphs', kw: 'event flow data pin link run order node' },
+      { file: 'graphs/02-variables-and-numbers.html', title: 'Variables, numbers and saving', kw: 'variable number counter persist save fx int bool' },
+      { file: 'graphs/03-map-logic.html', title: 'Map logic recipes', kw: 'door key secret ambush wave spawner arena lock switch counter' },
+      { file: 'graphs/04-the-world.html', title: 'Talking to the world', kw: 'sector look light sound music camera scene panel ui entity property' },
+      { file: 'graphs/05-game-graph-and-calls.html', title: 'The game graph, calls and maps', kw: 'game graph call answer change map slot shared module' },
+      { file: 'graphs/06-debugging.html', title: 'Debugging graphs', kw: 'problems refused play log debug overlay test' },
+    ],
+  },
+  {
     id: 'reference', title: 'Reference', icon: '⌘', blurb: 'Every shortcut, every file, every word.',
     pages: [
       { file: 'reference/shortcuts.html', title: 'All shortcuts', kw: 'keys keyboard shortcut trainer' },
       { file: 'reference/files.html', title: 'Files and baking', kw: 'sources assets bake tsprite texproj msproj mstk sfxproj module.txt' },
+      { file: 'reference/graph-nodes.html', title: 'Every graph node', kw: 'node vocabulary event action condition data pin property' },
+      { file: 'reference/monster-vocab.html', title: 'Every monster word', kw: 'mob vocabulary action condition state field missile drop' },
+      { file: 'reference/weapon-vocab.html', title: 'Every weapon word', kw: 'weapon vocabulary phase swing ammo pickup action condition' },
       { file: 'reference/glossary.html', title: 'Glossary', kw: 'words terms' },
     ],
   },

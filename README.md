@@ -17,12 +17,17 @@ Opening `index.html` straight from disk (`file://`) works too. The one differenc
 ## What's inside
 
 - `index.html`: the landing page and learning paths.
-- `studio/`, `sprites/`, `textures/`, `music/`, `sounds/`: the five tracks.
+- `studio/`, `sprites/`, `textures/`, `music/`, `sounds/`, `enemies/`, `weapons/`, `graphs/`: the tracks.
 - `reference/`: all shortcuts, files and baking, and a glossary.
 - `assets/site.css`, `assets/site.js`: the shell (sidebar, search, progress, quizzes, shortcut trainers, screenshot hotspots).
 - `assets/nav.js`: the table of contents. `assets/shortcuts.js`: every shortcut.
 - `assets/widgets/`: the interactive demos (room drawing, sprite views, seamless tile painter, ADSR synth, cue timeline, SFX toy, graph toy…).
 - `assets/shots/`: screenshots of the real tools.
+- `assets/data/vocab-*.js`: the engine's graph, monster and weapon vocabularies, behind the generated reference pages. They are generated, so don't edit them. After the engine's vocabulary changes, regenerate them:
+
+  ```sh
+  node tutorials/tools/build-vocab.mjs
+  ```
 
 Progress (ticked steps) is kept in the reader's own browser, in localStorage. Nothing is sent anywhere.
 

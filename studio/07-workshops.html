@@ -20,12 +20,13 @@
     <b>Time</b><span>30 minutes</span>
     <b>Needs</b><span>a module with a sprite sheet for the monster (<a href="../sprites/01-first-sprite.html">Sprites track</a>), and a map to play-test in</span>
   </div>
+  <div class="callout tip"><p>This page is an overview. To build monsters and weapons in depth, follow the <a href="../enemies/01-first-monster.html">Enemies</a> and <a href="../weapons/01-first-weapon.html">Weapons</a> tracks. Every word the engine accepts is listed in <a href="../reference/monster-vocab.html">Every monster word</a> and <a href="../reference/weapon-vocab.html">Every weapon word</a>.</p></div>
 
   <h2>They belong to the module</h2>
   <p>Monsters, weapons, props, particles and the player belong to the <b>module</b>, never to one map. Every map of the module sees the same imp and the same shotgun. The window says so in its bar: <em>"monsters belong to the module, not to one map"</em>. A map holds only its geometry, what is placed in it, its triggers, its camera, its cues and its paths.</p>
   <p>The three windows share one layout:</p>
   <ul>
-    <li>A bar with <span class="ui">‹ back</span>, a button across to the next workshop (<span class="ui">🧍 player</span> from Monsters, <span class="ui">☠ monsters</span> from Weapons, <span class="ui">⚔ weapons</span> from Player), and the names of the monsters or weapons with <span class="ui">+ new monster</span> or <span class="ui">+ new weapon</span>.</li>
+    <li>A bar with <span class="ui">‹ back</span>, a button across to the next workshop (<span class="ui">🧍 player</span> from Monsters, <span class="ui">☠ monsters</span> from Weapons, <span class="ui">🔫 weapons</span> from Player), and the names of the monsters or weapons with <span class="ui">+ new monster</span> or <span class="ui">+ new weapon</span>.</li>
     <li>A problem count in the runtime's own words, or <em>"loads clean"</em>.</li>
     <li>Three panes: <span class="ui">🎞 preview</span>, <span class="ui">⬡ graph</span> (not for the player) and <span class="ui">☰ details</span>. On a wide screen you see them side by side; on a phone, these tabs switch between them.</li>
   </ul>

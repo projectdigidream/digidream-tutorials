@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Variables, numbers and saving · Digidream Studio tutorials</title>
+<meta name="description" content="A graph's own variables, an entity's properties, counters and true/false, how numbers and fixed point behave, and what survives a save, a reload or a new game.">
+<link rel="stylesheet" href="../assets/site.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 16%22%3E%3Cpath d=%22M8 1l7 7-7 7-7-7z%22 fill=%22%235b8fd6%22/%3E%3C/svg%3E">
+<script defer src="../assets/nav.js"></script>
+<script defer src="../assets/shortcuts.js"></script>
+<script defer src="../assets/site.js"></script>
+</head>
+<body>
+<article>
+  <h1>Variables, numbers and saving</h1>
+  <p class="lede">A graph remembers things in variables, and reads and changes the world's bodies through their properties. This page covers both, the numbers that flow between them, and exactly what is still there after a save, a reload or a new game.</p>
+  <div class="goal">
+    <b>You'll learn</b><span>how to make and use variables, which properties of an entity you can read and set, how to count and how to test true/false, the traps in numbers and decimals, and what each kind of saving keeps</span>
+    <b>Time</b><span>30 minutes</span>
+    <b>Needs</b><span><a href="01-thinking-in-graphs.html">Thinking in graphs</a></span>
+  </div>
+
+  <h2>A graph's own variables</h2>
+  <p>Open the side panel's <span class="ui">variables</span> tab (on a phone, the 𝑥 tab in the bar). The first list, <span class="ui">this graph's variables</span>, is yours:</p>
+  <ul>
+    <li><span class="ui">+ variable</span> asks for a name. Letters, digits and underscore are kept; anything else is dropped. The new variable starts at 0.</li>
+    <li>Change its <span class="ui">starts at</span> to a number (<code>3</code>), a word (<code>red</code>), or <code>true</code> or <code>false</code>. The studio reads what you type the way you meant it: <code>true</code> is true/false, <code>12</code> is a number, <code>abc</code> is text.</li>
+    <li>The <span class="ui">✕</span> on its row removes it.</li>
+  </ul>
+  <p>Three nodes use variables: <a href="../reference/graph-nodes.html#get_var"><code>get_var</code></a> reads one, <a href="../reference/graph-nodes.html#set_var"><code>set_var</code></a> sets one, and <a href="../reference/graph-nodes.html#add_var"><code>add_var</code></a> adds to a number. Their <code>var</code> is a dropdown. Each row of the variables tab also has buttons that drop these nodes onto the board, already filled in.</p>
+  <h3>Whose variable is it?</h3>
+  <ul>
+    <li><b>Each graph has its own.</b> Two graphs can each have a <code>count</code>, and they are two different variables. To share a value between graphs, pass it with a <a href="05-game-graph-and-calls.html">call</a>.</li>
+    <li><b>Everyone in the level shares them.</b> A variable is not per player. If one player picks up a key and you set <code>has_key</code> to true, the door opens for everyone in that level. That is usually right in co-op. For a truly personal value, use a property of the player (below), or Lua.</li>
+    <li><b>A map's variables start again when its level does.</b> The game's graphs keep theirs from level to level (see <a href="05-game-graph-and-calls.html">The game graph</a>).</li>
+  </ul>
+  <div class="callout warn"><p>A variable may not take a property's name. <span class="ui">+ variable</span> refuses <code>hp</code> with <em>hp is an entity's property (in the list below) -- a variable needs another name</em>, because the engine would refuse the whole graph.</p></div>
+
+  <h2>Properties: reading and changing bodies</h2>
+  <p>Under your variables, the same tab lists every <b>property</b> an entity has. <a href="../reference/graph-nodes.html#get_var"><code>get_var</code></a>, <a href="../reference/graph-nodes.html#set_var"><code>set_var</code></a> and <a href="../reference/graph-nodes.html#add_var"><code>add_var</code></a> reach them by name, just like variables. Their <code>entity</code> pin says whose property: unlinked, it is the event's entity; linked, it is that one. (For your own variables the pin is dimmed, because it means nothing there.)</p>
+  <table>
+    <thead><tr><th>Property</th><th>Type</th><th>Can a graph set it?</th></tr></thead>
+    <tbody>
+      <tr><td><a href="../reference/graph-nodes.html#prop.hp"><code>hp</code></a></td><td>whole number</td><td>yes. On a monster it goes through its own record, so it feels pain and dies as a hit would make it.</td></tr>
+      <tr><td><a href="../reference/graph-nodes.html#prop.pain_ticks"><code>pain_ticks</code></a></td><td>whole number</td><td>yes: a monster's flinch length in ticks, for a stun or a frenzy</td></tr>
+      <tr><td><a href="../reference/graph-nodes.html#prop.alive"><code>alive</code></a>, <a href="../reference/graph-nodes.html#prop.grounded"><code>grounded</code></a>, <a href="../reference/graph-nodes.html#prop.is_player"><code>is_player</code></a></td><td>true/false</td><td>no, read only</td></tr>
+      <tr><td><a href="../reference/graph-nodes.html#prop.x"><code>x</code></a>, <a href="../reference/graph-nodes.html#prop.y"><code>y</code></a>, <a href="../reference/graph-nodes.html#prop.z"><code>z</code></a>, <a href="../reference/graph-nodes.html#prop.speed"><code>speed</code></a>, <a href="../reference/graph-nodes.html#prop.vertical_speed"><code>vertical_speed</code></a>, <a href="../reference/graph-nodes.html#prop.facing"><code>facing</code></a></td><td>number</td><td>no, read only (move things with <code>teleport</code> or <code>push</code>)</td></tr>
+      <tr><td><a href="../reference/graph-nodes.html#prop.sector"><code>sector</code></a>, <a href="../reference/graph-nodes.html#prop.kind"><code>kind</code></a></td><td>whole number</td><td>no. <code>kind</code> 0 is a player.</td></tr>
+      <tr><td><a href="../reference/graph-nodes.html#prop.name"><code>name</code></a></td><td>text</td><td>no: its catalogue name, as <code>spawn</code> takes it</td></tr>
+      <tr><td>45 movement rules: <a href="../reference/graph-nodes.html#prop.move_speed"><code>move_speed</code></a>, <a href="../reference/graph-nodes.html#prop.jump_impulse"><code>jump_impulse</code></a>, <a href="../reference/graph-nodes.html#prop.max_jumps"><code>max_jumps</code></a>, <a href="../reference/graph-nodes.html#prop.gravity_scale"><code>gravity_scale</code></a>, <a href="../reference/graph-nodes.html#prop.dash_speed"><code>dash_speed</code></a>, <a href="../reference/graph-nodes.html#prop.input_scale"><code>input_scale</code></a>, <a href="../reference/graph-nodes.html#prop.attack_enabled"><code>attack_enabled</code></a> …</td><td>mostly numbers, some true/false</td><td>yes, all of them</td></tr>
+    </tbody>
+  </table>
+  <p>That is 59 properties: 14 of the body's own, and the 45 movement rules from <a href="../studio/07-workshops.html">the Player workshop</a>. The full list, with what each one means, is in <a href="../reference/graph-nodes.html">Every graph node</a>.</p>
+  <h3>Setting a movement rule</h3>
+  <ul>
+    <li><b>On a player</b>, setting a movement rule makes a <b>lasting effect</b>, and a later set replaces it. The engine never lets a script rewrite a player's body directly, because the player's own machine predicts their movement and must agree.</li>
+    <li><b>On anything else</b>, it is written straight into the body.</li>
+  </ul>
+  <p>The dropdowns only offer what each node may use: <a href="../reference/graph-nodes.html#set_var"><code>set_var</code></a> offers only settable properties, and <a href="../reference/graph-nodes.html#add_var"><code>add_var</code></a> only settable numbers. The studio says what the engine would refuse at load: <em>… can only be read -- a graph cannot set it</em>, <em>… is not a number, so nothing can be added to it</em>.</p>
+
+  <h2>Counters</h2>
+  <p>A counter is a number variable, an <a href="../reference/graph-nodes.html#add_var"><code>add_var</code></a> that adds to it, and a <a href="../reference/graph-nodes.html#compare"><code>compare</code></a> that reads it.</p>
+  <pre><code>when_dies ──then──▶ add_var kills +1 ──then──▶ branch ──true──▶ open_door
+                                                 ▲ cond
+              get_var kills ──value──▶ compare (a &gt;= 5) ──value──┘</code></pre>
+  <ul>
+    <li><a href="../reference/graph-nodes.html#add_var"><code>add_var</code></a>'s <code>value</code> can be negative: <code>-1</code> counts down.</li>
+    <li><a href="../reference/graph-nodes.html#compare"><code>compare</code></a> has <code>op</code> (<code>==</code>, <code>~=</code>, <code>&lt;</code>, <code>&lt;=</code>, <code>&gt;</code>, <code>&gt;=</code>) and two inputs, <code>a</code> and <code>b</code>. Each can be typed or linked. <code>~=</code> means "is not".</li>
+    <li>The compare reads <code>kills</code> <em>after</em> the add, because the branch pulls it only when the run reaches the branch.</li>
+  </ul>
+  <div class="callout tip"><p>Trigger cards have their own counters (<code>counter_add</code>, <code>counter_at_least</code>), kept per map in the trigger table. They are a separate store from a graph's variables: a <code>counter_add</code> on <code>kills</code> does not change a graph variable called <code>kills</code>. Pick one of the two for each count.</p></div>
+
+  <h2>True and false</h2>
+  <p>A variable can hold <code>true</code> or <code>false</code>: <code>door_open</code>, <code>boss_awake</code>, <code>has_key</code>. Set it with <a href="../reference/graph-nodes.html#set_var"><code>set_var</code></a> (type <code>true</code> or <code>false</code> into its <code>value</code>), and test it with <a href="../reference/graph-nodes.html#branch"><code>branch</code></a>.</p>
+  <p><a href="../reference/graph-nodes.html#logic"><code>logic</code></a> combines them. Its <code>op</code> is <code>and</code>, <code>or</code> or <code>not</code>; <code>not</code> reads only <code>a</code>.</p>
+  <div class="callout warn"><p><a href="../reference/graph-nodes.html#branch"><code>branch</code></a> takes <b>true</b> for anything that is not <code>false</code> or nil. The number <b>0 is true</b>, and so is empty text. To ask "is the count zero?", compare it: <code>compare</code> <code>a == 0</code> into the branch.</p></div>
+  <p>Comparing two different kinds is safe but rarely useful. <code>==</code> between a number and text is just false. Ordering (<code>&lt;</code>, <code>&gt;</code> …) a number against anything that is not a number is always false.</p>
+
+  <h2>Numbers</h2>
+  <p>In the world's nodes, numbers are plain: map units for distances, seconds for times, degrees for angles, and <code>slow</code>, <code>normal</code> or <code>fast</code> for speeds. Two exceptions count in <b>ticks</b>, 60 a second: <a href="../reference/graph-nodes.html#delay"><code>delay</code></a>'s <code>ticks</code> and the <a href="../reference/graph-nodes.html#prop.pain_ticks"><code>pain_ticks</code></a> property.</p>
+  <ul>
+    <li><a href="../reference/graph-nodes.html#math"><code>math</code></a> does <code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>, <code>min</code> and <code>max</code>. Division by zero gives 0, not a crash.</li>
+    <li><a href="../reference/graph-nodes.html#random"><code>random</code></a> gives a whole number from <code>lo</code> to <code>hi</code>, both included. It draws from the level's own random stream, so a replayed level draws the same numbers. It draws once per run: two nodes reading one <code>random</code> see one number.</li>
+  </ul>
+  <h3>A number from a variable</h3>
+  <p>Almost every number a node takes is also a data pin of the same name, so a variable, a property or a sum can feed it. In the side panel, the <b>𝑥</b> beside a numeric field does it without drawing: tap it and choose a variable or a numeric property. <span class="ui">✕</span> makes it a typed number again. The exception is <a href="../reference/graph-nodes.html#sequence"><code>sequence</code></a>'s <code>count</code>, which decides how many exits the node has and so has no 𝑥.</p>
+  <p>Start nodes take linked numbers too (<a href="../reference/graph-nodes.html#every"><code>every</code></a>'s <code>seconds</code>, <a href="../reference/graph-nodes.html#when_near"><code>when_near</code></a>'s <code>radius</code>), with one rule: the value is worked out afresh each tick, from pure nodes only, because no run exists yet to make it. An <code>every</code> whose period comes from a variable takes the new period from the next tick.</p>
+  <h3>Fixed point</h3>
+  <p>The engine's simulation does not use ordinary floating-point numbers. Positions and heights are <b>fixed point</b> (32 bits whole, 32 bits fraction), so every machine computes exactly the same thing. In <code>0.1</code>, floating point is already slightly wrong, so the engine is strict about what it takes:</p>
+  <ul>
+    <li>A trigger action's fixed-point argument (a <code>sector_move</code>'s <code>height</code>, a <code>teleport</code>'s <code>x</code>) takes a whole number or an <b>exact decimal</b> typed as text. When you type <code>2.5</code> into a field, the studio keeps it as the exact text <code>2.5</code>, which is right.</li>
+    <li>A <b>linked</b> value that is a fraction, such as the result of <code>math 1 / 3</code> or <code>math 5 * 0.5</code>, does not fit. The action is <b>skipped</b>, and the server log says once: <em>node '…' was given 2.5 for 'height', which is not a fx -- skipped</em>.</li>
+    <li>The world nodes (<a href="../reference/graph-nodes.html#teleport"><code>teleport</code></a>, <a href="../reference/graph-nodes.html#move_floor"><code>move_floor</code></a>, <a href="../reference/graph-nodes.html#push"><code>push</code></a> …) convert plain numbers for you. Fractions are fine there.</li>
+  </ul>
+  <div class="callout warn"><p>Decimals typed into a graph are kept as exact <b>text</b>. That suits fixed point, but not <a href="../reference/graph-nodes.html#compare"><code>compare</code></a>: <code>compare a &gt;= 2.5</code> compares a number with the text <code>2.5</code>, and ordering against text is always false. The same goes for a variable whose <span class="ui">starts at</span> is <code>0.5</code>, until an <code>add_var</code> makes it a number. Keep compared numbers whole: count in tenths (25, not 2.5), or pass the decimal through a <code>math</code> node (<code>2.5 + 0</code>) to make it a number.</p></div>
+
+  <h2>What survives</h2>
+  <p>Three switches decide what the game keeps. They are module settings: open <b>Settings</b> from Home, and the <b>Module settings</b> sheet has:</p>
+  <table>
+    <thead><tr><th>Toggle</th><th>module.txt</th><th>What it does</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">levels keep their state</span></td><td><code>persist levels</code></td><td>A level that unloads keeps its state, and gets it back when it loads again, instead of starting over.</td></tr>
+      <tr><td><span class="ui">save and load games</span></td><td><code>persist saves</code></td><td>One player can save to a slot and load it again (<kbd>F5</kbd> / <kbd>F9</kbd> in the game).</td></tr>
+      <tr><td><span class="ui">survive a server restart</span></td><td><code>persist server</code></td><td>Level state is written to disk every minute and on stop, and read back at start.</td></tr>
+    </tbody>
+  </table>
+  <p>When a level's state is kept, each of its graphs keeps, under the graph's name:</p>
+  <ul>
+    <li>its <b>variables</b>;</li>
+    <li>which of its <a href="../reference/graph-nodes.html#once"><code>once</code></a> nodes have <b>passed</b>.</li>
+  </ul>
+  <p>On a load, a saved variable is restored only if the graph still has a variable of that name <em>and the same type</em>. A variable you renamed, or changed from a number to a word, starts fresh. The state is kept under the graph's name, so renaming the graph starts all of its saved state over.</p>
+  <p>What is <b>not</b> kept: pending <a href="../reference/graph-nodes.html#delay"><code>delay</code></a>s, and anything half done. A door caught half open comes back half open, but the delay that would have shut it is gone. The engine keeps the world's own state too: sectors moved, switch pictures, and the looks a graph set with <code>set_sector_light</code> and friends.</p>
+  <table>
+    <thead><tr><th>When…</th><th>A map's graph variables</th><th>The game's graph variables</th><th><code>save_vars</code> stores</th></tr></thead>
+    <tbody>
+      <tr><td>the level restarts (nothing persisted)</td><td>back to <span class="ui">starts at</span></td><td>kept</td><td>kept</td></tr>
+      <tr><td>a save game is loaded</td><td>as saved</td><td>as saved</td><td>kept (not part of the save)</td></tr>
+      <tr><td>a new game (<kbd>F2</kbd> twice)</td><td>back to start</td><td>back to start</td><td>kept</td></tr>
+      <tr><td>the server restarts, with <code>persist server</code></td><td>as last written</td><td>as last written</td><td>kept</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Saved on disk, on purpose</h2>
+  <p>A save game is the world at one moment, and a new game forgets it. A high score, an unlocked level or a setting should outlive both. Three nodes, in the menu's <span class="ui">other</span> group, write variables to a <b>store</b> on the disk:</p>
+  <ul>
+    <li><a href="../reference/graph-nodes.html#save_vars"><code>save_vars</code></a> writes variables to a store. <code>store</code> defaults to <code>game</code>; <code>vars</code> is a comma-separated list, all the graph's variables by default. It writes beside what the store already holds, so several graphs can share one store. Its <b>failed</b> exit runs when there is nowhere to write, a value can't be kept, or the store would pass 64 KB.</li>
+    <li><a href="../reference/graph-nodes.html#load_vars"><code>load_vars</code></a> reads them back into the graph's own variables, only into one of the same kind (a number into a number). Its <b>none</b> exit runs when nothing was ever saved there.</li>
+    <li><a href="../reference/graph-nodes.html#forget_saved"><code>forget_saved</code></a> deletes a store: a progress reset.</li>
+  </ul>
+  <p>Only numbers, text and true/false are kept. A store name is 1 to 48 letters, digits, <code>_</code> or <code>-</code>. The stores belong to the server: on a server several players share, they are the server's, not each player's. In the desktop app they live in your user data folder; on Android, in the app's own files.</p>
+  <div class="callout soon"><p>A player's own identity and inventory carried between servers (docs/PERSISTENCE.md) is designed but <b>not built</b>. Nothing today follows a player from one server to another.</p></div>
+
+  <h2>Exercise: a best time that survives</h2>
+  <ol class="steps">
+    <li><p>Open <b>◇ Graphs</b>, press <span class="ui">+ new graph for the game</span> and name it <code>records</code>. In the variables tab, add <code>best</code> (starts at <code>9999</code>) and <code>last</code> (starts at <code>0</code>).</p></li>
+    <li><p>Add <span class="ui">when player arrives</span>. Link it to a <a href="../reference/graph-nodes.html#load_vars"><code>load_vars</code></a> with <code>store</code> <code>records</code> and <code>vars</code> <code>best</code>. Leave its <b>none</b> exit unlinked: the first time, <code>best</code> keeps its start.</p></li>
+    <li><p>Add an <a href="../reference/graph-nodes.html#on_call"><code>on_call</code></a> named <code>finished</code>. A level will call it with the run's time as its <code>value</code> (page 5 shows the calling side). Link its <b>then</b> to a <a href="../reference/graph-nodes.html#set_var"><code>set_var</code></a> <code>last</code>, with <code>value</code> linked from the on_call's <code>value</code>.</p></li>
+    <li><p>After it, a <a href="../reference/graph-nodes.html#branch"><code>branch</code></a> whose <code>cond</code> is a <a href="../reference/graph-nodes.html#compare"><code>compare</code></a>: <code>a</code> from a <a href="../reference/graph-nodes.html#get_var"><code>get_var</code></a> <code>last</code>, <code>op</code> <code>&lt;</code>, <code>b</code> from a <a href="../reference/graph-nodes.html#get_var"><code>get_var</code></a> <code>best</code>.</p></li>
+    <li><p>On <b>true</b>: a <a href="../reference/graph-nodes.html#set_var"><code>set_var</code></a> <code>best</code> with its <code>value</code> linked from the same <code>get_var last</code>, then a <a href="../reference/graph-nodes.html#save_vars"><code>save_vars</code></a> with <code>store</code> <code>records</code> and <code>vars</code> <code>best</code>.</p></li>
+    <li><p>Check the side panel shows no problems. Then think through a new game: <code>best</code> starts at 9999, and the <code>load_vars</code> on arrival brings the saved record back.</p></li>
+  </ol>
+
+  <div class="quiz" data-answer="1">
+    <p class="q">A <code>compare</code> has <code>op</code> <code>&gt;=</code> and you typed <code>1.5</code> into its <code>b</code>. <code>a</code> is linked to a variable holding 3. What does it give?</p>
+    <ul>
+      <li>true, since 3 is at least 1.5</li>
+      <li>false: the typed decimal is kept as text, and ordering a number against text is false</li>
+      <li>the graph is refused</li>
+    </ul>
+    <p class="why">Decimals typed in a graph stay exact text, for fixed point. Keep compared numbers whole, or turn the text into a number with a <code>math</code> node.</p>
+  </div>
+  <div class="quiz" data-answer="2">
+    <p class="q">A level's graph is waiting in a 10-second <code>delay</code> when the player presses <kbd>F5</kbd>. After <kbd>F9</kbd>, what happens?</p>
+    <ul>
+      <li>The delay finishes its remaining seconds</li>
+      <li>The delay starts again from 10 seconds</li>
+      <li>Nothing: pending delays are not saved</li>
+    </ul>
+    <p class="why">A save keeps state (variables, passed <code>once</code> nodes), not what was in the middle of happening.</p>
+  </div>
+  <div class="quiz" data-answer="0">
+    <p class="q">You set <code>move_speed</code> on the player with <code>set_var</code>. What really happens?</p>
+    <ul>
+      <li>A lasting effect is put on the player, and a later set replaces it</li>
+      <li>The player's body is rewritten directly</li>
+      <li>Nothing: movement rules are read only</li>
+    </ul>
+    <p class="why">The engine never lets a script rewrite a player's body, because the player's machine predicts their movement. Setting a rule on a player is an effect, one per player and rule.</p>
+  </div>
+</article>
+</body>
+</html>

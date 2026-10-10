@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Your first monster · Digidream Studio tutorials</title>
+<meta name="description" content="Make a monster in the studio's Monsters workshop: its body, its sprite sheet and animation states, then place it on a map and play against it.">
+<link rel="stylesheet" href="../assets/site.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 16%22%3E%3Cpath d=%22M8 1l7 7-7 7-7-7z%22 fill=%22%235b8fd6%22/%3E%3C/svg%3E">
+<script defer src="../assets/nav.js"></script>
+<script defer src="../assets/shortcuts.js"></script>
+<script defer src="../assets/site.js"></script>
+</head>
+<body>
+<article>
+  <h1>Your first monster</h1>
+  <p class="lede">A monster is two things with one name: a <b>body</b> the game can draw and bump into, and a <b>brain</b> that decides what the body does. In this lesson you make both in the Monsters workshop, check its animations, put it on a map and play against it.</p>
+  <div class="goal">
+    <b>You'll learn</b><span>how the Monsters workshop is laid out; what <span class="ui">+ new monster</span> gives you; what each field of the body means; how the five animation states are chosen; how to place a monster, and what <span class="ui">dormant</span> really does</span>
+    <b>Time</b><span>25 minutes</span>
+    <b>Needs</b><span>a module with at least one sprite sheet that has idle, walk, attack, pain and death animations (see the <a href="../sprites/05-bone-animation.html">Sprites track</a>), and a map with a <code>start</code> spawn (<a href="../studio/03-placing-things.html">Placing things</a>)</span>
+  </div>
+
+  <h2>Where monsters live</h2>
+  <p>Monsters belong to the <b>module</b>, never to one map. Every map in the module sees the same monsters. A map only says <em>where</em> each one stands.</p>
+  <p>Open the studio and choose <b>☠ Monsters</b> in the rail on the left (on a phone, open the rail with <span class="ui">‹</span>). The studio opens the <b>monster workshop</b>, which fills the screen. Its top bar holds:</p>
+  <ul>
+    <li><span class="ui">‹ back</span>, to go back to where you were;</li>
+    <li><span class="ui">🧍 player</span>, which jumps across to the player's window;</li>
+    <li>one chip for each monster, then <span class="ui">+ new monster</span>;</li>
+    <li>the reminder <em>"monsters belong to the module, not to one map"</em>;</li>
+    <li>on the right, either <em>"loads clean"</em> or a red count such as <em>"2 problem(s)"</em>. Hover over the count to read the problems, in the runtime's own words.</li>
+  </ul>
+  <p>Below the bar are three panes. On a wide screen you see them side by side. On a phone, the tabs <span class="ui">🎞 preview</span>, <span class="ui">⬡ graph</span> and <span class="ui">☰ details</span> switch between them.</p>
+
+  <figure class="shot" data-src="../assets/shots/enemy-state.png" data-alt="The monster workshop with the chase state picked: preview on the left, the state graph in the middle, the state's fields on the right" data-hotspots='[{"x":30,"y":9,"t":"Monster chips","d":"Each monster in the module, then + new monster"},{"x":97,"y":9,"t":"Problems","d":"loads clean, or a red count of problems"},{"x":26,"y":40,"t":"Preview","d":"The monster drawn from its sheet, to scale against a ruler in world units"},{"x":28,"y":61,"t":"State chips","d":"Play animation state 0 to 4, with the animation each one uses"},{"x":63,"y":33,"t":"A state","d":"Tap it to edit it in the details pane. The yellow outline marks the picked state"},{"x":56,"y":16,"t":"Graph bar","d":"+ state, initial, link, remove the state, auto layout, delete monster"},{"x":86,"y":17,"t":"Details tabs","d":"The picked state, then brain, swing, body, vars and missiles"},{"x":80,"y":74,"t":"Transitions","d":"go to … when all of …: where this state goes next, and when"}]'>
+    <figcaption>The monster workshop, with the <code>chase</code> state picked. Tap the numbered dots for what each part does.</figcaption>
+  </figure>
+
+  <h3>The six details tabs</h3>
+  <p>The details pane has six tabs. You will use all of them in this track:</p>
+  <table>
+    <thead><tr><th>Tab</th><th>What it holds</th><th>Lesson</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">⬡ <i>state</i></span></td><td>The state you picked in the graph. The tab shows its name, for example <code>⬡ chase</code>.</td><td><a href="02-the-brain.html">The brain</a></td></tr>
+      <tr><td><span class="ui">🧠 brain</span></td><td>The monster's own numbers: <span class="ui">initial state</span>, <code>hp</code>, <code>sight</code>, <code>pain_chance</code>, <code>turn_speed</code> and the rest. Then <b>💢 the flinch</b> and <b>🎁 drops</b>.</td><td><a href="04-pain-death-drops.html">Pain, death and drops</a></td></tr>
+      <tr><td><span class="ui">🌀 swing</span></td><td>The claw, as a swept collider.</td><td><a href="03-attacks.html">Attacks</a></td></tr>
+      <tr><td><span class="ui">👤 body</span></td><td>Its size, speed, solidity and sprite sheet.</td><td>this page</td></tr>
+      <tr><td><span class="ui"># vars</span></td><td>The brain's own counters.</td><td><a href="04-pain-death-drops.html#vars">Pain, death and drops</a></td></tr>
+      <tr><td><span class="ui">☄ missiles</span></td><td>The module's missiles. Every monster shares them.</td><td><a href="03-attacks.html#missiles">Attacks</a></td></tr>
+    </tbody>
+  </table>
+  <p>Every field has an <b>ⓘ</b> button. It shows the runtime's own description of the field, the same text as the <a href="../reference/monster-vocab.html">monster vocabulary reference</a>. A field whose label ends in <b>?</b>, such as <code>sight?</code>, is optional: leave it empty and the engine uses its default.</p>
+
+  <h2>Make a monster</h2>
+  <p>Press <span class="ui">+ new monster</span>. The studio asks for a <em>"monster name (letters, digits, underscore)"</em> and suggests <code>grunt</code>. Capitals become lower case, and other characters are dropped. If the name is empty or another monster already has it, the status line says <em>"that name is empty or taken"</em>.</p>
+  <p>The new monster is not empty. It gets a working brain and a body:</p>
+  <table>
+    <thead><tr><th>Part</th><th>What you get</th></tr></thead>
+    <tbody>
+      <tr><td>Brain</td><td><code>hp</code> 30, <code>turn_speed</code> 12, <code>sight</code> 40, <code>pain_chance</code> 128, <code>infighting</code> on, <code>corpse</code> on, initial state <code>look</code>, and one var, <code>ready</code> = 0.</td></tr>
+      <tr><td>States</td><td><code>look</code> ★, <code>chase</code>, <code>attack</code>, <code>pain</code> and <code>death</code>. It stands still until it sees you, runs at you, claws for 8 when you are within 1.5, then waits 60 ticks before it can claw again.</td></tr>
+      <tr><td>Body</td><td><code>radius</code> 0.35, <code>height</code> as tall as the sheet, <code>speed</code> 4, <code>solid</code> on, drawn with the module's <b>first</b> sprite sheet.</td></tr>
+    </tbody>
+  </table>
+  <p>So a new monster already plays. You can place it and fight it before you change anything. The next lessons take the brain apart. This one is about the body.</p>
+
+  <h2>Two halves, one name</h2>
+  <p>The game reads a monster from two files, and the studio writes both:</p>
+  <ul>
+    <li>The <b>body</b> is a record in the module's catalogue, <code>assets/props.txt</code>. The server <em>and</em> every client read it, because a client needs to know how big a thing is, how fast it moves and what it looks like.</li>
+    <li>The <b>brain</b> goes into <code>maps/module.lua</code>, as one <code>mobs.load{…}</code> table for the whole module. Only the server reads it. A client never learns a monster's hit points or pain chance.</li>
+  </ul>
+  <p>The <b>name is the join</b>. A monster called <code>grunt</code> wears the catalogue record called <code>grunt</code>. Nothing says so twice. Here is what the catalogue holds for the starter module's monster, <code>spirit</code>:</p>
+  <pre><code>prop 1000 spirit radius 0.35 height 1 speed 5.2 solid
+atlas 1000 sheet SPIR anim idle
+atlas 1000 state 1 sheet SPIR anim walk
+atlas 1000 state 2 sheet SPIR anim Attack
+atlas 1000 state 3 sheet SPIR anim idle
+atlas 1000 state 4 sheet SPIR anim death</code></pre>
+  <p>The first line is the body. The <code>atlas</code> lines say which animation of the sheet <code>SPIR</code> plays in each animation state. You never type these lines: the <span class="ui">👤 body</span> tab writes them.</p>
+  <div class="callout tip"><p>The vocabulary also has a <a href="../reference/monster-vocab.html#mob_fields.prop"><code>prop</code></a> field, for two monsters that share one body on purpose. The workshop does not show it: each monster you make wears the record with its own name, which is almost always what you want.</p></div>
+
+  <h2>The body</h2>
+  <figure class="shot" data-src="../assets/shots/enemy-body.png" data-alt="The body tab: radius, height, sprite height, scale, speed, solid, the sprite sheet chips and the five animation states" data-hotspots='[{"x":89,"y":22,"t":"radius and height","d":"The cylinder it collides as"},{"x":89,"y":34,"t":"sprite height","d":"How tall the sheet is drawn, for everything that uses it"},{"x":89,"y":40,"t":"scale","d":"Draws this body bigger or smaller; does not change its collision"},{"x":89,"y":53,"t":"speed","d":"World units per second"},{"x":86,"y":64,"t":"sprite sheet","d":"Pick a sheet, or + import sheet…"},{"x":89,"y":82,"t":"State 0 to 4","d":"Which animation each animation state plays"}]'>
+    <figcaption>The <span class="ui">👤 body</span> tab for the starter module's <code>spirit</code>.</figcaption>
+  </figure>
+  <p>Open <span class="ui">👤 body</span>. Its fields, top to bottom:</p>
+  <table>
+    <thead><tr><th>Field</th><th>What it means</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">radius</span></td><td>How wide the body is, in world units, from its centre. Walls, players and other monsters stop at this circle.</td></tr>
+      <tr><td><span class="ui">height</span></td><td>How tall the body is when it collides. A shot over its head misses. A melee attack measures against it too.</td></tr>
+      <tr><td><span class="ui">sprite height</span></td><td>How tall the <b>sheet</b> is drawn. This is the sheet's own <code>worldHeight</code>, so changing it here grows <em>every</em> monster and prop drawn with that sheet. The preview's ruler shows it.</td></tr>
+      <tr><td><span class="ui">scale</span></td><td>Multiplies how big <em>this</em> body is drawn. It does not change what it collides as.</td></tr>
+      <tr><td><span class="ui">speed</span></td><td>World units per second when it walks. It becomes the body's <code>move_speed</code>, which every client knows, so a slow monster is slow everywhere.</td></tr>
+      <tr><td><span class="ui">solid</span></td><td>Whether things bump into it. A brain state can switch this off; the <code>death</code> state does, so you can walk over a corpse.</td></tr>
+      <tr><td><span class="ui">sprite sheet</span></td><td>One chip per sheet in the module, then <span class="ui">+ import sheet…</span>.</td></tr>
+      <tr><td><span class="ui">state 0 · idle</span> … <span class="ui">state 4 · death</span></td><td>Which animation of the sheet each of the five animation states plays.</td></tr>
+    </tbody>
+  </table>
+  <p>The studio puts it in one line under the fields: <em>"height is what the body collides as. sprite height is how tall the sheet is drawn, for everything that uses it; scale multiplies that for this body alone."</em></p>
+  <div class="callout warn"><p><b>Keep the drawing and the body close.</b> A monster drawn twice the size of its body gets shot "through" its shoulders, and one drawn too small gets hit by bullets that seem to miss. When you pick a new sheet, the studio copies the sheet's height into <span class="ui">height</span> for you. After that they are separate numbers.</p></div>
+
+  <h2>Animation states</h2>
+  <p>The server never sends frames. It sends a small number, the <b>animation state</b>, and the client plays the frames for that number at its own pace. A body has five:</p>
+  <table>
+    <thead><tr><th>Number</th><th>Meaning</th><th>Guessed from an animation whose name contains</th></tr></thead>
+    <tbody>
+      <tr><td>0</td><td>idle</td><td><i>idle</i> or <i>stand</i></td></tr>
+      <tr><td>1</td><td>walk</td><td><i>walk</i>, <i>run</i> or <i>move</i></td></tr>
+      <tr><td>2</td><td>attack</td><td><i>attack</i>, <i>fire</i> or <i>melee</i></td></tr>
+      <tr><td>3</td><td>pain</td><td><i>pain</i> or <i>hurt</i>, and otherwise the <i>idle</i> one</td></tr>
+      <tr><td>4</td><td>death</td><td><i>death</i> or <i>die</i></td></tr>
+    </tbody>
+  </table>
+  <p>When you pick a sheet, the studio fills the five lists by these guesses. Upper or lower case does not matter. If nothing matches, it uses the sheet's first animation. Check the guesses: a sheet with an animation called <i>dead_pose</i> and another called <i>die</i> gets <i>die</i> for death, which may not be what you meant.</p>
+  <p>Each brain state names one of these numbers in its <a href="../reference/monster-vocab.html#state_fields.anim"><code>anim</code></a> field. The new monster's <code>look</code> uses 0, <code>chase</code> 1, <code>attack</code> 2, <code>pain</code> 3 and <code>death</code> 4. Several states may share one number: a <code>wander</code> state can use 1, the walk, just like <code>chase</code>.</p>
+  <h3>The preview</h3>
+  <p>The preview pane draws the monster with the client's own code, so what plays here is what the game draws:</p>
+  <ul>
+    <li>The chips <span class="ui">0 idle · idle</span> … <span class="ui">4 death · death</span> play each animation state, and say which animation it uses.</li>
+    <li><span class="ui">animation</span> plays any animation of the sheet by name, whether a state uses it or not. <span class="ui">the state's</span> goes back to the chips.</li>
+    <li><span class="ui">pause</span> or <span class="ui">play</span>, and <span class="ui">turn</span>, which turns it an eighth. Dragging across the picture, or the <span class="ui">facing (turns)</span> slider, turns it too, so you can check every view.</li>
+    <li>The ruler on the left is in world units. Use it to judge the <span class="ui">sprite height</span> against your doors and corridors.</li>
+  </ul>
+
+  <h2>Put it on a map</h2>
+  <p>Open a map and choose <span class="ui">✦ Place</span> (key <kbd>3</kbd>). The Place palette has a chip for every monster in the module. Tap your monster's chip, then tap the floor. Tap the chip again to stop placing.</p>
+  <p>A placed monster has a small form, titled <b>Monster</b> and its name:</p>
+  <ul>
+    <li><span class="ui">name</span>: which monster this is. Rename it to another monster to swap it.</li>
+    <li><span class="ui">kind</span>: <em>monster</em> or <em>prop</em>.</li>
+    <li><span class="ui">dormant</span>: it starts asleep.</li>
+    <li><span class="ui">height</span>: where its feet start.</li>
+    <li><span class="ui">facing (°)</span>: which way it should face, drawn as an arrow at its feet.</li>
+  </ul>
+  <div class="callout soon"><p><b>Monsters do not take their facing yet.</b> The studio writes the facing into the map, but the engine's <code>mobs.spawn</code> ignores it, so every placed monster starts facing 0 (east). The change is proposed in <code>docs/MOB_FACING.md</code>. When it lands, maps you already made take their monsters' facings without a new export. Until then, a monster turns to you as soon as it has a target, so this mostly matters for ambushes.</p></div>
+
+  <h3>What dormant means</h3>
+  <p>A dormant monster makes no decisions and does not move. It costs almost nothing. It wakes only when <b>another monster</b> wakes it:</p>
+  <ul>
+    <li>a monster that runs <a href="../reference/monster-vocab.html#alert_nearby"><code>alert_nearby</code></a> wakes every monster within its radius, and hands them its target;</li>
+    <li>a monster that runs <a href="../reference/monster-vocab.html#wake"><code>wake</code></a> with a <code>radius</code> wakes the dormant ones near it.</li>
+  </ul>
+  <div class="callout warn"><p><b>Shooting a dormant monster does not wake it.</b> The engine takes its health, and can kill it, but it never starts thinking. A room of dormant monsters with nothing to wake them is a room of statues. Use dormant for an ambush that another monster sets off, as <a href="02-the-brain.html#hunting">The brain</a> shows. For "asleep until it sees you", leave dormant off: the default <code>look</code> state already waits.</p></div>
+
+  <h2>Play against it</h2>
+  <p>Press <span class="ui">▶ Play</span>. The studio writes the module and the map, and the server loads them. If a monster's brain has a problem the server would refuse, the workshop has already said so in its top bar, and the Home page lists it too. The server checks the same rules when it loads the map and prints what it refuses, so fix the red count before you play.</p>
+  <p>While you play, watch for these:</p>
+  <ul>
+    <li><b>It does not move.</b> Is it dormant? Can it see you? The default <code>look</code> needs you inside its <code>sight</code> <em>and</em> in a clear line.</li>
+    <li><b>It slides.</b> Its feet and its <span class="ui">speed</span> disagree. Change the walk animation's stride or fps, or the speed.</li>
+    <li><b>It sticks in doorways.</b> Its <span class="ui">radius</span> is too wide for your doors.</li>
+    <li><b>Its picture floats or sinks.</b> The sheet's feet are not on its bottom edge. Fix it in the sprite editor, not with <span class="ui">height</span>.</li>
+  </ul>
+
+  <h2>Exercise: a grunt of your own</h2>
+  <ol class="steps">
+    <li><p>Open <b>☠ Monsters</b> and press <span class="ui">+ new monster</span>. Type <code>grunt</code> and confirm. A <code>grunt</code> chip appears and is picked, and the graph shows its five states.</p></li>
+    <li><p>Open <span class="ui">👤 body</span>. Under <span class="ui">sprite sheet</span>, tap the sheet you want. Then read the five lists <span class="ui">state 0 · idle</span> to <span class="ui">state 4 · death</span>, and fix any guess that is wrong.</p></li>
+    <li><p>In the preview, tap each chip from <span class="ui">0 idle</span> to <span class="ui">4 death</span> and watch it. Drag across the picture to turn it and check the side and back views.</p></li>
+    <li><p>Set <span class="ui">radius</span> so the body fits the picture's shoulders: watch the ruler. Set <span class="ui">speed</span> to 3 for a slow, heavy grunt.</p></li>
+    <li><p>Check the top bar says <em>"loads clean"</em>.</p></li>
+    <li><p>Press <span class="ui">‹ back</span>, open a map, choose <span class="ui">✦ Place</span> and put one <code>grunt</code> in a room you can see from the start spawn. Leave <span class="ui">dormant</span> off.</p></li>
+    <li><p>Press <span class="ui">▶ Play</span>. Walk into its view and let it come to you. Step back when it stops to claw, and see that a claw only lands when you stand within 1.5.</p></li>
+  </ol>
+  <div class="callout tip"><p>Keep this grunt. Every lesson in this track changes it a little, until it has a brain of its own, a swing, a fireball, a flinch and a drop.</p></div>
+
+  <div class="quiz" data-answer="1">
+    <p class="q">You raise the <span class="ui">sprite height</span> of a sheet from 1 to 2. What changes?</p>
+    <ul>
+      <li>Only this monster is drawn bigger</li>
+      <li>Every monster and prop drawn with that sheet is drawn bigger; their collision does not change</li>
+      <li>The monster is drawn and collides twice as tall</li>
+    </ul>
+    <p class="why">Sprite height is the sheet's own <code>worldHeight</code>, shared by everything that uses the sheet. Collision is <span class="ui">height</span> and <span class="ui">radius</span>. To draw one body bigger alone, use <span class="ui">scale</span>.</p>
+  </div>
+  <div class="quiz" data-answer="2">
+    <p class="q">You place three monsters in a room, all <span class="ui">dormant</span>, and fire at them from the door. What happens?</p>
+    <ul>
+      <li>They wake up when the first one is hit</li>
+      <li>They wake up when they see you</li>
+      <li>They lose health and can die, but they never move: only another monster's <code>alert_nearby</code> or <code>wake</code> wakes them</li>
+    </ul>
+    <p class="why">A dormant monster makes no decisions at all, so neither seeing you nor being hurt reaches its brain. Something awake has to wake it.</p>
+  </div>
+  <div class="quiz" data-answer="0">
+    <p class="q">Why can a client draw a monster but never know its pain chance?</p>
+    <ul>
+      <li>The body is in the catalogue, which clients read; the brain is in <code>maps/module.lua</code>, which only the server runs</li>
+      <li>The pain chance is encrypted in the map</li>
+      <li>Clients ask the server for it on every hit</li>
+    </ul>
+    <p class="why">The two halves are split on purpose. What a client needs (size, speed, pictures) is in <code>assets/props.txt</code>. What decides behaviour stays on the server.</p>
+  </div>
+</article>
+</body>
+</html>

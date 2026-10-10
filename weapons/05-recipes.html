@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Recipes: five weapons · Digidream Studio tutorials</title>
+<meta name="description" content="Complete phase tables for a pistol, a pump shotgun, a chaingun that spins up, a rocket launcher, a chainsaw and a three-blow combo, and a charge shot, with values that load.">
+<link rel="stylesheet" href="../assets/site.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 16%22%3E%3Cpath d=%22M8 1l7 7-7 7-7-7z%22 fill=%22%235b8fd6%22/%3E%3C/svg%3E">
+<script defer src="../assets/nav.js"></script>
+<script defer src="../assets/shortcuts.js"></script>
+<script defer src="../assets/site.js"></script>
+</head>
+<body>
+<article>
+  <h1>Recipes: five weapons</h1>
+  <p class="lede">Complete weapons, phase by phase, with numbers that load. The first four are DOOM II's own weapons (from <code>modules/doom2/maps/weapons_doom2.lua</code>), converted to this engine's 60 ticks a second, with one change each where it teaches something. Then melee two ways, and a charge shot.</p>
+  <div class="goal">
+    <b>You'll learn</b><span>how real weapons are put together, how to read a phase table and type it into the studio, DOOM's numbers in this engine's units, and the engine's limits</span>
+    <b>Time</b><span>45 minutes (or one recipe at a time)</span>
+    <b>Needs</b><span><a href="02-phases.html">The phase machine</a>, <a href="03-hitscan-missiles-swings.html">Hitscan, missiles and swings</a> and <a href="04-ammo-and-pickups.html">Ammo and pickups</a></span>
+  </div>
+
+  <h2>How to read a recipe</h2>
+  <ul>
+    <li>Each recipe starts with the weapon's own fields (the <span class="ui">🔫 weapon</span> tab), then a table with a row per phase. ★ marks the initial phase.</li>
+    <li><b>Transitions</b> are numbered in the order they must appear. Order matters: the first match wins. <code>A ∧ B</code> means one transition card with both conditions.</li>
+    <li><b>Sequence</b> steps are written <code>at: action args</code>. All the steps here run at 0.</li>
+    <li><b>Times</b> are ticks at 60 a second. DOOM counts 35 a second, so a DOOM time is multiplied by 60/35 and rounded: DOOM's pistol 14 → 24.</li>
+    <li><b>Distances</b> are world units. DOOM's map units are 48 to one of ours, so its numbers are written as fractions: <code>2048/48</code>. The studio's <i>fx</i> fields take them as typed.</li>
+    <li><b>Ids</b> for tracers and particles (<span class="ui">tracer?</span>, <span class="ui">hit_vfx?</span>, <code>vfx</code>'s <span class="ui">effect</span>) are your module's own: pick from the lists. DOOM II uses tracer 1, blood 10 and muzzle sparks 12.</li>
+    <li><b>Sounds</b> name sounds in your module's sound packs. The names shown are DOOM II's. Turn <span class="ui">predicted?</span> on for the shooter's own shot sounds.</li>
+  </ul>
+  <p>Every gun below has the same dry check first in <code>ready</code>, and the same <code>dry</code> phase:</p>
+  <pre><code>ready  1. button_held ∧ no_ammo → dry
+dry    anim 0 · ticks 1 · next ready      0: switch_if_empty</code></pre>
+  <p>It's written out in each table anyway, so each recipe stands alone.</p>
+
+  <h2>1. Pistol</h2>
+  <p>Semi-automatic: <code>button_pressed</code>. One shot per press, at most one every 24 ticks (2.5 a second).</p>
+  <p><b>Weapon:</b> <span class="ui">label</span> Pistol · <span class="ui">order</span> 3 · <span class="ui">ammo?</span> bullets · <span class="ui">per?</span> 1 · <span class="ui">initial?</span> ready. <b>Pool</b> <code>bullets</code>: max 200, initial 50.</p>
+  <table>
+    <thead><tr><th>Phase</th><th>anim · ticks · next</th><th>Transitions</th><th>Sequence</th></tr></thead>
+    <tbody>
+      <tr><td>★ <code>ready</code></td><td>0 · — · —</td><td>1. <code>button_held</code> ∧ <code>no_ammo</code> → dry<br>2. <code>button_pressed</code> → fire</td><td>—</td></tr>
+      <tr><td><code>fire</code></td><td>2 · 24 · ready</td><td>—</td><td>0: <code>sound</code> weapon.pistol.fire, predicted<br>0: <code>consume</code><br>0: <code>hitscan</code> damage 10, range 2048/48, spread 3, tracer 1, hit_vfx 10<br>0: <code>vfx</code> effect 12</td></tr>
+      <tr><td><code>dry</code></td><td>0 · 1 · ready</td><td>—</td><td>0: <code>switch_if_empty</code></td></tr>
+    </tbody>
+  </table>
+  <div class="widget" data-widget="phase-machine" data-title="The pistol, running" data-preset="pistol"></div>
+
+  <h2>2. Pump shotgun</h2>
+  <p>DOOM's shotgun is one 51-tick <code>fire</code> phase. Here it's split: a 20-tick shot, then a 31-tick <code>pump</code> with its own animation and sound. Same rate, but now the pump can be seen and heard. (DOOM II's super shotgun does the same with its <code>reload</code>.)</p>
+  <p><b>Weapon:</b> <span class="ui">label</span> Shotgun · <span class="ui">order</span> 4 · <span class="ui">ammo?</span> shells · <span class="ui">per?</span> 1 · <span class="ui">initial?</span> ready · <b>what its own pickup grants</b> shells 8. <b>Pool</b> <code>shells</code>: max 50, initial 0. <b>Pickups</b> <code>w_shotgun</code> (weapon shotgun), <code>ammo_shells</code> (shells 4).</p>
+  <table>
+    <thead><tr><th>Phase</th><th>anim · ticks · next</th><th>Transitions</th><th>Sequence</th></tr></thead>
+    <tbody>
+      <tr><td>★ <code>ready</code></td><td>0 · — · —</td><td>1. <code>button_held</code> ∧ <code>no_ammo</code> → dry<br>2. <code>button_pressed</code> → fire</td><td>—</td></tr>
+      <tr><td><code>fire</code></td><td>2 · 20 · pump</td><td>—</td><td>0: <code>sound</code> weapon.shotgun.fire, predicted<br>0: <code>consume</code><br>0: <code>hitscan</code> damage 10, range 2048/48, count 7, spread 14, tracer 1, hit_vfx 10<br>0: <code>vfx</code> effect 12</td></tr>
+      <tr><td><code>pump</code></td><td>3 · 31 · ready</td><td>—</td><td>4: <code>sound</code> (your pump sound), predicted</td></tr>
+      <tr><td><code>dry</code></td><td>0 · 1 · ready</td><td>—</td><td>0: <code>switch_if_empty</code></td></tr>
+    </tbody>
+  </table>
+  <p>Point blank, all seven pellets land: 70 damage. Across a big room, two or three. For DOOM's <b>super shotgun</b>: <span class="ui">per?</span> 2, <code>fire</code> 24 ticks → <code>reload</code> (anim 3, 62 ticks), and the hitscan with count 20 and spread 26, plus <code>impulse</code> speed 140/48, towards away, for the kick.</p>
+
+  <h2>3. Chaingun that spins up</h2>
+  <p>DOOM's chaingun is the pistol with <code>button_held</code> and 9-tick shots. This one adds a <b>spin-up</b>: hold for 24 ticks before the first shot. The spin phase has no ticks, so it <b>waits</b>, and <code>held_for</code> counts from when the button went down.</p>
+  <p><b>Weapon:</b> <span class="ui">label</span> Chaingun · <span class="ui">order</span> 6 · <span class="ui">ammo?</span> bullets · <span class="ui">per?</span> 1 · <span class="ui">initial?</span> ready · <b>what its own pickup grants</b> bullets 20.</p>
+  <table>
+    <thead><tr><th>Phase</th><th>anim · ticks · next</th><th>Transitions</th><th>Sequence</th></tr></thead>
+    <tbody>
+      <tr><td>★ <code>ready</code></td><td>0 · — · —</td><td>1. <code>button_held</code> ∧ <code>no_ammo</code> → dry<br>2. <code>button_held</code> → spin</td><td>—</td></tr>
+      <tr><td><code>spin</code></td><td>0 · — · —</td><td>1. <code>held_for</code> ticks 24 → fire<br>2. <code>button_released</code> → ready</td><td>0: <code>sound</code> (a spin-up sound), predicted</td></tr>
+      <tr><td><code>fire</code></td><td>2 · 9 · ready</td><td>—</td><td>0: <code>sound</code> weapon.chaingun.fire, predicted<br>0: <code>consume</code><br>0: <code>hitscan</code> damage 10, range 2048/48, spread 8, tracer 1, hit_vfx 10<br>0: <code>vfx</code> effect 12</td></tr>
+      <tr><td><code>dry</code></td><td>0 · 1 · ready</td><td>—</td><td>0: <code>switch_if_empty</code></td></tr>
+    </tbody>
+  </table>
+  <p>Follow one tick at the end of a shot, while the button stays down: <code>fire</code> runs out → <code>ready</code> (dry check fails, held → <code>spin</code>) → <code>spin</code> (<code>held_for 24</code> is already true) → <code>fire</code>, whose shot goes off. Three changes in one tick, under the limit of five, so the gun fires a steady 6.7 shots a second with no gap.</p>
+  <div class="widget" data-widget="phase-machine" data-title="The chaingun with a spin-up" data-preset="chaingun"></div>
+  <div class="callout tip"><p><b>Without the spin-up</b> (DOOM's own), delete <code>spin</code> and point <code>ready</code>'s second transition at <code>fire</code>. With <code>button_pressed</code> there instead, you have the pistol again.</p></div>
+
+  <h2>4. Rocket launcher</h2>
+  <p>The weapon launches; the <b>missile</b> does the damage. Fire it at your feet for a rocket jump: the blast throws you but never hurts you.</p>
+  <p><b>Weapon:</b> <span class="ui">label</span> Rocket Launcher · <span class="ui">order</span> 7 · <span class="ui">ammo?</span> rockets · <span class="ui">per?</span> 1 · <span class="ui">initial?</span> ready · <b>what its own pickup grants</b> rockets 2. <b>Pool</b> <code>rockets</code>: max 50, initial 0.</p>
+  <table>
+    <thead><tr><th>Phase</th><th>anim · ticks · next</th><th>Transitions</th><th>Sequence</th></tr></thead>
+    <tbody>
+      <tr><td>★ <code>ready</code></td><td>0 · — · —</td><td>1. <code>button_held</code> ∧ <code>no_ammo</code> → dry<br>2. <code>button_pressed</code> → fire</td><td>—</td></tr>
+      <tr><td><code>fire</code></td><td>2 · 34 · ready</td><td>—</td><td>0: <code>sound</code> weapon.rocketlauncher.fire, predicted<br>0: <code>consume</code><br>0: <code>launch</code> missile rocket, offset 40/48<br>0: <code>impulse</code> speed 100/48, towards away</td></tr>
+      <tr><td><code>dry</code></td><td>0 · 1 · ready</td><td>—</td><td>0: <code>switch_if_empty</code></td></tr>
+    </tbody>
+  </table>
+  <p><b>The missile</b>, in <b>☠ Monsters</b> → <span class="ui">☄ missiles</span>, called <code>rocket</code> (and a prop called <code>rocket</code> to draw it):</p>
+  <table>
+    <thead><tr><th>Field</th><th>Value</th><th>Why</th></tr></thead>
+    <tbody>
+      <tr><td><code>speed</code></td><td>700/48</td><td>about 14.6 units a second: DOOM's 20 map units a tic</td></tr>
+      <tr><td><code>gravity</code> · <code>life</code></td><td>0 · 300</td><td>flies flat; gone after 5 seconds</td></tr>
+      <tr><td><code>z_offset</code></td><td>32/48</td><td>born at chest height, not at the ankles</td></tr>
+      <tr><td><code>anim_fly</code> · <code>anim_burst</code> · <code>burst_ticks</code></td><td>0 · 1 · 20</td><td>the burst plays for a third of a second</td></tr>
+      <tr><td><code>on_hit</code></td><td><code>damage</code> amount 20<br><code>damage_area</code> damage 128, radius 128/48, falloff on, hurts_owner off, shoves_owner on, knockback 560/48, lift 560/48, hit_vfx 10</td><td>a direct hit, then the blast: full at the centre, nothing at the edge. It doesn't hurt you, but it shoves you, which is the rocket jump.</td></tr>
+    </tbody>
+  </table>
+  <p>Add <code>vfx</code> steps to <code>on_hit</code> for the explosion's fire and smoke, so it shows even when nothing is in range. Your own rocket's flight, burst and jump are predicted; its damage is the server's.</p>
+  <div class="callout tip"><p><b>Plasma</b> is the same shape: <code>button_held</code> on <code>ready</code>, <code>fire</code> 5 ticks, <code>launch</code> a fast missile with offset 30/48, no blast. DOOM II's plasma rifle grants 40 cells with its pickup.</p></div>
+
+  <h2>5. Melee, two ways</h2>
+  <h3>The chainsaw: a hitscan that hums</h3>
+  <p>DOOM's chainsaw is a hitscan with a short range and no tracer, repeated while held. No ammunition.</p>
+  <p><b>Weapon:</b> <span class="ui">label</span> Chainsaw · <span class="ui">order</span> 2 · <span class="ui">ammo?</span> (never runs out) · <span class="ui">initial?</span> ready.</p>
+  <table>
+    <thead><tr><th>Phase</th><th>anim · ticks · next</th><th>Transitions</th><th>Sequence</th></tr></thead>
+    <tbody>
+      <tr><td>★ <code>ready</code></td><td>0 · — · —</td><td>1. <code>button_held</code> → cut</td><td>—</td></tr>
+      <tr><td><code>cut</code></td><td>2 · 7 · ready</td><td>—</td><td>0: <code>sound</code> weapon.chainsaw.cut, predicted<br>0: <code>hitscan</code> damage 12, range 80/48, hit_vfx 10<br>0: <code>vfx</code> effect 15, attach on</td></tr>
+    </tbody>
+  </table>
+  <p><code>attach</code> keeps the sparks on the saw as you move. There is no "stop" event: <code>cut</code> repeats every 7 ticks while you hold, and each repeat keeps the effect alive; let go and it fades.</p>
+
+  <h3>The fists: a three-blow combo with swings</h3>
+  <p>DOOM II's fists in this engine are a combo: a jab, a cross and a hook, each with its own swing. The <code>recover</code> phases are the <b>windows</b>: press again while one runs and you reach the next blow; press a tick late and you are back at <code>ready</code>, starting over.</p>
+  <p><b>Weapon:</b> <span class="ui">label</span> Fists · <span class="ui">order</span> 1 · <span class="ui">ammo?</span> (never runs out) · <span class="ui">initial?</span> ready. <b>🌀 swing</b> (the weapon's own, for <code>ready</code>): damage 10, reach 64/48, half_arc 1/8, sweep_from −1/8, sweep_to 1/8, ticks 16, cooldown 21.</p>
+  <table>
+    <thead><tr><th>Phase</th><th>anim · ticks · next</th><th>Transitions</th><th>The phase's own swing</th></tr></thead>
+    <tbody>
+      <tr><td>★ <code>ready</code></td><td>0 · — · —</td><td>1. <code>button_pressed</code> → jab1</td><td>— (the weapon's)</td></tr>
+      <tr><td><code>jab1</code></td><td>2 · 10 · recover1</td><td>—</td><td>damage 10, reach 64/48, half_arc 1/10, sweep_from −1/12, sweep_to 1/12, ticks 8, knockback 60/48</td></tr>
+      <tr><td><code>recover1</code></td><td>0 · 14 · ready</td><td>1. <code>button_pressed</code> → jab2</td><td>—</td></tr>
+      <tr><td><code>jab2</code></td><td>2 · 12 · recover2</td><td>—</td><td>damage 14, reach 72/48, half_arc 1/8, sweep_from 1/8, sweep_to −1/8, ticks 10, knockback 90/48</td></tr>
+      <tr><td><code>recover2</code></td><td>0 · 16 · ready</td><td>1. <code>button_pressed</code> → hook</td><td>—</td></tr>
+      <tr><td><code>hook</code></td><td>2 · 20 · ready</td><td>—</td><td>damage 30, reach 80/48, half_arc 1/6, sweep_from −1/5, sweep_to 1/5, ticks 14, knockback 220/48, lift 120/48, slow 1/2, slow_ticks 45, hit_vfx 10</td></tr>
+    </tbody>
+  </table>
+  <p>Notice <code>jab2</code> sweeps the other way (from 1/8 to −1/8): a cross. The hook is wider, slower, and lifts and slows what it hits. To add DOOM II's air attack, put a transition <em>above</em> <code>ready</code>'s first: <code>button_pressed</code> ∧ <code>grounded</code> (with <span class="ui">value?</span> switched on and off again, so it is really false) → <code>slam</code>, a phase whose swing has <code>pitch_from</code> 3/16, <code>pitch_to</code> −1/8 and <code>half_pitch</code> 1/10, so it only hits what is below you.</p>
+  <p>Give the jabs a predicted swing sound with a <code>sound</code> step at 0, or a <b>🔊 heard at once by the one firing</b> entry with <span class="ui">on</span> <code>swing</code>.</p>
+
+  <h2>Bonus: a charge shot</h2>
+  <p>The vocabulary supports it, with no special field: a phase with no ticks waits while you hold, and two transitions decide what letting go does. The engine's own tests load exactly this shape.</p>
+  <p><b>Weapon:</b> <span class="ui">label</span> Charger · <span class="ui">order</span> 9 · <span class="ui">ammo?</span> cells · <span class="ui">per?</span> 1 · <span class="ui">initial?</span> ready.</p>
+  <table>
+    <thead><tr><th>Phase</th><th>anim · ticks · next</th><th>Transitions</th><th>Sequence</th></tr></thead>
+    <tbody>
+      <tr><td>★ <code>ready</code></td><td>0 · — · —</td><td>1. <code>button_held</code> ∧ <code>no_ammo</code> → dry<br>2. <code>button_held</code> → charge</td><td>—</td></tr>
+      <tr><td><code>charge</code></td><td>2 · — · —</td><td>1. <code>held_for</code> ticks 60 ∧ <code>has_ammo</code> n 5 → fire_big<br>2. <code>button_released</code> → fire_small</td><td>0: <code>sound</code> (a charging hum), predicted</td></tr>
+      <tr><td><code>fire_small</code></td><td>2 · 12 · ready</td><td>—</td><td>0: <code>consume</code><br>0: <code>hitscan</code> damage 15, range 2048/48, tracer 1</td></tr>
+      <tr><td><code>fire_big</code></td><td>2 · 30 · spent</td><td>—</td><td>0: <code>consume</code> n 5<br>0: <code>hitscan</code> damage 80, range 2048/48, tracer 1, knockback 6<br>0: <code>impulse</code> speed 3, towards away</td></tr>
+      <tr><td><code>spent</code></td><td>0 · — · —</td><td>1. <code>button_released</code> → ready</td><td>—</td></tr>
+      <tr><td><code>dry</code></td><td>0 · 1 · ready</td><td>—</td><td>0: <code>switch_if_empty</code></td></tr>
+    </tbody>
+  </table>
+  <ul>
+    <li><b>The order is the mechanism.</b> <code>held_for 60</code> is above <code>button_released</code>, so a full second's hold fires big at once, without waiting for release. Let go sooner and you get the small shot.</li>
+    <li><b>The <code>has_ammo n 5</code> guard</b> stops a big shot you can't pay for. With fewer than 5 cells the hold just waits, and letting go fires the small one.</li>
+    <li><b>Charge levels</b> are more <code>held_for</code> transitions, longest first: 120 → fire_huge, 60 → fire_big, then release → fire_small.</li>
+    <li><b>Why <code>spent</code>.</b> <code>held_for</code> counts from when the button went down. Without <code>spent</code>, a player who keeps holding after a big shot would go <code>ready</code> → <code>charge</code> and find <code>held_for 60</code> already true: a big shot every 30 ticks, for free charging. <code>spent</code> waits for the release first.</li>
+    <li>A charge waits for the release, so the small shot comes when you let go, not when you press. That delay is the feel of a charge weapon.</li>
+  </ul>
+
+  <h2>The limits</h2>
+  <p>Your own weapons are predicted by your client from a fixed-size table. These are its sizes. Going past one is not refused: the server says so at load, and the whole weapon set then runs on the server only, without prediction.</p>
+  <table>
+    <thead><tr><th>Thing</th><th>Up to</th></tr></thead>
+    <tbody>
+      <tr><td>weapons in the module</td><td>24</td></tr>
+      <tr><td>phases in a weapon</td><td>16</td></tr>
+      <tr><td>sequence steps in a phase</td><td>16</td></tr>
+      <tr><td>transitions in a phase</td><td>8</td></tr>
+      <tr><td>conditions in one transition</td><td>4</td></tr>
+      <tr><td>vars in a weapon</td><td>4</td></tr>
+      <tr><td>ammunition pools</td><td>8</td></tr>
+      <tr><td>rays in one hitscan (<span class="ui">count?</span>)</td><td>32</td></tr>
+      <tr><td>phase changes in one tick</td><td>5 (more is a loop: the engine stops and complains)</td></tr>
+    </tbody>
+  </table>
+  <p>A <code>lua</code> step or condition in any weapon has the same effect as going past a limit.</p>
+
+  <h2>Exercise: build the spin-up chaingun</h2>
+  <ol class="steps">
+    <li><p>In <b>🔫 Weapons</b>, press <span class="ui">+ new weapon</span> and call it <code>chaingun</code>. On <span class="ui">🔫 weapon</span>: <span class="ui">order</span> 6, <span class="ui">ammo?</span> bullets, and under <b>what its own pickup grants</b>, bullets 20.</p></li>
+    <li><p>Tap <code>fire</code>. Set <span class="ui">ticks?</span> to <code>9</code>. In the hitscan, set <span class="ui">range</span> <code>2048/48</code>, <span class="ui">spread?</span> 8 and a <span class="ui">tracer?</span>. With <span class="ui">add step</span>, add <code>consume</code>, and a <code>sound</code> with <span class="ui">predicted?</span> on.</p></li>
+    <li><p>Press <span class="ui">+ phase</span>, call it <code>dry</code>, set <span class="ui">ticks?</span> 1 and add the step <code>switch_if_empty</code>.</p></li>
+    <li><p>Press <span class="ui">+ phase</span>, call it <code>spin</code>. Clear its <span class="ui">ticks?</span> and <span class="ui">next?</span>, so it waits.</p></li>
+    <li><p>On <code>spin</code>, press <span class="ui">+ transition</span>: target <code>fire</code>, <span class="ui">add when</span> <code>held_for</code>, <span class="ui">ticks</span> 24. Press <span class="ui">+ transition</span> again: target <code>ready</code>, condition <code>button_released</code>.</p></li>
+    <li><p>Tap <code>ready</code>. Delete its existing card with <span class="ui">✕</span>. Add two transitions in this order: <code>dry</code> when <code>button_held</code> and <code>no_ammo</code>; then <code>spin</code> when <code>button_held</code>.</p></li>
+    <li><p>Check the bar: <em>loads clean</em>. If not, hover over the count; an empty <b>when</b> list or a <span class="ui">not</span> switch is the usual cause (<a href="02-phases.html">The phase machine</a>).</p></li>
+    <li><p>Play. Hold: a short spin, then a steady stream. Tap: nothing fires, because every tap is shorter than the spin.</p></li>
+    <li><p>Tune it: try <code>held_for</code> 12 for a snappy spin, and 45 for a heavy one. Then compare with DOOM's own (no <code>spin</code> at all) and keep what suits your game.</p></li>
+  </ol>
+
+  <div class="quiz" data-answer="1">
+    <p class="q">You add a charge level: <code>held_for 30</code> → fire_mid, listed <em>above</em> <code>held_for 60</code> → fire_big. What happens when you hold for two seconds?</p>
+    <ul>
+      <li>fire_big, after 60 ticks</li>
+      <li>fire_mid, at 30 ticks: the big shot can never be reached</li>
+      <li>Both, one after the other</li>
+    </ul>
+    <p class="why">At 30 ticks the first transition matches and wins, and the weapon leaves <code>charge</code>. Charge levels go longest first.</p>
+  </div>
+  <div class="quiz" data-answer="0">
+    <p class="q">The spin-up chaingun fires every 9 ticks while held, with no gap after the first shot. Why doesn't it spin up again before each shot?</p>
+    <ul>
+      <li><code>held_for</code> counts from when the button went down, so it is still true when <code>fire</code> → <code>ready</code> → <code>spin</code> are passed in one tick</li>
+      <li>Because <code>spin</code> has ticks 24, which only count once</li>
+      <li>Because <code>fire</code> goes straight back to itself</li>
+    </ul>
+    <p class="why"><code>held_for</code> is about the button, not the phase. Let go and press again, and the spin starts over.</p>
+  </div>
+  <div class="quiz" data-answer="2">
+    <p class="q">You want DOOM's rocket to deal 160 at the centre of its blast instead of 128. What do you edit?</p>
+    <ul>
+      <li>The rocket launcher's <code>launch</code> step</li>
+      <li>The rocket launcher's <span class="ui">per?</span></li>
+      <li>The <code>damage_area</code> in the rocket missile's <code>on_hit</code></li>
+    </ul>
+    <p class="why">The weapon only launches; the missile's <code>on_hit</code> decides what the hit and the blast do.</p>
+  </div>
+</article>
+</body>
+</html>

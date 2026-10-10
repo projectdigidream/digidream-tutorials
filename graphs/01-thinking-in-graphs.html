@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Thinking in graphs · Digidream Studio tutorials</title>
+<meta name="description" content="How a graph runs: start nodes, exec links and data links, the order things happen in, a node's fields and pins, the flow nodes, and when to use a trigger instead.">
+<link rel="stylesheet" href="../assets/site.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 16%22%3E%3Cpath d=%22M8 1l7 7-7 7-7-7z%22 fill=%22%235b8fd6%22/%3E%3C/svg%3E">
+<script defer src="../assets/nav.js"></script>
+<script defer src="../assets/shortcuts.js"></script>
+<script defer src="../assets/site.js"></script>
+</head>
+<body>
+<article>
+  <h1>Thinking in graphs</h1>
+  <p class="lede">A graph does nothing until something happens. Then it walks: from one node to the next along the white links, fetching values along the green ones. Once you can predict that walk, you can build anything in this track.</p>
+  <div class="goal">
+    <b>You'll learn</b><span>what starts a run, how a run moves from node to node, when values are worked out, which order things happen in, how fields and data pins share a job, what each flow node does, and when a trigger is the better tool</span>
+    <b>Time</b><span>30 minutes</span>
+    <b>Needs</b><span>the tour of the graph window in <a href="../studio/06-graphs.html">Graphs</a>; it helps to know <a href="../studio/04-triggers.html">Triggers</a></span>
+  </div>
+
+  <p>This track goes deeper than the <a href="../studio/06-graphs.html">Graphs</a> page in the Studio track. That page shows you the window: the board, the node menu, the side panel. This one is about what happens when the graph runs. Every node name links to its entry in <a href="../reference/graph-nodes.html">Every graph node</a>, which lists its pins and fields.</p>
+
+  <h2>Try it first</h2>
+  <p>The lab below has a small board, a palette of real node types, and a toy world with three imps, a switch and a door. It starts with the preset <b>kill 3 to open the door</b> already wired. The buttons under the picture fire events, and each run lights the nodes as it reaches them.</p>
+  <div class="widget" data-widget="graph-lab" data-title="Graph lab" data-preset="kill3"></div>
+  <ol class="steps">
+    <li><p>Press <b>☠ a monster dies</b>. Read the log. The start node <code>dies</code> starts a run, <code>count</code> adds 1 to <code>kills</code>, and <code>if</code> asks <code>enough</code>, which asks <code>kills</code>. The answer is false, and nothing is linked to <code>if</code>'s <b>false</b>, so the run ends.</p></li>
+    <li><p>Press it twice more. On the third death the compare is true, <code>once</code> lets the run through, and the door opens.</p></li>
+    <li><p>Press <b>reset the world</b>, then drag a new link from <code>kills</code>'s <b>value</b> pin to <code>door</code>'s <b>sector</b> pin. The lab refuses nothing here: a number can be a sector. Kill three imps again. The door does not open, because <code>door</code> now opens sector 3, the value of <code>kills</code>. Tap that link to delete it.</p></li>
+    <li><p>Try to link <code>dies</code>'s <b>entity</b> pin into <code>if</code>'s <b>in</b> pin. The lab says <em>Exec links to exec, data to data.</em> This is the one link the studio refuses as you draw.</p></li>
+    <li><p>Load the <b>toggle switch</b> preset and press <b>✋ player presses use on the switch</b> a few times. Watch <code>door_open</code> in the variables box flip each time.</p></li>
+  </ol>
+
+  <h3>The same graph in the studio</h3>
+  <p>Here is nearly the lab's first preset, built in the studio on the starter module's map, with a <code>subtitle</code> in place of the sound. Tap the numbers for what each part is.</p>
+  <figure class="shot" data-src="../assets/shots/graph-kill-count.png" data-alt="A graph in the studio: when_dies, add_var, branch, once, open_door and subtitle in a row, with get_var and compare feeding the branch" data-hotspots='[{"x":7,"y":23,"t":"The start node","d":"when_dies: a run starts here each time a monster dies. Its white exit leads to add_var."},{"x":19,"y":62,"t":"Data feeding a decision","d":"get_var reads kills, and compare turns it into true or false (kills &gt;= 3). Its green link runs up into the branch&#39;s cond."},{"x":32,"y":27,"t":"A linked field","d":"The branch&#39;s cond says ← compare.value: a link supplies it, so nothing is typed."},{"x":44,"y":23,"t":"once","d":"Lets the third death through, and no run after it."},{"x":54,"y":27,"t":"The door","d":"open_door picks its door by tag here. On a real map you would tap the door room instead."},{"x":75,"y":40,"t":"then and done","d":"subtitle has two exits: then at once, done when the line goes."},{"x":87,"y":61,"t":"The side panel","d":"The picked node&#39;s fields. a is linked from get_var.value; b is typed."},{"x":19,"y":13,"t":"▶ scene","d":"Plays a run over the map with the game&#39;s timings: for cutscenes."}]'>
+    <figcaption>The kill-counting graph in the studio's graph window, with <code>compare</code> picked.</figcaption>
+  </figure>
+
+  <h2>A run starts at a start node</h2>
+  <p>Every run begins at a <b>start node</b>. It has no white input, only a white output, usually called <b>then</b>. The node menu lists the start nodes first, in the group <span class="ui">when …</span>. They fire <b>once for the moment they name</b>, not on every tick that the state holds: when a player <em>comes into</em> a sector, not for every tick they stand in it.</p>
+  <table>
+    <thead><tr><th>Start node</th><th>Fires when</th><th>Gives you</th></tr></thead>
+    <tbody>
+      <tr><td><a href="../reference/graph-nodes.html#when_level_starts"><code>when_level_starts</code></a>, <a href="../reference/graph-nodes.html#after"><code>after</code></a>, <a href="../reference/graph-nodes.html#every"><code>every</code></a></td><td>once when the level first runs; once N seconds in; every N seconds</td><td>nothing: no player is in these runs</td></tr>
+      <tr><td><a href="../reference/graph-nodes.html#when_player_arrives"><code>when_player_arrives</code></a>, <a href="../reference/graph-nodes.html#when_player_leaves"><code>when_player_leaves</code></a></td><td>a player comes into or leaves the level (in the game's graph: the game)</td><td><code>entity</code></td></tr>
+      <tr><td><a href="../reference/graph-nodes.html#when_sector_entered"><code>when_sector_entered</code></a>, <a href="../reference/graph-nodes.html#when_sector_left"><code>when_sector_left</code></a>, <a href="../reference/graph-nodes.html#when_floor_touched"><code>when_floor_touched</code></a></td><td>somebody comes into a sector, leaves it, or stands on its floor</td><td><code>entity</code>, <code>sector</code></td></tr>
+      <tr><td><a href="../reference/graph-nodes.html#when_near"><code>when_near</code></a></td><td>somebody comes within a radius of a spot (exit <b>near</b>) or goes back out (exit <b>away</b>)</td><td><code>entity</code></td></tr>
+      <tr><td><a href="../reference/graph-nodes.html#when_wall_used"><code>when_wall_used</code></a>, <a href="../reference/graph-nodes.html#when_prop_used"><code>when_prop_used</code></a>, <a href="../reference/graph-nodes.html#when_prop_touched"><code>when_prop_touched</code></a></td><td>use pressed on a wall or a prop; a prop walked into</td><td><code>entity</code>, plus <code>sector</code> or <code>prop</code></td></tr>
+      <tr><td><a href="../reference/graph-nodes.html#when_dies"><code>when_dies</code></a>, <a href="../reference/graph-nodes.html#when_hurt"><code>when_hurt</code></a></td><td>something dies; something is hurt</td><td><code>entity</code>, <code>by</code> (and <code>amount</code>)</td></tr>
+      <tr><td><a href="../reference/graph-nodes.html#when_button_pressed"><code>when_button_pressed</code></a>, <a href="../reference/graph-nodes.html#when_button_released"><code>when_button_released</code></a></td><td>a player's button goes down or up</td><td><code>entity</code></td></tr>
+      <tr><td><a href="../reference/graph-nodes.html#when_panel_used"><code>when_panel_used</code></a>, <a href="../reference/graph-nodes.html#when_panel_closed"><code>when_panel_closed</code></a></td><td>a panel's widget is used; the player closes the panel</td><td><code>entity</code>, <code>widget</code>, <code>value</code></td></tr>
+      <tr><td><a href="../reference/graph-nodes.html#when_weapon_changed"><code>when_weapon_changed</code></a>, <a href="../reference/graph-nodes.html#when_fired"><code>when_fired</code></a>, <a href="../reference/graph-nodes.html#when_out_of_ammo"><code>when_out_of_ammo</code></a></td><td>a player's weapon changes, shoots, or runs dry</td><td><code>entity</code>, <code>weapon</code></td></tr>
+      <tr><td><a href="../reference/graph-nodes.html#on_call"><code>on_call</code></a></td><td>a <code>call</code> node names it (see <a href="05-game-graph-and-calls.html">The game graph, calls and maps</a>)</td><td><code>entity</code>, <code>value</code></td></tr>
+    </tbody>
+  </table>
+  <p>The menu also offers <span class="ui">every tick</span>, and each trigger event by name in the <span class="ui">trigger words</span> group (<span class="ui">when interact</span>, <span class="ui">when cross</span> …). These are the <a href="../reference/graph-nodes.html#event"><code>event</code></a> node. Its data outputs are what the event carried: <code>entity</code>, <code>target</code>, <code>side</code>, <code>sector</code>, <code>crush_kind</code>, <code>ui_id</code>, <code>widget_id</code>, <code>value</code>. An output the event did not carry is nil.</p>
+  <div class="callout tip"><p>Most start nodes have <b>filters</b>: <code>sector</code> or <code>tag</code>, <code>prop</code>, <code>kind</code>, <code>who</code>. Read their defaults. <code>who</code> is <code>players</code> unless you change it. <a href="../reference/graph-nodes.html#when_dies"><code>when_dies</code></a> watches <code>monsters</code> by default, and <a href="../reference/graph-nodes.html#when_hurt"><code>when_hurt</code></a> watches <code>anyone</code>.</p></div>
+
+  <h2>Two kinds of link</h2>
+  <div class="diagram">
+    <svg viewBox="0 0 640 190" role="img" aria-label="Exec links go from then to in; data links carry a value into a pin">
+      <rect class="box" x="10" y="30" width="150" height="70" rx="8"/>
+      <text x="22" y="52" font-size="13" font-weight="700">when_dies</text>
+      <text x="96" y="76" font-size="12" class="dim">then ▢</text>
+      <text x="88" y="94" font-size="12" class="dim">entity ●</text>
+      <rect class="box" x="240" y="20" width="150" height="60" rx="8"/>
+      <text x="252" y="42" font-size="13" font-weight="700">add_var</text>
+      <text x="252" y="66" font-size="12" class="dim">▢ in</text>
+      <rect class="box" x="240" y="110" width="150" height="60" rx="8"/>
+      <text x="252" y="132" font-size="13" font-weight="700">play_sound</text>
+      <text x="252" y="156" font-size="12" class="dim">● entity</text>
+      <rect class="acc" x="470" y="40" width="160" height="100" rx="8"/>
+      <text x="482" y="64" font-size="12">white: what runs next.</text>
+      <text x="482" y="84" font-size="12">One exit, one place.</text>
+      <text x="482" y="108" font-size="12">green: a value.</text>
+      <text x="482" y="128" font-size="12">One output, many readers.</text>
+      <path class="arrow" d="M150 72 C200 72 200 62 240 62" stroke-width="3"/>
+      <path class="arrow" d="M150 90 C200 90 200 152 240 152" stroke-dasharray="6 4"/>
+    </svg>
+  </div>
+  <ul>
+    <li><b>Exec links</b> (white, square pins) say <em>what runs next</em>. An exec output leads to one place only; a new link from it replaces the old one. An exec <em>input</em> can take many links, so several paths can join at one node.</li>
+    <li><b>Data links</b> (green, round pins) carry a <em>value</em>. A data output can feed any number of inputs. A data input takes one link; a new one replaces the old.</li>
+  </ul>
+  <p>You cannot link exec to data. You can draw an exec loop (a later node linking back to an earlier one), but data links may not form a cycle: the studio says <em>the data links form a cycle through …</em>, and the engine refuses the graph.</p>
+
+  <h2>How a run moves</h2>
+  <p>From the start node's exit, the run follows the exec link to the next node and does it:</p>
+  <ul>
+    <li><b>An action</b> (<code>open_door</code>, <code>set_var</code>, a trigger action) does its job and continues from <b>then</b>.</li>
+    <li><b>A condition</b> (a trigger condition, or <a href="../reference/graph-nodes.html#branch"><code>branch</code></a>) continues from <b>true</b> or <b>false</b>.</li>
+    <li><b>A flow node</b> does what it says: see <a href="#flow">The flow nodes</a>.</li>
+  </ul>
+  <p>When an exit has nothing linked to it, that path ends. Nothing is an error about that: an unlinked <b>false</b> is how you say "otherwise, do nothing".</p>
+  <p>A run is bounded. It may take <b>256 node steps</b>. Past that, it stops, and the server log says <em>a run went past 256 steps at node '…' and was stopped -- a loop?</em> So an exec loop drawn by mistake cannot freeze the game.</p>
+
+  <h3>Values are pulled, and remembered for the run</h3>
+  <p>Nodes with no white pins at all, like <a href="../reference/graph-nodes.html#get_var"><code>get_var</code></a>, <a href="../reference/graph-nodes.html#compare"><code>compare</code></a>, <a href="../reference/graph-nodes.html#math"><code>math</code></a>, <a href="../reference/graph-nodes.html#logic"><code>logic</code></a>, <a href="../reference/graph-nodes.html#random"><code>random</code></a> or <a href="../reference/graph-nodes.html#health_of"><code>health_of</code></a>, are <b>pure</b>. Nothing runs them. A node that needs one of their values <em>pulls</em> it at the moment it runs, and the pure node works the value out then.</p>
+  <p>Each pure node is worked out <b>once per run</b>, and the run keeps the answer. That is why two readers of one <a href="../reference/graph-nodes.html#random"><code>random</code></a> see the same number. It also has a sharp edge:</p>
+  <div class="callout warn"><p>If a run reads <code>get_var kills</code>, then adds 1 to <code>kills</code>, then reads the same <code>get_var kills</code> node again, the second read gives the <b>old</b> value. The run remembered it. Use a second <code>get_var</code> node for the read after the change. A new run (a new event, or the far side of a <code>delay</code>) starts with nothing remembered.</p></div>
+  <p>Outputs of exec nodes are different. A <a href="../reference/graph-nodes.html#spawn"><code>spawn</code></a>'s <code>entity</code> output is whatever it last made in this run, read fresh each time.</p>
+
+  <h2>The order things happen in</h2>
+  <ul>
+    <li><b>Within a run</b>, everything happens in the same game tick, in link order, until a <a href="../reference/graph-nodes.html#delay"><code>delay</code></a> or a <b>done</b> exit pushes the rest later.</li>
+    <li><b>Several start nodes for one event</b> all run, one after another: graphs in the order they were loaded, and inside a graph, in the order the nodes are in the file. The studio keeps them in the order you added them. Don't let two of them depend on which goes first; join them into one chain instead.</li>
+    <li><b>A <a href="../reference/graph-nodes.html#sequence"><code>sequence</code></a></b> runs exit <b>0</b>'s whole chain first, then exit <b>1</b>'s, and so on, all in the same tick.</li>
+    <li><b>Changes to the world land at the end of the tick.</b> A <a href="../reference/graph-nodes.html#teleport"><code>teleport</code></a> moves its entity at the tick's flush point, so a <a href="../reference/graph-nodes.html#position_of"><code>position_of</code></a> later in the same run still reads the old place.</li>
+  </ul>
+
+  <h2>Fields and data pins</h2>
+  <p>A node has <b>fields</b>, which you type or pick in the side panel: a door's <code>sector</code>, a delay's <code>ticks</code>, a sound's name. Many fields also have a <b>data pin of the same name</b>. When a link goes into that pin, the link wins and the field says <code>← node.pin</code>. With nothing linked, the field's own value is used.</p>
+  <ul>
+    <li>A required field fed by a link needs no typed value.</li>
+    <li>Optional fields stay off the node until they have a value or a link. <span class="ui">+ N more…</span> brings them on.</li>
+    <li>A numeric field with a data pin has a small <b>𝑥</b>. Tap it to take the number from a variable instead. The studio writes that as a hidden <a href="../reference/graph-nodes.html#get_var"><code>get_var</code></a> linked into the pin, so it is the same thing as drawing the link.</li>
+    <li>A trigger condition or action on the board has a data pin for each of its arguments of a type the engine can pass: whole numbers, fixed-point numbers, text, true/false, choices, sectors, and plain values.</li>
+  </ul>
+  <h3>The entity pin</h3>
+  <p>Most "do to a thing" nodes have an <code>entity</code> input. Left <b>unlinked</b>, it means <b>the event's own entity</b>: the player who pressed use, the monster that died. Linked, it means whatever the link gives. If the link gives nothing (a <a href="../reference/graph-nodes.html#spawn"><code>spawn</code></a> that could not spawn), the node does <b>nothing</b>. It never falls back to the event's entity, so a failed spawn feeding a <a href="../reference/graph-nodes.html#kill"><code>kill</code></a> cannot kill the player who set it off.</p>
+  <div class="callout warn"><p><a href="../reference/graph-nodes.html#when_level_starts"><code>when_level_starts</code></a>, <a href="../reference/graph-nodes.html#every"><code>every</code></a> and <a href="../reference/graph-nodes.html#after"><code>after</code></a> runs have no entity. A <a href="../reference/graph-nodes.html#play_sound"><code>play_sound</code></a> or <a href="../reference/graph-nodes.html#set_hud"><code>set_hud</code></a> left unlinked in such a run reaches nobody. The cutscene and camera nodes are the exception: in a run with no player, they act on every player in the level.</p></div>
+
+  <h2 id="flow">The flow nodes</h2>
+  <table>
+    <thead><tr><th>Node</th><th>Exits</th><th>What it does</th></tr></thead>
+    <tbody>
+      <tr><td><a href="../reference/graph-nodes.html#branch"><code>branch</code></a></td><td>true, false</td><td>Takes <b>true</b> for anything but <code>false</code> and nil. Watch out: the number 0 and the empty text are <b>true</b>. Compare first if you mean "is it zero?".</td></tr>
+      <tr><td><a href="../reference/graph-nodes.html#sequence"><code>sequence</code></a></td><td>0 … 7</td><td>Each exit in turn, in the same tick. <code>count</code> is 2 to 8 and must be typed, because it decides how many exits the node has.</td></tr>
+      <tr><td><a href="../reference/graph-nodes.html#delay"><code>delay</code></a></td><td>then</td><td>The rest of the run, <code>ticks</code> later (60 a second), with the same event. The far side is a new run, with its own 256 steps.</td></tr>
+      <tr><td><a href="../reference/graph-nodes.html#once"><code>once</code></a></td><td>then</td><td>Through the first time, never again. Once per graph, not once per player. Which <code>once</code> nodes have passed is saved with the game.</td></tr>
+      <tr><td><a href="../reference/graph-nodes.html#call"><code>call</code></a></td><td>then</td><td>Starts the <a href="../reference/graph-nodes.html#on_call"><code>on_call</code></a> nodes of a name, now, then carries on.</td></tr>
+    </tbody>
+  </table>
+  <p>Some actions have a second exit for later:</p>
+  <ul>
+    <li><a href="../reference/graph-nodes.html#fade"><code>fade</code></a>, <a href="../reference/graph-nodes.html#subtitle"><code>subtitle</code></a> and <a href="../reference/graph-nodes.html#camera_flythrough"><code>camera_flythrough</code></a> continue from <b>then</b> at once, and from <b>done</b> when they finish. That is how a cutscene is chained.</li>
+    <li><a href="../reference/graph-nodes.html#save_vars"><code>save_vars</code></a> has <b>failed</b>, and <a href="../reference/graph-nodes.html#load_vars"><code>load_vars</code></a> has <b>none</b>.</li>
+    <li><a href="../reference/graph-nodes.html#when_near"><code>when_near</code></a> starts from <b>near</b> or <b>away</b>.</li>
+  </ul>
+  <h3>Loops</h3>
+  <p>There is no loop node. To repeat, use one of these:</p>
+  <ul>
+    <li><a href="../reference/graph-nodes.html#every"><code>every</code></a> N seconds, for a steady beat.</li>
+    <li>A <a href="../reference/graph-nodes.html#delay"><code>delay</code></a> whose <b>then</b> links back to an earlier node. Each pass is a new run, so it never hits the step limit. Guard it with a <a href="../reference/graph-nodes.html#branch"><code>branch</code></a> on a variable, so you can stop it.</li>
+    <li>A <a href="../reference/graph-nodes.html#sequence"><code>sequence</code></a>, when you need a fixed handful of the same thing (spawn three imps).</li>
+  </ul>
+  <div class="callout warn"><p>Pending delays are not saved. A save keeps state, not what was in the middle of happening. A timer loop that was waiting when the game was saved does not resume after a load. If it must keep going, restart it from <a href="../reference/graph-nodes.html#when_level_starts"><code>when_level_starts</code></a>.</p></div>
+
+  <h2>Triggers or graphs?</h2>
+  <p>A graph's events, conditions and actions <em>are</em> the trigger vocabulary's, run by the same code. A door opened by either is the same door. So the choice is about how you want to write it:</p>
+  <table>
+    <thead><tr><th></th><th>A trigger card</th><th>A graph</th></tr></thead>
+    <tbody>
+      <tr><td>Shape</td><td>WHEN, IF all of these, THEN these in order</td><td>any shape: branches, joins, sequences, delays</td></tr>
+      <tr><td>Remembers</td><td>named counters and properties per map; <code>once</code></td><td>its own typed variables, entity properties, <code>once</code></td></tr>
+      <tr><td>Waiting</td><td><code>run_after</code> another trigger</td><td><code>delay</code> in the middle of the chain</td></tr>
+      <tr><td>Presets</td><td>door, lift, switch, teleport, ambush, exit …</td><td>none; you draw it</td></tr>
+      <tr><td>Whole game</td><td>no: a map's</td><td>yes: the game's graphs</td></tr>
+      <tr><td>Cost</td><td>none extra</td><td>one of the map's script slots per graph</td></tr>
+    </tbody>
+  </table>
+  <p>Use a <b>trigger</b> for the classic one-liners: a door, a lift, a switch, a teleport. The presets write them in one tap. Use a <b>graph</b> when the logic has a shape: it counts, it waits halfway, it chooses, it talks to the game's graph, it drives a cutscene or a panel. The two live side by side on one map without trouble.</p>
+
+  <div class="quiz" data-answer="2">
+    <p class="q">A <code>branch</code>'s <code>cond</code> is linked to <code>get_var lives</code>, and <code>lives</code> is 0. Which exit does it take?</p>
+    <ul>
+      <li>false, because 0 is false</li>
+      <li>neither: the run stops</li>
+      <li>true, because only false and nil count as false</li>
+    </ul>
+    <p class="why">A branch takes true for anything but <code>false</code> and nil, so 0 is true. Put a <code>compare</code> (<code>lives</code> <code>&lt;=</code> 0) between them.</p>
+  </div>
+  <div class="quiz" data-answer="0">
+    <p class="q">One run reads <code>get_var kills</code> (it is 2), then <code>add_var kills 1</code>, then reads the same <code>get_var kills</code> node again. What does the second read give?</p>
+    <ul>
+      <li>2: a pure node is worked out once per run</li>
+      <li>3: it reads the variable again</li>
+      <li>nil: the variable changed</li>
+    </ul>
+    <p class="why">The run remembers each pure node's value. Use a second <code>get_var</code> node for the read after the change.</p>
+  </div>
+  <div class="quiz" data-answer="1">
+    <p class="q">An <code>every</code> node fires a <code>play_sound</code> with nothing linked to its <code>entity</code>. What do players hear?</p>
+    <ul>
+      <li>The sound, from every player</li>
+      <li>Nothing: an <code>every</code> run has no entity, so the sound has nobody to come from</li>
+      <li>The sound, from the map's centre</li>
+    </ul>
+    <p class="why">Unlinked, <code>entity</code> is the event's entity, and timer runs have none. Start from a node that has a player, or link an entity in.</p>
+  </div>
+</article>
+</body>
+</html>

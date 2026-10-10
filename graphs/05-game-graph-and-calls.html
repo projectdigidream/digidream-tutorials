@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The game graph, calls and maps · Digidream Studio tutorials</title>
+<meta name="description" content="Graphs for the whole game, calls between the game and a level, going to other maps, a map's script slots, what the game keeps when saved, and when to write Lua instead.">
+<link rel="stylesheet" href="../assets/site.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 16%22%3E%3Cpath d=%22M8 1l7 7-7 7-7-7z%22 fill=%22%235b8fd6%22/%3E%3C/svg%3E">
+<script defer src="../assets/nav.js"></script>
+<script defer src="../assets/shortcuts.js"></script>
+<script defer src="../assets/site.js"></script>
+</head>
+<body>
+<article>
+  <h1>The game graph, calls and maps</h1>
+  <p class="lede">A map's graph lives and dies with its level. A game graph runs once for the whole game, and remembers across every map. This page shows how the two talk, how players move between maps, how many graphs a map can hold, and where graphs stop and Lua begins.</p>
+  <div class="goal">
+    <b>You'll learn</b><span>what a game graph can and cannot do, how <code>call</code> and <code>on_call</code> carry a value across, how to send a player to another map and greet them there, the map's 16 script slots, what a save keeps of the game, and the ways into Lua</span>
+    <b>Time</b><span>35 minutes</span>
+    <b>Needs</b><span><a href="02-variables-and-numbers.html">Variables, numbers and saving</a>; a module with two maps for the last part</span>
+  </div>
+
+  <h2>Two places a graph can run</h2>
+  <p>In <b>◇ Graphs</b>, the list starts with <span class="ui">the game's graphs</span> and their <span class="ui">+ new graph for the game</span>, then one group per map with <span class="ui">+ new graph on <i>map</i></span>. Under the hood they run in different places:</p>
+  <table>
+    <thead><tr><th></th><th>A map's graph</th><th>A game graph</th></tr></thead>
+    <tbody>
+      <tr><td>Runs in</td><td>that map's level, once per level</td><td>the game, once, not in any level</td></tr>
+      <tr><td>Variables</td><td>start again with the level (unless the module keeps level state)</td><td>kept from level to level; saved with the game</td></tr>
+      <tr><td>Can touch</td><td>everything in its level: sectors, walls, spawns, triggers</td><td>players and their view; nothing that needs a level's map</td></tr>
+      <tr><td>Hears</td><td>everything that happens in the level</td><td>players arriving and leaving, every tick, props touched and used, panels, buttons, weapons</td></tr>
+      <tr><td>Costs</td><td>one of the map's script slots</td><td>no slot</td></tr>
+    </tbody>
+  </table>
+  <p>The game has no level of its own. When something happens to a player, the game is bound for that moment to the world of the player it is about. That is why it can speak to a player (a panel, the music, a fade, a subtitle) but cannot name a sector: whose sector would it be?</p>
+
+  <h3>What a game graph may use</h3>
+  <p>Its node menu only offers what works there:</p>
+  <ul>
+    <li><b>Start nodes</b> that aren't tied to a level: <a href="../reference/graph-nodes.html#when_player_arrives"><code>when_player_arrives</code></a>, <a href="../reference/graph-nodes.html#when_player_leaves"><code>when_player_leaves</code></a>, <a href="../reference/graph-nodes.html#every"><code>every</code></a>, <a href="../reference/graph-nodes.html#after"><code>after</code></a>, <a href="../reference/graph-nodes.html#when_prop_used"><code>when_prop_used</code></a>, <a href="../reference/graph-nodes.html#when_prop_touched"><code>when_prop_touched</code></a>, <a href="../reference/graph-nodes.html#when_button_pressed"><code>when_button_pressed</code></a>, <a href="../reference/graph-nodes.html#when_panel_used"><code>when_panel_used</code></a>, the weapon events, <a href="../reference/graph-nodes.html#on_call"><code>on_call</code></a>. Of the trigger events: <code>on_tick</code>, <code>on_touch</code>, <code>on_prop_use</code>, <code>on_ui_event</code>, <code>on_player_enter</code>, <code>on_player_leave</code>.</li>
+    <li><b>Actions</b> on entities and on a player's view: <a href="../reference/graph-nodes.html#damage"><code>damage</code></a>, <a href="../reference/graph-nodes.html#heal"><code>heal</code></a>, <a href="../reference/graph-nodes.html#push"><code>push</code></a>, <a href="../reference/graph-nodes.html#play_sound"><code>play_sound</code></a>, the panel nodes, the cutscene nodes, <a href="../reference/graph-nodes.html#camera_follow"><code>camera_follow</code></a>, <a href="../reference/graph-nodes.html#camera_shake"><code>camera_shake</code></a>, weapons, <a href="../reference/graph-nodes.html#change_map"><code>change_map</code></a>, <a href="../reference/graph-nodes.html#quit_game"><code>quit_game</code></a>, the storage nodes. Of the trigger actions: <code>set_hp</code>, <code>set_solid</code>, <code>set_animation</code>, <code>despawn</code>, <code>add_effect</code>, <code>music</code>, <code>ui_open</code>, <code>ui_close</code>, <code>camera</code>, <code>screen</code>, <code>counter_add</code>, <code>counter_set</code>, <code>set_property</code>, <code>log</code>, <code>lua</code>.</li>
+    <li>All of flow and data.</li>
+  </ul>
+  <p>Everything marked <em>level only</em> in <a href="../reference/graph-nodes.html">Every graph node</a> is refused: doors, floors, <a href="../reference/graph-nodes.html#spawn"><code>spawn</code></a>, <a href="../reference/graph-nodes.html#teleport"><code>teleport</code></a>, <a href="../reference/graph-nodes.html#when_sector_entered"><code>when_sector_entered</code></a>, <a href="../reference/graph-nodes.html#when_dies"><code>when_dies</code></a>, camera paths, the sky. The studio says <em>a … acts on a level, and the game has none -- call the level's graph (a call node, to level) and do it there</em>. The other way round, a map's graph refuses the game's own events: <em>'on_player_enter' reaches only the game's graph</em>. (<a href="../reference/graph-nodes.html#when_player_arrives"><code>when_player_arrives</code></a> works in both.)</p>
+
+  <h2>Calls: crossing over</h2>
+  <p>A <a href="../reference/graph-nodes.html#call"><code>call</code></a> node starts every <a href="../reference/graph-nodes.html#on_call"><code>on_call</code></a> node of the same name, <b>now</b>, and then carries on. It sends one <code>value</code> and one <code>entity</code>.</p>
+  <table>
+    <thead><tr><th><code>to</code></th><th>From a map's graph</th><th>From a game graph</th></tr></thead>
+    <tbody>
+      <tr><td><code>game</code></td><td>the game's graphs</td><td>the game's own graphs</td></tr>
+      <tr><td><code>level</code></td><td>this level's own graphs</td><td>the graphs of the level that <code>entity</code> is in</td></tr>
+    </tbody>
+  </table>
+  <ul>
+    <li><code>entity</code> is the one linked, or else the event's. A call <code>to: level</code> from the game <b>needs</b> an entity, to know which level. Without one it is skipped, and the log says <em>calls a level with no entity to say which -- skipped</em>.</li>
+    <li><code>value</code> is typed, or linked. Numbers, text, true/false and entity handles cross safely.</li>
+    <li>On the far side, <a href="../reference/graph-nodes.html#on_call"><code>on_call</code></a>'s outputs <code>entity</code> and <code>value</code> are what was sent. Its run is a run like any other.</li>
+    <li>Every graph with an <code>on_call</code> of that name answers, in the order they were loaded.</li>
+    <li>Calls nest at most <b>four deep</b>. Two graphs that call each other in a ring stop there: <em>a call to '…' is 4 deep -- stopped (calls that call each other?)</em>.</li>
+  </ul>
+  <p>The Graphs list shows, for each graph, what it <b>calls</b> and what it <b>answers</b>. A call nobody answers is a warning under the list, and a problem on Home: <em>… calls 'x' (to game), and no game graph has an on_call of that name</em>.</p>
+
+  <h3>Example: a game-wide secret count</h3>
+  <p>Each map counts its own secrets (<a href="03-map-logic.html#secret">Recipe 2</a>). The game keeps the total, so the HUD shows every secret found on every map.</p>
+  <pre><code>map01's graph "secrets":
+  when_sector_entered → once → call (to: game, name: secret_found, value: 1)
+
+the game's graph "progress"      vars: total = 0
+  on_call secret_found → add_var total (value ← on_call.value) → set_hud (name: secrets, value ← get_var total)</code></pre>
+  <p>The <code>set_hud</code> goes to the on_call's entity: the player whose map made the call. That works because the map's call sent the event's entity, the player who walked in.</p>
+
+  <h3>Example: the game asks a level to act</h3>
+  <p>A main menu panel is opened by the game's graph. Its <b>Start</b> button should open a gate in whatever map the player is on. The game cannot name the gate, but the level can:</p>
+  <pre><code>the game's graph:
+  when_panel_used (menu › start) → close_panel (menu) → call (to: level, name: open_gate)
+
+each map's graph:
+  on_call open_gate → open_door (sector: picked, that map's gate)</code></pre>
+  <p>The call's entity is the panel event's player, so the call goes to that player's level. Maps without an <code>open_gate</code> simply don't answer.</p>
+
+  <h2>Going to other maps</h2>
+  <p><a href="../reference/graph-nodes.html#change_map"><code>change_map</code></a> sends a player to another map. It is in the menu's <span class="ui">maps</span> group.</p>
+  <ul>
+    <li><code>level</code>: the map, chosen from the module's maps. A map the module does not have is a problem: <em>no map called … in the module</em>.</li>
+    <li><code>spawn</code>: the spawn point to arrive at on that map, by its tag (the door on the far side). Spawn points are placed in the map editor; each has a <span class="ui">tag</span>. Without one, or with a tag the map lacks, the player arrives at the map's start, and the studio warns you.</li>
+    <li><code>fade</code>: seconds of fading to black first. The new map fades in on arrival.</li>
+    <li><code>everyone</code>: every player in the level, not just the event's.</li>
+  </ul>
+  <p>On the far side, <a href="../reference/graph-nodes.html#when_player_arrives"><code>when_player_arrives</code></a> in that map's graph starts a run for the newcomer: the place for a title card or a door that shuts behind them. <a href="../reference/graph-nodes.html#change_map"><code>change_map</code></a> works from a game graph too.</p>
+  <p><a href="../reference/graph-nodes.html#teleport"><code>teleport</code></a> with a <code>spawn</code> tag moves a player to a spawn point on the <em>same</em> map. <a href="../reference/graph-nodes.html#quit_game"><code>quit_game</code></a> closes the game for the player: the main menu's Quit. In the desktop app it exits; in a play-test it goes back to the studio; in a browser tab the screen fades to black and says the game may be closed.</p>
+  <div class="callout"><p>A module can also lay its maps out on a grid as one connected world (the maps' metamap), where neighbouring maps share one simulation and the player walks from one into the next. Each map's graphs still run in their own map's level. Be sparing there with <code>who: monsters</code> or <code>anyone</code> on the "when …" nodes: they watch every body in the level on every tick, and a big world has many.</p></div>
+
+  <h2>Script slots</h2>
+  <p>A map may declare at most <b>16 scripts</b>, and each of its graphs is one. The rest go to what the map needs to run:</p>
+  <table>
+    <thead><tr><th>Slots</th><th>For</th><th>When</th></tr></thead>
+    <tbody>
+      <tr><td>2</td><td>the monster runtime</td><td>the module has monsters or weapons</td></tr>
+      <tr><td>2</td><td>the trigger runtime</td><td>the map has triggers or any graph</td></tr>
+      <tr><td>2</td><td>the graph runtime</td><td>the map has a graph</td></tr>
+      <tr><td>1 each</td><td>the map's graphs</td><td>each graph with at least one node</td></tr>
+      <tr><td>1</td><td>the module's own Lua (monsters, scripts)</td><td>the module defines any</td></tr>
+      <tr><td>1</td><td>the map's own Lua (placed things, triggers)</td><td>always</td></tr>
+    </tbody>
+  </table>
+  <p>So a map in a module with monsters can hold <b>8 graphs</b>. Play and Export refuse a map past the limit: <em>a map can declare 16 scripts and this module needs 17: …</em>. An empty graph is kept in the studio but not written, so it costs nothing. Game graphs take no map slots. When you run short, merge small graphs: one graph can hold many unrelated chains.</p>
+
+  <h2>What the game keeps</h2>
+  <ul>
+    <li>A game graph's variables and its passed <a href="../reference/graph-nodes.html#once"><code>once</code></a> nodes go into every save game, as the game's own part, under the graph's name.</li>
+    <li>With <span class="ui">survive a server restart</span> on, they are also written to the server's <code>game.save</code> every minute and on stop, and read back before any level loads.</li>
+    <li>A new game starts the game's graphs from scratch. What a graph wrote with <a href="../reference/graph-nodes.html#save_vars"><code>save_vars</code></a> is the exception: it outlives a new game.</li>
+  </ul>
+  <p>So a score, quest flags and unlocked doors belong in a game graph. A map's own puzzle state belongs in the map's graph, kept by <span class="ui">levels keep their state</span>.</p>
+
+  <h2>Graphs or Lua?</h2>
+  <p>Graphs cover most map logic. Reach for Lua when you need what the vocabulary does not say:</p>
+  <ul>
+    <li>a value <b>per player</b> (graph variables are shared by the level);</li>
+    <li>going over <b>many entities</b> at once ("every monster within 10 units");</li>
+    <li>maths beyond <code>+ - * / min max</code>, or building text;</li>
+    <li>a new behaviour for a monster or weapon that their workshops can't express.</li>
+  </ul>
+  <p>There are three ways in, from small to large:</p>
+  <ol>
+    <li><b><span class="ui">do lua</span></b>, the trigger action <code>lua</code>, as a node. Its <code>code</code> is a snippet that runs with <code>ev</code>, the event (<code>ev.entity</code>, <code>ev.sector</code> …).</li>
+    <li><b>📜 Scripts</b>: the module's own Lua files. A script runs in <em>every level</em>, after the module's monsters are loaded, and its hooks run alongside everyone else's. See <a href="../studio/06-graphs.html">Graphs</a>.</li>
+    <li><b>Calling a graph from Lua.</b> A level's script can start that level's <code>on_call</code> nodes with <code>graphs.call("name", entity, value)</code>, and the game's with <code>dnp.call_game("graph_call", "name", value, entity)</code>. So Lua can do the hard part and hand the result to a graph.</li>
+  </ol>
+  <div class="callout warn"><p>A <code>do lua</code> written in the studio is stored as text and compiled with <code>loadstring</code>. A server running in its strict trust profile removes <code>loadstring</code>, and then refuses the code at load rather than run the graph with a piece missing. If your module will be hosted that way, put the Lua in 📜 Scripts instead.</p></div>
+
+  <h2>Exercise: secrets across the game</h2>
+  <ol class="steps">
+    <li><p>Build <a href="03-map-logic.html#secret">Recipe 2</a> on one map, but remove its <code>set_hud</code>.</p></li>
+    <li><p>After <code>count</code>, add a <a href="../reference/graph-nodes.html#call"><code>call</code></a>: <code>to</code> <code>game</code>, <code>name</code> <code>secret_found</code>, <code>value</code> <code>1</code>. In <b>◇ Graphs</b>, the map's row now says <em>calls secret_found</em>, and a warning says nothing answers it.</p></li>
+    <li><p>Press <span class="ui">+ new graph for the game</span>, name it <code>progress</code>, and add a variable <code>total</code> starting at 0.</p></li>
+    <li><p>Add an <a href="../reference/graph-nodes.html#on_call"><code>on_call</code></a> named <code>secret_found</code>. The warning goes away, and the game's row says <em>answers secret_found</em>.</p></li>
+    <li><p>Link it to an <a href="../reference/graph-nodes.html#add_var"><code>add_var</code></a> <code>total</code>, with <code>value</code> linked from the on_call's <code>value</code>. Then a <a href="../reference/graph-nodes.html#set_hud"><code>set_hud</code></a> <code>secrets</code>, with <code>value</code> linked from a <a href="../reference/graph-nodes.html#get_var"><code>get_var</code></a> <code>total</code>.</p></li>
+    <li><p>Try adding an <a href="../reference/graph-nodes.html#open_door"><code>open_door</code></a> to the <code>progress</code> graph. It isn't in its menu. That is the game graph telling you to call a level instead.</p></li>
+  </ol>
+
+  <div class="quiz" data-answer="2">
+    <p class="q">The game's graph runs <code>call</code> with <code>to: level</code>, after an <code>every</code> node, with nothing linked to <code>entity</code>. What happens?</p>
+    <ul>
+      <li>Every level's graphs answer</li>
+      <li>The level the first player is in answers</li>
+      <li>Nothing: a call to a level needs an entity to say which, so it is skipped and logged</li>
+    </ul>
+    <p class="why">An <code>every</code> run has no entity. Link a player in, for example from a variable or a <code>when_player_arrives</code> chain.</p>
+  </div>
+  <div class="quiz" data-answer="0">
+    <p class="q">A module has monsters. How many graphs can one of its maps hold?</p>
+    <ul>
+      <li>8: the runtimes take 6 slots, the module's and the map's Lua take 2</li>
+      <li>16</li>
+      <li>As many as you like</li>
+    </ul>
+    <p class="why">A map has 16 script slots. Monsters, triggers and graphs need two slots each, plus one for the module's Lua and one for the map's own.</p>
+  </div>
+  <div class="quiz" data-answer="1">
+    <p class="q">Where should "the player has the blue keycard, across every map" live, if a graph keeps it?</p>
+    <ul>
+      <li>In each map's graph, with <code>once</code></li>
+      <li>In a game graph's variable, set through a call</li>
+      <li>In a <code>save_vars</code> store</li>
+    </ul>
+    <p class="why">A game graph's variables are kept from level to level and saved with the game. A store would outlive a new game, which a keycard should not.</p>
+  </div>
+</article>
+</body>
+</html>

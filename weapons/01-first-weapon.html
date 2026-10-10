@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Your first weapon · Digidream Studio tutorials</title>
+<meta name="description" content="Make a weapon in the Weapons section, give it to the player through the kit, choose it with the number keys, see it on the HUD and play-test it.">
+<link rel="stylesheet" href="../assets/site.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 16%22%3E%3Cpath d=%22M8 1l7 7-7 7-7-7z%22 fill=%22%235b8fd6%22/%3E%3C/svg%3E">
+<script defer src="../assets/nav.js"></script>
+<script defer src="../assets/shortcuts.js"></script>
+<script defer src="../assets/site.js"></script>
+</head>
+<body>
+<article>
+  <h1>Your first weapon</h1>
+  <p class="lede">A weapon is a small machine you draw: a few named <b>phases</b>, and arrows between them. In this lesson you make one in the Weapons section, put it in the player's hands, and fire it in a map. The next lessons take the machine apart.</p>
+  <div class="goal">
+    <b>You'll learn</b><span>where weapons live, what the workshop's panes and tabs hold, what "+ new weapon" gives you, how the player's kit decides what they start with, how a player picks a weapon, and how to play-test it</span>
+    <b>Time</b><span>25 minutes</span>
+    <b>Needs</b><span>a module with one map (<a href="../studio/02-first-map.html">Your first map</a>), and the app for <span class="ui">▶ Play</span> (<a href="../studio/10-play-and-export.html">Play, export, snapshots</a>)</span>
+  </div>
+
+  <h2>Where weapons live</h2>
+  <p>Open <b>🔫 Weapons</b> in the studio's rail. Weapons belong to the <b>module</b>, not to one map, and the window says so in its bar: <em>"weapons belong to the module, not to one map"</em>. Every map of the module sees the same pistol.</p>
+  <p>They also run <b>once for the whole game</b>. The studio writes the weapons into a game script (<code>maps/arsenal.lua</code>), and the server runs it once, not once per level. So a player keeps what they hold, and the ammunition they carry, from map to map.</p>
+  <p>The window is the same <b>workshop</b> the monsters use, because a weapon and a monster's brain are the same kind of graph. It has three panes. On a wide screen they sit side by side; on a phone, the tabs at the top right switch between them:</p>
+  <table>
+    <thead><tr><th>Pane</th><th>What it shows</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">🎞 preview</span></td><td>The player's art, because the player holds the weapon. With no player art chosen yet, it says <em>"no picture: give the body a sheet"</em>. The state chips <span class="ui">0 idle</span> … <span class="ui">4 death</span> play each animation state.</td></tr>
+      <tr><td><span class="ui">⬡ graph</span></td><td>The weapon's phases as boxes, and the ways between them as arrows.</td></tr>
+      <tr><td><span class="ui">☰ details</span></td><td>Five tabs of forms: the picked phase, the weapon, its swing, its counters, and the arsenal.</td></tr>
+    </tbody>
+  </table>
+
+  <figure class="shot" data-src="../assets/shots/weapon-workshop.png" data-alt="The Weapons workshop with a new weapon called pistol: preview, phase graph and details" data-hotspots='[{"x":31,"y":9,"t":"Weapon chips","d":"one chip per weapon of the module, and + new weapon"},{"x":97,"y":9,"t":"Problems","d":"loads clean, or a count of problems in the runtime&#39;s own words; hover for the list"},{"x":47,"y":16,"t":"Graph bar","d":"+ phase, auto layout, delete weapon; more buttons appear when a phase is picked"},{"x":47,"y":27,"t":"Phases","d":"ready (★, the initial phase) and fire, with the after-12-ticks arrow back"},{"x":86,"y":16,"t":"Details tabs","d":"⬡ phase, 🔫 weapon, 🌀 swing, # vars, 🎒 arsenal"},{"x":26,"y":35,"t":"Preview","d":"the player&#39;s art; empty until the player has a prop to draw them"}]'>
+    <figcaption>The Weapons workshop, just after <span class="ui">+ new weapon</span>: two phases and the arrow between them.</figcaption>
+  </figure>
+
+  <h3>The bar</h3>
+  <ul>
+    <li><span class="ui">‹ back</span> leaves the window.</li>
+    <li><span class="ui">☠ monsters</span> goes across to the monster workshop. (The Player window has <span class="ui">🔫 weapons</span> to come back here.)</li>
+    <li>A chip per weapon, then <span class="ui">+ new weapon</span>.</li>
+    <li>On the right: <em>loads clean</em>, or <span class="ui">1 problem(s)</span> in red. Hover over the count to read the problems. They are checked against the same vocabulary the server loads, so a problem here is one the server would refuse too. (Two mistakes slip past this check; <a href="02-phases.html">The phase machine</a> names them.)</li>
+  </ul>
+
+  <h3>The graph bar</h3>
+  <p><span class="ui">+ phase</span> asks for a name. <span class="ui">auto layout</span> tidies the boxes. <span class="ui">delete weapon</span> asks first, and also deletes any pickup that grants this weapon. When a phase is picked, three more buttons appear: <span class="ui">★ initial</span>, <span class="ui">→ link</span> and <span class="ui">✕ phase</span>.</p>
+  <div class="callout warn"><p><b><span class="ui">→ link</span> does not work for weapons yet.</b> Tapping the target phase throws an error in the studio, and no transition is added. (The code writes to <code>states</code>, which a monster has, but a weapon keeps its nodes in <code>phases</code>. The <span class="ui">tap a target state</span> button in the details pane runs into the same error.) Add transitions with <span class="ui">+ transition</span> in the details pane and choose the target from its list. That always works.</p></div>
+
+  <h3>The details tabs</h3>
+  <table>
+    <thead><tr><th>Tab</th><th>What it holds</th><th>Lesson</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">⬡</span> <i>phase</i></td><td>The picked phase, by name (the tab reads <code>⬡ fire</code>). Its fields, <b>❓ go to … when all of …</b> (its transitions) and <b>▶ at tick … do …</b> (its sequence of actions). Then its own swing, if it has one.</td><td><a href="02-phases.html">The phase machine</a></td></tr>
+      <tr><td><span class="ui">🔫 weapon</span></td><td>The weapon's own fields: <span class="ui">label</span>, <span class="ui">order</span>, <span class="ui">ammo?</span>, <span class="ui">per?</span>, <span class="ui">initial?</span>, <span class="ui">icon?</span>, <span class="ui">aim_snap?</span>. Then <b>🔊 heard at once by the one firing</b> and <b>🎒 what its own pickup grants</b>.</td><td>this page, and <a href="04-ammo-and-pickups.html">Ammo and pickups</a></td></tr>
+      <tr><td><span class="ui">🌀 swing</span></td><td>The weapon's melee swing, for every phase that has none of its own. Empty means the weapon does not swing.</td><td><a href="03-hitscan-missiles-swings.html">Hitscan, missiles and swings</a></td></tr>
+      <tr><td><span class="ui"># vars</span></td><td>The weapon's own counters, such as a combo step or a heat level. Each player gets their own copy.</td><td><a href="05-recipes.html">Recipes</a></td></tr>
+      <tr><td><span class="ui">🎒 arsenal</span></td><td>Shared by every weapon: <b>🔢 ammunition</b> pools, <b>❤ health</b> ceilings and <b>📦 pickups</b>.</td><td><a href="04-ammo-and-pickups.html">Ammo and pickups</a></td></tr>
+    </tbody>
+  </table>
+  <p>A field name with a <b>?</b> is optional: leave it empty and the engine uses its default. Every field has an <b>ⓘ</b> button with the engine's own description. The same words are listed in <a href="../reference/weapon-vocab.html">Every weapon word</a>.</p>
+
+  <h2>What "+ new weapon" gives you</h2>
+  <p><span class="ui">+ new weapon</span> asks for a <em>weapon name (letters, digits, underscore)</em>, suggesting <code>pistol</code>. The name is the weapon's id: pickups, the kit and graphs use it. It is lower-cased, and anything other than letters, digits and underscores is dropped.</p>
+  <p>The weapon it makes already works. It has two phases:</p>
+  <table>
+    <thead><tr><th>Phase</th><th>Fields</th><th>Does</th></tr></thead>
+    <tbody>
+      <tr><td><code>ready</code> ★</td><td><span class="ui">anim?</span> 0, no ticks</td><td>Waits. One transition: <a href="../reference/weapon-vocab.html#button_pressed"><code>button_pressed</code></a> → <code>fire</code>.</td></tr>
+      <tr><td><code>fire</code></td><td><span class="ui">anim?</span> 2, <span class="ui">ticks?</span> 12, <span class="ui">next?</span> ready</td><td>At tick 0, a <a href="../reference/weapon-vocab.html#hitscan"><code>hitscan</code></a> with <span class="ui">damage</span> 10 and <span class="ui">range</span> 32. After 12 ticks it goes back to <code>ready</code>.</td></tr>
+    </tbody>
+  </table>
+  <p>The game runs at <b>60 ticks a second</b>, so 12 ticks is a fifth of a second: at most five shots a second, one per press.</p>
+  <p>Its <span class="ui">label</span> is the name with a capital (<code>Pistol</code>), and its <span class="ui">order</span> is one more than the highest so far (the first weapon gets 1). It has no <span class="ui">ammo?</span>, so it never runs out.</p>
+  <p>The first weapon also creates the <b>arsenal</b>: one pool, <code>bullets</code> (<span class="ui">label?</span> Bullets, <span class="ui">max</span> 200, <span class="ui">initial?</span> 50, <span class="ui">order?</span> 1), and the health ceilings 100 and 200.</p>
+
+  <h2>The weapon's own fields</h2>
+  <figure class="shot" data-src="../assets/shots/weapon-weapon-tab.png" data-alt="The weapon tab: label, order, ammo, per, initial, icon, aim_snap, the predicted sounds and what the pickup grants" data-hotspots='[{"x":81,"y":22,"t":"label","d":"the only string a player sees"},{"x":81,"y":28,"t":"order","d":"selection priority, low to high"},{"x":81,"y":34,"t":"ammo?","d":"the pool it eats, or (never runs out)"},{"x":81,"y":66,"t":"Predicted sounds","d":"what the shooter&#39;s own client plays at once"},{"x":81,"y":82,"t":"Pickup grants","d":"ammunition its own pickup gives, every time"}]'>
+    <figcaption>The <span class="ui">🔫 weapon</span> tab of a new weapon.</figcaption>
+  </figure>
+  <table>
+    <thead><tr><th>Field</th><th>What it means</th></tr></thead>
+    <tbody>
+      <tr><td><a href="../reference/weapon-vocab.html#weapon_fields.label"><span class="ui">label</span></a></td><td>What the HUD and the weapon panel call it. The only string a player sees.</td></tr>
+      <tr><td><a href="../reference/weapon-vocab.html#weapon_fields.order"><span class="ui">order</span></a></td><td>Selection priority, low to high. It sorts the weapons for the number keys, and it decides which weapon the player falls back to when one runs dry (the highest one that still has ammunition).</td></tr>
+      <tr><td><a href="../reference/weapon-vocab.html#weapon_fields.ammo"><span class="ui">ammo?</span></a></td><td>The pool it eats, chosen from the arsenal's pools. <code>(never runs out)</code> is right for a fist or a chainsaw.</td></tr>
+      <tr><td><a href="../reference/weapon-vocab.html#weapon_fields.per"><span class="ui">per?</span></a></td><td>What one shot costs. Default 1. It is only taken when a phase runs a <code>consume</code> action.</td></tr>
+      <tr><td><a href="../reference/weapon-vocab.html#weapon_fields.initial"><span class="ui">initial?</span></a></td><td>The phase it rests in. A weapon with more than one phase must name it. A new weapon has <code>ready</code>, marked ★ in the graph.</td></tr>
+      <tr><td><a href="../reference/weapon-vocab.html#weapon_fields.icon"><span class="ui">icon?</span></a></td><td>A picture for the HUD: a sprite frame key from the module's sheets, or a texture name.</td></tr>
+      <tr><td><a href="../reference/weapon-vocab.html#weapon_fields.aim_snap"><span class="ui">aim_snap?</span></a></td><td>How many directions aim snaps to while it is held. Empty or 0 is free aim; 8 is eight-way, for a side-on platformer.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Exercise: make a pistol and fire it</h2>
+  <ol class="steps">
+    <li><p>Open <b>🔫 Weapons</b> and press <span class="ui">+ new weapon</span>. Keep the name <code>pistol</code> and press <span class="ui">OK</span>. Two boxes appear, <code>ready</code> and <code>fire</code>, and the bar says <em>loads clean</em>.</p></li>
+    <li><p>Tap the <code>fire</code> box. The first details tab now reads <span class="ui">⬡ fire</span>. Under <b>▶ at tick … do …</b> you see the <code>hitscan</code> step. Set <span class="ui">spread?</span> to <code>3</code> and <span class="ui">tracer?</span> to a tracer style from the list, so you can see the shot.</p></li>
+    <li><p>Still on <code>fire</code>, set <span class="ui">ticks?</span> to <code>24</code>. That is DOOM's pistol rate: one shot every 0.4 seconds.</p></li>
+    <li><p>Open <span class="ui">🔫 weapon</span>. Choose <code>bullets</code> under <span class="ui">ammo?</span>. The pistol now has a pool, but nothing takes from it yet.</p></li>
+    <li><p>Go back to <span class="ui">⬡ fire</span>. Under <span class="ui">add step</span>, choose <code>consume</code>. A step appears with <span class="ui">at</span> 0. Now each shot costs one bullet. (You'll stop it firing when empty in the <a href="02-phases.html">next lesson</a>.)</p></li>
+    <li><p>Open <b>🧍 Player</b>, the <span class="ui">🎒 kit</span> tab. Check that <span class="ui">bullets</span> under <b>ammunition carried at the start</b> is 50.</p></li>
+    <li><p>Open your map and press <span class="ui">▶ Play</span>. Press <kbd>1</kbd> if the pistol is not already in your hands, then fire with the left mouse button or <kbd>F</kbd>. Hold the button down: it fires once. Each new shot needs a new press.</p></li>
+  </ol>
+  <div class="callout tip"><p><b>Nothing happens?</b> Look at the bar first. A problem count in red means the server refuses the arsenal, and the player has no weapons at all. Hover over the count: the message names the weapon, the phase and the field.</p></div>
+
+  <h2>The player's kit</h2>
+  <p>What a player <b>starts</b> with is set in <b>🧍 Player</b>, on the <span class="ui">🎒 kit</span> tab, not in the weapon:</p>
+  <figure class="shot" data-src="../assets/shots/weapon-kit.png" data-alt="The Player window's kit tab: health, ammunition carried at the start, and weapons in hand" data-hotspots='[{"x":46,"y":21,"t":"every map / only first","d":"the kit is module-wide; switched to a map it only explains"},{"x":72,"y":33,"t":"health","d":"max and bonus max"},{"x":72,"y":48,"t":"Starting ammunition","d":"each pool&#39;s initial value"},{"x":47,"y":57,"t":"choose them","d":"off: the lowest-order weapon; on: tick the weapons to start with"}]'>
+    <figcaption>The kit: health ceilings, starting ammunition and the weapons in hand.</figcaption>
+  </figure>
+  <ul>
+    <li><b>❤ health</b>: <span class="ui">max</span> and <span class="ui">bonus max</span>, the same two ceilings as the arsenal.</li>
+    <li><b>🔢 ammunition carried at the start</b>: one number per pool. It is the pool's <span class="ui">initial?</span>.</li>
+    <li><b>🔫 weapons in hand</b>: with <span class="ui">choose them</span> off, the player starts with the weapon of the <b>lowest</b> <span class="ui">order</span>, <em>"the one that always works, and which cannot be empty"</em>. Turn it on and a switch appears for each weapon. Tick the ones they start with.</li>
+  </ul>
+  <p>When the player starts with several weapons, the one in their hands is the one with the <b>highest</b> order. DOOM starts you with fists (order 1) and a pistol (order 3), and you start holding the pistol.</p>
+  <p>The kit is module-wide. Switch the tab to <span class="ui">🗺 only <i>map</i></span> and it only explains why: <em>the weapons run once for the whole game, so a player arrives in a map holding what they held in the last one.</em></p>
+
+  <h2>Choosing a weapon</h2>
+  <ul>
+    <li><b>Number keys.</b> <kbd>1</kbd> to <kbd>9</kbd> pick the n-th weapon <em>you hold</em>, counted in <span class="ui">order</span>. They are not fixed slots: if you hold fists (order 1), a pistol (3) and a chaingun (6), <kbd>3</kbd> is the chaingun. The switch is predicted, so it happens on your screen at once.</li>
+    <li><b>A pickup.</b> Walking over a weapon you don't have yet gives it to you and puts it in your hands.</li>
+    <li><b>Running dry.</b> A phase that runs <a href="../reference/weapon-vocab.html#switch_if_empty"><code>switch_if_empty</code></a> swaps to the highest-order weapon that still has ammunition. A weapon only does this if you build it in, as the next lesson shows.</li>
+    <li><b>A graph.</b> The graph nodes <a href="../reference/graph-nodes.html#select_weapon"><code>select_weapon</code></a>, <a href="../reference/graph-nodes.html#give_weapon"><code>give_weapon</code></a> (with <code>select</code>) and <a href="../reference/graph-nodes.html#take_weapon"><code>take_weapon</code></a>. See <a href="04-ammo-and-pickups.html#graphs">Ammo and pickups</a>.</li>
+  </ul>
+  <div class="callout soon"><p><b>No weapon panel or wheel from the studio yet.</b> The weapons runtime has an opt-in panel listing what a player holds (<code>weapons.load{ panel = true }</code>), but the studio's arsenal doesn't write that switch. In a studio-made module, players switch with the number keys, pickups and graphs.</p></div>
+
+  <h2>Seeing it: first person and the HUD</h2>
+  <p>How the module is played is chosen in <b>🎮 Controls</b>, under <span class="ui">how it is played</span>: <code>platformer — third person</code> or <code>first person (fps)</code> (see <a href="../studio/07-workshops.html#controls">Controls</a>). In first person, the gun is drawn over the view, and it kicks on the tick your client predicts the shot, not a round trip later.</p>
+  <div class="callout soon"><p><b>The first-person gun picture can't be made in the studio yet.</b> The game draws it from the module's <code>sprites/weapons.json</code>, which lists each weapon's frames by weapon name (DOOM II's module has one). The studio doesn't write that file, so a studio-made weapon shows no gun in first person. Third person, the HUD and everything the weapon does work.</p></div>
+  <p>The weapons runtime tells the HUD about the weapon in hand, so any module has these values to show without a script. Bind them in <b>▣ Screens</b> on the HUD tab (<a href="../studio/08-look-and-feel.html">Sky, screens and weather</a>):</p>
+  <table>
+    <thead><tr><th>Value</th><th>Meaning</th></tr></thead>
+    <tbody>
+      <tr><td><code>hud.weapon</code></td><td>the weapon in hand, by name</td></tr>
+      <tr><td><code>hud.weapon_icon</code></td><td>its <span class="ui">icon?</span>. A new HUD image is bound to this.</td></tr>
+      <tr><td><code>hud.ammo_type</code></td><td>the pool it draws from, or empty</td></tr>
+      <tr><td><code>hud.ammo</code>, <code>hud.ammo_max</code></td><td>the amount in that pool, and the pool's <span class="ui">max</span></td></tr>
+      <tr><td><code>hud.ammo_<i>pool</i></code></td><td>every pool, by name, such as <code>hud.ammo_bullets</code></td></tr>
+      <tr><td><code>hud.hp_max</code></td><td>the health ceiling</td></tr>
+    </tbody>
+  </table>
+  <p>A text element with <code>Ammo {hud.ammo}</code> shows the count of whatever is in your hands.</p>
+
+  <h2>Play-testing well</h2>
+  <ul>
+    <li><b>Count ticks, not feelings.</b> A <span class="ui">ticks?</span> of 24 is 0.4 s. Write the rate you want as shots per second, then divide 60 by it.</li>
+    <li><b>Test the edges.</b> Fire with the pool empty. Switch away mid-shot. Hold the button through a whole phase and let go.</li>
+    <li><b>Read the Play log</b> if the weapon misbehaves in the game but the studio says <em>loads clean</em>. The server prints load errors and runtime complaints there, such as a transition loop.</li>
+    <li><b>Try it on a busy map.</b> Your own shots are predicted, so firing feels instant even on a slow link. Damage still comes from the server. <a href="03-hitscan-missiles-swings.html#prediction">What is predicted</a> explains the split.</li>
+  </ul>
+
+  <div class="quiz" data-answer="1">
+    <p class="q">You hold fists (order 1), a shotgun (order 4) and a rocket launcher (order 7). Which weapon does <kbd>2</kbd> select?</p>
+    <ul>
+      <li>Nothing: no weapon has order 2</li>
+      <li>The shotgun: the second weapon you hold, counted in order</li>
+      <li>The rocket launcher: the highest order</li>
+    </ul>
+    <p class="why">Number keys count the weapons you hold, sorted by order. They are not fixed slots, so a gap in the order numbers doesn't leave a key empty.</p>
+  </div>
+  <div class="quiz" data-answer="2">
+    <p class="q">With <span class="ui">choose them</span> off in the kit, what does a player start holding?</p>
+    <ul>
+      <li>Every weapon of the module</li>
+      <li>The weapon with the highest order</li>
+      <li>The weapon with the lowest order</li>
+    </ul>
+    <p class="why">The lowest-order weapon is the default because it is meant to be the one that always works, like fists. To start with more, turn <span class="ui">choose them</span> on and tick them.</p>
+  </div>
+  <div class="quiz" data-answer="0">
+    <p class="q">You make a separate starting kit for map 3 by switching the kit tab to <span class="ui">🗺 only map3</span>. What happens?</p>
+    <ul>
+      <li>You can't: the kit is module-wide, because the weapons run once for the whole game</li>
+      <li>Map 3 starts the player with its own weapons</li>
+      <li>The player loses their weapons when they reach map 3</li>
+    </ul>
+    <p class="why">A player arrives in a map holding what they held in the last one. To hand out something on arrival, use a graph with <code>give_weapon</code> (see Ammo and pickups).</p>
+  </div>
+</article>
+</body>
+</html>
