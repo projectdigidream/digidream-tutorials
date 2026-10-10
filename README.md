@@ -29,6 +29,14 @@ Opening `index.html` straight from disk (`file://`) works too. The one differenc
   node tutorials/tools/build-vocab.mjs
   ```
 
+Pages can wear any of the four skins uikit ships (claude, paper, 90s, ps1), in any of each skin's modes. Readers choose from the skin button in the top bar, and Auto follows the system's light or dark setting. The skin CSS in `assets/skins/` is generated from `uikit/skins` by uikit's own compiler. After a skin changes, regenerate it:
+
+```sh
+node tutorials/tools/build-skins.mjs
+```
+
+The logo (`assets/logo.png`) is a copy of `branding/digidream-logo.png`.
+
 Progress (ticked steps) is kept in the reader's own browser, in localStorage. Nothing is sent anywhere.
 
 To add or change a page, see `AUTHORING.md`.

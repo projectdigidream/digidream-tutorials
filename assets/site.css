@@ -6,7 +6,7 @@
   --hover: #222b3b; --input: #151a24; --code: #0f131b; --sunken: #07090d;
   --line-soft: #1f2734; --line: #2a3446; --line-strong: #3a4454;
   --text: #e8f0ff; --text-2: #9fb0c8; --text-dim: #6f7e96;
-  --accent: #5b8fd6; --accent-hover: #6d9ee2; --select: #ffe066;
+  --accent: #5b8fd6; --accent-hover: #6d9ee2; --accent-ink: #ffffff; --select: #ffe066;
   --ok: #7ad48a; --warn: #ffc857; --error: #ff6b6b; --info: #8fd0ff; --wave: #7fd1b9;
   --when: #ffc857; --if: #5b8fd6; --then: #7ad48a;
   --shadow: 0 12px 32px rgba(0,0,0,.45);
@@ -190,7 +190,7 @@ figcaption { font-size: 13px; color: var(--text-dim); margin-top: 6px; }
 .shot img { display: block; width: 100%; height: auto; }
 .hotspot {
   position: absolute; width: 26px; height: 26px; margin: -13px 0 0 -13px; border-radius: 50%;
-  background: var(--accent); color: #fff; border: 2px solid #fff; font: 700 12px var(--font); cursor: pointer;
+  background: var(--accent); color: var(--accent-ink); border: 2px solid #fff; font: 700 12px var(--font); cursor: pointer;
   box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 60%, transparent); animation: pulse 2.4s infinite;
 }
 .hotspot.on { background: var(--select); color: #000; animation: none; }
@@ -229,7 +229,7 @@ figcaption { font-size: 13px; color: var(--text-dim); margin-top: 6px; }
   color: var(--text); font: inherit; font-size: 13px; cursor: pointer;
 }
 .wbtn:hover { background: var(--hover); }
-.wbtn.on, .wbtn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+.wbtn.on, .wbtn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
 .wlabel { font-size: 13px; color: var(--text-2); display: inline-flex; align-items: center; gap: 6px; }
 .wlabel input[type=range] { width: 120px; accent-color: var(--accent); }
 .wlabel select { font: inherit; font-size: 13px; background: var(--input); color: var(--text); border: 1px solid var(--line); border-radius: var(--r-s); padding: 2px 4px; }
@@ -303,3 +303,73 @@ figcaption { font-size: 13px; color: var(--text-dim); margin-top: 6px; }
   ol.steps > li .tick { left: 36px; }
 }
 @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+
+/* ---------- logo ---------- */
+.brand .logo { width: 32px; height: 32px; image-rendering: auto; border-radius: var(--r-s); }
+.hero .logo-big { width: 128px; height: 128px; image-rendering: pixelated; display: block; margin: 0 0 12px; border-radius: var(--r-card); }
+
+/* ---------- skin picker ---------- */
+.skinwrap { position: relative; }
+.skinbtn { display: inline-flex; align-items: center; gap: 8px; padding: 0 10px; font-size: 13px; }
+.skinbtn .sw { width: 14px; height: 14px; border-radius: 50%; border: 1px solid var(--line-strong); }
+.skinpop {
+  position: absolute; right: 0; top: 42px; width: min(340px, 92vw); z-index: 40; display: none; padding: 10px;
+  background: var(--panel); border: 1px solid var(--line); border-radius: var(--r-d); box-shadow: var(--shadow);
+}
+.skinpop.open { display: block; }
+.skinhead { font-size: 12px; font-weight: 700; color: var(--text-2); text-transform: uppercase; letter-spacing: .06em; margin: 4px 4px 8px; }
+.skinhead small { display: block; text-transform: none; letter-spacing: 0; font-weight: 400; color: var(--text-dim); }
+.skincard {
+  display: grid; grid-template-columns: auto 1fr; gap: 2px 10px; align-items: center; width: 100%; text-align: left; cursor: pointer;
+  padding: 8px 10px; margin: 0 0 6px; border-radius: var(--r-c); border: 1px solid var(--line-soft); background: var(--raised); color: var(--text); font: inherit;
+}
+.skincard:hover { background: var(--hover); }
+.skincard.on { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+.skincard .swatches { grid-row: span 2; display: grid; grid-template-columns: repeat(5, 9px); height: 30px; border-radius: 4px; overflow: hidden; border: 1px solid var(--line); }
+.skincard .swatches i { display: block; }
+.skincard b { font-size: 14px; }
+.skincard .about { font-size: 12px; color: var(--text-2); line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.skinmodes { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 4px 4px; }
+@media (max-width: 900px) { .skinbtn .skinname { display: none; } }
+
+/* ---------- skin flavours ----------
+   assets/skins/skins.css gives every skin its colours, fonts and radii. These
+   rules add what makes each one itself, from its own tokens (--dnp-*). */
+/* paper: serif headings, soft shadows in place of borders */
+:root[data-skin="paper"] article h1, :root[data-skin="paper"] article h2, :root[data-skin="paper"] .hero h1 { font-family: var(--dnp-font-serif); font-weight: 600; letter-spacing: 0; }
+:root[data-skin="paper"] :is(.goal, ol.steps > li, .quiz, .widget, .track, .callout, .pager a, .path, .vb-card, .diagram) { box-shadow: var(--dnp-shadow-card); border-color: var(--line-soft); }
+
+/* 90s: grey bevels, square corners, a navy title bar, the selection in title colours */
+:root[data-skin="90s"] body { font-size: 14px; }
+:root[data-skin="90s"] .topbar { background: linear-gradient(90deg, var(--dnp-color-title-a), var(--dnp-color-title-b)); border-bottom: 0; backdrop-filter: none; }
+:root[data-skin="90s"] .topbar .brand, :root[data-skin="90s"] .topbar .brand small { color: var(--dnp-color-title-ink); }
+:root[data-skin="90s"] :is(.goal, ol.steps > li, .quiz, .widget, .track, .callout, .pager a, .path, .vb-card, .diagram, .skinpop, .search .results, .hotnote) { border: 0; border-radius: 0; box-shadow: var(--dnp-bevel-out); }
+:root[data-skin="90s"] .callout { box-shadow: var(--dnp-bevel-out), inset 4px 0 0 var(--info); }
+:root[data-skin="90s"] .callout.tip { box-shadow: var(--dnp-bevel-out), inset 4px 0 0 var(--ok); }
+:root[data-skin="90s"] .callout.warn { box-shadow: var(--dnp-bevel-out), inset 4px 0 0 var(--warn); }
+:root[data-skin="90s"] :is(.wbtn, .iconbtn, .quiz li button, pre .copy, .skincard) { border: 0; border-radius: 0; box-shadow: var(--dnp-bevel-out); }
+:root[data-skin="90s"] :is(.wbtn, .iconbtn, .quiz li button, pre .copy):active { box-shadow: var(--dnp-bevel-in); }
+:root[data-skin="90s"] .wbtn.on, :root[data-skin="90s"] .skincard.on { box-shadow: var(--dnp-bevel-in); background: var(--dnp-pattern-dither); color: var(--text); }
+:root[data-skin="90s"] :is(.search input, .filters input, .vb-bar input, .wlabel select, .wlabel input) { border: 0; border-radius: 0; box-shadow: var(--dnp-bevel-field); background: var(--input); }
+:root[data-skin="90s"] :is(pre, .shot, .widget canvas) { border: 0; border-radius: 0; box-shadow: var(--dnp-bevel-field); }
+:root[data-skin="90s"] :is(kbd, .ui) { border: 0; border-radius: 0; box-shadow: var(--dnp-bevel-thinOut); }
+:root[data-skin="90s"] h2 { border-top: 0; box-shadow: 0 -1px 0 var(--dnp-color-bevel-shadow), 0 -2px 0 var(--dnp-color-bevel-hi) inset; }
+:root[data-skin="90s"] .sidebar { border-right: 0; background: var(--panel); box-shadow: var(--dnp-bevel-out); }
+:root[data-skin="90s"] .sidebar li a.here { background: var(--dnp-color-title-a); color: var(--dnp-color-title-ink); box-shadow: none; border-radius: 0; }
+:root[data-skin="90s"] .sidebar li a { border-radius: 0; }
+:root[data-skin="90s"] .progress { border-radius: 0; box-shadow: var(--dnp-bevel-field); background: var(--input); }
+:root[data-skin="90s"] .progress > i { background: var(--dnp-pattern-blocks); }
+
+/* ps1: blue gradient windows with a bright rim, hard text shadows, gradient buttons, scanlines */
+:root[data-skin="ps1"] body { background: var(--dnp-pattern-app) fixed; }
+:root[data-skin="ps1"] .sidebar, :root[data-skin="ps1"] .topbar { background: var(--dnp-pattern-window); box-shadow: var(--dnp-rim-window); border: 0; backdrop-filter: none; }
+:root[data-skin="ps1"] :is(.goal, ol.steps > li, .quiz, .widget, .track, .callout, .pager a, .path, .vb-card, .diagram, .skinpop, .search .results, .hotnote) { background: var(--dnp-pattern-window); border: 0; box-shadow: var(--dnp-rim-window); }
+:root[data-skin="ps1"] :is(article h1, article h2, article h3, .brand, .lede, .sidebar summary, .wtitle, .track h3, .skinhead) { text-shadow: 2px 2px 0 var(--dnp-color-textShadow); }
+:root[data-skin="ps1"] :is(article p, article li, td) { text-shadow: 1px 1px 0 var(--dnp-color-textShadow); }
+:root[data-skin="ps1"] :is(.wbtn, .iconbtn, .quiz li button, pre .copy) { background: var(--dnp-pattern-button); color: var(--dnp-color-btnInk); border: 0; box-shadow: var(--dnp-rim-button); text-shadow: 1px 1px 0 var(--dnp-color-textShadow); }
+:root[data-skin="ps1"] :is(.wbtn, .iconbtn, .quiz li button):hover { background: var(--dnp-pattern-buttonHover); box-shadow: var(--dnp-rim-glow); }
+:root[data-skin="ps1"] :is(.wbtn, .iconbtn, .quiz li button):active { background: var(--dnp-pattern-buttonDown); box-shadow: var(--dnp-rim-pressed); }
+:root[data-skin="ps1"] .wbtn.on, :root[data-skin="ps1"] .wbtn.primary { background: var(--dnp-pattern-gold); color: var(--dnp-color-gold-ink); text-shadow: none; }
+:root[data-skin="ps1"] .sidebar li a.here { background: var(--dnp-pattern-select); box-shadow: inset 3px 0 0 var(--dnp-color-gold-top); }
+:root[data-skin="ps1"] .progress > i { background: var(--dnp-pattern-blocks); }
+:root[data-skin="ps1"] h2 { border-top-color: var(--dnp-color-win-rimShadow); }

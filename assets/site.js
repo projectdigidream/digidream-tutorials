@@ -20,13 +20,6 @@
   };
   window.DNPStore = store;
 
-  // ---------- theme ----------
-  function applyTheme(t) {
-    if (t === 'dark' || t === 'light') document.documentElement.dataset.theme = t;
-    else delete document.documentElement.dataset.theme;
-  }
-  applyTheme(store.get('theme', 'auto'));
-
   // ---------- shared audio: created only from a user gesture ----------
   let actx = null;
   window.DNPAudio = {
@@ -60,20 +53,13 @@
   function buildShell() {
     const article = document.querySelector('article');
     if (!article) return;
-    const themeBtn = h('button', { class: 'iconbtn', title: 'Theme: auto / dark / light', 'aria-label': 'Theme' });
-    const setThemeLabel = () => { const t = store.get('theme', 'auto'); themeBtn.textContent = t === 'dark' ? '☾' : t === 'light' ? '☀' : '◐'; };
-    setThemeLabel();
-    themeBtn.onclick = () => {
-      const order = ['auto', 'dark', 'light'];
-      const t = order[(order.indexOf(store.get('theme', 'auto')) + 1) % 3];
-      store.set('theme', t); applyTheme(t); setThemeLabel();
-    };
+    const skinBtn = buildSkinPicker();
     const menuBtn = h('button', { class: 'iconbtn menubtn', 'aria-label': 'Menu', onclick: () => document.body.classList.toggle('nav-open') }, '☰');
     const search = buildSearch();
     const top = h('header', { class: 'topbar' },
       menuBtn,
-      h('a', { class: 'brand', href: ROOT + 'index.html' }, h('span', { class: 'mark' }, '◆'), 'Digidream Studio', h('small', {}, 'tutorials')),
-      h('div', { class: 'spacer' }), search, themeBtn);
+      h('a', { class: 'brand', href: ROOT + 'index.html' }, h('img', { class: 'logo', src: ASSETS + 'logo.png', alt: '', width: 32, height: 32 }), 'Digidream Studio', h('small', {}, 'tutorials')),
+      h('div', { class: 'spacer' }), search, skinBtn);
 
     const side = h('nav', { class: 'sidebar', 'aria-label': 'Tutorials' });
     NAV.forEach(t => {
@@ -90,7 +76,7 @@
       side.append(det);
     });
     side.append(h('div', { class: 'themes' }, 'Progress is kept in this browser only. ',
-      h('a', { href: '#', onclick: e => { e.preventDefault(); if (confirm('Forget all ticked steps and finished pages?')) { try { Object.keys(localStorage).filter(k => k.startsWith('dnp-tut:') && k !== 'dnp-tut:theme').forEach(k => localStorage.removeItem(k)); } catch {} location.reload(); } } }, 'Reset progress')));
+      h('a', { href: '#', onclick: e => { e.preventDefault(); if (confirm('Forget all ticked steps and finished pages?')) { try { Object.keys(localStorage).filter(k => k.startsWith('dnp-tut:') && !/^dnp-tut:(theme|skin|mode)$/.test(k)).forEach(k => localStorage.removeItem(k)); } catch {} location.reload(); } } }, 'Reset progress')));
 
     const main = h('main');
     if (me) {
@@ -306,6 +292,47 @@
       el.append(h('div', { class: 'filters' }, input), chips, table);
       draw();
     });
+  }
+
+  // ---------- skin picker ----------
+  // The four shipped uikit skins (assets/skins/, built by tools/build-skins.mjs)
+  // and their modes; assets/skin.js applies the choice before the page paints.
+  function buildSkinPicker() {
+    const S = window.DNPSkin;
+    const btn = h('button', { class: 'iconbtn skinbtn', type: 'button', title: 'Skin', 'aria-label': 'Choose a skin', 'aria-haspopup': 'true' });
+    if (!S || !S.list.length) { btn.hidden = true; return btn; }
+    const pop = h('div', { class: 'skinpop', role: 'dialog', 'aria-label': 'Skin' });
+    const wrap = h('div', { class: 'skinwrap' }, btn, pop);
+    const label = s => s.charAt(0).toUpperCase() + s.slice(1);
+    function draw() {
+      const c = S.choice(), r = S.resolved();
+      btn.innerHTML = '';
+      btn.append(h('span', { class: 'sw', style: `background:${r.mode.swatches[2]}` }), h('span', { class: 'skinname' }, r.skin.name));
+      pop.innerHTML = '';
+      pop.append(h('div', { class: 'skinhead' }, 'Skin', h('small', {}, 'the looks the Digidream tools ship with')));
+      for (const s of S.list) {
+        const on = s.id === r.skin.id;
+        const m = (on ? r.mode : null) || s.modes.find(x => x.dark === r.mode.dark) || s.modes[0];
+        const card = h('button', { type: 'button', class: 'skincard' + (on ? ' on' : ''), 'aria-pressed': on ? 'true' : 'false',
+          onclick: () => { S.set(s.id, s.modes.some(x => x.id === c.mode) ? c.mode : 'auto'); draw(); } },
+          h('span', { class: 'swatches' }, ...m.swatches.map(col => h('i', { style: `background:${col}` }))),
+          h('b', {}, s.name), h('span', { class: 'about' }, s.about.split(/(?<=\.)\s/)[0]));
+        pop.append(card);
+      }
+      const seg = h('div', { class: 'skinmodes', role: 'group', 'aria-label': 'Mode' });
+      for (const id of ['auto', ...r.skin.modes.map(m => m.id)]) {
+        seg.append(h('button', { type: 'button', class: 'wbtn' + (c.mode === id || (id === 'auto' && !r.skin.modes.some(m => m.id === c.mode)) ? ' on' : ''),
+          title: id === 'auto' ? 'Follow the system: a dark mode when it is dark' : '', onclick: () => { S.set(r.skin.id, id); draw(); } }, id === 'auto' ? 'Auto' : label(id)));
+      }
+      pop.append(h('div', { class: 'skinhead' }, 'Mode'), seg);
+    }
+    btn.onclick = e => { e.stopPropagation(); pop.classList.toggle('open'); if (pop.classList.contains('open')) draw(); };
+    pop.addEventListener('click', e => e.stopPropagation());
+    document.addEventListener('click', () => pop.classList.remove('open'));
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') pop.classList.remove('open'); });
+    document.addEventListener('dnp-skin', () => { if (!pop.classList.contains('open')) draw(); });
+    draw();
+    return wrap;
   }
 
   // ---------- search ----------
