@@ -24,8 +24,8 @@
     <b>Needs</b><span>a sprite with something drawn in it (see <a href="02-drawing.html">Drawing</a>)</span>
   </div>
 
-  <figure class="shot" data-src="../assets/shots/sprite-rig.png" data-alt="ThreeSprite's Rig tab with a skeleton drawn over the sprite">
-    <figcaption>The Rig tab: bones over the canvas; the Bones, Inspector and Parts panels on the right.</figcaption>
+  <figure class="shot" data-src="../assets/shots/sprite-rig.png" data-alt="ThreeSprite's Rig tab with HERO's eleven bones drawn over it" data-hotspots='[{"x":54,"y":6,"t":"Rig","d":"the tab"},{"x":41,"y":63,"t":"The bones","d":"drag a root to move, a tip to turn; Shift-drag a tip for length"},{"x":86,"y":11,"t":"Bones panel header","d":"draw a bone, add a child, delete"},{"x":82,"y":24,"t":"The bone tree","d":"children indented; the number is how many parts hang on each"},{"x":88,"y":60,"t":"Inspector: bone","d":"name, parent, position, rotation, length"},{"x":88,"y":90,"t":"Inspector: part","d":"the selected part, and the bone it hangs from"}]'>
+    <figcaption>Gem Hollow's HERO in the Rig tab, from the front: the root bone <code>hips</code> is selected.</figcaption>
   </figure>
 
   <h2>Bones and parts</h2>
@@ -107,6 +107,41 @@
     <li><span class="ui">Grid cell</span> (px, 1–64): the grid's size. Smaller is smoother.</li>
   </ul>
 
+  <h2 id="gem-hollow">In Gem Hollow: how HERO is rigged</h2>
+  <p>HERO has eleven bones. <code>hips</code> is the root, 19 px above the feet, and everything else hangs from it:</p>
+<pre><code>hips          root, Pos up 19, length 4
+├─ torso      length 15
+│  ├─ head    Pos up 15, length 20
+│  ├─ armR    Pos right 9.5, Pos up 13, length 8
+│  │  └─ foreR   Pos up −8, length 7
+│  └─ armL    Pos right −9.5, Pos up 13, length 8
+│     └─ foreL   Pos up −8, length 7
+├─ thighR     Pos right 4, length 9
+│  └─ shinR   Pos up −9, length 9
+└─ thighL     Pos right −4, length 9
+   └─ shinL   Pos up −9, length 9</code></pre>
+  <ul>
+    <li>The limbs come in mirrored pairs: <code>armR</code> at +9.5 right, <code>armL</code> at −9.5. A forearm starts 8 px <em>below</em> its upper arm's root: that is the elbow.</li>
+    <li>There is <b>one part per bone</b> except <code>hips</code>: ten parts, each named after its bone, each a solids part of about three shapes. The head is two spheres (face and hair) and small cubes for the eyes.</li>
+    <li>The parts are stacked with the right leg at the back and the left arm in front, the same in every view (the Parts header reads <span class="ui">All views</span>).</li>
+  </ul>
+  <p>The other characters are simpler rigs:</p>
+  <table>
+    <thead><tr><th>Sprite</th><th>Bones</th><th>Parts</th></tr></thead>
+    <tbody>
+      <tr><td><code>SLIME</code></td><td><code>body</code> only</td><td><code>body</code>: 9 shapes. All of its motion is the one bone moving and scaling.</td></tr>
+      <tr><td><code>BEE</code></td><td><code>body</code>, <code>wingR</code>, <code>wingL</code></td><td>one per bone; the wings are two spheres each, flattened by a scale key</td></tr>
+      <tr><td><code>SNAIL</code></td><td><code>base</code>, <code>foot</code>, <code>shell</code>, <code>head</code></td><td><code>foot</code>, <code>shell</code>, <code>head</code>. <code>base</code> carries nothing: it is a handle to move the rest.</td></tr>
+      <tr><td><code>LEVER</code></td><td><code>base</code>, <code>handle</code> (10 px up, 20 long)</td><td><code>base</code>: 5 cubes; <code>handle</code>: two cylinders and a ball</td></tr>
+    </tbody>
+  </table>
+  <ol class="steps">
+    <li><p>Open Gem Hollow's <code>HERO</code> in ThreeSprite and open <span class="ui">Rig</span>.</p></li>
+    <li><p>Click <code>armR</code> in the Bones panel. The Inspector shows <span class="ui">Parent</span> <code>torso</code>, <span class="ui">Pos right</span> 9.5, <span class="ui">Pos up</span> 13 and <span class="ui">Length</span> 8.</p></li>
+    <li><p>Press <kbd>.</kbd> twice for view 3, the left side. The arms and legs now overlap, since the bones are the same 3D skeleton seen side on.</p></li>
+    <li><p>Drag the tip of <code>armR</code> forward, then press <kbd>,</kbd> twice: in the front view the arm now points at you. Press <span class="ui">✕</span> to throw the change away.</p></li>
+  </ol>
+
   <h2>Exercise: an arm that bends</h2>
   <ol class="steps">
     <li><p>Open the <span class="ui">Rig</span> tab and select <code>body</code> in the Bones panel. Press <b>+</b> twice to add a chain of two child bones. Name them <code>upper</code> and <code>lower</code> in the Inspector.</p></li>
@@ -145,6 +180,15 @@
       <li>Use a variant with an empty picture</li>
     </ul>
     <p class="why">Per-view layer order lets a view stack its parts its own way, with the same parts and pictures.</p>
+  </div>
+  <div class="quiz" data-answer="2">
+    <p class="q">HERO's <code>foreR</code> has Pos up −8. Measured from what?</p>
+    <ul>
+      <li>From the feet</li>
+      <li>From the hips</li>
+      <li>From the root of its parent, <code>armR</code>, in armR's frame</li>
+    </ul>
+    <p class="why">A child bone's position is in its parent's frame. So −8 puts the elbow 8 px below the shoulder, the length of the upper arm.</p>
   </div>
   <div class="quiz" data-answer="1">
     <p class="q">You delete a bone that carries two parts. What happens to them?</p>

@@ -24,8 +24,8 @@
     <b>Needs</b><span>a rigged sprite (see <a href="03-rig.html">Rig, bones and parts</a>)</span>
   </div>
 
-  <figure class="shot" data-src="../assets/shots/sprite-animate.png" data-alt="ThreeSprite's Animate tab with the timeline at the bottom">
-    <figcaption>The Animate tab: the canvas, the keys at the current frame on the right, the timeline along the bottom.</figcaption>
+  <figure class="shot" data-src="../assets/shots/sprite-animate.png" data-alt="ThreeSprite's Animate tab: HERO's walk at frame 5, seen from the left side, with the timeline at the bottom" data-hotspots='[{"x":3,"y":73,"t":"Animation","d":"choose, add, rename, delete"},{"x":15.5,"y":73,"t":"Play and frame","d":"Space plays; [ and ] step"},{"x":26,"y":73,"t":"fps, frames, loop","d":"the chosen animation&#39;s settings"},{"x":10,"y":90,"t":"The timeline","d":"a row per bone, then per part; ◆ is a key"},{"x":88,"y":12,"t":"Keys at frame","d":"type values for the selected bone"},{"x":82,"y":41.5,"t":"Ease, Key all, Delete keys","d":"how this frame&#39;s keys blend to the next"}]'>
+    <figcaption>Gem Hollow's HERO, <code>walk</code> at frame 5 of 8, 10 fps, seen from view 3. Every frame of every bone has a key.</figcaption>
   </figure>
 
   <h2>Animations</h2>
@@ -128,6 +128,40 @@
     <li><p>Turn on the onion skin, pause, and step through with <kbd>[</kbd> and <kbd>]</kbd>.</p></li>
   </ol>
 
+  <h2 id="gem-hollow">In Gem Hollow</h2>
+  <h3>HERO's eight animations</h3>
+  <table>
+    <thead><tr><th>Animation</th><th>Frames</th><th>fps</th><th>Loop</th><th>What moves</th></tr></thead>
+    <tbody>
+      <tr><td><code>idle</code></td><td>8</td><td>8</td><td>✓</td><td>breathing: the torso dips under a pixel and the arms swing out a few degrees</td></tr>
+      <tr><td><code>walk</code></td><td>8</td><td>10</td><td>✓</td><td>legs and arms swing, the hips bob (see <a href="05-bone-animation.html#gem-hollow">the walk in detail</a>)</td></tr>
+      <tr><td><code>run</code></td><td>8</td><td>12</td><td>✓</td><td>the walk, bigger: thighs to 54°, torso leaning 14°, forearms bent near 80°</td></tr>
+      <tr><td><code>jump</code></td><td>3</td><td>10</td><td>—</td><td>arms flung up, one knee drawn up</td></tr>
+      <tr><td><code>fall</code></td><td>4</td><td>8</td><td>✓</td><td>arms out, legs paddling, for as long as the fall lasts</td></tr>
+      <tr><td><code>attack</code></td><td>4</td><td>10</td><td>—</td><td>a punch: the torso twists (yaw −28 to 30) as the right arm swings forward</td></tr>
+      <tr><td><code>hurt</code></td><td>3</td><td>10</td><td>—</td><td>knocked back, then half recovered</td></tr>
+      <tr><td><code>death</code></td><td>10</td><td>10</td><td>—</td><td>falls flat and stays down</td></tr>
+    </tbody>
+  </table>
+  <p>Every bone has a key on every frame, all <code>linear</code>. That is how a script generated them. When you animate by hand you set far fewer keys and let the in-betweens do the work. The result plays the same.</p>
+  <h3>How the slime squashes</h3>
+  <p>SLIME has one bone, so all its life is in the <span class="ui">Scale</span> and <span class="ui">Move</span> keys of <code>body</code>:</p>
+  <ul>
+    <li><b>idle</b> (8 frames, 8 fps) breathes between <span class="ui">Scale right</span> 1.15 / <span class="ui">Scale up</span> 0.77 on frame 1 and 1.06 / 0.89 on frame 5. Wide and low, then a little taller.</li>
+    <li><b>walk</b> (8 frames, 10 fps) is a hop: squashed flat on frame 1 (1.3 wide, 0.65 tall), stretched tall on frame 3 (0.99 / 0.98) as it leaves the ground, highest on frame 5 (<span class="ui">Move up</span> 7.5), and squashed hardest on frame 8 (1.35 / 0.61) as it lands.</li>
+    <li><b>death</b> (8 frames) flattens it into a puddle, down to 0.13 tall and 1.54 wide, and holds there.</li>
+  </ul>
+  <p>The rule of squash and stretch: when it gets wider, make it shorter, so it seems to keep its volume.</p>
+  <h3>How the coin spins</h3>
+  <p>COIN has no bones that move. Its one animation, <code>spin</code>, is 6 frames at 6 fps, looping, with one <span class="ui">Variant</span> key on each frame of the <code>picture</code> part: <code>face</code>, <code>w75</code>, <code>w40</code>, <code>edge</code>, <code>b40</code>, <code>b75</code>. Variant keys are always step, so each frame shows exactly one drawing.</p>
+  <p>The other pickups mix the two ways. GEM and KEY have one picture and bob: a <span class="ui">Move up</span> key on <code>root</code> rises to 9 px on frame 5 of 8 and comes back. STAR also swaps between variants <code>s100</code>, <code>s105</code> and <code>s110</code>, slightly bigger drawings, so it pulses as it bobs. TORCH flickers between two variants at 6 fps. The LEVER has <code>off</code> and <code>on</code>, one frame each, and <code>pull</code>, six frames turning the handle from one side to the other.</p>
+  <ol class="steps">
+    <li><p>Open Gem Hollow's <code>SLIME</code> in ThreeSprite and open <span class="ui">Animate</span>. Choose <code>walk</code> in the drop-down.</p></li>
+    <li><p>Click <code>body</code> in the timeline and step through with <kbd>]</kbd>. Watch <span class="ui">Scale right</span>, <span class="ui">Scale up</span> and <span class="ui">Move up</span> change in <b>Keys at frame</b>.</p></li>
+    <li><p>Go to frame 8 and type <code>0.4</code> in <span class="ui">Scale up</span>. Play with <kbd>Space</kbd>: the landing splats harder.</p></li>
+    <li><p>Press <span class="ui">✕</span> to throw the change away.</p></li>
+  </ol>
+
   <h2>What the studio does with animations</h2>
   <p>Each animation becomes one animation in the baked sheet, with its frame count, fps and loop. A monster's body card picks one animation for each of its five states. When a sheet is chosen, the studio guesses from the names:</p>
   <table>
@@ -141,7 +175,7 @@
     </tbody>
   </table>
   <p>If nothing matches, the first animation is used. You can change any of them on the card afterwards.</p>
-  <div class="callout tip"><p>Name your animations <code>idle</code>, <code>walk</code>, <code>attack</code>, <code>pain</code> and <code>death</code>, and a new monster is wired up the moment you give it the sheet.</p></div>
+  <div class="callout tip"><p>Name your animations <code>idle</code>, <code>walk</code>, <code>attack</code>, <code>pain</code> and <code>death</code>, and a new monster is wired up the moment you give it the sheet. Gem Hollow's SLIME, BEE and SNAIL use <code>idle</code>, <code>walk</code>, <code>attack</code>, <code>hurt</code> and <code>death</code>: <code>hurt</code> matches the pain state.</p></div>
 
   <div class="quiz" data-answer="2">
     <p class="q">A bone has a key on frame 1 set to step, and another on frame 5. What does it do on frames 2 to 4?</p>
@@ -160,6 +194,15 @@
       <li>A second animation with the flash in it</li>
     </ul>
     <p class="why">Visibility keys show and hide a part, and are always step. Keying it off at frame 1 matters, because before the first key a part shows its first key's value.</p>
+  </div>
+  <div class="quiz" data-answer="0">
+    <p class="q">Gem Hollow's COIN turns with no bones moving. What is keyed?</p>
+    <ul>
+      <li>The picture part's Variant: a different drawing on each of 6 frames</li>
+      <li>The root bone's Rot yaw, a full turn</li>
+      <li>Scale right, from 1 down to 0 and back</li>
+    </ul>
+    <p class="why">A one-view sprite can't be turned by its bones: there is no other view to show. So each angle of the coin is drawn as a variant, and spin keys one variant per frame.</p>
   </div>
   <div class="quiz" data-answer="1">
     <p class="q">You copy keys on frames 1 and 3, then paste with the playhead on frame 5. Where do they land?</p>

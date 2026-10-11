@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Map logic recipes · Digidream Studio tutorials</title>
-<meta name="description" content="Five complete map graphs, node by node: a key-locked door, a secret that counts, an ambush, an arena that opens when the last wave dies, and a timed two-switch puzzle.">
+<meta name="description" content="Six map graphs, node by node: Gem Hollow&#39;s levers, vault and checkpoints, then an ambush, an arena that opens when the last wave dies, and a timed two-switch puzzle.">
 <link rel="stylesheet" href="../assets/site.css">
 <link rel="stylesheet" href="../assets/skins/skins.css">
 <link rel="icon" type="image/png" href="../assets/logo.png">
@@ -17,11 +17,11 @@
 <body>
 <article>
   <h1>Map logic recipes</h1>
-  <p class="lede">Five graphs that most action maps need, wired node by node with nothing but real nodes. Build them as written, then bend them to your map.</p>
+  <p class="lede">Six graphs that most maps need, wired node by node. The first three are Gem Hollow&#39;s own: open them in the studio and read along. The last three are recipes to build on your own map.</p>
   <div class="goal">
-    <b>You'll learn</b><span>how to build a key-locked door, a secret that counts, an ambush, a wave arena that opens its exit, and a timed switch puzzle, and the traps each one hides</span>
+    <b>You'll learn</b><span>how Gem Hollow's levers open its gates on camera, how its keys open the vault, how its checkpoints bring you back, and how to build an ambush, a wave arena and a timed switch puzzle, with the traps each one hides</span>
     <b>Time</b><span>45 minutes</span>
-    <b>Needs</b><span>a map with a few rooms and a door (<a href="../studio/02-first-map.html">Your first map</a>), a monster (<a href="../enemies/01-first-monster.html">Your first monster</a>), and <a href="02-variables-and-numbers.html">Variables, numbers and saving</a></span>
+    <b>Needs</b><span>Gem Hollow open; for the last three, a map with a few rooms and a door (<a href="../studio/02-first-map.html">Your first map</a>), a monster (<a href="../enemies/01-first-monster.html">Your first monster</a>), and <a href="02-variables-and-numbers.html">Variables, numbers and saving</a></span>
   </div>
 
   <h2>How to read a recipe</h2>
@@ -33,71 +33,68 @@
   <p>The lab is loaded with an ambush: entering sector 3 shuts the door behind you, sounds an alarm, and opens the door three seconds later. Press <b>🚶 player enters sector 3</b> twice. The second time, <code>once</code> stops the run at once.</p>
   <div class="widget" data-widget="graph-lab" data-title="Graph lab: an ambush" data-preset="ambush"></div>
 
-  <h2 id="keydoor">Recipe 1: a key-locked door</h2>
-  <p>There are no key items in the graph vocabulary, so the graph keeps the key itself: a variable. Touching the key prop sets it and removes the prop. Using the door checks it.</p>
-  <p><b>Before you start:</b> in <b>Props</b>, press <span class="ui">+ new prop</span> and name it <code>red_key</code>. Turn <span class="ui">solid</span> off, so the player can walk into it. Place one in the map. Make the door a narrow room whose ceiling sits on its floor, as the <span class="ui">🚪 door</span> preset would, but don't use the preset.</p>
-  <p><b>Variables:</b> <code>has_red_key</code>, starts at <code>false</code>.</p>
+  <h2 id="levers">Recipe 1: a lever opens a gate, on camera (Gem Hollow)</h2>
+  <p>Gem Hollow has three gates, each opened by a lever in the zone before it. Its <code>levers</code> graph (on <span class="ui">world</span>) has three copies of one chain, one per lever, each in a note of its colour. Here is the red one.</p>
+  <figure class="shot" data-src="../assets/shots/graph-gem-levers.png" data-alt="Gem Hollow's levers graph: three notes, red, blue and gold, each with a row of nine nodes and a row of four" data-hotspots='[{"x":5.4,"y":16.5,"t":"The lever is used","d":"when_prop_used, prop lever_red: the player pressed use (E) on the lever."},{"x":13.7,"y":16.5,"t":"once","d":"The lever works one time. A second press does nothing."},{"x":24.7,"y":21.4,"t":"Flip its picture","d":"do set_animation, state 1, who target: the lever, not the player who pulled it."},{"x":40.8,"y":18.2,"t":"Take the controls","d":"start_cinematic: thin bars (0.1 of the screen) in 0.4 seconds."},{"x":49.6,"y":18.2,"t":"Fly to the gate","d":"camera_flythrough on path 2, 2.5 units a second. The studio says how long the shot lasts."},{"x":53.5,"y":28.1,"t":"done","d":"When the flight ends, done leads down to the second row."},{"x":58.2,"y":16.5,"t":"Open the gate","d":"open_door, tag 11. It runs from the flythrough&#39;s then: at once, so the gate is opening while the camera flies to it."},{"x":75.1,"y":16.5,"t":"Shake","d":"camera_shake 0.25 for 1.2 seconds, after the door sound."},{"x":7,"y":30.8,"t":"Say what happened","d":"subtitle, 4 seconds, then its done goes on."},{"x":24.2,"y":28.9,"t":"Hand back","d":"camera_follow, then end_cinematic: the camera on the player, the controls back."},{"x":32.5,"y":30.8,"t":"A hint for the next zone","d":"A last subtitle, after the controls are back."},{"x":90,"y":38.3,"t":"By tag","d":"The picked open_door names its gate by tag 11, not by a sector picked on the map."},{"x":28,"y":41.8,"t":"The same again","d":"The blue lever: tag 12, path 3. The gold one below: tag 13, path 4."}]'>
+    <figcaption>Gem Hollow's <code>levers</code> graph at 62%, with <code>opendoor7</code> picked.</figcaption>
+  </figure>
   <table>
-    <thead><tr><th>id</th><th>Node</th><th>Fields</th></tr></thead>
+    <thead><tr><th>Node</th><th>Fields</th><th>What it is for</th></tr></thead>
     <tbody>
-      <tr><td>take</td><td><a href="../reference/graph-nodes.html#when_prop_touched"><code>when_prop_touched</code></a></td><td>prop: <code>red_key</code> · who: players</td></tr>
-      <tr><td>got</td><td><a href="../reference/graph-nodes.html#set_var"><code>set_var</code></a></td><td>var: <code>has_red_key</code> · value: <code>true</code></td></tr>
-      <tr><td>gone</td><td><a href="../reference/graph-nodes.html#remove"><code>remove</code></a></td><td>(entity linked)</td></tr>
-      <tr><td>ding</td><td><a href="../reference/graph-nodes.html#play_sound"><code>play_sound</code></a></td><td>sound: a pickup sound</td></tr>
-      <tr><td>tell</td><td><a href="../reference/graph-nodes.html#subtitle"><code>subtitle</code></a></td><td>text: <code>You have the red key.</code></td></tr>
-      <tr><td>press</td><td><a href="../reference/graph-nodes.html#when_wall_used"><code>when_wall_used</code></a></td><td>side: <em>picked</em>, the door's face on the near side</td></tr>
-      <tr><td>press2</td><td><a href="../reference/graph-nodes.html#when_wall_used"><code>when_wall_used</code></a></td><td>side: <em>picked</em>, the door's face on the far side</td></tr>
-      <tr><td>key</td><td><a href="../reference/graph-nodes.html#get_var"><code>get_var</code></a></td><td>var: <code>has_red_key</code></td></tr>
-      <tr><td>if</td><td><a href="../reference/graph-nodes.html#branch"><code>branch</code></a></td><td></td></tr>
-      <tr><td>open</td><td><a href="../reference/graph-nodes.html#open_door"><code>open_door</code></a></td><td>sector: <em>picked</em>, the door · close_after: <code>4</code></td></tr>
-      <tr><td>no</td><td><a href="../reference/graph-nodes.html#subtitle"><code>subtitle</code></a></td><td>text: <code>You need the red key.</code> · seconds: <code>2</code></td></tr>
+      <tr><td><a href="../reference/graph-nodes.html#when_prop_used"><code>when_prop_used</code></a></td><td>prop: <code>lever_red</code></td><td>The player presses use on the lever. The prop is marked <span class="ui">usable</span> in <b>Props</b>.</td></tr>
+      <tr><td><a href="../reference/graph-nodes.html#once"><code>once</code></a></td><td></td><td>One pull only. Which <code>once</code> nodes have passed is part of a level's saved state.</td></tr>
+      <tr><td><span class="ui">do set animation</span></td><td>state: <code>1</code> · who: <code>target</code></td><td>The lever's picture flips to its <code>pull</code> animation. <code>who: target</code> is the thing used; the default, <code>entity</code>, would be the player.</td></tr>
+      <tr><td><a href="../reference/graph-nodes.html#play_sound"><code>play_sound</code></a></td><td>sound: <code>world.lever</code></td><td>The clunk.</td></tr>
+      <tr><td><a href="../reference/graph-nodes.html#start_cinematic"><code>start_cinematic</code></a></td><td>letterbox: <code>0.1</code> · seconds: <code>0.4</code></td><td>Controls off, bars in.</td></tr>
+      <tr><td><a href="../reference/graph-nodes.html#camera_flythrough"><code>camera_flythrough</code></a></td><td>path: <code>2</code> · speed: <code>2.5</code> · blend: <code>0.8</code></td><td>Flies a short camera path that looks at the gate.</td></tr>
+      <tr><td><a href="../reference/graph-nodes.html#open_door"><code>open_door</code></a></td><td>tag: <code>11</code> · speed: normal</td><td>Every sector tagged 11, the red gate, opens like a DOOM door.</td></tr>
+      <tr><td><a href="../reference/graph-nodes.html#play_sound"><code>play_sound</code></a>, <a href="../reference/graph-nodes.html#camera_shake"><code>camera_shake</code></a></td><td><code>world.door.open</code>; strength <code>0.25</code>, <code>1.2</code> s</td><td>The grinding gate.</td></tr>
+      <tr><td><a href="../reference/graph-nodes.html#subtitle"><code>subtitle</code></a></td><td><code>The red gate grinds open to the east.</code> · 4 s</td><td>Said when the flight ends.</td></tr>
+      <tr><td><a href="../reference/graph-nodes.html#camera_follow"><code>camera_follow</code></a>, <a href="../reference/graph-nodes.html#end_cinematic"><code>end_cinematic</code></a></td><td>seconds: <code>0.4</code></td><td>Camera back on the player, controls back.</td></tr>
+      <tr><td><a href="../reference/graph-nodes.html#subtitle"><code>subtitle</code></a></td><td><code>Beyond it: the Isles. …</code> · 5 s</td><td>A hint, while the player can move again.</td></tr>
     </tbody>
   </table>
-  <pre><code>take.then  → got.in
-got.then   → gone.in
-take.prop  → gone.entity        (data: remove the key, not the player)
-gone.then  → ding.in
-ding.then  → tell.in
-press.then → if.in
-press2.then → if.in             (an exec input takes many links)
-key.value  → if.cond
-if.true    → open.in
-if.false   → no.in</code></pre>
+  <pre><code>use.then → once → set_animation → play_sound → start_cinematic → camera_flythrough
+camera_flythrough.then → open_door → play_sound → camera_shake      (at once: the gate opens during the flight)
+camera_flythrough.done → subtitle ─done→ camera_follow → end_cinematic → subtitle</code></pre>
   <ul>
-    <li><b>The data link into <code>gone.entity</code> matters.</b> Unlinked, <a href="../reference/graph-nodes.html#remove"><code>remove</code></a> would act on the event's entity: the player. The prop is a different output of the start node.</li>
-    <li><a href="../reference/graph-nodes.html#open_door"><code>open_door</code></a> with <code>close_after</code> shuts the door again after 4 seconds. Without it, the door stays open.</li>
-    <li>The key is the level's, not the player's: in co-op, once anyone has it, the door opens for all. It is also forgotten when the level starts again, unless the module keeps level state.</li>
+    <li><b>Two exits, two jobs.</b> The flythrough's <b>then</b> fires at once, so the gate starts opening as the camera sets off and is moving when the camera gets there. Its <b>done</b> waits for the end of the path. Swap them and the camera arrives at a closed gate.</li>
+    <li><b>Doors by tag.</b> Each gate is a door room with a tag (11, 12, 13) in its room settings. A tag survives editing the map better than a picked sector, and one tag can open a two-sector gate.</li>
+    <li><b>Copy, don't rebuild.</b> The blue and gold chains differ only in the prop, the tag, the camera path and the lines.</li>
+    <li><code>end_cinematic</code> already puts the camera back on the player. The <code>camera_follow</code> before it is there to say so on the board, and to set a distance if you want one.</li>
+  </ul>
+
+  <h2 id="vault">Recipe 2: keys that open a vault (Gem Hollow)</h2>
+  <p>The <code>vault</code> graph is taken apart node by node in <a href="01-thinking-in-graphs.html">Thinking in graphs</a>. In short: each <code>key</code> prop touched is removed, counted in <code>keys</code>, written to the HUD, and the run asks <code>keys &gt;= 3</code>. Not yet: a subtitle. Yes: the same cutscene shape as the levers, on camera path 6, opening the door tagged 14.</p>
+  <ul>
+    <li><b>The data link into <code>remove</code>'s <code>entity</code> matters.</b> It comes from the start node's <code>prop</code>. Unlinked, <a href="../reference/graph-nodes.html#remove"><code>remove</code></a> would act on the event's entity: the player.</li>
+    <li><b>A single key</b> is simpler: a variable <code>has_key</code> (starts <code>false</code>), a <a href="../reference/graph-nodes.html#set_var"><code>set_var</code></a> to <code>true</code> on touch, and a <a href="../reference/graph-nodes.html#branch"><code>branch</code></a> on it in front of the door. Since 0 is true for a branch, use <code>true</code>/<code>false</code> for a flag and a <a href="../reference/graph-nodes.html#compare"><code>compare</code></a> for a count.</li>
+    <li>The keys are the level's, not the player's: in co-op, anyone's key counts for everybody.</li>
   </ul>
   <div class="callout"><p>The DOOM modules carry keys of their own (<code>key_red</code> and friends), picked up and checked by their Lua. A graph can't see that inventory. This recipe is for your own keys in your own module.</p></div>
 
-  <h2 id="secret">Recipe 2: a secret that counts</h2>
-  <p>Walking into a hidden room counts once, says so, and shows the count on the HUD.</p>
-  <p><b>Variables:</b> <code>secrets</code>, starts at <code>0</code>.</p>
-  <table>
-    <thead><tr><th>id</th><th>Node</th><th>Fields</th></tr></thead>
-    <tbody>
-      <tr><td>found</td><td><a href="../reference/graph-nodes.html#when_sector_entered"><code>when_sector_entered</code></a></td><td>sector: <em>picked</em>, the secret room · who: players</td></tr>
-      <tr><td>first</td><td><a href="../reference/graph-nodes.html#once"><code>once</code></a></td><td></td></tr>
-      <tr><td>count</td><td><a href="../reference/graph-nodes.html#add_var"><code>add_var</code></a></td><td>var: <code>secrets</code> · value: <code>1</code></td></tr>
-      <tr><td>n</td><td><a href="../reference/graph-nodes.html#get_var"><code>get_var</code></a></td><td>var: <code>secrets</code></td></tr>
-      <tr><td>hud</td><td><a href="../reference/graph-nodes.html#set_hud"><code>set_hud</code></a></td><td>name: <code>secrets</code> · to: everyone</td></tr>
-      <tr><td>say</td><td><a href="../reference/graph-nodes.html#subtitle"><code>subtitle</code></a></td><td>text: <code>A secret!</code> · seconds: <code>2</code></td></tr>
-      <tr><td>chime</td><td><a href="../reference/graph-nodes.html#play_sound"><code>play_sound</code></a></td><td>sound: a chime</td></tr>
-    </tbody>
-  </table>
-  <pre><code>found.then → first.in
-first.then → count.in
-count.then → hud.in
-n.value    → hud.value
-hud.then   → say.in
-say.then   → chime.in</code></pre>
+  <h2 id="checkpoints">Recipe 3: checkpoints and respawning (Gem Hollow)</h2>
+  <p>Gem Hollow has three checkpoint flags, water, lava, and monsters that can knock you out. The <code>checkpoints</code> graph handles all of it, with three variables, <code>cpx</code>, <code>cpy</code> and <code>cpz</code>, that hold the last checkpoint. They start at the level's start: 22, 70, 0.</p>
+  <figure class="shot" data-src="../assets/shots/graph-gem-checkpoints.png" data-alt="Gem Hollow's checkpoints graph: three flag chains in a green note, and the falling and respawning chains in a red note" data-hotspots='[{"x":10.9,"y":17.8,"t":"A flag is reached","d":"when_prop_touched, prop flag1, who players."},{"x":18.7,"y":16.1,"t":"once","d":"Each flag counts the first time only."},{"x":34.7,"y":19.2,"t":"Remember the spot","d":"Three set_var nodes: cpx 142, cpy 70, cpz 0, the flag&#39;s place."},{"x":66.2,"y":17.8,"t":"Tell the player","d":"play_sound world.checkpoint, then subtitle Checkpoint! for 1.5 seconds."},{"x":74,"y":30.8,"t":"New zone, new music","d":"Flags 2 and 3 end with do music: cue cliffs, then keep, on the next bar."},{"x":10.9,"y":56.6,"t":"Water","d":"when_floor_touched, tag 900, who players."},{"x":34.5,"y":56.6,"t":"Hurt, then move","d":"play_sound player.pain, damage 15, and its then loops back left to teleport."},{"x":19.2,"y":58.1,"t":"Back to the checkpoint","d":"teleport, with x, y and z each taken from a get_var (bound with 𝑥, so the get_var nodes are hidden)."},{"x":10.9,"y":79.9,"t":"Knocked out","d":"when_dies, what players: the same teleport, without the damage."},{"x":10.9,"y":92.8,"t":"Monsters drown","d":"when_floor_touched, who monsters, then kill: a slime that slides into the water or lava dies."},{"x":88.9,"y":36.5,"t":"Linked fields","d":"The picked teleport&#39;s x, y and z say linked from getvar29, 30 and 31."}]'>
+    <figcaption>Gem Hollow's <code>checkpoints</code> graph, with <code>teleport28</code> picked.</figcaption>
+  </figure>
+  <pre><code>flag1 touched → once → set_animation (target, state 1) → set_var cpx 142 → set_var cpy 70 → set_var cpz 0
+              → play_sound world.checkpoint → subtitle "Checkpoint!"
+flag2, flag3: the same, then do music (cliffs; keep)
+
+floor tag 900 (water) → play_sound player.pain → damage 15 → teleport (x ← cpx, y ← cpy, z ← cpz)
+floor tag 901 (lava)  → play_sound player.pain → damage 25 → teleport (the same)
+when_dies (players)   → teleport (the same)
+floor tag 900 or 901 (monsters) → kill</code></pre>
   <ul>
-    <li>For a second secret, add another <a href="../reference/graph-nodes.html#when_sector_entered"><code>when_sector_entered</code></a> and another <a href="../reference/graph-nodes.html#once"><code>once</code></a>, and link that <code>once</code>'s <b>then</b> into the same <code>count.in</code>. Each secret has its own <code>once</code>; they share the counter.</li>
-    <li><a href="../reference/graph-nodes.html#set_hud"><code>set_hud</code></a> writes the HUD value <code>secrets</code>. It shows only where a layout or a panel has a text with <code>{hud.secrets}</code> in it. Add one in <b>Screens</b> (see <a href="../studio/08-look-and-feel.html">Sky, screens and weather</a>).</li>
-    <li>To count secrets across the whole game, add a <a href="../reference/graph-nodes.html#call"><code>call</code></a> after <code>count</code> (to: game, name: <code>secret_found</code>) and keep the total in a game graph. See <a href="05-game-graph-and-calls.html">The game graph, calls and maps</a>.</li>
+    <li><b>A floor by tag.</b> Every water sector carries tag 900 and the lava tag 901, so one <a href="../reference/graph-nodes.html#when_floor_touched"><code>when_floor_touched</code></a> covers them all. It fires when somebody stands on the floor, not when they jump over it.</li>
+    <li><b>Hurt first, then move.</b> The <a href="../reference/graph-nodes.html#damage"><code>damage</code></a> runs before the <a href="../reference/graph-nodes.html#teleport"><code>teleport</code></a>, and the teleport lands at the end of the tick. If the damage knocks the player out, the <code>when_dies</code> chain sends them to the same place.</li>
+    <li><b>A knock-out.</b> When a player's health runs out, the monster runtime heals them and sends them home. The <code>when_dies</code> chain then moves them on, to the checkpoint.</li>
+    <li><b>Music per zone.</b> <span class="ui">do music</span> with <code>at</code> <code>next_bar</code> and <code>fade</code> 1500 changes the soundtrack's cue on the beat. <code>everyone</code> is off, so only the player who reached the flag hears it change.</li>
+    <li><b>Per level, not per player.</b> <code>cpx</code>, <code>cpy</code> and <code>cpz</code> are the graph's, so in co-op the last flag anyone raised is where everybody comes back.</li>
   </ul>
 
-  <h2 id="ambush">Recipe 3: an ambush</h2>
+  <h2 id="ambush">Recipe 4: an ambush</h2>
   <p>The player walks into a room, the door slams behind them, and imps appear.</p>
   <div class="callout"><p>There is no node that wakes a sleeping monster placed on the map. A <span class="ui">dormant</span> monster wakes by its own brain (see <a href="../enemies/02-the-brain.html">The brain</a>). A graph's ambush <b>spawns</b> its monsters instead; a spawned monster starts awake.</p></div>
   <table>
@@ -127,8 +124,8 @@ b.entity   → yell.entity        (the roar comes from the second imp)</code></p
     <li>If a spawn fails (no room), its <code>entity</code> is nil, and the linked <code>play_sound</code> does nothing rather than roaring from the player.</li>
   </ul>
 
-  <h2 id="arena">Recipe 4: an arena that opens when all are dead</h2>
-  <p>Two waves of three. When the last monster of the last wave dies, the exit opens. This joins recipe 3 with a counter.</p>
+  <h2 id="arena">Recipe 5: an arena that opens when all are dead</h2>
+  <p>Two waves of three. When the last monster of the last wave dies, the exit opens. This joins recipe 4 with a counter.</p>
   <p><b>Variables:</b> <code>alive</code> (0), <code>wave</code> (0), <code>fighting</code> (<code>false</code>).</p>
   <table>
     <thead><tr><th>id</th><th>Node</th><th>Fields</th></tr></thead>
@@ -188,7 +185,7 @@ exit.then    → win.in</code></pre>
     <li><b>Who sees the win line?</b> In a <a href="../reference/graph-nodes.html#when_dies"><code>when_dies</code></a> run, the event's entity is the monster that died, not a player. An unlinked <a href="../reference/graph-nodes.html#subtitle"><code>subtitle</code></a> would reach nobody, and the server log would say <em>acted on no player</em>. Tick <code>everyone</code> on <code>win</code>, or link <code>dies.by</code> (the killer) into its <code>entity</code>.</li>
   </ul>
 
-  <h2 id="timed">Recipe 5: a timed two-switch puzzle</h2>
+  <h2 id="timed">Recipe 6: a timed two-switch puzzle</h2>
   <p>Two switches, far apart. Each one lights up for five seconds when pressed. If both are lit at once, the vault opens.</p>
   <p><b>Before you start:</b> pick two textures, one for an unlit switch and one for a lit switch. Mark both walls <span class="ui">usable</span> in their wall flags.</p>
   <p><b>Variables:</b> <code>a_on</code> (<code>false</code>), <code>b_on</code> (<code>false</code>).</p>
@@ -235,24 +232,33 @@ vault1.then  → vault.in</code></pre>
     <li>Five seconds is 300 ticks. To make the window shorter for a harder puzzle, lower both delays.</li>
   </ul>
 
-  <h2>Exercise: build the key door</h2>
+  <h2>Exercise: kinder lava</h2>
+  <p>Gem Hollow's lava takes 25 health and sends you back. Make it take less, and say why you were moved.</p>
   <ol class="steps">
-    <li><p>Make the <code>red_key</code> prop in <b>Props</b> (<span class="ui">solid</span> off), and place it in a room away from the door.</p></li>
-    <li><p>In <b>◇ Graphs</b>, press <span class="ui">+ new graph on <i>your map</i></span> and name it <code>keydoor</code>. Add the variable <code>has_red_key</code> and set its <span class="ui">starts at</span> to <code>false</code>.</p></li>
-    <li><p>Build the pickup half: <code>take</code>, <code>got</code>, <code>gone</code>, <code>ding</code>, <code>tell</code>. Don't forget the data link <code>take.prop → gone.entity</code>.</p></li>
-    <li><p>Build the door half. For <code>press</code>, tap the door's face on the map when the side panel asks for the wall. Add <code>press2</code> for the other face.</p></li>
-    <li><p>Check that the window's bar shows no problem count. If it does, read the first line in the side panel.</p></li>
-    <li><p>Play. Press use on the door: the line says you need the key. Fetch it and try again.</p></li>
+    <li><p>Open Gem Hollow (<b>Home</b>, <span class="ui">examples</span>, <span class="ui">Gem Hollow</span>), then <b>◇ Graphs</b>, and tap <span class="ui">checkpoints</span> under <span class="ui">world</span>.</p></li>
+    <li><p>In the red note, find the lava chain: <code>whenfloort34</code> (tag <code>901</code>) → <code>playsound39</code> → <code>damage40</code> → <code>teleport35</code>. Tap <code>damage40</code> and set its <code>amount</code> to <code>10</code>.</p></li>
+    <li><p>Add a <a href="../reference/graph-nodes.html#subtitle"><code>subtitle</code></a> with the text <code>Too hot! Back to the checkpoint.</code> and <code>seconds</code> <code>2</code>. Link <code>teleport35</code>'s <b>then</b> into it.</p></li>
+    <li><p>Press <span class="ui">+ node…</span>, choose <span class="ui">a note</span>, and write <code>Kinder lava: 10 damage and a line</code>. Drag it by its grip so it sits beside the chain.</p></li>
+    <li><p>Play. Raise the first flag in the meadow, walk on to the Keep, and step into the lava. You lose 10, hear the line, and stand at the flag.</p></li>
   </ol>
 
   <div class="quiz" data-answer="1">
-    <p class="q">In the key recipe, you forget the link <code>take.prop → gone.entity</code>. What does <code>remove</code> do?</p>
+    <p class="q">In the vault graph, you delete the link from the start node's <code>prop</code> to <code>remove</code>'s <code>entity</code>. What does <code>remove</code> do when a key is touched?</p>
     <ul>
       <li>Removes the key: it is what was touched</li>
       <li>Acts on the event's entity, the player who touched the key</li>
       <li>Nothing</li>
     </ul>
     <p class="why">Unlinked, an <code>entity</code> input means the event's entity, and for a touch that is whoever walked in. The prop is a separate output.</p>
+  </div>
+  <div class="quiz" data-answer="2">
+    <p class="q">In the red lever's chain, <code>open_door</code> hangs off the flythrough's <b>then</b>, not its <b>done</b>. Why?</p>
+    <ul>
+      <li>A door can't be opened during a cinematic</li>
+      <li>done never fires for a flythrough</li>
+      <li>So the gate is already opening while the camera flies to it</li>
+    </ul>
+    <p class="why"><b>then</b> fires at once and <b>done</b> when the path ends. From done, the camera would arrive at a gate that has not moved yet.</p>
   </div>
   <div class="quiz" data-answer="0">
     <p class="q">Why does the arena check <code>fighting</code> before counting a death?</p>

@@ -19,9 +19,9 @@
   <h1>The game graph, calls and maps</h1>
   <p class="lede">A map's graph lives and dies with its level. A game graph runs once for the whole game, and remembers across every map. This page shows how the two talk, how players move between maps, how many graphs a map can hold, and where graphs stop and Lua begins.</p>
   <div class="goal">
-    <b>You'll learn</b><span>what a game graph can and cannot do, how <code>call</code> and <code>on_call</code> carry a value across, how to send a player to another map and greet them there, the map's 16 script slots, what a save keeps of the game, and the ways into Lua</span>
+    <b>You'll learn</b><span>what a game graph can and cannot do, how <code>call</code> and <code>on_call</code> carry a value across, how Gem Hollow's title screen starts the game and quits, how to send a player to another map and greet them there, the map's 16 script slots, what a save keeps of the game, and the ways into Lua</span>
     <b>Time</b><span>35 minutes</span>
-    <b>Needs</b><span><a href="02-variables-and-numbers.html">Variables, numbers and saving</a>; a module with two maps for the last part</span>
+    <b>Needs</b><span><a href="02-variables-and-numbers.html">Variables, numbers and saving</a>, and Gem Hollow open: it has two maps, a title and a level</span>
   </div>
 
   <h2>Two places a graph can run</h2>
@@ -65,14 +65,14 @@
   </ul>
   <p>The Graphs list shows, for each graph, what it <b>calls</b> and what it <b>answers</b>. A call nobody answers is a warning under the list, and a problem on Home: <em>… calls 'x' (to game), and no game graph has an on_call of that name</em>.</p>
 
-  <h3>Example: a game-wide secret count</h3>
-  <p>Each map counts its own secrets (<a href="03-map-logic.html#secret">Recipe 2</a>). The game keeps the total, so the HUD shows every secret found on every map.</p>
-  <pre><code>map01's graph "secrets":
-  when_sector_entered → once → call (to: game, name: secret_found, value: 1)
+  <h3>Example: gems across many maps</h3>
+  <p>Gem Hollow is one level, so its <code>pickups</code> graph counts gems in a map graph (<a href="02-variables-and-numbers.html#counters">Counters</a>). Give it a second level and that count would start at 0 there. To count across maps, the map's graph tells the game, and the game keeps the total:</p>
+  <pre><code>each map's graph "pickups":
+  when_prop_touched (gem) → remove → call (to: game, name: gem_found, value: 1)
 
-the game's graph "progress"      vars: total = 0
-  on_call secret_found → add_var total (value ← on_call.value) → set_hud (name: secrets, value ← get_var total)</code></pre>
-  <p>The <code>set_hud</code> goes to the on_call's entity: the player whose map made the call. That works because the map's call sent the event's entity, the player who walked in.</p>
+the game's graph "progress"      vars: gems = 0
+  on_call gem_found → add_var gems (value ← on_call.value) → set_hud (name: gems, value ← get_var gems)</code></pre>
+  <p>The <code>set_hud</code> goes to the on_call's entity: the player whose map made the call. That works because the map's call sent the event's entity, the player who touched the gem.</p>
 
   <h3>Example: the game asks a level to act</h3>
   <p>A main menu panel is opened by the game's graph. Its <b>Start</b> button should open a gate in whatever map the player is on. The game cannot name the gate, but the level can:</p>
@@ -83,6 +83,24 @@ each map's graph:
   on_call open_gate → open_door (sector: picked, that map's gate)</code></pre>
   <p>The call's entity is the panel event's player, so the call goes to that player's level. Maps without an <code>open_gate</code> simply don't answer.</p>
 
+  <h2 id="title">A title screen: Gem Hollow's menu map</h2>
+  <p>A title screen could be a game graph's panel, but Gem Hollow makes it a map of its own: <code>menu</code>, a small island the camera circles. The map's camera setting does the circling (it rides camera path 1 on its own), and the map's own screens hide the HUD and the touch buttons. Its one graph, <code>main</code>, does the rest:</p>
+  <figure class="shot" data-src="../assets/shots/graph-gem-menu.png" data-alt="Gem Hollow's main graph on the menu map: arrival opens the title panel; Play fades out and changes map; Quit closes the game" data-hotspots='[{"x":9.3,"y":19.3,"t":"Arrives","d":"when_player_arrives: every arrival on the menu map, the first and each return."},{"x":25.9,"y":22.2,"t":"Controls off, no bars","d":"start_cinematic with letterbox 0: the player can&#39;t walk about behind the menu."},{"x":38,"y":22.2,"t":"The title panel","d":"open_panel title: GEM HOLLOW, a tagline, Play and Quit. It is modal and has no ×."},{"x":13.1,"y":51.7,"t":"Play","d":"when_panel_used, panel title, widget play."},{"x":57.6,"y":60.3,"t":"Wait for black","d":"fade to black over 0.8 seconds; its done goes on."},{"x":67.4,"y":49.2,"t":"To the level","d":"change_map, level world, fade 0.5."},{"x":37.5,"y":73.2,"t":"Quit","d":"quit_game, after close_panel."},{"x":5.9,"y":13,"t":"A note","d":"Drag its title (the grip) to move it with its nodes."},{"x":91.1,"y":41.2,"t":"The widget","d":"The picked start node listens to the title panel&#39;s quit button only."}]'>
+    <figcaption>Gem Hollow's <code>main</code> graph on the <code>menu</code> map, at 100%, with the Quit start node picked.</figcaption>
+  </figure>
+  <pre><code>when_player_arrives → start_cinematic (letterbox 0) → open_panel title
+
+when_panel_used (title › play) → close_panel title → play_sound ui.start → fade black (0.8 s)
+  ─done→ change_map (level: world, fade: 0.5)
+
+when_panel_used (title › quit) → close_panel title → quit_game</code></pre>
+  <ul>
+    <li><b>Why a map?</b> A map has a place to look at, a camera path and its own screens. The game's graph has none of those. And the module's first map is where the game starts, so the menu is the first thing anyone sees.</li>
+    <li><b>Why start_cinematic?</b> It takes the controls, so the hero can't wander off behind the panel. <code>letterbox</code> 0 means no bars.</li>
+    <li><b>Coming back.</b> The ending's <span class="ui">Back to the title</span> button runs <code>change_map</code> to <code>menu</code>. The player arrives again, <code>when_player_arrives</code> fires again, and the panel opens again. There is no <code>once</code> here on purpose.</li>
+    <li><b>Quit</b> is <a href="../reference/graph-nodes.html#quit_game"><code>quit_game</code></a>, below.</li>
+  </ul>
+
   <h2>Going to other maps</h2>
   <p><a href="../reference/graph-nodes.html#change_map"><code>change_map</code></a> sends a player to another map. It is in the menu's <span class="ui">maps</span> group.</p>
   <ul>
@@ -92,7 +110,7 @@ each map's graph:
     <li><code>everyone</code>: every player in the level, not just the event's.</li>
   </ul>
   <p>On the far side, <a href="../reference/graph-nodes.html#when_player_arrives"><code>when_player_arrives</code></a> in that map's graph starts a run for the newcomer: the place for a title card or a door that shuts behind them. <a href="../reference/graph-nodes.html#change_map"><code>change_map</code></a> works from a game graph too.</p>
-  <p><a href="../reference/graph-nodes.html#teleport"><code>teleport</code></a> with a <code>spawn</code> tag moves a player to a spawn point on the <em>same</em> map. <a href="../reference/graph-nodes.html#quit_game"><code>quit_game</code></a> closes the game for the player: the main menu's Quit. In the desktop app it exits; in a play-test it goes back to the studio; in a browser tab the screen fades to black and says the game may be closed.</p>
+  <p><a href="../reference/graph-nodes.html#teleport"><code>teleport</code></a> with a <code>spawn</code> tag moves a player to a spawn point on the <em>same</em> map. <a href="../reference/graph-nodes.html#quit_game"><code>quit_game</code></a> closes the game for the player: a main menu's Quit. The desktop app exits and the Android app closes. A play-test started from the studio goes back to the studio instead. A browser tab can't close itself, and iOS has no quit, so there the screen fades to black and says the game may be closed. Tick <code>everyone</code> to close it for every player in the level. It works from a game graph too.</p>
   <div class="callout"><p>A module can also lay its maps out on a grid as one connected world (the maps' metamap), where neighbouring maps share one simulation and the player walks from one into the next. Each map's graphs still run in their own map's level. Be sparing there with <code>who: monsters</code> or <code>anyone</code> on the "when …" nodes: they watch every body in the level on every tick, and a big world has many.</p></div>
 
   <h2>Script slots</h2>
@@ -108,7 +126,7 @@ each map's graph:
       <tr><td>1</td><td>the map's own Lua (placed things, triggers)</td><td>always</td></tr>
     </tbody>
   </table>
-  <p>So a map in a module with monsters can hold <b>8 graphs</b>. Play and Export refuse a map past the limit: <em>a map can declare 16 scripts and this module needs 17: …</em>. An empty graph is kept in the studio but not written, so it costs nothing. Game graphs take no map slots. When you run short, merge small graphs: one graph can hold many unrelated chains.</p>
+  <p>So a map in a module with monsters can hold <b>8 graphs</b>. Gem Hollow's <code>world</code> map has seven (<code>intro</code>, <code>pickups</code>, <code>levers</code>, <code>vault</code>, <code>checkpoints</code>, <code>moving</code>, <code>ending</code>): 15 of its 16 slots. One more graph fits; a ninth would not. Play and Export refuse a map past the limit: <em>a map can declare 16 scripts and this module needs 17: …</em>. An empty graph is kept in the studio but not written, so it costs nothing. Game graphs take no map slots. When you run short, merge small graphs: one graph can hold many unrelated chains.</p>
 
   <h2>What the game keeps</h2>
   <ul>
@@ -134,14 +152,15 @@ each map's graph:
   </ol>
   <div class="callout warn"><p>A <code>do lua</code> written in the studio is stored as text and compiled with <code>loadstring</code>. A server running in its strict trust profile removes <code>loadstring</code>, and then refuses the code at load rather than run the graph with a piece missing. If your module will be hosted that way, put the Lua in 📜 Scripts instead.</p></div>
 
-  <h2>Exercise: secrets across the game</h2>
+  <h2>Exercise: the game counts the gems</h2>
+  <p>Gem Hollow counts gems in the <code>world</code> map's graph, so the count is lost when the level starts over. Hand each gem to a game graph as well, which keeps its count from level to level.</p>
   <ol class="steps">
-    <li><p>Build <a href="03-map-logic.html#secret">Recipe 2</a> on one map, but remove its <code>set_hud</code>.</p></li>
-    <li><p>After <code>count</code>, add a <a href="../reference/graph-nodes.html#call"><code>call</code></a>: <code>to</code> <code>game</code>, <code>name</code> <code>secret_found</code>, <code>value</code> <code>1</code>. In <b>◇ Graphs</b>, the map's row now says <em>calls secret_found</em>, and a warning says nothing answers it.</p></li>
-    <li><p>Press <span class="ui">+ new graph for the game</span>, name it <code>progress</code>, and add a variable <code>total</code> starting at 0.</p></li>
-    <li><p>Add an <a href="../reference/graph-nodes.html#on_call"><code>on_call</code></a> named <code>secret_found</code>. The warning goes away, and the game's row says <em>answers secret_found</em>.</p></li>
-    <li><p>Link it to an <a href="../reference/graph-nodes.html#add_var"><code>add_var</code></a> <code>total</code>, with <code>value</code> linked from the on_call's <code>value</code>. Then a <a href="../reference/graph-nodes.html#set_hud"><code>set_hud</code></a> <code>secrets</code>, with <code>value</code> linked from a <a href="../reference/graph-nodes.html#get_var"><code>get_var</code></a> <code>total</code>.</p></li>
-    <li><p>Try adding an <a href="../reference/graph-nodes.html#open_door"><code>open_door</code></a> to the <code>progress</code> graph. It isn't in its menu. That is the game graph telling you to call a level instead.</p></li>
+    <li><p>Open Gem Hollow (<b>Home</b>, <span class="ui">examples</span>, <span class="ui">Gem Hollow</span>), then <b>◇ Graphs</b>, and tap <span class="ui">pickups</span> under <span class="ui">world</span>.</p></li>
+    <li><p>In the gem chain, link <code>subtitle12</code>'s <b>done</b> to a new <a href="../reference/graph-nodes.html#call"><code>call</code></a>: <code>to</code> <code>game</code>, <code>name</code> <code>gem_found</code>, <code>value</code> <code>1</code>. Back in <b>◇ Graphs</b>, the <code>pickups</code> row says <em>calls gem_found</em>, and a warning says nothing answers it.</p></li>
+    <li><p>Press <span class="ui">+ new graph for the game</span>, name it <code>progress</code>, and add a variable <code>gems</code> starting at 0.</p></li>
+    <li><p>Add an <a href="../reference/graph-nodes.html#on_call"><code>on_call</code></a> named <code>gem_found</code>. The warning goes away, and the game's row says <em>answers gem_found</em>.</p></li>
+    <li><p>Link it to an <a href="../reference/graph-nodes.html#add_var"><code>add_var</code></a> <code>gems</code>, with <code>value</code> linked from the on_call's <code>value</code>, then to a <span class="ui">do log</span> with the text <code>the game counted a gem</code>.</p></li>
+    <li><p>Try adding an <a href="../reference/graph-nodes.html#open_door"><code>open_door</code></a> to the <code>progress</code> graph. It isn't in its menu: the game has no level. Then play, find a gem, and look for your line in <code>play-server.log</code> (<a href="06-debugging.html">Debugging graphs</a>).</p></li>
   </ol>
 
   <div class="quiz" data-answer="2">

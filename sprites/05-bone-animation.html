@@ -116,6 +116,35 @@
   </ol>
   <div class="callout tip"><p><b>The feet slide.</b> A sprite walks on the spot, and the game moves it across the floor. If its feet seem to skate, the stride and the monster's speed don't match. Shorten or lengthen the stride (the thigh angles), or change the fps, rather than fixing it in the game.</p></div>
 
+  <h2 id="gem-hollow">In Gem Hollow: HERO's walk and death</h2>
+  <p>Gem Hollow's HERO walks with 8 frames at 10 fps. These are its <span class="ui">Rot pitch</span> values, from the side view:</p>
+  <table>
+    <thead><tr><th>Frame</th><th>thighR</th><th>shinR</th><th>thighL</th><th>shinL</th><th>armR</th><th>armL</th><th>hips Move up</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>0</td><td>−6</td><td>0</td><td><b>−46</b></td><td>0</td><td>0</td><td>1.7</td></tr>
+      <tr><td>2</td><td>−19.8</td><td>−6</td><td>19.8</td><td>−34.3</td><td>18.4</td><td>−18.4</td><td>1.3</td></tr>
+      <tr><td>3</td><td><b>−28</b></td><td>−6</td><td><b>28</b></td><td>−6</td><td>26</td><td>−26</td><td>0.9</td></tr>
+      <tr><td>4</td><td>−19.8</td><td>−34.3</td><td>19.8</td><td>−6</td><td>18.4</td><td>−18.4</td><td>0.7</td></tr>
+      <tr><td>5</td><td>0</td><td><b>−46</b></td><td>0</td><td>−6</td><td>0</td><td>0</td><td>1.7</td></tr>
+      <tr><td>6–8</td><td colspan="7">frames 2–4 with the sides swapped</td></tr>
+    </tbody>
+  </table>
+  <p>What to notice:</p>
+  <ul>
+    <li><b>It starts on the passing pose.</b> Frames 1 and 5 have both thighs under the body, the swinging leg's shin bent to −46 so its foot clears the ground, and the hips at their highest. Frames 3 and 7 are the contacts: legs spread ±28, hips coming down. It is the cycle from the walk exercise, started two frames later.</li>
+    <li><b>The arms go against the legs.</b> When thighR is back (−28), armR is forward (26), and the other way round.</li>
+    <li><b>The in-betweens follow a curve, not a straight line.</b> Halfway to 28 would be 14, but frames 2 and 4 hold 19.8: the swing is fast through the middle and slow at the ends, like a pendulum. You would get the same feel by keying only frames 1, 3, 5 and 7 with <span class="ui">easeInOut</span>.</li>
+    <li><b>The loop seam is clean.</b> Frame 8 is frame 4 mirrored, which leads straight back into frame 1.</li>
+    <li>The torso leans forward a steady 3° and the head tips 1.5° the other way, so the walk has purpose.</li>
+  </ul>
+  <p>HERO's <b>death</b> (10 frames, 10 fps, no loop) keys the hips' pitch from 0 to 90 by frame 7, so the whole body tips over backwards, and drops the hips 9 px as it lands. Frame 8 bounces back to 84, and frames 9 and 10 settle at 90 and hold. The arms swing up to 80° and the legs fold, then straighten as it lies down. This is the "small bounce" of the death exercise.</p>
+  <ol class="steps">
+    <li><p>Open Gem Hollow's <code>HERO</code> in ThreeSprite, open <span class="ui">Animate</span>, and choose <code>walk</code>.</p></li>
+    <li><p>Press <kbd>.</kbd> twice for view 3. Select <code>thighR</code> in the timeline and step with <kbd>]</kbd>: <span class="ui">Rot pitch</span> reads 0, −19.8, −28, −19.8, 0 …</p></li>
+    <li><p>Go to frame 3 and change thighR's pitch to −40 and thighL's to 40. Play: a longer stride. In the game, longer strides suit a faster <code>move_speed</code>.</p></li>
+    <li><p>Choose <code>death</code>, open the <span class="ui">3D</span> tab and turn up <span class="ui">Spread</span> to watch it fall from every side. Then press <span class="ui">✕</span>.</p></li>
+  </ol>
+
   <h2>Exercise: an overhead swing</h2>
   <p>An attack reads well with three beats. First a slow <b>wind-up</b> the player can see coming, then a <b>strike</b> so fast it nearly isn't drawn, then a <b>recovery</b>. You make those beats with the ease of each key, not with more frames. Load <b>overhead swing</b> in the demo above to see the finished version.</p>
   <ol class="steps">
@@ -145,7 +174,7 @@
     <li><b>Look at every view.</b> In the <span class="ui">3D</span> tab, turn up <span class="ui">Spread</span> to see every view at once while the animation plays. A pose that reads from the side can hide a limb from the front.</li>
     <li><b>Check the layer order.</b> When an arm swings in front of the body in one view and behind it in another, set the part's order in that view's own scope. See <a href="03-rig.html#layer-order">Layer order, per view</a>.</li>
     <li><b>Count the frames.</b> Every frame of every animation becomes a frame in the baked atlas, in every authored view. Eight frames are often plenty, and a 4-frame idle is fine.</li>
-    <li>Press <span class="ui">← studio</span>. The sprite is baked, and the monster's body card can pick idle, walk, attack, pain and death from your names.</li>
+    <li>Press <span class="ui">‹ studio</span>. The sprite is baked, and the monster's body card can pick idle, walk, attack, pain and death from your names.</li>
   </ul>
 
   <div class="quiz" data-answer="2">

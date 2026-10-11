@@ -21,7 +21,7 @@
   <div class="goal">
     <b>You'll learn</b><span>how to make and use variables, which properties of an entity you can read and set, how to count and how to test true/false, the traps in numbers and decimals, and what each kind of saving keeps</span>
     <b>Time</b><span>30 minutes</span>
-    <b>Needs</b><span><a href="01-thinking-in-graphs.html">Thinking in graphs</a></span>
+    <b>Needs</b><span><a href="01-thinking-in-graphs.html">Thinking in graphs</a>, and Gem Hollow open</span>
   </div>
 
   <h2>A graph's own variables</h2>
@@ -62,16 +62,29 @@
   </ul>
   <p>The dropdowns only offer what each node may use: <a href="../reference/graph-nodes.html#set_var"><code>set_var</code></a> offers only settable properties, and <a href="../reference/graph-nodes.html#add_var"><code>add_var</code></a> only settable numbers. The studio says what the engine would refuse at load: <em>… can only be read -- a graph cannot set it</em>, <em>… is not a number, so nothing can be added to it</em>.</p>
 
-  <h2>Counters</h2>
-  <p>A counter is a number variable, an <a href="../reference/graph-nodes.html#add_var"><code>add_var</code></a> that adds to it, and a <a href="../reference/graph-nodes.html#compare"><code>compare</code></a> that reads it.</p>
-  <pre><code>when_dies ──then──▶ add_var kills +1 ──then──▶ branch ──true──▶ open_door
-                                                 ▲ cond
-              get_var kills ──value──▶ compare (a &gt;= 5) ──value──┘</code></pre>
+  <h2 id="counters">Counters: Gem Hollow's coins and gems</h2>
+  <p>A counter is a number variable, an <a href="../reference/graph-nodes.html#add_var"><code>add_var</code></a> that adds to it, and something that reads it. Gem Hollow's <code>pickups</code> graph (on the <span class="ui">world</span> map) counts coins and gems this way. Its variables tab has <code>coins</code> and <code>gems</code>, both starting at 0.</p>
+  <figure class="shot" data-src="../assets/shots/graph-gem-pickups.png" data-alt="Gem Hollow's pickups graph: a coin chain, a gem chain and a HUD start chain, each in its own note" data-hotspots='[{"x":19.8,"y":18.7,"t":"Every coin","d":"when_prop_touched, prop coin: one start node for all 152 coins, because they are all the same prop."},{"x":24.2,"y":23,"t":"Remove the coin","d":"prop goes into remove&#39;s entity, so the coin goes, not the player."},{"x":37.5,"y":20.3,"t":"Count it","d":"add_var coins, value 1."},{"x":46.6,"y":20.3,"t":"Show it","d":"set_hud coins, its value linked from get_var coins."},{"x":55.7,"y":32.5,"t":"Read after the add","d":"get_var coins is pulled when set_hud runs, after add_var, so it gives the new count."},{"x":64.6,"y":49.5,"t":"A gem says so","d":"The gem chain is the same, plus a subtitle."},{"x":19.8,"y":78.6,"t":"HUD start","d":"when_player_arrives writes both counters, so the HUD reads 0 rather than blank."},{"x":88.9,"y":33.6,"t":"Linked, not typed","d":"The picked set_hud&#39;s value says linked from getvar6.value."}]'>
+    <figcaption>Gem Hollow's <code>pickups</code> graph, with <code>sethud4</code> picked.</figcaption>
+  </figure>
+  <pre><code>when_prop_touched (coin) ──then──▶ remove ──▶ add_var coins +1 ──▶ set_hud coins ──▶ play_sound pickup.coin
+          └──prop──▶ remove.entity                    get_var coins ──value──▶ set_hud.value</code></pre>
   <ul>
+    <li><b>One start node for every coin.</b> All 152 coins are the same prop, <code>coin</code>, so one <a href="../reference/graph-nodes.html#when_prop_touched"><code>when_prop_touched</code></a> hears them all. Its <code>prop</code> output says which one was touched.</li>
+    <li><b>The read comes after the add.</b> <a href="../reference/graph-nodes.html#set_hud"><code>set_hud</code></a> pulls <code>get_var coins</code> only when the run reaches it, after <a href="../reference/graph-nodes.html#add_var"><code>add_var</code></a>, so it sees the new count.</li>
+    <li><b>The HUD shows what the graph writes.</b> <code>set_hud coins</code> fills the HUD value <code>coins</code>. Gem Hollow's HUD layout, in <b>Screens</b>, has a text <code>{hud.coins} / 152</code>, and another <code>{hud.gems} / 5</code>.</li>
+    <li><b>Start values on the HUD.</b> A HUD value nobody has written is blank. The third chain, from <a href="../reference/graph-nodes.html#when_player_arrives"><code>when_player_arrives</code></a>, writes both counters as the player arrives, so the HUD reads <code>0 / 152</code>.</li>
     <li><a href="../reference/graph-nodes.html#add_var"><code>add_var</code></a>'s <code>value</code> can be negative: <code>-1</code> counts down.</li>
-    <li><a href="../reference/graph-nodes.html#compare"><code>compare</code></a> has <code>op</code> (<code>==</code>, <code>~=</code>, <code>&lt;</code>, <code>&lt;=</code>, <code>&gt;</code>, <code>&gt;=</code>) and two inputs, <code>a</code> and <code>b</code>. Each can be typed or linked. <code>~=</code> means "is not".</li>
-    <li>The compare reads <code>kills</code> <em>after</em> the add, because the branch pulls it only when the run reaches the branch.</li>
   </ul>
+  <p>To act at a number, compare the count. <a href="../reference/graph-nodes.html#compare"><code>compare</code></a> has <code>op</code> (<code>==</code>, <code>~=</code>, <code>&lt;</code>, <code>&lt;=</code>, <code>&gt;</code>, <code>&gt;=</code>) and two inputs, <code>a</code> and <code>b</code>. Each can be typed or linked; <code>~=</code> means "is not". Gem Hollow's vault does exactly this with its <code>keys</code>: <code>compare</code> <code>keys &gt;= 3</code> into a <code>branch</code> (see <a href="01-thinking-in-graphs.html">Thinking in graphs</a>).</p>
+
+  <h2>Remembering a place: checkpoints</h2>
+  <p>A variable can hold any number, so three of them can hold a place. Gem Hollow's <code>checkpoints</code> graph keeps the last checkpoint in <code>cpx</code>, <code>cpy</code> and <code>cpz</code>, which start at the level's start (22, 70, 0).</p>
+  <ul>
+    <li><b>Raising a flag</b> (<a href="../reference/graph-nodes.html#when_prop_touched"><code>when_prop_touched</code></a> <code>flag1</code>) runs three <a href="../reference/graph-nodes.html#set_var"><code>set_var</code></a> nodes that write the flag's spot: <code>cpx</code> 142, <code>cpy</code> 70, <code>cpz</code> 0.</li>
+    <li><b>Falling in the water</b> (<a href="../reference/graph-nodes.html#when_floor_touched"><code>when_floor_touched</code></a>, tag 900) ends at a <a href="../reference/graph-nodes.html#teleport"><code>teleport</code></a> whose <code>x</code>, <code>y</code> and <code>z</code> are each fed by a <code>get_var</code>. In the studio those fields say <code>← getvar29.value</code>: they were bound with the <b>𝑥</b> beside the field, which writes a hidden <code>get_var</code>.</li>
+  </ul>
+  <p>The whole graph is taken apart in <a href="03-map-logic.html#checkpoints">Map logic</a>.</p>
   <div class="callout tip"><p>Trigger cards have their own counters (<code>counter_add</code>, <code>counter_at_least</code>), kept per map in the trigger table. They are a separate store from a graph's variables: a <code>counter_add</code> on <code>kills</code> does not change a graph variable called <code>kills</code>. Pick one of the two for each count.</p></div>
 
   <h2>True and false</h2>
@@ -108,7 +121,7 @@
       <tr><td><span class="ui">survive a server restart</span></td><td><code>persist server</code></td><td>Level state is written to disk every minute and on stop, and read back at start.</td></tr>
     </tbody>
   </table>
-  <p>When a level's state is kept, each of its graphs keeps, under the graph's name:</p>
+  <p>Gem Hollow turns all three off, so its coins, gems and keys start again at 0 whenever the <code>world</code> level does. When a level's state is kept, each of its graphs keeps, under the graph's name:</p>
   <ul>
     <li>its <b>variables</b>;</li>
     <li>which of its <a href="../reference/graph-nodes.html#once"><code>once</code></a> nodes have <b>passed</b>.</li>
@@ -135,14 +148,24 @@
   <p>Only numbers, text and true/false are kept. A store name is 1 to 48 letters, digits, <code>_</code> or <code>-</code>. The stores belong to the server: on a server several players share, they are the server's, not each player's. In the desktop app they live in your user data folder; on Android, in the app's own files.</p>
   <div class="callout soon"><p>A player's own identity and inventory carried between servers (docs/PERSISTENCE.md) is designed but <b>not built</b>. Nothing today follows a player from one server to another.</p></div>
 
-  <h2>Exercise: a best time that survives</h2>
+  <h3>A recipe: a best time that survives</h3>
+  <p>Gem Hollow keeps nothing on disk, so here is an invented one. A game graph <code>records</code> has variables <code>best</code> (starts at <code>9999</code>) and <code>last</code> (0). A level calls it with the run's time when the player finishes (<a href="05-game-graph-and-calls.html">page 5</a> shows the calling side).</p>
+  <pre><code>when_player_arrives → load_vars (store: records, vars: best)        none: unlinked, best keeps 9999
+
+on_call finished → set_var last (value ← on_call.value)
+                 → branch (cond ← compare: get_var last &lt; get_var best)
+                       true → set_var best (value ← get_var last) → save_vars (store: records, vars: best)</code></pre>
+  <p>A new game starts <code>best</code> at 9999, and the <a href="../reference/graph-nodes.html#load_vars"><code>load_vars</code></a> on arrival brings the saved record back.</p>
+
+  <h2>Exercise: a reward for all five gems</h2>
+  <p>Gem Hollow says <em>A gem! Five are hidden in the hollow.</em> for every gem. Make the fifth say something else.</p>
   <ol class="steps">
-    <li><p>Open <b>◇ Graphs</b>, press <span class="ui">+ new graph for the game</span> and name it <code>records</code>. In the variables tab, add <code>best</code> (starts at <code>9999</code>) and <code>last</code> (starts at <code>0</code>).</p></li>
-    <li><p>Add <span class="ui">when player arrives</span>. Link it to a <a href="../reference/graph-nodes.html#load_vars"><code>load_vars</code></a> with <code>store</code> <code>records</code> and <code>vars</code> <code>best</code>. Leave its <b>none</b> exit unlinked: the first time, <code>best</code> keeps its start.</p></li>
-    <li><p>Add an <a href="../reference/graph-nodes.html#on_call"><code>on_call</code></a> named <code>finished</code>. A level will call it with the run's time as its <code>value</code> (page 5 shows the calling side). Link its <b>then</b> to a <a href="../reference/graph-nodes.html#set_var"><code>set_var</code></a> <code>last</code>, with <code>value</code> linked from the on_call's <code>value</code>.</p></li>
-    <li><p>After it, a <a href="../reference/graph-nodes.html#branch"><code>branch</code></a> whose <code>cond</code> is a <a href="../reference/graph-nodes.html#compare"><code>compare</code></a>: <code>a</code> from a <a href="../reference/graph-nodes.html#get_var"><code>get_var</code></a> <code>last</code>, <code>op</code> <code>&lt;</code>, <code>b</code> from a <a href="../reference/graph-nodes.html#get_var"><code>get_var</code></a> <code>best</code>.</p></li>
-    <li><p>On <b>true</b>: a <a href="../reference/graph-nodes.html#set_var"><code>set_var</code></a> <code>best</code> with its <code>value</code> linked from the same <code>get_var last</code>, then a <a href="../reference/graph-nodes.html#save_vars"><code>save_vars</code></a> with <code>store</code> <code>records</code> and <code>vars</code> <code>best</code>.</p></li>
-    <li><p>Check the side panel shows no problems. Then think through a new game: <code>best</code> starts at 9999, and the <code>load_vars</code> on arrival brings the saved record back.</p></li>
+    <li><p>Open Gem Hollow (<b>Home</b>, <span class="ui">examples</span>, <span class="ui">Gem Hollow</span>), then <b>◇ Graphs</b>, and tap <span class="ui">pickups</span> under <span class="ui">world</span>. Open the <span class="ui">variables</span> tab: <code>coins</code> and <code>gems</code> both start at 0.</p></li>
+    <li><p>In the gem chain, tap the white link from <code>playsound11</code> to <code>subtitle12</code> to delete it.</p></li>
+    <li><p>Add a <a href="../reference/graph-nodes.html#branch"><code>branch</code></a> and a <a href="../reference/graph-nodes.html#compare"><code>compare</code></a> (<code>op</code> <code>&gt;=</code>, <code>b</code> <code>5</code>). Link <code>getvar13</code>'s <b>value</b> into the compare's <b>a</b>, and the compare's <b>value</b> into the branch's <b>cond</b>. Reusing <code>getvar13</code> is fine: this run first pulls it at <code>sethud10</code>, after the add.</p></li>
+    <li><p>Link <code>playsound11</code>'s <b>then</b> to the branch, and the branch's <b>false</b> to <code>subtitle12</code>.</p></li>
+    <li><p>On <b>true</b>, add a <a href="../reference/graph-nodes.html#subtitle"><code>subtitle</code></a>: <code>All five gems! The hollow has no secrets left.</code>, <code>seconds</code> <code>4</code>.</p></li>
+    <li><p>Check the bar shows no problem count, then play and find the five gems. The fifth gets the new line.</p></li>
   </ol>
 
   <div class="quiz" data-answer="1">

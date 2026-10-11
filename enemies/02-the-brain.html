@@ -21,7 +21,7 @@
   <div class="goal">
     <b>You'll learn</b><span>the fields of a state; how transitions and conditions are checked; the order of one decision; how a monster finds a target and why it keeps it; and the patterns for idle, wander, chase, attack and give up</span>
     <b>Time</b><span>40 minutes</span>
-    <b>Needs</b><span>the <code>grunt</code> from <a href="01-first-monster.html">Your first monster</a>, and a map with two rooms joined by a door</span>
+    <b>Needs</b><span>Gem Hollow open in the studio (<a href="01-first-monster.html#gem-hollow">Your first monster</a>); for the last exercise, the <code>grunt</code> from that lesson and a map with two rooms joined by a door</span>
   </div>
 
   <h2>Try it first</h2>
@@ -43,8 +43,8 @@
   <p>The difference matters. A wind-up, a strike and a recovery are not three states. They are one <code>attack</code> state with a duration and two steps in its sequence.</p>
 
   <h2>A state's fields</h2>
-  <figure class="shot" data-src="../assets/shots/enemy-state.png" data-alt="The chase state's tab: name, anim, move, face, ticks, ticks_jitter, next, interruptible, solid, then its transitions" data-hotspots='[{"x":82,"y":22,"t":"name","d":"Rename the state; arrows that point at it follow"},{"x":88,"y":34,"t":"move","d":"How the body is driven"},{"x":88,"y":40,"t":"face","d":"Where it looks"},{"x":88,"y":46,"t":"ticks and next","d":"How long it lasts, and where it goes after"},{"x":80,"y":74,"t":"go to … when all of …","d":"The transitions, each with its conditions"}]'>
-    <figcaption>Tap a state in the graph, and its fields fill the <span class="ui">⬡ <i>state</i></span> tab.</figcaption>
+  <figure class="shot" data-src="../assets/shots/enemy-state.png" data-alt="The slime's chase state's tab: name, anim, move, face, ticks, ticks_jitter, next, interruptible, solid, then its first transition, to squash" data-hotspots='[{"x":86,"y":26,"t":"name","d":"Rename the state; arrows that point at it follow"},{"x":88,"y":38,"t":"move","d":"How the body is driven: chase follows a route"},{"x":88,"y":44,"t":"face","d":"Where it looks: target"},{"x":88,"y":56,"t":"ticks and next","d":"Empty: chase lasts until a transition fires"},{"x":82,"y":80,"t":"go to … when all of …","d":"The transitions, each with its conditions; the first is to squash"},{"x":93,"y":92,"t":"not","d":"Turns a condition round"}]'>
+    <figcaption>Tap a state in the graph, and its fields fill the <span class="ui">⬡ <i>state</i></span> tab. Here, Gem Hollow's <code>slime</code> in <code>chase</code>.</figcaption>
   </figure>
   <p>Tap a state in the graph. Its tab shows a <span class="ui">name</span> box, then the fields from the vocabulary:</p>
   <table>
@@ -56,7 +56,7 @@
       <tr><td><a href="../reference/monster-vocab.html#state_fields.ticks"><code>ticks</code></a></td><td>How long the state lasts. Empty means "until a transition fires", which is what <code>chase</code> wants.</td></tr>
       <tr><td><a href="../reference/monster-vocab.html#state_fields.ticks_jitter"><code>ticks_jitter</code></a></td><td>Up to this many extra ticks, rolled each time it enters. Monsters that entered together then leave at different times and stop moving as one animal. Needs <code>ticks</code>.</td></tr>
       <tr><td><a href="../reference/monster-vocab.html#state_fields.next"><code>next</code></a></td><td>Where it goes when <code>ticks</code> runs out. A state with <code>ticks</code> must have one. A state that ends and stays, like <code>death</code>, names itself.</td></tr>
-      <tr><td><a href="../reference/monster-vocab.html#state_fields.interruptible"><code>interruptible</code></a></td><td>Whether a hit can send it to <code>pain</code>. Left empty, it can. Death interrupts everything.</td></tr>
+      <tr><td><a href="../reference/monster-vocab.html#state_fields.interruptible"><code>interruptible</code></a></td><td>Whether a hit can send it to <code>pain</code>. Left empty, it can, even though the empty switch is drawn off. Death interrupts everything.</td></tr>
       <tr><td><a href="../reference/monster-vocab.html#state_fields.solid"><code>solid</code></a></td><td>Collision while in this state. Only <code>death</code> normally sets it, to off. Leave it empty elsewhere.</td></tr>
     </tbody>
   </table>
@@ -132,6 +132,39 @@
   <p>The transition into <code>attack</code> asks <code>cooldown_ready</code> on a var (the new monster uses <code>ready</code>). The attack's sequence runs <code>set_cooldown</code> on that var. The state has <code>ticks</code> and <code>next</code> chase. See <a href="03-attacks.html">Attacks</a>.</p>
   <h3>Give up</h3>
   <p>Because a target is kept, giving up is something you build: a <code>lost</code> state the monster enters when it cannot see you, which goes back to <code>chase</code> if it sees you again, and otherwise runs out into a state that runs <code>target_none</code>. The exercise builds exactly this.</p>
+
+  <h2 id="gem-hollow">In Gem Hollow: the slime's brain</h2>
+  <figure class="shot" data-src="../assets/shots/enemy-slime-brain.png" data-alt="The slime's graph laid out in two columns: look, chase, squash, attack, gone, death and pain, with squash picked" data-hotspots='[{"x":46,"y":30,"t":"look ★","d":"The initial state: wanders until it notices you"},{"x":64,"y":30,"t":"chase","d":"Runs at you; three transitions"},{"x":46,"y":44,"t":"squash","d":"You landed on it: it bounces you and goes"},{"x":64,"y":44,"t":"attack","d":"A bump at tick 10, then a 60-tick cooldown"},{"x":46,"y":57,"t":"gone","d":"Runs despawn, once"},{"x":64,"y":57,"t":"death","d":"Hit to 0 hp: a sound, and the body goes"},{"x":64,"y":70,"t":"pain","d":"12 ticks, back to chase"}]'>
+    <figcaption>Gem Hollow's <code>slime</code>, with <code>squash</code> picked. Its states were dragged into two columns so they fit; <span class="ui">⤢</span> at the bottom of the graph fits every state in view.</figcaption>
+  </figure>
+  <p>Open <b>☠ Monsters</b> and pick <code>slime</code>. It has the five states a new monster has, plus two of its own: <code>squash</code> and <code>gone</code>. Read it state by state.</p>
+  <table>
+    <thead><tr><th>State</th><th>Fields</th><th>Transitions, in order</th></tr></thead>
+    <tbody>
+      <tr><td><code>look</code> ★</td><td><code>anim</code> 0, <code>move</code> wander, <code>face</code> movement</td><td>1. to <code>squash</code> when <code>target_above</code> (by 0.6) and <code>target_within</code> 1.3<br>2. to <code>chase</code> when <code>has_target</code>, <code>target_visible</code> and <code>target_within</code> 9</td></tr>
+      <tr><td><code>chase</code></td><td><code>anim</code> 1, <code>move</code> chase, <code>face</code> target, <code>interruptible</code> on</td><td>1. to <code>squash</code>, the same two conditions<br>2. to <code>look</code> when <code>has_target</code> with <span class="ui">not</span> on<br>3. to <code>attack</code> when <code>target_within</code> 1.4 and <code>cooldown_ready</code> on <code>ready</code></td></tr>
+      <tr><td><code>attack</code></td><td><code>anim</code> 2, stop, <code>ticks</code> 24, <code>next</code> chase</td><td>none: at 10, <code>melee</code> (damage 10, range 1.2, knockback 6), a sound, and <code>set_cooldown</code> ready 60</td></tr>
+      <tr><td><code>pain</code></td><td><code>anim</code> 3, <code>ticks</code> 12, <code>next</code> chase</td><td>none: a hurt sound at 0</td></tr>
+      <tr><td><code>squash</code></td><td><code>anim</code> 4, stop, <code>solid</code> off, <code>ticks</code> 40, <code>next</code> gone</td><td>none: at 0, a sound and <code>melee</code> with damage 1, range 2 and <code>lift</code> 14</td></tr>
+      <tr><td><code>gone</code></td><td><code>anim</code> 4, <code>ticks</code> 1, <code>next</code> gone</td><td>none: <a href="../reference/monster-vocab.html#despawn"><code>despawn</code></a> at 0</td></tr>
+      <tr><td><code>death</code></td><td><code>anim</code> 4, <code>solid</code> off, <code>ticks</code> 40, <code>next</code> gone</td><td>none: a sound at 0</td></tr>
+    </tbody>
+  </table>
+  <p>What to notice:</p>
+  <ul>
+    <li><b>The stomp is a transition, not a hit.</b> <code>squash</code> is the <em>first</em> card in both <code>look</code> and <code>chase</code>, so landing on a slime beats everything else it might do. <a href="../reference/monster-vocab.html#target_above"><code>target_above</code></a> with <code>by</code> 0.6 means "you are at least 0.6 above me", and <code>target_within</code> 1.3 means "and nearly on top of me". The <code>melee</code> in <code>squash</code> does 1 damage but lifts the hero by 14: that is the bounce off the slime's head. Then it switches <code>solid</code> off, waits 40 ticks for the death animation, and <code>gone</code> removes it.</li>
+    <li><b>Noticing has a shorter range than <code>sight</code>.</b> <code>sight</code> is 14 on <span class="ui">🧠 brain</span>, so it takes you as its target from 14 away, but <code>look</code> only leaves for <code>chase</code> inside 9. The bee does the same with 16 and 10, the snail with 8 and 6.</li>
+    <li><b>Its wander is a straight walk.</b> <code>move</code> wander walks the heading in the var <code>wander</code>. The slime has no such var, only <code>ready</code>, so it walks along the heading it already has until something stops it. And <code>face</code> movement behaves like hold (see the callout above). The bee and the snail are built the same way. The exercise below gives the snail a real wander.</li>
+    <li><b>The bee and the snail</b> have the same <code>look</code>, <code>chase</code>, <code>attack</code>, <code>pain</code>, <code>gone</code> and <code>death</code>, and no <code>squash</code>: you cannot stomp them. The snail's <code>look</code> uses <code>anim</code> 1, so it crawls with its walk animation even before it has seen you.</li>
+  </ul>
+
+  <h2>Exercise: a snail that really wanders</h2>
+  <ol class="steps">
+    <li><p>Open Gem Hollow, choose <b>☠ Monsters</b> and pick <code>snail</code>. On <span class="ui"># vars</span>, press <span class="ui">+ var</span> and name it <code>wander</code>.</p></li>
+    <li><p>Tap <code>look</code>. Set <code>ticks</code> 120, <code>ticks_jitter</code> 60 and <code>next</code> look, so it picks a new heading every two to three seconds. Set <code>face</code> to hold.</p></li>
+    <li><p>Under <b>▶ at tick … do …</b>, use <span class="ui">add step</span> to add <code>set_angle</code>: <code>at</code> 0, <code>var</code> wander, <code>towards</code> random. Add <code>face</code>: <code>at</code> 0, <code>towards</code> var, <code>var</code> wander.</p></li>
+    <li><p>Check the bar says <em>"loads clean"</em>, then press <span class="ui">▶ Play</span>. Go to the third zone and watch the snails from a distance: they now turn every few seconds instead of crawling into a wall and staying there.</p></li>
+  </ol>
 
   <h2>Exercise: a watcher that gives up</h2>
   <p>You will turn the grunt's brain into this:</p>

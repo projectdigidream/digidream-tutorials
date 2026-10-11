@@ -24,8 +24,8 @@
     <b>Needs</b><span>a sprite open in ThreeSprite (see <a href="01-first-sprite.html">Your first sprite</a>)</span>
   </div>
 
-  <figure class="shot" data-src="../assets/shots/sprite-draw.png" data-hotspots='[{"x": 3, "y": 1.7, "t": "← studio", "d": "save into the module and go back; ✕ throws the changes away"}, {"x": 5, "y": 6, "t": "The project", "d": "name, canvas size, views, mirrored — click for settings"}, {"x": 55, "y": 6, "t": "Mode tabs", "d": "Draw · Rig · Animate · 3D · Export"}, {"x": 15, "y": 11, "t": "View strip", "d": "one button per view; ⇄ marks mirrored views ( , and . step)"}, {"x": 2, "y": 15, "t": "Tools", "d": "pencil, eraser, dither, fill, pick, select, move, pan"}, {"x": 2, "y": 46, "t": "Brush size", "d": "1 to 4 pixels"}, {"x": 2, "y": 60, "t": "Toggles", "d": "mirror drawing, dim other parts, pixel grid"}, {"x": 41, "y": 50, "t": "The canvas", "d": "one square frame; the feet stand on the orange line"}, {"x": 88, "y": 20, "t": "Palette", "d": "primary and secondary colour, swap with X"}, {"x": 88, "y": 34, "t": "Parts", "d": "what is drawn, hung on bones; variants per part"}, {"x": 88, "y": 49, "t": "Solids", "d": "3D shapes drawn in every view; Bake turns them into pixels"}]' data-alt="ThreeSprite's Draw tab">
-    <figcaption>The Draw tab: tools on the left, the view strip over the canvas, the palette, parts and solids on the right.</figcaption>
+  <figure class="shot" data-src="../assets/shots/sprite-draw.png" data-hotspots='[{"x": 3.3, "y": 1.7, "t": "‹ studio", "d": "save into the module and go back; ✕ at the top right throws the changes away"}, {"x": 6, "y": 6, "t": "The project", "d": "name, canvas size, views (and mirrored, when it is) — click for settings"}, {"x": 54, "y": 6, "t": "Mode tabs", "d": "Draw · Rig · Animate · 3D · Export"}, {"x": 17, "y": 11, "t": "View strip", "d": "one button per view; ⇄ marks mirrored views ( , and . step)"}, {"x": 2, "y": 24, "t": "Tools", "d": "pencil, eraser, dither, fill, pick, select, move, pan"}, {"x": 2, "y": 47, "t": "Brush size", "d": "1 to 4 pixels"}, {"x": 2, "y": 60, "t": "Toggles", "d": "mirror drawing, dim other parts, pixel grid"}, {"x": 41, "y": 50, "t": "The canvas", "d": "one square frame; the feet stand on the orange line"}, {"x": 88, "y": 17, "t": "Palette", "d": "primary and secondary colour, swap with X"}, {"x": 88, "y": 40, "t": "Parts", "d": "what is drawn, hung on bones; ⬡ marks a part made of solids"}, {"x": 88, "y": 72, "t": "Solids", "d": "3D shapes drawn in every view; Bake turns them into pixels"}]' data-alt="ThreeSprite's Draw tab with Gem Hollow's HERO open">
+    <figcaption>Gem Hollow's HERO in the Draw tab: tools on the left, the view strip over the canvas, the palette, parts and solids on the right. The <code>head</code> part is selected, so the others are dimmed.</figcaption>
   </figure>
 
   <h2>What you are drawing on</h2>
@@ -107,6 +107,19 @@
       <tr><td><kbd>Space</kbd>+drag, middle button, or the wheel</td><td>Pan</td></tr>
     </tbody>
   </table>
+
+  <h2 id="gem-hollow">In Gem Hollow</h2>
+  <p>Gem Hollow uses the Draw tab in two ways.</p>
+  <ul>
+    <li><b>HERO, SLIME, BEE, SNAIL and LEVER aren't painted at all.</b> Every part is a solids part (⬡ in Parts): HERO's ten parts hold 35 shapes between them. So the Draw tab shows their palette and their shapes in the Solids panel, and the pixels are rendered from the shapes in every view. Each has its own palette: HERO's is <i>HERO colours</i>, 14 colours.</li>
+    <li><b>The pickups and scenery are pictures.</b> Each has one part, <code>picture</code>, drawn in its single view with the <i>Kenney</i> palette. A picture that changes, such as a coin turning, is drawn as several <b>variants</b> of that part. COIN has six: <code>face</code>, <code>w75</code>, <code>w40</code>, <code>edge</code>, <code>b40</code> and <code>b75</code>, the coin at full width, three quarters, 40%, edge on, and back again. TORCH has two flames, <code>a</code> and <code>b</code>.</li>
+  </ul>
+  <ol class="steps">
+    <li><p>Open Gem Hollow, then <b>🎞 Sprites</b>, click <code>TORCH</code> and press <span class="ui">✎ edit in ThreeSprite</span>.</p></li>
+    <li><p>Under the part's name, open the <b>Variant</b> drop-down and choose <code>b</code>: the other flame. Switch back to <code>a</code> and compare.</p></li>
+    <li><p>Press <kbd>I</kbd> and click the flame's brightest pixel. With the <span class="ui">Pencil</span> (<kbd>B</kbd>) at size 1, add a spark above the flame in variant <code>b</code>.</p></li>
+    <li><p>Press <span class="ui">✕</span> to go back without saving, so Gem Hollow keeps its torch.</p></li>
+  </ol>
 
   <h2>Exercise: a turned head</h2>
   <ol class="steps">

@@ -32,7 +32,7 @@
       <tr><td>Where the texture lives</td><td>in the module: <code>sources/textures/NAME.texproj.json</code>, baked to <code>assets/textures/NAME.png</code></td><td>in its <span class="ui">Recent</span> list, and in any file you <span class="ui">Save</span> to</td></tr>
       <tr><td><span class="ui">New…</span> <span class="ui">Open</span> <span class="ui">Recent</span> <span class="ui">Save</span> <span class="ui">Save as…</span></td><td>hidden: the studio hands the texture in and takes it back</td><td>✓</td></tr>
       <tr><td><span class="ui">Export…</span></td><td>✓ (downloads a PNG)</td><td>✓</td></tr>
-      <tr><td>How you finish</td><td><span class="ui">← studio</span> saves and goes back; <span class="ui">✕</span> goes back without saving</td><td><span class="ui">Save</span> (<kbd>⌘S</kbd>), or just close: every change is autosaved to <span class="ui">Recent</span></td></tr>
+      <tr><td>How you finish</td><td><span class="ui">‹ studio</span> saves and goes back; <span class="ui">✕</span> goes back without saving</td><td><span class="ui">Save</span> (<kbd>⌘S</kbd>), or just close: every change is autosaved to <span class="ui">Recent</span></td></tr>
     </tbody>
   </table>
 
@@ -162,7 +162,7 @@
     <li><p>Press <kbd>X</kbd> to swap the colours. Press <kbd>L</kbd> and draw the mortar lines, holding <kbd>Shift</kbd> to keep them straight: two horizontal rows, with the vertical joints staggered between them.</p></li>
     <li><p>Press <kbd>N</kbd> for Noise. Set <span class="ui">Density</span> low and scatter a little grain over the bricks.</p></li>
     <li><p>Press <kbd>Tab</kbd> twice to hide and bring back the side panel. Then look at the cube in the <b>3D preview</b>.</p></li>
-    <li><p>In the studio, press <span class="ui">← studio</span>. The texture is saved as a project and baked to <code>assets/textures/BRICK1.png</code>, and its card appears under <span class="ui">🧱 the module's own (N)</span>. Standalone, press <kbd>⌘S</kbd> and pick where to save it.</p></li>
+    <li><p>In the studio, press <span class="ui">‹ studio</span>. The texture is saved as a project and baked to <code>assets/textures/BRICK1.png</code>, and its card appears under <span class="ui">🧱 the module's own (N)</span>. Standalone, press <kbd>⌘S</kbd> and pick where to save it.</p></li>
   </ol>
   <div class="callout"><p>The studio always keeps what qPainter returns as a <b>project</b>, <code>sources/textures/NAME.texproj.json</code>, with its layers and frames, and bakes the PNG from it. The PNG is a composite of the visible layers. A texture that started as an imported PNG becomes a project the first time you edit it in qPainter.</p></div>
 
@@ -175,7 +175,7 @@
     <p class="q">You opened a texture from the studio and want to keep your changes. Where is <span class="ui">Save</span>?</p>
     <ul>
       <li>In the top bar, as always</li>
-      <li>There is none in the studio: <span class="ui">← studio</span> saves and goes back</li>
+      <li>There is none in the studio: <span class="ui">‹ studio</span> saves and goes back</li>
       <li>Under <span class="ui">Export…</span></li>
     </ul>
     <p class="why">Inside the studio, qPainter is a guest. The texture belongs to the module, so the file buttons are hidden, and going back to the studio is what saves it.</p>

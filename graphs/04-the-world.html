@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Talking to the world · Digidream Studio tutorials</title>
-<meta name="description" content="What a graph can do to the world: entities and their properties, sectors, lights, weather and the sky, sounds and music, cutscenes and the camera, panels and the HUD, and the player's keys.">
+<meta name="description" content="What a graph can do to the world, shown on Gem Hollow: entities, moving sectors, lights and the sky, sounds and music, cutscenes and typed subtitles, the camera, panels and the HUD, and the player's keys.">
 <link rel="stylesheet" href="../assets/site.css">
 <link rel="stylesheet" href="../assets/skins/skins.css">
 <link rel="icon" type="image/png" href="../assets/logo.png">
@@ -19,8 +19,8 @@
   <h1>Talking to the world</h1>
   <p class="lede">Variables are a graph's memory. This page is about its hands: the nodes that move, hurt, light, play, film and show things. Each section names the nodes, says what they act on, and points out what they cannot do.</p>
   <div class="goal">
-    <b>You'll learn</b><span>how to act on entities and read them, move and restyle sectors, play sounds and change the music, run a cutscene and preview it with ▶ scene, open and answer panels, write HUD values, and answer the player's keys</span>
-    <b>Time</b><span>40 minutes</span>
+    <b>You'll learn</b><span>how to act on entities and read them (Gem Hollow's springs and spikes), move and restyle sectors (its rafts and turning platforms), play sounds and change the music, run a cutscene (its intro and ending), type out subtitles, preview it all with ▶ scene, open and answer panels, write HUD values, and answer the player's keys</span>
+    <b>Time</b><span>45 minutes</span>
     <b>Needs</b><span><a href="01-thinking-in-graphs.html">Thinking in graphs</a> and <a href="02-variables-and-numbers.html">Variables, numbers and saving</a>; camera paths (<a href="../studio/05-camera.html">Camera and cinematics</a>) and panels (<a href="../studio/08-look-and-feel.html">Sky, screens and weather</a>) for those sections</span>
   </div>
 
@@ -34,7 +34,7 @@
       <tr><td><a href="../reference/graph-nodes.html#kill"><code>kill</code></a></td><td>Kills it outright, as if shot.</td><td></td></tr>
       <tr><td><a href="../reference/graph-nodes.html#remove"><code>remove</code></a></td><td>Takes it out of the world, with no death.</td><td></td></tr>
       <tr><td><a href="../reference/graph-nodes.html#teleport"><code>teleport</code></a></td><td>Puts it at a spawn point (by tag), onto the entity linked to <code>to</code>, or at x, y, z. An axis you leave out stays as it is.</td><td></td></tr>
-      <tr><td><a href="../reference/graph-nodes.html#push"><code>push</code></a></td><td>A shove it slides from: <code>forward</code>, <code>backward</code>, <code>away</code> or <code>toward</code> the entity linked to <code>from</code>, <code>up</code>, or at an <code>angle</code> (0 is east, 90 north).</td><td>strength 10 units a second</td></tr>
+      <tr><td><a href="../reference/graph-nodes.html#push"><code>push</code></a></td><td>A shove it slides from: <code>forward</code>, <code>backward</code>, <code>away</code> or <code>toward</code> the entity linked to <code>from</code>, straight <code>up</code> (the strength is all lift: a spring), or at an <code>angle</code> (0 is east, 90 north). <code>up</code> adds lift to any of them.</td><td>strength 10 units a second</td></tr>
       <tr><td><a href="../reference/graph-nodes.html#stop"><code>stop</code></a></td><td>Takes all its velocity away.</td><td></td></tr>
       <tr><td><a href="../reference/graph-nodes.html#speed_up"><code>speed_up</code></a></td><td>Faster or slower for a while: 2 is twice as fast, 0.5 half.</td><td>factor 2, 5 seconds</td></tr>
       <tr><td><a href="../reference/graph-nodes.html#spawn"><code>spawn</code></a></td><td>Brings a monster or a catalogue prop into the world, at the entity linked to <code>at</code>, or at x, y, z. Its <code>entity</code> output is what appeared, or nil.</td><td></td></tr>
@@ -42,6 +42,12 @@
     </tbody>
   </table>
   <p>A <a href="../reference/graph-nodes.html#teleport"><code>teleport</code></a> lands at the end of the tick, like every change to the world. A <a href="../reference/graph-nodes.html#position_of"><code>position_of</code></a> later in the same run still reads the old place.</p>
+
+  <h3>Gem Hollow's springs and spikes</h3>
+  <p>The second note of Gem Hollow's <code>moving</code> graph (below) is two tiny chains:</p>
+  <pre><code>when_prop_touched (spring) → push (direction: up, strength: 15) → play_sound world.spring
+when_prop_touched (spikes) → damage 15 → push (direction: away, strength: 9, up: 5)</code></pre>
+  <p>The spring throws the player 15 units a second straight up, more than a jump. The spikes are meant to knock the player back, away from them. But <code>away</code> means away from the entity linked to <code>from</code>, and nothing is linked there. With no <code>from</code>, the push has no direction, so only the <code>up</code> 5 is felt: a hop on the spot. Link the start node's <code>prop</code> into <code>from</code> and the spikes throw you clear. That is the exercise at the end of this page.</p>
 
   <h3>Reading entities</h3>
   <p>The <span class="ui">read</span> group has pure nodes that give values:</p>
@@ -68,6 +74,17 @@
       <tr><td><a href="../reference/graph-nodes.html#stop_sector"><code>stop_sector</code></a></td><td>Stops it where it is.</td></tr>
     </tbody>
   </table>
+  <h3 id="moving">Gem Hollow's moving platforms</h3>
+  <p>Gem Hollow's rafts slide over the water and the lava, and a cross, a disc and a bridge turn over the lava. All of it starts in one chain in the <code>moving</code> graph:</p>
+  <figure class="shot" data-src="../assets/shots/graph-gem-moving.png" data-alt="Gem Hollow's moving graph: when_level_starts, three slide_sector nodes and three spinning sectors in a row, and the springs and spikes below" data-hotspots='[{"x":5.4,"y":23.3,"t":"When the level starts","d":"when_level_starts: once, when the level first runs. No player is in this run, and none is needed."},{"x":17.6,"y":29,"t":"A raft","d":"slide_sector, tag 31: dx 18, dy 0, normal speed."},{"x":17.8,"y":37,"t":"There and back","d":"back_and_forth on: the raft keeps going, forever."},{"x":50.2,"y":29,"t":"A turning platform","d":"Every sector tagged 41 turns 360 degrees, and keeps turning."},{"x":18.4,"y":54.8,"t":"The spring","d":"push, direction up, strength 15."},{"x":29.2,"y":75.8,"t":"The spikes","d":"push away, strength 9, up 5. Its from is not linked, so only the lift is felt."},{"x":24.1,"y":93.1,"t":"from","d":"Link the touch&#39;s prop here for a real knock-back."}]'>
+    <figcaption>Gem Hollow's <code>moving</code> graph at 80%.</figcaption>
+  </figure>
+  <ul>
+    <li><b>One start, a row of moves.</b> Each move starts and hands on at once, so all six platforms start on the level's first tick. Nothing waits: a sector move runs on by itself.</li>
+    <li><b>By tag.</b> Each platform's room carries a tag (31, 32, 33 for the rafts; 41, 42, 43 for the turning ones), set in its room settings. A tag needs nothing picked on the map, so the chain survives redrawing the rooms.</li>
+    <li><b>Rafts</b> are <a href="../reference/graph-nodes.html#slide_sector"><code>slide_sector</code></a> with <code>back_and_forth</code> on: <code>dx</code> 18 for the first, a diagonal (<code>dx</code> -9, <code>dy</code> 12) for the second. A player can land on a raft from its open sides while it moves.</li>
+    <li><b>Turning platforms</b> turn a full 360° about their middle and keep turning. <a href="../reference/graph-nodes.html#spin_sector"><code>spin_sector</code></a> does that (<code>degrees</code> 360, <code>forever</code> on, <code>speed</code> <code>slow</code>). For a finer speed, the trigger word <span class="ui">do sector move</span> takes <code>spin</code> in degrees and <code>spin_speed</code> in degrees a tick: a third of a degree a tick is one turn in 18 seconds. It also takes a <code>tag</code>.</li>
+  </ul>
   <p>These are the trigger runtime's own sector moves underneath. The server sends a move once, and every player's machine computes the rest, so a graph's door costs no more than a trigger's and moves just as smoothly.</p>
   <div class="callout warn"><p>A door you can press again while it moves will restart halfway. A trigger door guards against that with the condition <code>sector_at_rest</code>. In a graph, use the same condition from <span class="ui">trigger words</span> (<span class="ui">if sector at rest</span>) before the move.</p></div>
 
@@ -98,6 +115,7 @@
       <tr><td><code>everyone</code></td><td>Every player in the level, not just the event's.</td></tr>
     </tbody>
   </table>
+  <p>Gem Hollow's soundtrack has four cues: <code>default</code>, <code>cliffs</code>, <code>keep</code> and <code>victory</code>. The second and third checkpoint flags end with <span class="ui">do music</span> (<code>cliffs</code>, then <code>keep</code>; <code>fade</code> 1500, <code>at</code> <code>next_bar</code>), so each zone has its tune and the change falls on the beat. The ending switches to <code>victory</code> with <code>at</code> <code>now</code>, because a cutscene can't wait for a bar.</p>
   <p>The change is not remembered: a player who joins later hears <code>default</code>. To keep a boss theme for latecomers, also play it from <a href="../reference/graph-nodes.html#when_player_arrives"><code>when_player_arrives</code></a> while a <code>boss_awake</code> variable is true. Cues are named in the <b>♪ Music</b> section; see <a href="../music/05-loops-and-cues.html">Loops, cuts and cues</a>.</p>
 
   <h2>Cutscenes and the camera</h2>
@@ -107,20 +125,58 @@
     <tbody>
       <tr><td><a href="../reference/graph-nodes.html#start_cinematic"><code>start_cinematic</code></a></td><td>Takes the controls (no move, jump, dash, use or attack) and brings in the letterbox bars: 0.12 of the screen, over 0.5 seconds.</td><td>then</td></tr>
       <tr><td><a href="../reference/graph-nodes.html#end_cinematic"><code>end_cinematic</code></a></td><td>Gives it all back: the controls, the camera following the player, the subtitle off.</td><td>then</td></tr>
-      <tr><td><a href="../reference/graph-nodes.html#subtitle"><code>subtitle</code></a></td><td>A line at the bottom, with an optional <code>speaker</code>. It stays <code>seconds</code>, or long enough to read (1.5 s plus 0.05 s a letter, at most 8).</td><td>then, done</td></tr>
+      <tr><td><a href="../reference/graph-nodes.html#subtitle"><code>subtitle</code></a></td><td>A line at the bottom, with an optional <code>speaker</code>. It stays <code>seconds</code>, or long enough to read (1.5 s plus 0.05 s a letter, at most 8). With <code>mode</code> <code>typed</code>, it is typed out (see below).</td><td>then, done</td></tr>
       <tr><td><a href="../reference/graph-nodes.html#clear_subtitle"><code>clear_subtitle</code></a></td><td>Takes the line off now.</td><td>then</td></tr>
       <tr><td><a href="../reference/graph-nodes.html#fade"><code>fade</code></a></td><td>To <code>black</code> or back to <code>clear</code>, over 1 second by default.</td><td>then, done</td></tr>
       <tr><td><a href="../reference/graph-nodes.html#camera_flythrough"><code>camera_flythrough</code></a></td><td>Flies the camera along a camera path, picked by its tag, looking where the path looks. 6 units a second, easing on over 1 second.</td><td>then, done</td></tr>
       <tr><td><a href="../reference/graph-nodes.html#camera_track"><code>camera_track</code></a></td><td>Rides a path but keeps looking at the player: a dolly down a corridor.</td><td>then</td></tr>
-      <tr><td><a href="../reference/graph-nodes.html#camera_follow"><code>camera_follow</code></a></td><td>Back to following the player, from a <code>distance</code>, <code>height</code> and <code>angle</code>; <code>lock</code> holds them.</td><td>then</td></tr>
+      <tr><td><a href="../reference/graph-nodes.html#camera_follow"><code>camera_follow</code></a></td><td>Back to following the player, from a <code>distance</code>, <code>height</code> and <code>angle</code>; <code>lock</code> holds them. <code>lead</code> aims that many units ahead of where the player faces, and <code>lead_velocity</code> further ahead the faster they run forward.</td><td>then</td></tr>
       <tr><td><a href="../reference/graph-nodes.html#camera_shake"><code>camera_shake</code></a></td><td>A shake: 0.3 strength for 0.5 seconds by default.</td><td>then</td></tr>
     </tbody>
   </table>
+  <p>How the follow camera moves between cutscenes (its smoothing, its weight, how far it looks ahead, its dead zones) is the map's, set in the camera sheet under <span class="ui">how it moves</span>; see <a href="../studio/05-camera.html">Camera and cinematics</a>. From a graph, <code>camera_follow</code>'s <code>lead</code> and <code>lead_velocity</code> change the look-ahead.</p>
   <p>Chain the <b>done</b> exits, not the <b>then</b> ones, when the next step should wait:</p>
   <pre><code>when_level_starts → start_cinematic → camera_flythrough ─done→ subtitle "…" ─done→ end_cinematic</code></pre>
   <div class="callout tip"><p><a href="../reference/graph-nodes.html#start_cinematic"><code>start_cinematic</code></a> blocks every engine button, but the module's own keys still reach graphs. Make a <code>skip</code> key in <b>Controls</b> and answer it with <a href="../reference/graph-nodes.html#when_button_pressed"><code>when_button_pressed</code></a> → <a href="../reference/graph-nodes.html#end_cinematic"><code>end_cinematic</code></a>.</p></div>
+  <h3>Typed subtitles</h3>
+  <p>A <a href="../reference/graph-nodes.html#subtitle"><code>subtitle</code></a> with <code>mode</code> <code>typed</code> types its line out, as in an old adventure game:</p>
+  <ul>
+    <li><code>speed</code>: letters a second (30 when empty).</li>
+    <li><code>pack</code>: how many letters appear at each step (2 when empty).</li>
+    <li><code>sound</code>: a sound played with each step that shows a letter. A step of only spaces is silent, so the gaps between words are heard. With no sound, it types in silence.</li>
+  </ul>
+  <p>Unless <code>seconds</code> is set, a typed line stays long enough to be typed (letters ÷ <code>speed</code>) and then read. The speaker's name shows at once. The sound is centred, wherever the camera is.</p>
+
+  <h3 id="intro">Gem Hollow's intro, node by node</h3>
+  <p>The first time a player arrives in the <code>world</code> level, Gem Hollow flies the camera over the whole hollow and tells the story. It is the <code>intro</code> graph:</p>
+  <figure class="shot" data-src="../assets/shots/graph-gem-intro.png" data-alt="Gem Hollow's intro graph: a top row from when_player_arrives to camera_flythrough, a row of four subtitles, and a bottom row that hands the controls back" data-hotspots='[{"x":5.4,"y":26.9,"t":"Arrives","d":"when_player_arrives starts the run with the player as its entity."},{"x":15.9,"y":26.9,"t":"once","d":"Only the first arrival. once is per graph, so in co-op a second player does not see it."},{"x":28.9,"y":30.5,"t":"Bars","d":"start_cinematic: bars of 0.12 in 0.6 seconds, and the controls off."},{"x":39.1,"y":33.6,"t":"A cut to black","d":"fade to black in 0.01 seconds: at once."},{"x":50.2,"y":33.6,"t":"Fade in","d":"fade to clear over 2 seconds, from fade4&#39;s then."},{"x":71.8,"y":30.5,"t":"The flight","d":"camera_flythrough on path 1 at 12 units a second. The studio works out the shot: 42.8 seconds."},{"x":77.3,"y":46,"t":"Two exits","d":"then starts the subtitles at once; done, at the end of the flight, starts the bottom row."},{"x":5.9,"y":55,"t":"The story","d":"Four subtitles, each started by the one before&#39;s done: 5, 6, 6 and 4 seconds."},{"x":5.4,"y":79.3,"t":"Back to the hero","d":"fade to black, camera_follow, end_cinematic, fade to clear."},{"x":50.2,"y":79.2,"t":"The first goal","d":"A last subtitle, with the controls back: find the red lever."},{"x":91.1,"y":72.2,"t":"mode","d":"The picked subtitle&#39;s mode: empty is line. Choose typed to type it out."}]'>
+    <figcaption>Gem Hollow's <code>intro</code> graph at 80%, with <code>subtitle8</code> picked.</figcaption>
+  </figure>
+  <pre><code>when_player_arrives → once → start_cinematic (0.12, 0.6 s) → fade black (0.01 s)
+  → fade clear (2 s) → play_sound cine.whoosh → camera_flythrough (path 1, speed 12, blend 1)
+
+camera_flythrough.then → subtitle "Long ago…" (5 s) ─done→ subtitle (6 s) ─done→ subtitle (6 s) ─done→ subtitle (4 s)
+camera_flythrough.done → fade black (0.8 s) ─done→ camera_follow → end_cinematic (0.6 s) → fade clear (1 s)
+  → subtitle "Find the RED lever…" (6 s)</code></pre>
+  <ul>
+    <li><b>Two clocks.</b> After the flight starts, two paths run side by side: the story, timed by the subtitles (21 seconds), and the flight, timed by the path (about 43 seconds at 12 units a second). The bottom row waits for the flight, not for the words.</li>
+    <li><b>Black, then in.</b> The first fade's <b>then</b>, not its <b>done</b>, starts the second, so the screen cuts to black and fades in over 2 seconds while the bars come in.</li>
+    <li><b>Out under cover.</b> The camera goes back to the player behind a fade to black, so the jump is never seen. <code>end_cinematic</code> also takes off any line still showing.</li>
+    <li><b>once.</b> The intro plays the first time only. Gem Hollow does not keep level state, so it plays again whenever the level starts over.</li>
+  </ul>
+
+  <h3 id="ending">Gem Hollow's ending</h3>
+  <p>Touching the Star at the end runs the <code>ending</code> graph: a victory cutscene, then a panel.</p>
+  <figure class="shot" data-src="../assets/shots/graph-gem-ending.png" data-alt="Gem Hollow's ending graph: the Star touched, the cutscene, the end panel, and its two buttons" data-hotspots='[{"x":7.6,"y":24.2,"t":"The Star","d":"when_prop_touched, prop star, then once."},{"x":17.6,"y":30.9,"t":"Take the Star","d":"remove, with its entity linked from the touch&#39;s prop."},{"x":39.7,"y":24.2,"t":"Wider bars","d":"start_cinematic: 0.14 in 0.8 seconds."},{"x":62.4,"y":26.6,"t":"Victory music","d":"do music: cue victory, fade 600, at now."},{"x":72.3,"y":24.2,"t":"camera_track","d":"Rides path 5, a loop round the vault, while still looking at the player."},{"x":7,"y":43.5,"t":"Two lines","d":"Two subtitles of 4 seconds, chained by done: they set the length of the shot."},{"x":33.5,"y":54.1,"t":"Fade out","d":"fade to black over 1.5 seconds; its done hands back the camera and the controls."},{"x":39.4,"y":62.7,"t":"The end panel","d":"open_panel theend, after the fade back in."},{"x":7.6,"y":84.4,"t":"Back to the title","d":"when_panel_used theend › again: close_panel, then change_map to menu."},{"x":61.3,"y":82,"t":"Quit","d":"when_panel_used theend › quit: close_panel, then quit_game."}]'>
+    <figcaption>Gem Hollow's <code>ending</code> graph at 80%, with <code>cameratrac7</code> picked.</figcaption>
+  </figure>
+  <ul>
+    <li><a href="../reference/graph-nodes.html#camera_track"><code>camera_track</code></a> has no <b>done</b>: it rides its path until something else takes the camera. So the timing comes from the two subtitles (4 + 4 seconds) and the fade (1.5 seconds).</li>
+    <li>The panel <code>theend</code> shows <code>Coins {hud.coins}   Gems {hud.gems} / 5</code> in its template, written by the <code>pickups</code> graph. Its buttons are answered in the same graph, because a panel is answered where it was opened. The title screen's side of it is in <a href="05-game-graph-and-calls.html#title">The game graph, calls and maps</a>.</li>
+  </ul>
+
   <h3>Previewing with ▶ scene</h3>
-  <p>Once a graph has nodes, the window's bar has <span class="ui">▶ scene</span>. It plays the run from the picked node, or else from the first start node that reaches a cutscene or camera node, over the map, with the game's own timings: the bars, the fades, each subtitle as the HUD draws it, the camera on its curve, the shakes. Things only the server does (a door, a log line, a call) appear as a line in the corner when they happen. <kbd>Esc</kbd> or <span class="ui">■</span> comes back, and <span class="ui">↻</span> plays it again.</p>
+  <p>Once a graph has nodes, the window's bar has <span class="ui">▶ scene</span>. It plays the run from the picked node, or else from the first start node that reaches a cutscene or camera node, over the map, with the game's own timings: the bars, the fades, each subtitle as the HUD draws it (a typed one typed out, with its sound, and timed as the engine times it), the camera on its curve, the shakes. Things only the server does (a door, a log line, a call) appear as a line in the corner when they happen. <kbd>Esc</kbd> or <span class="ui">■</span> comes back, and <span class="ui">↻</span> plays it again.</p>
   <p>The preview has no game state to decide by, so every <a href="../reference/graph-nodes.html#branch"><code>branch</code></a> takes <b>true</b>, and it says so. It stops after 256 steps or two minutes.</p>
 
   <h2>Panels and the HUD</h2>
@@ -140,6 +196,7 @@
   </table>
   <ul>
     <li><b>A panel is answered where it was opened.</b> A panel the game's graph opened is answered by the game's graphs, and stays open from level to level. A level's panel is answered by that level's graphs, and closes when the player leaves.</li>
+    <li>Gem Hollow uses two panels, both opened from map graphs: <code>title</code> on the <code>menu</code> map and <code>theend</code> in the <code>ending</code> graph. Their buttons are answered with <span class="ui">when title › play is pressed</span> and friends, in the same graph.</li>
     <li><a href="../reference/graph-nodes.html#set_hud"><code>set_hud</code></a> goes to the event's player by default. In a run with no player, set <code>to</code> to <code>everyone</code>, or it reaches nobody.</li>
     <li>The older way still works: the trigger words <span class="ui">open a panel</span> (<code>ui_open</code>), and <span class="ui">when a panel is used</span> with <span class="ui">if it was this widget …</span> (<code>on_ui_event</code> and <code>widget_is</code>). That event's data outputs are numbers: <code>ui_id</code> and <code>widget_id</code>. Prefer the panel nodes, which name things.</li>
   </ul>
@@ -154,15 +211,14 @@
   <p>A <code>button</code> is one of the engine's (<code>jump</code>, <code>dash</code>, <code>grab</code>, <code>hover</code>, <code>fly</code>, <code>grapple</code>, <code>use</code>, <code>attack</code>, <code>alt_attack</code>, <code>crouch</code>) or one of the module's own keys, made in <b>Controls</b> (<a href="../studio/07-workshops.html#controls">Controls</a>). A module key can have a touch button too. A button nobody has is a problem: <em>no button or key called …</em></p>
   <p>The weapon nodes follow the same pattern: act (<a href="../reference/graph-nodes.html#give_weapon"><code>give_weapon</code></a>, <a href="../reference/graph-nodes.html#take_weapon"><code>take_weapon</code></a>, <a href="../reference/graph-nodes.html#select_weapon"><code>select_weapon</code></a>, <a href="../reference/graph-nodes.html#give_ammo"><code>give_ammo</code></a>, <a href="../reference/graph-nodes.html#set_ammo"><code>set_ammo</code></a>), read (<a href="../reference/graph-nodes.html#held_weapon"><code>held_weapon</code></a>, <a href="../reference/graph-nodes.html#has_weapon"><code>has_weapon</code></a>, <a href="../reference/graph-nodes.html#ammo_of"><code>ammo_of</code></a>) and start (<a href="../reference/graph-nodes.html#when_weapon_changed"><code>when_weapon_changed</code></a>, <a href="../reference/graph-nodes.html#when_fired"><code>when_fired</code></a>, <a href="../reference/graph-nodes.html#when_out_of_ammo"><code>when_out_of_ammo</code></a>). See the <a href="../weapons/04-ammo-and-pickups.html">Weapons</a> track.</p>
 
-  <h2>Exercise: a power cut</h2>
-  <p>A switch kills the lights, fog rolls in, the music turns tense, and a ten-second cutscene shows the danger.</p>
+  <h2>Exercise: spikes that bite, and a story that types</h2>
   <ol class="steps">
-    <li><p>Give the rooms you want darkened a tag, say <code>5</code>, in their room settings. Draw a camera path over them with tag <code>1</code> (<a href="../studio/05-camera.html">Camera and cinematics</a>).</p></li>
-    <li><p>Make a graph <code>power</code>. Add <a href="../reference/graph-nodes.html#when_wall_used"><code>when_wall_used</code></a> and pick the switch wall. Link it to a <a href="../reference/graph-nodes.html#once"><code>once</code></a>.</p></li>
-    <li><p>Then a <a href="../reference/graph-nodes.html#set_sector_light"><code>set_sector_light</code></a>: tag <code>5</code>, light <code>40</code>, seconds <code>2</code>. Then a <a href="../reference/graph-nodes.html#set_sector_effect"><code>set_sector_effect</code></a>: tag <code>5</code>, effect <code>fog</code>.</p></li>
-    <li><p>Then <span class="ui">do music</span> with cue set to one of your map's cues, <code>at</code> <code>now</code> and <code>everyone</code> on.</p></li>
-    <li><p>Then <a href="../reference/graph-nodes.html#start_cinematic"><code>start_cinematic</code></a> → <a href="../reference/graph-nodes.html#camera_flythrough"><code>camera_flythrough</code></a> (path <code>1</code>). From its <b>done</b>, a <a href="../reference/graph-nodes.html#subtitle"><code>subtitle</code></a> <code>Something is moving in the dark.</code>, and from the subtitle's <b>done</b>, <a href="../reference/graph-nodes.html#end_cinematic"><code>end_cinematic</code></a>.</p></li>
-    <li><p>Pick the <code>when_wall_used</code> node and press <span class="ui">▶ scene</span>. Watch the light and music lines go by in the corner, then the flight and the line. Press <kbd>Esc</kbd>.</p></li>
+    <li><p>Open Gem Hollow (<b>Home</b>, <span class="ui">examples</span>, <span class="ui">Gem Hollow</span>), then <b>◇ Graphs</b>, and tap <span class="ui">moving</span> under <span class="ui">world</span>.</p></li>
+    <li><p>In the green note, drag a link from <code>whenpropto11</code>'s <b>prop</b> pin to <code>push13</code>'s <b>from</b> pin. The spikes now push the player away from themselves.</p></li>
+    <li><p>Switch to the <code>intro</code> graph with the picker in the window's bar. Tap <code>subtitle8</code>, set <span class="ui">mode?</span> to <code>typed</code>, <span class="ui">speed?</span> to <code>25</code>, and choose <code>ui.select</code> for <span class="ui">sound?</span>. Do the same for <code>subtitle9</code>, <code>subtitle10</code> and <code>subtitle11</code>.</p></li>
+    <li><p>Each of those lines has its own <code>seconds</code>, which now has to cover the typing too. Clear <span class="ui">seconds?</span> on all four, so each line stays long enough to be typed and read.</p></li>
+    <li><p>Tap <code>whenplayer1</code> and press <span class="ui">▶ scene</span>. Watch the lines type out over the flight, with a tick at each step. Press <kbd>Esc</kbd>.</p></li>
+    <li><p>Play. The intro types its story. Then find a row of spikes and step on them: they now throw you back.</p></li>
   </ol>
 
   <div class="quiz" data-answer="1">
