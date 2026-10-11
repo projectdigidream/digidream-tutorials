@@ -23,8 +23,8 @@
   <table>
     <thead><tr><th>Editor</th><th>Source (kept in the module)</th><th>Baked into</th><th>When it is baked</th></tr></thead>
     <tbody>
-      <tr><td>🎞 ThreeSprite</td><td><code>sources/sprites/NAME.tsprite</code></td><td><code>assets/sprites/NAME.json</code> + <code>NAME.png</code> (an atlas)</td><td>on <span class="ui">← studio</span>, and at Play / Export if stale</td></tr>
-      <tr><td>🧱 qPainter</td><td><code>sources/textures/NAME.texproj.json</code></td><td><code>assets/textures/NAME.png</code>. Visible layers are flattened; a multi-frame project becomes a vertical sheet.</td><td>on <span class="ui">← studio</span>, and at Play / Export if stale</td></tr>
+      <tr><td>🎞 ThreeSprite</td><td><code>sources/sprites/NAME.tsprite</code></td><td><code>assets/sprites/NAME.json</code> + <code>NAME.png</code> (an atlas)</td><td>on <span class="ui">‹ studio</span>, and at Play / Export if stale</td></tr>
+      <tr><td>🧱 qPainter</td><td><code>sources/textures/NAME.texproj.json</code></td><td><code>assets/textures/NAME.png</code>. Visible layers are flattened; a multi-frame project becomes a vertical sheet.</td><td>on <span class="ui">‹ studio</span>, and at Play / Export if stale</td></tr>
       <tr><td>♪ DigidreamSynth</td><td><code>sources/music/NAME.msproj</code></td><td><code>assets/music/NAME.mstk</code>, with mastering baked in</td><td>only at Play, Export or <span class="ui">bake now</span></td></tr>
       <tr><td>🔊 DigidreamSound</td><td><code>sources/sounds/ID.sfxproj</code> (one per pack)</td><td>merged into <code>assets/sounds/bank.sfxproj</code>; when two packs share a name, the higher pack wins</td><td>when the module is written (no baker)</td></tr>
     </tbody>
@@ -65,7 +65,7 @@
   <div class="quiz" data-answer="1">
     <p class="q">You changed a melody in DigidreamSynth and went back to the studio. When does the game's .mstk change?</p>
     <ul>
-      <li>Right away, when you press ← studio</li>
+      <li>Right away, when you press ‹ studio</li>
       <li>At the next Play or Export, or when you press bake now</li>
       <li>Never; you have to export the .mstk by hand</li>
     </ul>

@@ -24,8 +24,8 @@
     <b>Needs</b><span>the DAW running (see <a href="01-daw-tour.html">A tour of the DAW</a>); a MIDI keyboard for the recording part</span>
   </div>
 
-  <figure class="shot" data-src="../assets/shots/synth-track.png" data-alt="The Track tab: the toolbar, the piano roll with its keyboard on the left, the lane below, and the Record box">
-    <figcaption>Track: the toolbar, the roll, the lane under it, and the Record box at the bottom.</figcaption>
+  <figure class="shot" data-src="../assets/shots/synth-track.png" data-alt="The Track tab on Gem Hollow's airship: the toolbar, the piano roll with the bass line, and the velocity lane below">
+    <figcaption>Track, on <code>airship</code>'s <code>Instrument_01</code>: the toolbar, the roll with its keyboard on the left, and the velocity lane under it. The Record box is further down.</figcaption>
   </figure>
 
   <h2>The toolbar</h2>
@@ -95,6 +95,20 @@
   <ol class="steps">
     <li><p>Set <span class="ui">lane</span> to <span class="ui">CC11 expr</span>. <kbd>⇧</kbd>-drag from low at the start of bar 1 to high at the end of bar 4.</p></li>
     <li><p>Play it. The track swells over four bars. Then right-click along the lane to clear the ramp.</p></li>
+  </ol>
+
+  <h2 id="gemhollow">In Gem Hollow</h2>
+  <p>Open <code>airship</code> from Gem Hollow's <b>♪ Music</b> page and look at its first two tracks in the roll:</p>
+  <ul>
+    <li><code>Instrument_01</code> is the bass: eighth notes, every one of them at velocity 80, the line you see in the picture above.</li>
+    <li><code>Instrument_02</code> plays the same notes an octave higher on the same program, <code>38 Synth Bass 1</code>. Doubling a line at the octave is the cheapest way to make it fuller.</li>
+    <li>Each track has only the controllers the MIDI file set at the start: <span class="ui">CC7 volume</span> 100, <span class="ui">CC10 pan</span> centre, and <span class="ui">CC91 reverb</span> and <span class="ui">CC93 chorus</span> at 0. Nothing moves during the song.</li>
+  </ul>
+  <p>So every note is equally loud and every part sits in the middle, dry. That is where an imported song leaves room for you.</p>
+  <ol class="steps">
+    <li><p>In <code>airship</code>, open <code>Instrument_03</code> (a saw lead) in the Track tab. Set <span class="ui">lane</span> to <span class="ui">CC10 pan</span> and paint it a little left. Do the same on <code>Instrument_04</code>, a little right. The two leads now come from two places.</p></li>
+    <li><p>Set <span class="ui">lane</span> to <span class="ui">velocity</span> on <code>Instrument_01</code>. Drag the bars of the first note of each bar up to about 110, so the bass leans on the downbeat. Play it.</p></li>
+    <li><p>Press <span class="ui">✕</span> at the top to throw the changes away, or <span class="ui">‹ studio</span> to keep them.</p></li>
   </ol>
 
   <h2 id="record">Recording</h2>

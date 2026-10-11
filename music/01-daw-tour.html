@@ -32,7 +32,7 @@
       <tr><td>Browser</td><td><code>node tool/serve.js</code>, then <a href="http://localhost:8930/tool/daw.html">localhost:8930/tool/daw.html</a></td><td>Needs a click on <span class="ui">Start audio</span> before anything sounds.</td></tr>
       <tr><td>Desktop app</td><td><code>cd midisynth/electron &amp;&amp; npm install</code> once, then <code>npm start</code></td><td>Native menus and dialogs, file associations, no Start-audio click.</td></tr>
       <tr><td>Android</td><td><code>./scripts/package_android.sh</code> builds an APK</td><td>Saved files land in <code>Documents/</code>. A WebView has no Web MIDI, so no MIDI keyboard.</td></tr>
-      <tr><td>Inside the studio</td><td>the <b>♪ Music</b> page, <span class="ui">✎ edit in DigidreamSynth</span></td><td>The same DAW as a plugin. See <a href="05-loops-and-cues.html#studio">Loops, cuts and cues</a>.</td></tr>
+      <tr><td>Inside the studio</td><td>the <b>♪ Music</b> page, <span class="ui">✎ edit in DigidreamSynth</span></td><td>The same DAW as a plugin, in the studio's skin. It starts by itself (no <span class="ui">Start audio</span>) and has no File menu: <span class="ui">‹ studio</span> saves the project and goes back, <span class="ui">✕</span> goes back without saving. See <a href="05-loops-and-cues.html#studio">Loops, cuts and cues</a>.</td></tr>
     </tbody>
   </table>
   <p>The same server also hosts two smaller tools: the stand-alone patch editor at <code>/tool/</code> and the track cutter at <code>/tool/cutter.html</code>. The DAW has both inside it, as the <b>Synth</b> and <b>Cut &amp; Loop</b> tabs.</p>
@@ -59,6 +59,7 @@
   <div class="callout tip"><p>On a phone, or in any window under 700 px wide or 520 px tall, the header collapses to one line with play, stop and the position. Tap <span class="ui">▾</span> to open it.</p></div>
 
   <h3>The File menu</h3>
+  <p>The File menu is in the browser, desktop and Android versions. Inside the studio it is hidden: the studio keeps the project and bakes the track itself (see <a href="05-loops-and-cues.html#studio">the Music page</a>). The log line <em>"bake in File › Bake .mstk"</em> still shows there; ignore it.</p>
   <table>
     <thead><tr><th>Item</th><th>What it does</th></tr></thead>
     <tbody>
@@ -110,8 +111,8 @@
   </table>
 
   <h2>Arrange</h2>
-  <figure class="shot" data-src="../assets/shots/synth-arrange.png" data-hotspots='[{"x": 14.5, "y": 2.3, "t": "File", "d": "open, import .mid, bake .mstk, render .wav, export"}, {"x": 42.5, "y": 2.3, "t": "Transport", "d": "play (Space) and stop"}, {"x": 49.5, "y": 2.3, "t": "● Rec", "d": "record from a MIDI keyboard (R)"}, {"x": 66, "y": 2.3, "t": "Tempo and metre", "d": "bpm and time signature"}, {"x": 82, "y": 2.3, "t": "Loop, click, count-in", "d": "loop playback of the loop region; metronome"}, {"x": 25, "y": 11, "t": "Tabs", "d": "Arrange · Track · Synth · Master · Cut & Loop · Cues · Fit"}, {"x": 3, "y": 16, "t": "＋ track", "d": "add a track"}, {"x": 6, "y": 24, "t": "A track", "d": "name, MIDI channel and instrument (program)"}, {"x": 15.3, "y": 23.5, "t": "M S R", "d": "mute, solo, arm for recording"}, {"x": 50, "y": 19.6, "t": "The ruler", "d": "drag on it to set the loop region"}, {"x": 65, "y": 31, "t": "Note lanes", "d": "double-click a lane to open it in the piano roll"}]' data-alt="The Arrange tab: the track list on the left, note lanes and the bar ruler on the right">
-    <figcaption>Arrange: one row per track, one lane of notes per row, the bar ruler on top.</figcaption>
+  <figure class="shot" data-src="../assets/shots/synth-arrange.png" data-hotspots='[{"x": 3.3, "y": 1.8, "t": "‹ studio", "d": "back to the studio, saving the project (✕ at the far right leaves without saving)"}, {"x": 14.7, "y": 6, "t": "Edit", "d": "undo, redo and the history; in the studio there is no File menu"}, {"x": 37.7, "y": 6, "t": "Transport", "d": "play (Space) and stop"}, {"x": 44.9, "y": 6, "t": "● Rec", "d": "record from a MIDI keyboard (R)"}, {"x": 64.6, "y": 6, "t": "Tempo and metre", "d": "airship: 126 bpm, 4/4"}, {"x": 81.9, "y": 6, "t": "Loop, click, count-in", "d": "loop playback of the loop region; metronome"}, {"x": 5.9, "y": 10.1, "t": "Swing", "d": "a grid and a percentage; 0 is straight"}, {"x": 18, "y": 14.7, "t": "Tabs", "d": "Arrange · Track · Synth · Master · Cut & Loop · Cues · Fit"}, {"x": 2.9, "y": 19.9, "t": "＋ track", "d": "add a track"}, {"x": 5.2, "y": 28.4, "t": "A track", "d": "name, MIDI channel and instrument (program)"}, {"x": 15.4, "y": 27.1, "t": "M S R", "d": "mute, solo, arm for recording"}, {"x": 60.4, "y": 23.2, "t": "The ruler", "d": "drag on it to set the loop region"}, {"x": 60.4, "y": 44.4, "t": "Note lanes", "d": "double-click a lane to open it in the piano roll"}]' data-alt="Gem Hollow's airship track open in DigidreamSynth inside the studio, on the Arrange tab: six tracks and 48 bars of notes">
+    <figcaption>Gem Hollow's <code>airship</code> in the studio, zoomed out: one row per track, one lane of notes per row, the bar ruler on top.</figcaption>
   </figure>
   <p>One track is one MIDI channel, so a project has at most 16 tracks. Channel 10 is always the drum kit. Each row in the track list has:</p>
   <ul>
@@ -136,6 +137,26 @@
     <li><p>Drag on the ruler from bar 1 to bar 5. The region shows on the ruler, and <span class="ui">loop</span> is ticked.</p></li>
     <li><p>Double-click the first lane. The <b>Track</b> tab opens on that track. Draw a few notes (the next page explains how), go back to <b>Arrange</b> and press <kbd>Space</kbd>.</p></li>
     <li><p>While it plays, press <span class="ui">M</span> on the track, then <span class="ui">S</span>. Then press <kbd>⌘S</kbd> to save the project as a <code>.msproj</code>.</p></li>
+  </ol>
+
+  <h2 id="gemhollow">In Gem Hollow</h2>
+  <p>Gem Hollow, the example project bundled with the studio, has five tracks. All five are CC0 chiptunes brought in as MIDI files and kept as projects in <code>sources/music/</code>. Each plays the stock General MIDI patches, so they show what an imported song looks like before anyone tunes it:</p>
+  <table>
+    <thead><tr><th>Track</th><th>Tracks and programs</th><th>Tempo</th><th>Loop</th></tr></thead>
+    <tbody>
+      <tr><td><code>title</code></td><td>4 × <code>81 Lead 2 (sawtooth)</code>, 1 × <code>82 Lead 3 (calliope)</code>, drums</td><td>180 bpm</td><td>bars 1–40, about 53 s</td></tr>
+      <tr><td><code>airship</code></td><td>2 × <code>38 Synth Bass 1</code>, 2 × <code>81</code> saw lead, 1 × <code>80 Lead 1 (square)</code>, drums</td><td>126 bpm</td><td>bars 1–48, about 1:31</td></tr>
+      <tr><td><code>castle</code></td><td>2 × <code>80</code> square lead, 2 × <code>62 Synth Brass 1</code>, drums</td><td>96 bpm</td><td>bars 1–32, 1:20</td></tr>
+      <tr><td><code>shrine</code></td><td>1 × <code>80</code> square lead, 4 × <code>50 Synth Strings 1</code>, drums</td><td>90 bpm</td><td>bars 1–32, about 1:25</td></tr>
+      <tr><td><code>fairies</code></td><td>2 × <code>80</code>, <code>62</code>, <code>81</code>, <code>50</code>, drums</td><td>90 bpm</td><td>bars 1–80, about 3:33</td></tr>
+    </tbody>
+  </table>
+  <p>Each one is a single 4/4 song with one tempo, swing 0, and a loop region that covers the whole song: there is no intro, and the game plays it round and round from bar 1. The tracks are still called <code>Instrument_01</code> … <code>Drumset</code>, the names the MIDI files carried.</p>
+  <ol class="steps">
+    <li><p>On Home, open <span class="ui">Gem Hollow</span> under the examples. Open <b>♪ Music</b> and press <span class="ui">✎ edit in DigidreamSynth</span> on <code>airship</code>.</p></li>
+    <li><p>Drag the <span class="ui">zoom</span> slider down until all 48 bars fit, as in the picture above. Play it with <kbd>Space</kbd>, and press <span class="ui">S</span> on <code>Drumset</code> to hear the drums alone, then <span class="ui">S</span> again.</p></li>
+    <li><p>Rename <code>Instrument_05</code> to <code>lead</code>, and change its program from <code>80 Lead 1 (square)</code> to <code>81 Lead 2 (sawtooth)</code>. Listen to the melody turn brighter.</p></li>
+    <li><p>Press <span class="ui">✕</span> at the top right to leave without saving, or <span class="ui">‹ studio</span> to keep the change. The studio bakes <code>airship.mstk</code> again the next time you play or export.</p></li>
   </ol>
 
   <h2 id="import">Importing a MIDI file</h2>

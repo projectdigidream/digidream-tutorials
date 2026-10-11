@@ -41,8 +41,8 @@
   </ol>
 
   <h2>In the game</h2>
-  <figure class="shot" data-src="../assets/shots/sound-ingame.png" data-alt="The In the game panel for a weapon sound">
-    <figcaption>In the game: where it plays, what happens when it is triggered a lot, variation, distance, music and playback.</figcaption>
+  <figure class="shot" data-src="../assets/shots/sound-ingame.png" data-alt="The In the game panel for Gem Hollow's world.door.open, scrolled to Distance, Music and Playback">
+    <figcaption>In the game for Gem Hollow's <code>world.door.open</code>, scrolled down: full volume to 4, silent from 40, a <b>Natural</b> fade, muffled to 1.5 kHz far away.</figcaption>
   </figure>
   <p>The panel on the right has six sections. These settings belong to the sound, not to a take. <b>Nothing you leave at its default is written to the file.</b></p>
   <table>
@@ -117,6 +117,27 @@
   <h2>Sounds that repeat</h2>
   <p>An engine hum, an alarm or a humming generator plays until the game stops it. Turn on <span class="ui">Repeats until stopped</span>. A repeating sound is always live, because a loop has no finite render.</p>
   <div class="callout warn"><p>The game has to stop a repeating sound. Use one only where a script, a monster or a sector will stop it. For one-shot effects, keep it off, and keep <span class="ui">Ends by itself</span> on in Layers.</p></div>
+
+  <h2 id="gemhollow">In Gem Hollow</h2>
+  <p>The <code>meadow</code> pack shows these settings at work. Every sound has one take, so the variety comes from <span class="ui">Different every time</span> where it is needed:</p>
+  <table>
+    <thead><tr><th>Sound</th><th>Settings</th><th>Why</th></tr></thead>
+    <tbody>
+      <tr><td><code>player.jump</code></td><td>player · importance 200 · at most 2 · gap 60 ms · pitch ± 60¢</td><td>Heard on every jump, double jumps included: the jitter keeps it from sounding like a button.</td></tr>
+      <tr><td><code>player.land</code> · <code>player.step</code></td><td>volume ± 1.5 dB and ± 2 dB, pitch off</td><td>Thuds vary in force, not in pitch.</td></tr>
+      <tr><td><code>player.pain</code></td><td>at most 1 · gap 150 ms · pitch ± 80¢ · importance 210</td><td>It plays when a monster hits you and when you fall into water or lava; hits can come in a burst, and one yelp at a time is enough.</td></tr>
+      <tr><td><code>monster.slime.hurt</code></td><td>at most 3 · pitch ± 150¢</td><td>Several slimes at once, each a little higher or lower: a crowd, not a copy.</td></tr>
+      <tr><td><code>world.door.open</code></td><td>world · full volume to 4 · silent from 40 · Natural fade · muffled to 1.5 kHz · gap 300 ms</td><td>The gates are far from their levers: heard across the map, dull with distance.</td></tr>
+      <tr><td><code>world.checkpoint</code> · <code>world.secret</code></td><td>at most 1 · gap 500 ms · lower music −4 dB for 600 ms (700 ms)</td><td>A short jingle that steps out of the soundtrack.</td></tr>
+      <tr><td><code>cine.victory</code></td><td>ui · importance 240 · lower music −10 dB for 2200 ms</td><td>The fanfare when the Star is touched. The ending graph changes the cue to <code>victory</code> at the same moment, so the new tune comes in under it. See <a href="../music/05-loops-and-cues.html#gemhollow">Loops, cuts and cues</a>.</td></tr>
+    </tbody>
+  </table>
+  <p>The other world sounds keep a 3 to 30 unit range with the <b>Natural</b> fade; the player, pickup, ui and cine sounds are not placed in the world, so Distance does not apply to them. Nothing in the pack repeats until stopped, and nothing is rendered live.</p>
+  <ol class="steps">
+    <li><p>Open the <code>meadow</code> pack from Gem Hollow's <b>🔊 Sounds</b> page. Select <code>coin</code>: <span class="ui">At most, at once</span> is 3 and <span class="ui">Minimum gap</span> 40 ms, for a row of coins grabbed in one run.</p></li>
+    <li><p>Set its <span class="ui">Pitch</span> under <span class="ui">Different every time</span> to ± 50¢ and press <kbd>Space</kbd> a few times. A row of coins would now chime at slightly different pitches. Keep it with <span class="ui">‹ studio</span> or leave with <span class="ui">✕</span>.</p></li>
+    <li><p>Select <code>door.open</code> and scroll the panel down to <span class="ui">Fade</span>. Compare it with <span class="ui">Even</span> later in <a href="04-mix-and-ship.html#test">Test in the engine</a>.</p></li>
+  </ol>
 
   <div class="quiz" data-answer="1">
     <p class="q">Eight zombies fire the same pistol on the same tick. Which setting turns that into one shot heard and seven skipped, without touching the voice pool?</p>

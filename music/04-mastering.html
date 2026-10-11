@@ -24,8 +24,8 @@
     <b>Needs</b><span>a project with a few tracks that play (see <a href="01-daw-tour.html">A tour of the DAW</a>)</span>
   </div>
 
-  <figure class="shot" data-src="../assets/shots/synth-master.png" data-alt="The Master tab: EQ curve, compressor, limiter and output meters, then per-channel EQ and send effects">
-    <figcaption>Master: the mastering chain on top, per-channel EQ and the send effects below.</figcaption>
+  <figure class="shot" data-src="../assets/shots/synth-master.png" data-alt="The Master tab on Gem Hollow's airship: mastering enabled, flat EQ, compressor at -12 dB and 2:1, limiter ceiling -1 dB, gain +15.3 dB">
+    <figcaption>Master, on <code>airship</code>: the mastering chain on top; per-channel EQ and the send effects are further down.</figcaption>
   </figure>
 
   <h2>The chain</h2>
@@ -122,8 +122,25 @@
     <li><p>Play. Only the lead echoes, bouncing left and right.</p></li>
   </ol>
 
+  <h2 id="gemhollow">In Gem Hollow</h2>
+  <p>All five Gem Hollow tracks share one simple master, and differ in one number:</p>
+  <ul>
+    <li><span class="ui">enabled</span> ticked; the EQ flat; <span class="ui">width</span> 1; <span class="ui">saturation</span> 1 (off).</li>
+    <li>Compressor: <span class="ui">threshold</span> −12 dB, <span class="ui">ratio</span> 2, <span class="ui">attack ms</span> 10, <span class="ui">release ms</span> 150, <span class="ui">knee dB</span> 6, <span class="ui">makeup dB</span> 0. A gentle 2:1 that only touches the peaks.</li>
+    <li>Limiter: <span class="ui">ceiling dB</span> −1, <span class="ui">lookahead</span> 2 blocks (the <em>+128 samples latency (2.7 ms)</em> in the picture), <span class="ui">release ms</span> 80.</li>
+    <li><span class="ui">gain dB</span>, set per track so they all come out equally loud: <code>title</code> +21.3, <code>fairies</code> +20.3, <code>castle</code> +19.3, <code>shrine</code> +18.4, <code>airship</code> +15.3.</li>
+  </ul>
+  <p>That large gain makes up for chiptune MIDI files written quietly; the limiter catches what it pushes over −1 dB. Matching the loudness of tracks is what keeps a zone change from jumping in level when the music crossfades.</p>
+  <p>The send effects are set (a reverb with <span class="ui">room</span> 0.8 and <span class="ui">wet</span> 0.25, a chorus at <span class="ui">wet</span> 0.2, the delay at 0), but every track's <span class="ui">CC91 reverb</span> and <span class="ui">CC93 chorus</span> is 0. So no channel sends to them, and the tracks play dry.</p>
+  <ol class="steps">
+    <li><p>Open <code>castle</code> from Gem Hollow's <b>♪ Music</b> page and play it. Watch <span class="ui">gain reduction</span> and <span class="ui">limiter gain</span>.</p></li>
+    <li><p>Hold <span class="ui">A/B bypass</span>. Without the master the track is far quieter: the +19.3 dB gain is part of the chain.</p></li>
+    <li><p>Give it some room: on the <b>Track</b> tab, set <span class="ui">lane</span> to <span class="ui">CC91 reverb</span> on <code>Instrument_03</code> and <code>Instrument_04</code> (the brass) and paint a value about a third of the way up at the start. Play: the brass sits in a hall, the rest stays dry.</p></li>
+    <li><p>Leave with <span class="ui">✕</span> to discard, or <span class="ui">‹ studio</span> to keep it.</p></li>
+  </ol>
+
   <h2>Baking it in</h2>
-  <p><span class="ui">File</span> › <span class="ui">Bake .mstk (with mastering)</span> makes the game's file. It carries the effects, the per-channel EQ and, when <span class="ui">enabled</span> is ticked, the mastering chain. The game loads all of it with the track, so there is nothing to set up on the game's side, and every player hears the same master. <span class="ui">Render .wav</span> uses the same chain.</p>
+  <p><span class="ui">File</span> › <span class="ui">Bake .mstk (with mastering)</span> makes the game's file (in the studio, the studio bakes it for you). It carries the effects, the per-channel EQ and, when <span class="ui">enabled</span> is ticked, the mastering chain. The game loads all of it with the track, so there is nothing to set up on the game's side, and every player hears the same master. <span class="ui">Render .wav</span> uses the same chain.</p>
   <p>To reuse a master on another song, use <span class="ui">Export master.json</span> here and <span class="ui">Import master.json…</span> there.</p>
 
   <div class="quiz" data-answer="1">

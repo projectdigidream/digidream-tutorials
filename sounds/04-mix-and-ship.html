@@ -26,8 +26,8 @@
 
   <h2>Mix &amp; test</h2>
   <p>Press <span class="ui">Mix &amp; test</span> in the top bar. The library, the sound and In the game give way to four cards for the <b>whole bank</b>: Groups, Effects, Master and Test in the engine. Press <span class="ui">Sounds</span> to go back.</p>
-  <figure class="shot" data-src="../assets/shots/sound-mix.png" data-alt="The Mix and test view with the group cards, the effects and the live engine">
-    <figcaption>Mix &amp; test: groups, effects, the master chain and the live engine.</figcaption>
+  <figure class="shot" data-src="../assets/shots/sound-mix.png" data-alt="Mix and test for Gem Hollow's meadow pack: the world, player and ui group cards, and the room reverb">
+    <figcaption>Mix &amp; test for Gem Hollow's <code>meadow</code>: three groups (world, placed in the world, with 12% room; player; ui), then the effects. Master and Test in the engine are further down.</figcaption>
   </figure>
 
   <h3 id="groups">Groups</h3>
@@ -112,15 +112,15 @@
 
   <h2 id="packs">Sound packs in the studio</h2>
   <p>In the studio, a module's sounds come in <b>packs</b>. A pack is a DigidreamSound project (<code>.sfxproj</code>). A module can hold several — DOOM's monsters, a UI set, your own — and the studio merges them into the one bank the game plays.</p>
-  <figure class="shot" data-src="../assets/shots/studio-sounds-page.png" data-alt="The studio's Sounds page with two packs and the list of sounds">
-    <figcaption>The Sounds page: packs, highest first, then every sound with a ▶.</figcaption>
+  <figure class="shot" data-src="../assets/shots/studio-sounds-page.png" data-alt="The studio's Sounds page in Gem Hollow: one pack, meadow, with 30 sounds, and the sounds listed with who uses them">
+    <figcaption>The Sounds page in Gem Hollow: one pack, then every sound with who uses it and a ▶.</figcaption>
   </figure>
   <p>Open <span class="ui">🔊 Sounds</span> from the rail or Home. The page has:</p>
   <ul>
     <li><span class="ui">+ new sound pack</span> — asks for a name, then opens DigidreamSound on the new pack;</li>
     <li><span class="ui">+ import sound packs (.sfxproj)</span> — takes one or more project files. Each is checked by the sound engine's own loader first, so a file that parses but would not play is refused;</li>
-    <li>the packs, <b>highest first</b>, each with <span class="ui">✎ edit in DigidreamSound</span>, <span class="ui">↑</span> and <span class="ui">↓</span> to change its priority, <span class="ui">✕</span> to remove it, an <b>in the game</b> switch to leave it out without removing it, and how many sounds it has (and how many of them a pack above already gives);</li>
-    <li>every sound, grouped by pack, with who uses it and a <span class="ui">▶</span> to hear it.</li>
+    <li>the packs, <b>highest first</b>, each with <span class="ui">✎ edit in DigidreamSound</span> (and <span class="ui">open with…</span> when more than one editor can open a pack), <span class="ui">↑</span> and <span class="ui">↓</span> to change its priority, <span class="ui">✕</span> to remove it, an <b>in the game</b> switch to leave it out without removing it, and how many sounds it has (and how many of them a pack above already gives);</li>
+    <li>every sound, grouped by pack, with the monsters, weapons and pickups that use it and a <span class="ui">▶</span> to hear it. Graphs and scripts are not counted there: in Gem Hollow, <code>world.checkpoint</code> shows no user although a graph plays it.</li>
   </ul>
   <div class="diagram"><svg viewBox="0 0 560 130" font-size="13" role="img" aria-label="Packs in sources/sounds are merged in priority order into assets/sounds/bank.sfxproj">
     <rect class="acc" x="10" y="10" width="200" height="30" rx="6"/><text x="110" y="30" text-anchor="middle">sources/sounds/mine.sfxproj</text>
@@ -139,7 +139,7 @@
     <li>the room reverb is the first pack's that has one.</li>
   </ul>
   <div class="callout tip"><p>Priority is how you override. To replace DOOM's pistol without touching DOOM's pack, make your own pack with a sound named <code>weapon.pistol.fire</code> and move it above with <span class="ui">↑</span>.</p></div>
-  <p>A sound that a monster or weapon names but no pack has is silent in the game. The Sounds page says <em>Named but in no pack (silent in the game)</em> with who uses it, and Home lists it under what is wrong.</p>
+  <p>A sound that a monster, weapon or pickup names but no pack has is silent in the game. The Sounds page says <em>Named but in no pack (silent in the game)</em> with who uses it, and Home lists it under what is wrong.</p>
 
   <h2>Calling sounds from the game</h2>
   <p>There are no <code>module.txt</code> lines for sounds. A sound is addressed by its name, from three places.</p>
@@ -164,9 +164,37 @@ dnp.sound("weapon.pistol.fire", e, { predicted = true })  -- e's client already 
   <div class="callout warn"><p>A sound may be dropped — by distance, by a limit, by the network. Never make it the only sign of anything. A door that opens should also move; a hit should also flash.</p></div>
   <ol class="steps">
     <li><p>In the studio, open <span class="ui">🔊 Sounds</span> and press <span class="ui">+ new sound pack</span>. Call it <code>mine</code>.</p></li>
-    <li><p>In DigidreamSound, make <code>world.door.open</code> from <span class="ui">🚪 Door / mechanism</span>, on the <b>world</b> group. Press <span class="ui">← studio</span>.</p></li>
+    <li><p>In DigidreamSound, make <code>world.door.open</code> from <span class="ui">🚪 Door / mechanism</span>, on the <b>world</b> group. Press <span class="ui">‹ studio</span>.</p></li>
     <li><p>If the module has another pack with the same name, move <code>mine</code> to the top with <span class="ui">↑</span> and check the report says yours is kept.</p></li>
     <li><p>Press <span class="ui">▶</span> beside <code>world.door.open</code> to hear it from the merged bank. Then play the module and open a door.</p></li>
+  </ol>
+
+  <h3>From a graph</h3>
+  <p>A graph's <code>play_sound</code> node plays a sound by name, from the event's entity (or the entity you link in). A <code>subtitle</code> node in <code>mode</code> <code>typed</code> types its line out and can play a <code>sound</code> with every step that shows letters: a soft <code>ui.select</code> makes a typewriter. That sound plays at the listener, centred and at full volume, so put it on a group that is not placed in the world.</p>
+
+  <h2 id="gemhollow">In Gem Hollow</h2>
+  <p>Gem Hollow has one pack, <code>meadow</code>, so the merged <code>assets/sounds/bank.sfxproj</code> is the same 30 sounds. Here is every place the game calls them:</p>
+  <table>
+    <thead><tr><th>From</th><th>Where</th><th>Sounds</th></tr></thead>
+    <tbody>
+      <tr><td>graphs (<code>play_sound</code>)</td><td><code>menu.main</code>: the Play button</td><td><code>ui.start</code></td></tr>
+      <tr><td></td><td><code>world.intro</code>: the opening flythrough</td><td><code>cine.whoosh</code></td></tr>
+      <tr><td></td><td><code>world.pickups</code>: touching a coin or a gem</td><td><code>pickup.coin</code>, <code>pickup.gem</code></td></tr>
+      <tr><td></td><td><code>world.levers</code>: each of the three levers</td><td><code>world.lever</code>, then <code>world.door.open</code></td></tr>
+      <tr><td></td><td><code>world.checkpoints</code>: raising a flag; falling in water or lava</td><td><code>world.checkpoint</code>; <code>player.pain</code></td></tr>
+      <tr><td></td><td><code>world.moving</code>: a spring</td><td><code>world.spring</code></td></tr>
+      <tr><td></td><td><code>world.vault</code>: a key; the vault opening</td><td><code>pickup.key</code>; <code>world.door.open</code></td></tr>
+      <tr><td></td><td><code>world.ending</code>: touching the Star</td><td><code>cine.victory</code></td></tr>
+      <tr><td>monsters (<code>maps/module.lua</code>)</td><td>sequences of the slime, the bee and the snail</td><td><code>monster.attack</code>, <code>monster.slime.*</code>, <code>monster.bee.*</code>, <code>monster.snail.*</code></td></tr>
+      <tr><td>weapons and pickups (<code>maps/arsenal.lua</code>)</td><td>the fists' and star toss's swing, <code>predicted</code>; the heart, star pouch and star ammo pickups</td><td><code>player.swing</code>; <code>pickup.heart</code>, <code>world.secret</code>, <code>pickup.coin</code></td></tr>
+      <tr><td>scripts</td><td><code>player_setup.lua</code> sets the player's jump and landing, <code>player_sounds.lua</code> plays them <code>predicted</code>; <code>module.lua</code> gives the mob runtime the player's pain and death</td><td><code>player.jump</code>, <code>player.land</code>; <code>player.pain</code>, <code>player.death</code></td></tr>
+    </tbody>
+  </table>
+  <p>Six sounds are in the pack but nothing calls them yet: <code>player.step</code>, <code>world.door.close</code>, <code>world.lift</code>, <code>ui.open</code>, <code>ui.close</code> and <code>ui.select</code>. They are ready for your own graphs.</p>
+  <ol class="steps">
+    <li><p>Open Gem Hollow and the <code>world</code> map's graphs (<a href="../graphs/01-thinking-in-graphs.html">Graphs</a> shows how). In <code>world.pickups</code>, find the <code>play_sound</code> node after the coin and change its sound to <code>pickup.gem</code>. Press <span class="ui">▶ Play</span> and grab a coin: it sparkles like a gem. Change it back.</p></li>
+    <li><p>In <code>world.intro</code>, select one of the <code>subtitle</code> nodes, set its <code>mode</code> to <code>typed</code> and its <code>sound</code> to <code>ui.select</code>. Play: the story line types itself out with a click per step.</p></li>
+    <li><p>In <b>🔊 Sounds</b>, open <code>meadow</code> and replace <code>world.door.open</code> with something heavier (press <span class="ui">🚪 Door / mechanism</span> until one fits). Press <span class="ui">‹ studio</span>, then pull the red lever in the game: the gate uses your door.</p></li>
   </ol>
 
   <h2>File formats</h2>

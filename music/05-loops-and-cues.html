@@ -30,8 +30,8 @@
   <div class="callout tip"><p>Listen to the seam before you bake: with <span class="ui">loop</span> on, the DAW plays the region round and round exactly as the game will.</p></div>
 
   <h2>Cut &amp; Loop</h2>
-  <figure class="shot" data-src="../assets/shots/synth-cut.png" data-alt="The Cut and Loop tab: the timeline with a selected region, the playback buttons, and the slice list">
-    <figcaption>Cut &amp; Loop: drag a region on the timeline, listen, add it as a slice.</figcaption>
+  <figure class="shot" data-src="../assets/shots/synth-cut.png" data-alt="The Cut and Loop tab on Gem Hollow's airship: bars 1 to 16 selected on the timeline and added as a slice called meadow">
+    <figcaption>Cut &amp; Loop, on <code>airship</code>: bars 1–16 selected and added as the slice <code>meadow</code> (30.4 s, 38.1 KB).</figcaption>
   </figure>
   <p>One song can give several pieces. The <span class="ui">Cut &amp; Loop</span> tab cuts them:</p>
   <ul>
@@ -59,8 +59,8 @@
   </ol>
 
   <h2 id="cues">Cues: try the changes</h2>
-  <figure class="shot" data-src="../assets/shots/synth-cues.png" data-alt="The Cues tab: one card per piece with its switch buttons and chain rule, and the transition log">
-    <figcaption>Cues: one card per piece, and a log of every switch.</figcaption>
+  <figure class="shot" data-src="../assets/shots/synth-cues.png" data-alt="The Cues tab with two pieces, the meadow slice and the whole airship project, and the empty transition log">
+    <figcaption>Cues: a card for the <code>meadow</code> slice and one for the whole <code>airship</code> project, and the log of every switch.</figcaption>
   </figure>
   <p>The <span class="ui">Cues</span> tab plays pieces and switches between them the way the game does. Its pieces are your slices (they appear on their own), plus:</p>
   <ul>
@@ -97,15 +97,15 @@
   </ol>
 
   <h2 id="studio">In the studio: the Music page</h2>
-  <figure class="shot" data-src="../assets/shots/studio-music-page.png" data-alt="The studio's Music page: the map's cues on top, the module's tracks below">
-    <figcaption>The Music page: this map's cues on top, the module's tracks below.</figcaption>
+  <figure class="shot" data-src="../assets/shots/studio-music-page.png" data-alt="The studio's Music page in Gem Hollow: the menu map's default cue on title, and the five tracks of the module">
+    <figcaption>The Music page in Gem Hollow, with the <code>menu</code> map open: its one cue on top, the module's five tracks below.</figcaption>
   </figure>
-  <p>In the studio, open <b>♪ Music</b> from the rail. The page has two parts.</p>
+  <p>In the studio, open <b>♪ Music</b> from the rail. The page, titled <b>Soundtrack</b>, has two parts.</p>
   <h3>Tracks in the module</h3>
-  <p>Every track the module has, with its size (or <em>not baked yet</em>), how many cues use it, and buttons:</p>
+  <p>Under <b>♫ tracks in the module</b>, every track the module has, with its size (or <em>not baked yet</em>), how many cues use it (<em>in 1 cue(s)</em>), <em>from its project</em> when the studio keeps its <code>.msproj</code>, and buttons:</p>
   <ul>
     <li><span class="ui">+ new track</span> asks for a name and opens a new project in DigidreamSynth, right inside the studio. It needs the DigidreamSynth plugin.</li>
-    <li><span class="ui">✎ edit in DigidreamSynth</span> opens that track's project. Going back to the studio saves it.</li>
+    <li><span class="ui">✎ edit in DigidreamSynth</span> opens that track's project. <span class="ui">‹ studio</span> saves it on the way back; <span class="ui">✕</span> throws the changes away. If you left the editor without either (a closed tab, say), the next open asks whether to <span class="ui">go on with it</span> or <span class="ui">start from the saved one</span>.</li>
     <li><span class="ui">+ import track (.mstk)</span> adds a track baked elsewhere. If the map has no <code>default</code> cue yet, the track becomes it.</li>
     <li><span class="ui">bake now</span> bakes the project into its track at once. <span class="ui">▶</span> listens, <span class="ui">■</span> stops, <span class="ui">✕</span> deletes the track and every cue that uses it.</li>
   </ul>
@@ -162,6 +162,39 @@
     <li><p>Press <span class="ui">▶ Play</span>. The map starts on <code>calm</code>; walk through the doorway and the music turns to <code>fight</code> on the next bar.</p></li>
   </ol>
 
+  <h2 id="gemhollow">In Gem Hollow</h2>
+  <p>Gem Hollow has two maps, and its soundtrack follows the player through the big one. This is its <code>assets/music/index.json</code>, written by the Music page:</p>
+<pre><code>{
+ "menu":  { "default": "title.mstk" },
+ "world": { "default": "airship.mstk",
+            "cliffs":  "castle.mstk",
+            "keep":    "shrine.mstk",
+            "victory": "fairies.mstk" }
+}</code></pre>
+  <table>
+    <thead><tr><th>Cue</th><th>Track</th><th>When</th><th>Switched by</th></tr></thead>
+    <tbody>
+      <tr><td><code>menu</code> · <code>default</code></td><td><code>title</code></td><td>the title screen</td><td>the map starts on it</td></tr>
+      <tr><td><code>world</code> · <code>default</code></td><td><code>airship</code></td><td>the meadow and the isles, from the moment the level starts</td><td>the map starts on it</td></tr>
+      <tr><td><code>cliffs</code></td><td><code>castle</code></td><td>after the second checkpoint flag</td><td><code>world.checkpoints</code> graph: <code>when_prop_touched</code> <code>flag2</code> → <code>once</code> → … → <code>action</code> <code>music</code>, cue <code>cliffs</code>, fade 1500, at <code>next_bar</code></td></tr>
+      <tr><td><code>keep</code></td><td><code>shrine</code></td><td>after the third flag, at the gate of the lava keep</td><td>the same graph, on <code>flag3</code>: cue <code>keep</code>, fade 1500, at <code>next_bar</code></td></tr>
+      <tr><td><code>victory</code></td><td><code>fairies</code></td><td>touching the Star</td><td><code>world.ending</code> graph: <code>when_prop_touched</code> <code>star</code> → <code>once</code> → … → <code>action</code> <code>music</code>, cue <code>victory</code>, fade 600, at <code>now</code></td></tr>
+    </tbody>
+  </table>
+  <p>Gem Hollow uses graphs, not triggers: a graph's <code>action</code> node runs any trigger action, so its <code>music</code> has the same fields as above. Note the choices:</p>
+  <ul>
+    <li>The zone changes wait for <code>next_bar</code> and fade over 1.5 s. The player is walking on; a change on the beat is smooth.</li>
+    <li>The ending cuts in <code>now</code> with a short 600 ms fade, and the same graph plays <code>cine.victory</code>, a fanfare from the sound pack that lowers the music by 10 dB for 2.2 s (see <a href="../sounds/03-takes-and-in-game.html#gemhollow">Takes and in-game rules</a>). The tune arrives under the fanfare.</li>
+    <li><code>everyone</code> is off. Each player hears the music of where they are, not where the first player is.</li>
+    <li>The five tracks are unrelated songs, not slices of one parent, so the game swaps them with the fade instead of crossfading on the beat.</li>
+  </ul>
+  <ol class="steps">
+    <li><p>Open Gem Hollow. In <b>🗺 Maps</b>, tap <code>world</code>, then open <b>♪ Music</b>. The top part now reads <b>world: cues</b>, with four cues.</p></li>
+    <li><p>Press <span class="ui">▶</span> beside <code>cliffs</code> to hear <code>castle</code>, and <span class="ui">■</span> to stop.</p></li>
+    <li><p>Change the <code>keep</code> cue's track from <code>shrine</code> to <code>castle</code> in its list. Press <span class="ui">▶ Play</span>, reach the third flag, and the music does not change: both zones now play <code>castle</code>. Put it back with <span class="ui">↶ Undo</span>.</p></li>
+    <li><p>Open <span class="ui">✎ edit in DigidreamSynth</span> on <code>airship</code> and go to <span class="ui">Cut &amp; Loop</span>. Press <span class="ui">Bake project → load here</span>, drag across bars 1–16 and press <span class="ui">▶ Loop region</span> to hear how the seam sounds when those 16 bars repeat. Add it as a slice called <code>meadow</code>, then try it against the whole song in <span class="ui">Cues</span>. Leave with <span class="ui">✕</span>.</p></li>
+  </ol>
+
   <div class="quiz" data-answer="2">
     <p class="q">A trigger's music action has only <code>cue = "fight"</code>. When does the change land, and for whom?</p>
     <ul>
@@ -188,6 +221,15 @@
       <li>Every time you press a key in the DAW</li>
     </ul>
     <p class="why">The studio keeps the project as the source and bakes the track the game loads from it whenever it would otherwise be stale.</p>
+  </div>
+  <div class="quiz" data-answer="1">
+    <p class="q">In Gem Hollow, a player raises the second checkpoint flag in the middle of a bar of <code>airship</code>. What happens to the music?</p>
+    <ul>
+      <li>It cuts to <code>castle</code> at once, for every player</li>
+      <li>On the next bar line it fades into <code>castle</code> over 1.5 s, for that player</li>
+      <li>Nothing until <code>airship</code> reaches the end of its loop</li>
+    </ul>
+    <p class="why">The checkpoints graph's music action has cue <code>cliffs</code>, at <code>next_bar</code>, fade 1500, and <code>everyone</code> off.</p>
   </div>
 </article>
 </body>

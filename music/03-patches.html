@@ -30,8 +30,8 @@
     <li>the DAW's <span class="ui">Synth</span> tab, editing the project's own bank and kit;</li>
     <li>the stand-alone tool at <a href="http://localhost:8930/tool/">localhost:8930/tool/</a>, which plays test songs and edits a bank or kit file directly.</li>
   </ul>
-  <figure class="shot" data-src="../assets/shots/synth-synth.png" data-alt="The Synth tab: the list of tracks and their instruments on the left, the patch editor on the right">
-    <figcaption>Synth: who plays what on the left, the patch editor on the right.</figcaption>
+  <figure class="shot" data-src="../assets/shots/synth-synth.png" data-alt="The Synth tab on Gem Hollow's airship: the tracks and their programs on the left, program 38 Synth Bass 1 open in the patch editor on the right">
+    <figcaption>Synth, on <code>airship</code>: program 38 is played by <code>Instrument_01</code> and <code>Instrument_02</code>, so both light up; the editor shows its two layers.</figcaption>
   </figure>
   <p>On the Synth tab, the left column lists every track with its program. Click one to edit the instrument it plays. A green dot lights on a track while the engine is sounding it. The line above the list names the patch you are editing and which tracks play it. When <b>no</b> track plays it, the line turns amber: you can still audition it from the keyboard, but you will not hear the edit in the song.</p>
   <div class="callout tip"><p>Two tracks on the same program share one patch. An edit to the patch changes both.</p></div>
@@ -165,6 +165,29 @@
   }
 }</code></pre>
   <p>The shipped files are <code>midisynth/content/patches/gm_bank.json</code> and <code>midisynth/content/drums/gm_kit.json</code>. A new project starts from them. When a track is baked, only the programs and drum notes the song actually plays are kept in the <code>.mstk</code>.</p>
+
+  <h2 id="gemhollow">In Gem Hollow</h2>
+  <p>Gem Hollow's five projects carry the shipped bank unchanged: the same 71 programs as <code>gm_bank.json</code>. Its chiptune sound comes from a handful of them. Here is how two are built, as you see them on the Synth tab of <code>airship</code>:</p>
+  <table>
+    <thead><tr><th>Patch</th><th>Layer 1</th><th>Layer 2</th><th>Modulation</th></tr></thead>
+    <tbody>
+      <tr><td><code>38 Synth Bass 1</code> (<code>synth_bass</code>)</td>
+          <td><code>additive</code>, 20 harmonics, square falloff, gain 0.58. Amp: A 1, D 300, S 0.55, R 110. <code>lowpass</code> at 500 Hz, resonance 0.4, slope 24, drive 2.2, keytrack 0.7. Filter envelope: D 260, S 0.15, depth 0.3: each note starts bright and closes.</td>
+          <td>A plain sine (1 harmonic) at <span class="ui">detune ¢</span> −1200, one octave down, gain 0.20, held at full: the sub under the bass.</td>
+          <td><code>Velocity</code> → <code>FilterCutoff</code> 0.2; <code>ModWheel</code> → <code>FilterCutoff</code> 0.22</td></tr>
+      <tr><td><code>81 Lead 2 (sawtooth)</code> (<code>saw_lead</code>)</td>
+          <td><code>additive</code>, 30 harmonics, saw falloff, detune −5 ¢, pan −0.15, <code>lowpass</code> 3800 Hz, drive 1.8</td>
+          <td>the same saw at +6 ¢ and pan +0.15: two slightly detuned saws, one each side, are what make it wide</td>
+          <td><code>LFO1</code> (sine, 5.4 Hz, delay 300 ms) → <code>Pitch</code> 0.004: the vibrato that fades in on long notes; <code>ModWheel</code> adds more</td></tr>
+    </tbody>
+  </table>
+  <p>Every track in <code>airship</code> plays at velocity 80, so the <code>Velocity</code> routing never opens the bass's filter further. That is one reason the imported song sounds flat until you shape it.</p>
+  <ol class="steps">
+    <li><p>Open <code>airship</code> from Gem Hollow's <b>♪ Music</b> page. On the <span class="ui">Synth</span> tab, click <code>Instrument_01</code> in the list. The line above it says the patch is played by <code>Instrument_01</code> and <code>Instrument_02</code>.</p></li>
+    <li><p>Press <span class="ui">Store B</span>. On <span class="ui">Layer 1</span>, raise <span class="ui">resonance</span> to 0.6 and lower <span class="ui">cutoff</span> to 350 Hz. Play the song: the bass squelches.</p></li>
+    <li><p>Press <span class="ui">A⇄B</span> to compare with the original, and again to come back. Keep whichever you like.</p></li>
+    <li><p>Leave with <span class="ui">✕</span> to throw it away. With <span class="ui">‹ studio</span>, the patch is saved in <code>airship</code>'s own bank only; the other four tracks keep theirs.</p></li>
+  </ol>
 
   <h2 id="fit">Fit: a patch from a recording</h2>
   <p>The <span class="ui">Fit</span> tab searches for a patch that sounds like a short recorded sample:</p>

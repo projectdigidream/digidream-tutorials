@@ -35,9 +35,6 @@
   <div class="callout tip"><p>Leave <span class="ui">Play on change</span> on while you shape. A slider then plays the sound each time you let go of it, so your ears stay in the loop.</p></div>
 
   <h2>Shape: four knobs that work on any sound</h2>
-  <figure class="shot" data-src="../assets/shots/sound-layers.png" data-alt="The Shape card with its general and recipe knobs, and the Layers card below">
-    <figcaption>Shape, with the four general knobs on top and the recipe's own knobs grouped by part.</figcaption>
-  </figure>
   <table>
     <thead><tr><th>Knob</th><th>Range</th><th>What it does</th></tr></thead>
     <tbody>
@@ -124,6 +121,9 @@
     <rect class="box" x="410" y="44" width="70" height="32" rx="6"/><text x="445" y="65" text-anchor="middle">volume</text>
     <path class="arrow" d="M480 60 L510 60"/><text class="dim" x="515" y="65">game</text>
   </svg></div>
+  <figure class="shot" data-src="../assets/shots/sound-layers.png" data-alt="Gem Hollow's world.lever with Layers open: the last sections of a layer, then Rings (a struck body) with two rings at 310 Hz and 870 Hz, and the take as JSON">
+    <figcaption>Gem Hollow's <code>world.lever</code>, Layers open: under its four layers, two rings (310 Hz for 140 ms, 870 Hz for 90 ms) with <b>dry strike</b> at 1.00.</figcaption>
+  </figure>
   <p>Press <span class="ui">＋ Add a ring</span> to add one, up to eight. Each ring is a row of three sliders:</p>
   <ul>
     <li><b>pitch</b> — the frequency the object rings at;</li>
@@ -138,6 +138,24 @@
     <li><p>Press <span class="ui">＋ Add a ring</span> three times. Play it: the knock now hits something that rings.</p></li>
     <li><p>Set the first ring's <b>ring time</b> to about 1500 ms and the others shorter. Long low rings and short high ones sound like a big metal plate.</p></li>
     <li><p>Lower <b>dry strike</b> until the knock is just the start of the ring. Name the sound <code>world.pipe.hit</code>.</p></li>
+  </ol>
+
+  <h2 id="gemhollow">In Gem Hollow</h2>
+  <p>The <code>meadow</code> pack was built layer by layer, the way the tip above says. Open it from Gem Hollow's <b>🔊 Sounds</b> page and read a few in the player's lanes:</p>
+  <table>
+    <thead><tr><th>Sound</th><th>Layers (as the lanes name them)</th><th>The idea</th></tr></thead>
+    <tbody>
+      <tr><td><code>player.jump</code></td><td>1 · Tone · Pulse · low-pass 5.0 kHz; 2 · Tone · Harmonics (morph)</td><td>A 25% pulse whose pitch envelope starts an octave low and slides up to the note in 150 ms, with a fast 20 Hz wobble: the cartoon "boing".</td></tr>
+      <tr><td><code>world.lever</code></td><td>1 · Noise (brown) · low-pass 700 Hz; 2 · Tone; 3 · Noise · band 3.2 kHz; 4 · Tone; and two rings</td><td>A dull clunk (70 ms of brown noise), a bright click, two tones, then rings at 310 and 870 Hz: the iron of the lever, ringing for a moment.</td></tr>
+      <tr><td><code>world.door.open</code></td><td>1 · Noise (brown) · low-pass 320 Hz; 2 · Noise (pink) · band 900 Hz; 3 · Tone · Harmonics (morph) at G1</td><td>A grinding stone gate, 1.25 s long: the first layer holds for 750 ms while a sample-and-hold LFO at 28 Hz shakes its filter, which is the grind.</td></tr>
+      <tr><td><code>pickup.key</code></td><td>Metal · band 6.5 kHz; Tone (FM, ratio 7); Noise (white) · high-pass</td><td>A metal cluster for the jingle, FM for the bell-like ring, a breath of white noise on top.</td></tr>
+      <tr><td><code>monster.snail.death</code></td><td>four noise layers (three white or pink bands, one brown low-pass), two rings at 640 and 1700 Hz, dry strike 0.8</td><td>A shell cracking: short noise bursts struck into a small, hard body.</td></tr>
+    </tbody>
+  </table>
+  <ol class="steps">
+    <li><p>Select <code>lever</code>. Press <span class="ui">S</span> on each of the four lanes in turn to hear its parts, then <span class="ui">Hear everything</span>.</p></li>
+    <li><p>Open <span class="ui">Layers</span> and scroll to <span class="ui">Rings (a struck body)</span>, as in the picture above. Set ring 1's <b>ring time</b> from 140 to 600 ms. The lever now sounds like a heavy iron bar.</p></li>
+    <li><p>Lower <b>dry strike</b> to about 0.4: less clunk, more ring. Then press <span class="ui">✕</span> at the top right to leave without saving.</p></li>
   </ol>
 
   <h2>Timing &amp; notes, and the JSON</h2>
