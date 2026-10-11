@@ -19,8 +19,8 @@
   <h1>Getting started</h1>
   <p class="lede">The studio is a module editor that ships inside the game. A <em>module</em> is a whole game: its maps, monsters, weapons, textures, music, sounds and screens. You edit it on a desktop or a phone, press Play to walk through it, and export it as a pack the engine loads unchanged.</p>
   <div class="goal">
-    <b>You'll learn</b><span>how to launch the studio, how Home and the rail are laid out, and what undo applies to</span>
-    <b>Time</b><span>10 minutes</span>
+    <b>You'll learn</b><span>how to launch the studio, how Home and the rail are laid out, how to open the Gem Hollow example, how to change the studio's style, and what undo applies to</span>
+    <b>Time</b><span>15 minutes</span>
     <b>Needs</b><span>a checkout of the repository with Node.js, or a built Digidream Studio app</span>
   </div>
 
@@ -56,22 +56,53 @@
   <div class="callout soon"><p>There is no iOS build yet.</p></div>
 
   <h2>Home</h2>
-  <figure class="shot" data-src="../assets/shots/studio-home.png" data-alt="The studio's Home page">
-    <figcaption>Home: the module, its maps, what is wrong, and every section.</figcaption>
+  <figure class="shot" data-src="../assets/shots/studio-home.png" data-alt="The studio's Home page with Gem Hollow open">
+    <figcaption>Home, with Gem Hollow open: the module, its maps, what is wrong, and every section.</figcaption>
   </figure>
-  <p>The studio opens on the module's <b>Home</b> page. Along the top are the actions that apply to the whole module:</p>
+  <p>The studio opens on the module's <b>Home</b> page. At the top are the module's name, its <em>about</em> text and the studio's version (<code>studio 0.3.0</code>). Below them are the actions that apply to the whole module:</p>
   <ul>
     <li><span class="ui">▶ play</span> and <span class="ui">⇪ export</span>.</li>
     <li><span class="ui">⇩ import pack</span>, which brings in a pack someone exported.</li>
-    <li><span class="ui">+ new module</span>, which starts a new module as a copy of the starter template.</li>
-    <li><span class="ui">🕘 snapshots</span>, <span class="ui">🧩 plugins</span> and <span class="ui">📋 play log</span>.</li>
+    <li><span class="ui">＋ new module</span>, which starts a new module as a copy of the starter template.</li>
+    <li><span class="ui">🕘 snapshots</span>, <span class="ui">🧩 plugins (6)</span> (the count of plugins), and <span class="ui">📋 play log</span> after a play-test.</li>
   </ul>
-  <p>Below them are three things:</p>
+  <p>Below them are:</p>
   <ul>
-    <li><b><span class="ui">🗺 maps</span></b>: a thumbnail of each map, its rooms drawn from above in their floor textures.</li>
+    <li><b><span class="ui">🗺 maps</span></b>: a thumbnail of each map, its rooms drawn from above in their floor textures, with a count of rooms and things.</li>
     <li><b>What is wrong</b>: every problem the studio can find in any map, trigger, graph, monster or weapon. Each problem links to where it is. When there are none, the list says <em>"✔ nothing wrong that the studio can see"</em>.</li>
-    <li><b>The sections</b>, one tile each.</li>
+    <li><b><span class="ui">◆ the module</span></b>: the sections, one tile each, with a count.</li>
+    <li><b><span class="ui">◆ examples</span></b>: the example projects that ship with the studio (see below).</li>
+    <li><b>Style</b>: how the studio itself looks on this device (see below).</li>
+    <li><b>other modules</b>, when the device holds more than one: a chip per module, to switch.</li>
   </ul>
+
+  <h2 id="gem-hollow">Gem Hollow, the example project</h2>
+  <p>The studio ships with <b>Gem Hollow</b>, a small but complete platformer. It is the running example of these tutorials: most pages have an <b>In Gem Hollow</b> box that shows how it does the thing the page teaches.</p>
+  <ul>
+    <li>A title map, <code>menu</code>, where the camera circles an island while the title panel offers <b>Play</b> and <b>Quit</b>.</li>
+    <li>One big level, <code>world</code>, in four zones: the <b>Meadow</b>, the <b>Isles</b> (water), the <b>Cliffs</b> and the <b>Keep</b> (lava). A lever opens the gate at the end of each of the first three zones, and three keys open the vault in the Keep, where the Star waits.</li>
+    <li>Three monsters (slime, bee, snail), two weapons (<em>Bonk</em> and the <em>Star Toss</em>), 30 props, 25 textures, 5 music tracks and 30 sounds, a HUD of its own, the sky <code>SKYHILLS</code>, and cutscenes at both ends, all drawn as graphs.</li>
+  </ul>
+  <p>Its art is Kenney's CC0 "New Platformer Pack", its music CC0 chiptunes; its characters were made in ThreeSprite and its sounds in DigidreamSound.</p>
+  <ol class="steps">
+    <li><p>On Home, under <span class="ui">◆ examples</span>, press <span class="ui">📂 Gem Hollow</span>. The first time, the studio makes a module of your own from the example and opens it. Home now shows two maps, <code>menu</code> and <code>world</code>, and nothing wrong.</p></li>
+    <li><p>Change anything you like: it is your copy. Pressing <span class="ui">📂 Gem Hollow</span> again opens the same copy, with your changes.</p></li>
+    <li><p>To start over, press <span class="ui">a fresh copy</span>. It makes another, untouched copy beside yours.</p></li>
+  </ol>
+
+  <h2 id="style">The studio's style</h2>
+  <figure class="shot" data-src="../assets/shots/studio-skins.png" data-alt="Home in three styles: Claude, Aero and 90s">
+    <figcaption>The same Home in three styles: Claude (the default), Aero and 90s.</figcaption>
+  </figure>
+  <p>The studio wears a <b>style</b>: its colours, fonts, control shapes and icons. Five ship with it: <b>Claude</b> (the default), <b>Paper</b>, <b>90s</b>, <b>PS1</b> and <b>Aero</b> (Frutiger Aero: frosted glass and glossy buttons). You choose it in the <b>Style</b> card at the foot of Home, or in <b>⚙ Settings</b> under <b>Look — this device, not the module</b>:</p>
+  <ul>
+    <li><span class="ui">style</span>: which one.</li>
+    <li><span class="ui">mode</span>: <code>auto — follows the system</code>, or one of the style's modes, such as light and dark (Paper and Aero call theirs day and night).</li>
+    <li><span class="ui">pointer</span>: <code>touch — finger-sized</code>, <code>mouse — compact</code>, or <code>auto — follows the device</code>.</li>
+    <li><span class="ui">⇩ import a style…</span>: brings in a style made with uikit and baked into one file (a <code>.skin.json</code>, or the <code>.skin.js</code> a tool vendors). It is listed after the shipped ones, marked <em>(imported)</em>, and <span class="ui">🗑 forget this style</span> removes it.</li>
+  </ul>
+  <p>The style is <b>this device's choice</b>, never the module's: it is not exported, and it changes nothing in the game. (Do not confuse it with the rail's <b>🎨 Style</b> section, which styles the <em>game's</em> screens; see <a href="08-look-and-feel.html">Sky, screens and weather</a>.)The plugins (ThreeSprite, qPainter, DigidreamSound, DigidreamSynth, Code and the Packager) wear the studio's style too.</p>
+  <div class="callout"><p>The labels in these tutorials use each icon's plain glyph, such as <span class="ui">▶ play</span>. A style may draw the icon as a picture instead, but the words are the same in every style.</p></div>
 
   <h2>The rail</h2>
   <p>On a wide or landscape screen, a <b>rail</b> down the left lists the sections. Each one shows a count of its problems. The rail's foot holds <span class="ui">↶ Undo</span>, <span class="ui">↷ Redo</span>, <span class="ui">▶ Play</span> and <span class="ui">⇪ Export</span>.</p>
@@ -89,13 +120,14 @@
       <tr><td>▣ Screens · ▢ Panels · 🎨 Style</td><td>HUD, touch controls, panels, fonts</td><td><a href="08-look-and-feel.html">Sky, screens and weather</a></td></tr>
       <tr><td>🌌 Sky</td><td>the module's sky and each map's own</td><td><a href="08-look-and-feel.html">Sky, screens and weather</a></td></tr>
       <tr><td>📜 Scripts · ◇ Graphs</td><td>Lua for the module; Blueprint-style graphs</td><td><a href="06-graphs.html">Graphs</a></td></tr>
-      <tr><td>⚙ Settings</td><td>id, name, about, controls, the debug overlay</td><td><a href="10-play-and-export.html">Play and export</a></td></tr>
+      <tr><td>⚙ Settings</td><td>id, name, about, controls, the debug overlay, saving, and the studio's look on this device</td><td><a href="10-play-and-export.html">Play and export</a></td></tr>
+      <tr><td>📦 Package</td><td>the Packager: the module as an app for Android, Windows, macOS or Linux</td><td><a href="10-play-and-export.html#package">Play and export</a></td></tr>
     </tbody>
   </table>
   <div class="callout tip"><p><b>On a phone held upright</b> there is no rail. Home is the list of sections, and every page has a way back: <span class="ui">‹ module</span> on a page, and <span class="ui">‹</span> beside undo in the map editor.</p></div>
 
   <h2>Every place has an address</h2>
-  <p>The address bar always says where you are, for example <code>#/monsters/imp</code> or <code>#/map/first</code>. Reloading the page brings you back to the same place. Coming back from Play returns you to the map you were testing, with the view as you left it.</p>
+  <p>The address bar always says where you are, for example <code>#/monsters</code>, <code>#/map/world</code> or <code>#/graph/world%3Alevers</code>. Reloading the page brings you back to the same place. Coming back from Play returns you to the map you were testing, with the view as you left it.</p>
 
   <h2>What undo applies to</h2>
   <p>Undo has two scopes:</p>
@@ -107,9 +139,10 @@
   <div class="callout"><p>Undo is for the last few minutes. For anything older, the studio keeps <b>snapshots</b> of the module on the device. It takes one when the module is opened, every ten minutes while you edit, and before anything that replaces work. See <a href="10-play-and-export.html#snapshots">Snapshots</a>.</p></div>
 
   <ol class="steps">
-    <li><p>Open <b>Settings</b> (⚙) and give the module a <span class="ui">name</span> and an <span class="ui">about</span> line.</p></li>
-    <li><p>Press <kbd>⌘Z</kbd>. The name goes back, because a page undoes changes to the module.</p></li>
+    <li><p>With your copy of Gem Hollow open, open <b>⚙ Settings</b> and change its <span class="ui">name</span> to <code>My Hollow</code>.</p></li>
+    <li><p>Press <kbd>⌘Z</kbd>. The name goes back to <code>Gem Hollow</code>, because a page undoes changes to the module.</p></li>
     <li><p>Press <kbd>⇧⌘Z</kbd> to bring the name back. Then reload the page and check you land on Settings again.</p></li>
+    <li><p>In the <b>Look</b> card at the bottom of Settings, set <span class="ui">style</span> to Aero, then to 90s. Set it back to Claude when you have seen enough.</p></li>
   </ol>
 
   <div class="quiz" data-answer="2">
@@ -129,6 +162,15 @@
       <li>Nothing, because undo is off in the map editor</li>
     </ul>
     <p class="why">Inside the map editor, undo applies to the map. Go back to a page to undo changes to the module.</p>
+  </div>
+  <div class="quiz" data-answer="0">
+    <p class="q">You switch the studio to the Aero style and export your module. What does a player of the exported game see?</p>
+    <ul>
+      <li>The game as before: the style is the studio's look on your device, not part of the module</li>
+      <li>The game's HUD and panels in Aero</li>
+      <li>A question asking which style to use</li>
+    </ul>
+    <p class="why">The style is kept on the device and never written into the module. The game's own look is set in Screens, Panels and Style (the rail's 🎨 section).</p>
   </div>
 </article>
 </body>

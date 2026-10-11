@@ -25,8 +25,8 @@
   </div>
 
   <h2>Sky</h2>
-  <figure class="shot" data-src="../assets/shots/studio-sky.png" data-alt="The Sky section: the kind, its picture, and a preview to drag round">
-    <figcaption>The Sky section: its form on one side, the preview on the other.</figcaption>
+  <figure class="shot" data-src="../assets/shots/studio-sky.png" data-alt="The Sky section with Gem Hollow's strip sky SKYHILLS">
+    <figcaption>The Sky section with Gem Hollow's sky: a strip, <code>SKYHILLS</code>, twice round the horizon, 0.7 of the way up. The preview is above the form.</figcaption>
   </figure>
   <p><b>🌌 Sky</b> sets what the module and each map are drawn under. A new module names no sky, so it gets the game's dark background. <span class="ui">+ give the module a sky</span> starts one.</p>
   <p>A sky has a <span class="ui">kind</span>:</p>
@@ -41,6 +41,8 @@
   </table>
   <p>Every kind but none can be <span class="ui">turned, degrees</span>. The pictures are textures, the module's own or the app's, picked with their thumbnails. A sky with a missing picture is said here and on Home. The form's last line shows the <code>module.txt</code> line it writes, such as <code>sky default strip …</code>.</p>
   <p>The preview is the game's own sky. Drag it to look round; it says which way you are facing.</p>
+
+  <div class="callout"><p><b>In Gem Hollow</b> the module's sky is a <b>strip</b> of rolling hills and clouds, the texture <code>SKYHILLS</code> (composed from Kenney's art in qPainter), set to <span class="ui">times round the horizon</span> 2 and <span class="ui">height (how far up the sky)</span> 0.7. The form's last line shows what it writes: <code>sky default strip SKYHILLS repeat 2 height 0.7</code>. Neither map has its own sky; every outdoor room has its ceiling open to it.</p></div>
 
   <h3>A map's own sky</h3>
   <p>The <span class="ui">whose</span> list at the top switches between <span class="ui">the module (every map)</span> and each map; a map with its own sky is marked <code>(own)</code>. For a map, turn on <span class="ui"><i>map</i> has a sky of its own</span>. It starts as a copy of the module's. Turned off, the map is drawn under the module's sky again. You can also reach it from the map editor's <b>⋯ → Map settings</b>.</p>
@@ -57,8 +59,8 @@
   </ol>
 
   <h2>Screens</h2>
-  <figure class="shot" data-src="../assets/shots/studio-screens.png" data-alt="The Screens window: a phone frame with the HUD drawn in it">
-    <figcaption>Screens: the HUD drawn in a device frame by the game's own code.</figcaption>
+  <figure class="shot" data-src="../assets/shots/studio-screens.png" data-alt="The Screens window with Gem Hollow's HUD in a landscape phone frame">
+    <figcaption>Screens: Gem Hollow's HUD (health, coins, gems, keys, stars) drawn in a landscape phone frame by the game's own code, with its elements listed on the right.</figcaption>
   </figure>
   <p><b>▣ Screens</b> is what is drawn over the game. Its frame is drawn by the game's own HUD code, so it shows what that screen will show. The bar has:</p>
   <ul>
@@ -71,8 +73,12 @@
   <ul>
     <li>An element binds to what the game knows, such as <code>hp</code>, or what the weapons runtime sends, such as <code>hud.ammo</code> or <code>hud.weapon</code>.</li>
     <li><span class="ui">shown</span> can be <code>always</code>, <code>touch screens only</code> or <code>keyboard and mouse only</code>.</li>
+    <li>An <b>image</b> takes its picture from a binding (<span class="ui">picture from</span>, such as <code>hud.weapon_icon</code>) or, in <span class="ui">or always</span>, names one picture: a sprite, or one of the module's textures. The name is looked up in <code>sprites/</code> first, then in <code>textures/</code>, so an icon you painted in qPainter works as it is. The picture fills the element's <b>w × h</b>, whatever its own size, so a 128-pixel icon in a 48 × 48 box is drawn at 48 × 48.</li>
     <li><b>sample data</b> sets the values the frame shows, so you can see a low-health bar without playing.</li>
   </ul>
+  <div class="callout soon"><p>In studio 0.3.0 the Screens frame does not yet draw an image that names one of the module's own textures: it shows an empty box where Gem Hollow's heart, coin and gem icons are (as in the picture above). The game draws them.</p></div>
+  <div class="callout"><p><b>In Gem Hollow</b> the module's HUD has nine elements along the top: <code>heart</code> (an image naming the texture <code>HUDHEART</code>, 48 × 48), <code>hpbar</code> (a bar bound to <code>hp</code>, red, redder below 30%), <code>coin</code> and <code>coins</code> (<code>{hud.coins} / 152</code>), <code>gem</code> and <code>gems</code> (<code>{hud.gems} / 5</code>), <code>key</code> and <code>keys</code>, shown only once a key is held, and <code>stars</code> at the top right, shown only with stars to throw. The graphs fill the <code>hud.*</code> values with <code>set_hud</code>. The <code>menu</code> map has screens of its own (switch to <span class="ui">🗺 only menu</span>): no HUD, and every touch button hidden, so the title screen is clean.</p></div>
+
   <h3>Touch</h3>
   <p>The touch tab moves, resizes, relabels and hides the engine's buttons for the module's control scheme. It cannot invent a button, because each one is an input. The module's own keys with a touch label appear here too, to place beside the engine's (see <a href="07-workshops.html#controls">Controls</a>). <span class="ui">back to the engine's buttons</span> undoes the module's layout for them.</p>
   <h3>Templates</h3>
@@ -93,6 +99,7 @@
     <li>Zoom with a pinch, the wheel, or the bar: <span class="ui">−</span>, <span class="ui">+</span>, <span class="ui">▢</span> (zoom onto the panel) and <span class="ui">⤢</span> (the whole screen).</li>
     <li>The panel's details include its <span class="ui">style</span> (with <span class="ui">🎨</span> to go to Style), <span class="ui">duplicate</span> and <span class="ui">delete panel</span>.</li>
   </ul>
+  <div class="callout"><p><b>In Gem Hollow</b> there are two panels. <code>title</code> (titled <em>GEM HOLLOW</em>, centred, modal, not closeable) has the label <code>tagline</code>, <em>"Three levers. Three keys. One star."</em>, and the buttons <code>play</code> and <code>quit</code>. <code>theend</code> has <code>again</code> and <code>quit</code>. The <code>menu</code> map's graph opens <code>title</code> and answers its buttons; the <code>ending</code> graph does the same for <code>theend</code> (see <a href="06-graphs.html#gem-hollow">Graphs</a>).</p></div>
   <h3>Try</h3>
   <p>Switch from <span class="ui">✎ edit</span> to <span class="ui">▶ try</span> and the panel works as it does in the game. Each press says what a graph would hear, for example <code>when_panel_used · shop · buy → value 1</code>. <span class="ui">open it again</span> starts over.</p>
   <h3>Hooking it to a graph</h3>

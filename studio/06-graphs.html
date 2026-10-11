@@ -19,7 +19,7 @@
   <h1>Graphs</h1>
   <p class="lede">A graph is Blueprint-style scripting: nodes joined by links. A map can carry graphs that run in its level, and the module can carry graphs that run once for the whole game. You draw them on a board, and the studio checks them as you draw.</p>
   <div class="goal">
-    <b>You'll learn</b><span>where graphs live, how to add and link nodes, how variables, notes and scenes work, how to answer a key, and when to write Lua instead</span>
+    <b>You'll learn</b><span>where graphs live, how to add and link nodes, how variables, notes and scenes (with typed subtitles) work, how to answer a key, how Gem Hollow's graphs are built, and when to write Lua instead</span>
     <b>Time</b><span>25 minutes</span>
     <b>Needs</b><span>a module with at least one map (<a href="02-first-map.html">Your first map</a>); triggers help (<a href="04-triggers.html">Triggers</a>)</span>
   </div>
@@ -53,8 +53,8 @@
   <div class="callout tip"><p>Unlinked, <code>play_sound</code>'s <code>entity</code> input is the event's own entity. Most nodes work this way: you only need a data link when you mean <em>another</em> entity, such as a monster that a <code>spawn</code> has just made.</p></div>
 
   <h2>Where graphs live: the Graphs section</h2>
-  <figure class="shot" data-src="../assets/shots/studio-graph.png" data-alt="The graph window: the bar, the board with linked nodes, and the side panel">
-    <figcaption>The graph window: its bar, the board, and the side panel.</figcaption>
+  <figure class="shot" data-src="../assets/shots/studio-graph.png" data-alt="Gem Hollow's levers graph: the bar, notes round each lever's nodes, and the side panel">
+    <figcaption>The graph window on Gem Hollow's <code>levers</code> graph: its bar, the board (each lever's nodes inside a coloured note), and the side panel.</figcaption>
   </figure>
   <p>The rail's <b>◇ Graphs</b> lists every graph of the module, in two groups:</p>
   <ul>
@@ -112,7 +112,7 @@
       <tr><td>do to a thing</td><td><code>teleport</code>, <code>push</code>, <code>damage</code>, <code>heal</code>, <code>spawn</code>, <code>play_sound</code></td></tr>
       <tr><td>move the map</td><td>doors, floors, ceilings, lifts, sliding and spinning sectors, a wall's texture, a sector's pictures, its light, its weather or fog</td></tr>
       <tr><td>🎬 cutscene · 🎥 camera</td><td><code>start_cinematic</code>, <code>subtitle</code>, <code>fade</code>; <code>camera_flythrough</code>, <code>camera_track</code>, <code>camera_shake</code></td></tr>
-      <tr><td>🚪 maps</td><td><code>change_map</code></td></tr>
+      <tr><td>🚪 maps</td><td><code>change_map</code>; <code>quit_game</code>, a main menu's <b>Quit</b></td></tr>
       <tr><td>read</td><td><code>position_of</code>, <code>health_of</code>, <code>distance</code>, <code>nearest_player</code>, <code>sector_of</code></td></tr>
       <tr><td>flow · data</td><td><code>branch</code>, <code>sequence</code>, <code>delay</code>, <code>once</code>, <code>call</code>; <code>get_var</code>, <code>set_var</code>, <code>add_var</code>, <code>compare</code>, <code>math</code>, <code>random</code></td></tr>
       <tr><td>🪟 panels</td><td>the module's panels one by one: <code>open shop</code>, <code>close shop</code>, and per widget <code>when shop › buy is pressed</code></td></tr>
@@ -134,7 +134,13 @@
   <p>Below every selection, the panel shows the graph itself: its <span class="ui">name</span> (renaming it here), <span class="ui">+ new graph</span> and <span class="ui">delete graph</span>, which asks first.</p>
 
   <h3>Notes</h3>
-  <p><code>a note</code> (in the <span class="ui">📝 board</span> group of the menu) is a labelled, coloured box on the board. If a node is picked, the note is placed round it. Drag its title and every node and bend inside moves with it. Drag its corner to resize it. Its text and colour are in the side panel under <span class="ui">📝 note</span>. Its <span class="ui">✕</span> removes the note and leaves the nodes.</p>
+  <p><code>a note</code> (in the <span class="ui">📝 board</span> group of the menu) is a labelled, coloured box on the board. If a node is picked, the note is placed round it.</p>
+  <ul>
+    <li><b>Move it</b> by its title: the title has a grip (✥) and says <em>drag to move</em>. Every node and bend inside moves with it.</li>
+    <li><b>Resize it</b> by its handles. Its bottom-right corner always shows a grip; a picked note shows a handle on every side and corner, and the far side stays put while you drag.</li>
+    <li><b>Edit its text</b> in place: tap the title twice, or its <span class="ui">✎</span>. <kbd>Enter</kbd> keeps the new text, <kbd>Esc</kbd> puts the old one back.</li>
+    <li>Its text and colour are also in the side panel under <span class="ui">📝 note</span>, which repeats these three ways of handling it. Its <span class="ui">✕</span> removes the note and leaves the nodes.</li>
+  </ul>
   <p>Notes and bends are only for the board. They are saved with the graph, and the game never runs them.</p>
 
   <h2>Variables</h2>
@@ -165,9 +171,39 @@
   </ol>
 
   <h2 id="scene">Playing a scene</h2>
-  <p>The menu's <span class="ui">🎬 cutscene</span> group takes the controls and gives them back (<code>start_cinematic</code>, <code>end_cinematic</code>), shows lines at the bottom of the screen (<code>subtitle</code>, chained by their <code>done</code> exit), and fades. <span class="ui">🎥 camera</span> flies a camera path (<code>camera_flythrough</code>), rides one while tracking the player (<code>camera_track</code>), follows again, or shakes. A path is chosen from the map's camera paths by tag.</p>
-  <p><span class="ui">▶ scene</span> plays the run from the picked node, or else from the first start that reaches a cutscene or camera node, over the map. It is timed as the game times it: the bars, the fade, each subtitle, the camera on its curve, the shakes. Anything only the server does (a door, a call) appears as a line in the corner when it happens. <kbd>Esc</kbd> or <span class="ui">■</span> comes back.</p>
+  <p>The menu's <span class="ui">🎬 cutscene</span> group takes the controls and gives them back (<code>start_cinematic</code>, <code>end_cinematic</code>), shows lines at the bottom of the screen (<code>subtitle</code>, chained by their <code>done</code> exit), and fades.</p>
+  <p>A <code>subtitle</code>'s <code>mode</code> is <code>line</code> (the whole line at once, the default) or <code>typed</code>: the line is typed out a few letters at a time, as in an old RPG. A typed line has three more fields: <code>speed</code> (letters a second, 30 by default), <code>pack</code> (letters that appear together each step, 2 by default) and <code>sound</code>, a sound played with every step that shows a letter (a step of spaces is silent; with none, it types in silence). Unless you set <code>seconds</code>, a typed line stays long enough to type it and then to read it.</p>
+  <p> <span class="ui">🎥 camera</span> flies a camera path (<code>camera_flythrough</code>), rides one while tracking the player (<code>camera_track</code>), follows again, or shakes. A path is chosen from the map's camera paths by tag.</p>
+  <p><span class="ui">▶ scene</span> plays the run from the picked node, or else from the first start that reaches a cutscene or camera node, over the map. It is timed as the game times it: the bars, the fade, each subtitle, the camera on its curve, the shakes. A typed subtitle is typed out in the preview with the game's own typewriter, sounding each step, and timed as the engine times it: its letters at its speed, then the reading time. Anything only the server does (a door, a call) appears as a line in the corner when it happens. <kbd>Esc</kbd> or <span class="ui">■</span> comes back.</p>
   <p>See <a href="05-camera.html">Camera and cinematics</a> for drawing the paths.</p>
+
+  <h2 id="gem-hollow">In Gem Hollow: its graphs</h2>
+  <figure class="shot" data-src="../assets/shots/studio-graph-menu.png" data-alt="Gem Hollow's menu graph: the title panel opened on arrival, Play changes map, Quit runs quit_game">
+    <figcaption>The <code>menu</code> map's <code>main</code> graph: open the title panel on arrival, <b>Play</b> to the hollow, <b>Quit</b> to <code>quit_game</code>.</figcaption>
+  </figure>
+  <p>Gem Hollow does all its logic with graphs, every one of them annotated with notes. Open <b>◇ Graphs</b>: there is no game graph, one graph on <code>menu</code> and seven on <code>world</code>.</p>
+  <table>
+    <thead><tr><th>Graph</th><th>What it does</th></tr></thead>
+    <tbody>
+      <tr><td><code>menu</code> · <code>main</code></td><td>When a player arrives: <code>start_cinematic</code> with no bars, which takes the controls, and <code>open title</code>. (The map's own screens hide the HUD and the touch buttons, and the modal panel hides the touch stick.) <b>Play</b> closes the panel, plays <code>ui.start</code>, fades to black and does <code>change_map</code> to <code>world</code>. <b>Quit</b> closes the panel and runs <code>quit_game</code>.</td></tr>
+      <tr><td><code>world</code> · <code>intro</code></td><td>The first arrival only (<code>once</code>): black, bars, a <code>camera_flythrough</code> on path 1 with four subtitles of the story, then <code>camera_follow</code> and the first hint.</td></tr>
+      <tr><td><code>levers</code></td><td>Three chains, one per lever: <code>when_prop_used</code> → <code>once</code> → flip its picture → a short flythrough of the gate → <code>open_door</code> on tag 11, 12 or 13 → shake, subtitles, follow again.</td></tr>
+      <tr><td><code>pickups</code></td><td>Coins and gems: touched, removed, counted in the variables <code>coins</code> and <code>gems</code>, shown on the HUD with <code>set_hud</code>.</td></tr>
+      <tr><td><code>vault</code></td><td>Keys: counted in <code>keys</code>; a <code>branch</code> on <code>keys &gt;= 3</code> opens the vault door (tag 14) on camera.</td></tr>
+      <tr><td><code>checkpoints</code></td><td>Each flag stores its spot in <code>cpx</code>, <code>cpy</code>, <code>cpz</code> and changes the music cue; water (tag 900) and lava (tag 901) hurt and <code>teleport</code> the player back there; a knocked-out player comes back there too.</td></tr>
+      <tr><td><code>moving</code></td><td>When the level starts: <code>slide_sector</code> sends the rafts to and fro, and <code>sector_move</code> spins the platforms. Springs <code>push</code> the player up; spikes <code>damage</code> and push away.</td></tr>
+      <tr><td><code>ending</code></td><td>Touching the Star: the victory cue, <code>camera_track</code> on the vault's loop, subtitles, then the <code>theend</code> panel, whose <b>again</b> goes back to <code>menu</code> and whose <b>quit</b> runs <code>quit_game</code>.</td></tr>
+    </tbody>
+  </table>
+  <p><code>quit_game</code> closes the game for that player: the desktop app quits and the Android app closes. A studio play-test goes back to the studio instead, and in a plain browser tab (or on iOS, which has no quit) the screen fades to black and says the game may be closed.</p>
+  <ol class="steps">
+    <li><p>Open <b>◇ Graphs</b> and tap <code>levers</code> under <code>world</code>. The board opens on the map's graph, with each lever's nodes inside a note.</p></li>
+    <li><p>Tap the red lever's <code>open_door</code> node. In the side panel its <code>tag</code> is 11: tap the field, then the red gate on the map.</p></li>
+    <li><p>Drag the blue note by its title. Its nodes move with it. Pick it and drag its right side to widen it; then double-tap its title, change the text, and press <kbd>Esc</kbd> to put it back.</p></li>
+    <li><p>Switch to <code>intro</code> in the bar's list. Tap the first <code>subtitle</code>, bring on <code>mode</code> from <code>+ N more…</code> and set it to <code>typed</code>, with <code>sound</code> set to <code>ui.select</code>, a short blip from Gem Hollow's pack.</p></li>
+    <li><p>Press <span class="ui">▶ scene</span>. The flight plays over the map and your line types itself out. Press <kbd>Esc</kbd> to come back, and <kbd>⌘Z</kbd> to undo the change.</p></li>
+    <li><p>Open <code>main</code> under <code>menu</code> and find the <code>quit_game</code> node at the end of the <b>Quit</b> chain.</p></li>
+  </ol>
 
   <h2>When the studio says no</h2>
   <p>The studio names what the engine would refuse while you draw: a button nobody has, a map the module lacks, a path tag the map does not have, a variable named like a property. The problems show in red in the side panel, as a count in the window's bar, and on Home. Play refuses to start while a graph has problems.</p>

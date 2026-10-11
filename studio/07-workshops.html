@@ -19,7 +19,7 @@
   <h1>Monsters, weapons, player</h1>
   <p class="lede">The workshops are where the things that move are made: monsters, the weapons the player holds, and the player. Monsters and weapons are graphs of states you draw. The player is a set of forms. Controls, at the end, gives the module keys of its own.</p>
   <div class="goal">
-    <b>You'll learn</b><span>how a monster's brain, swing and body fit together, how a weapon's phases work, how to set the player up for every map or one map, and how to add a key</span>
+    <b>You'll learn</b><span>how a monster's brain, swing, slash and body fit together, how a weapon's phases work (and where its first-person look is set), how to set the player up for every map or one map, and how to add a key</span>
     <b>Time</b><span>30 minutes</span>
     <b>Needs</b><span>a module with a sprite sheet for the monster (<a href="../sprites/01-first-sprite.html">Sprites track</a>), and a map to play-test in</span>
   </div>
@@ -29,13 +29,13 @@
   <p>Monsters, weapons, props, particles and the player belong to the <b>module</b>, never to one map. Every map of the module sees the same imp and the same shotgun. The window says so in its bar: <em>"monsters belong to the module, not to one map"</em>. A map holds only its geometry, what is placed in it, its triggers, its camera, its cues and its paths.</p>
   <p>The three windows share one layout:</p>
   <ul>
-    <li>A bar with <span class="ui">‹ back</span>, a button across to the next workshop (<span class="ui">🧍 player</span> from Monsters, <span class="ui">☠ monsters</span> from Weapons, <span class="ui">🔫 weapons</span> from Player), and the names of the monsters or weapons with <span class="ui">+ new monster</span> or <span class="ui">+ new weapon</span>.</li>
+    <li>A bar with <span class="ui">‹ back</span> and the names of the monsters or weapons with <span class="ui">+ new monster</span> or <span class="ui">+ new weapon</span>. Only the Player has a button across, to <span class="ui">🔫 weapons</span>; Monsters and Weapons are reached from the rail.</li>
     <li>A problem count in the runtime's own words, or <em>"loads clean"</em>.</li>
     <li>Three panes: <span class="ui">🎞 preview</span>, <span class="ui">⬡ graph</span> (not for the player) and <span class="ui">☰ details</span>. On a wide screen you see them side by side; on a phone, these tabs switch between them.</li>
   </ul>
 
-  <figure class="shot" data-src="../assets/shots/studio-monsters.png" data-alt="The monster workshop: preview, state graph and details">
-    <figcaption>The monster workshop: the preview, the brain's states, and the details tabs.</figcaption>
+  <figure class="shot" data-src="../assets/shots/studio-monsters.png" data-alt="The monster workshop on Gem Hollow's slime: preview, state graph and details tabs">
+    <figcaption>The monster workshop on Gem Hollow's <code>slime</code>: the preview, the brain's states (<code>look</code>, <code>chase</code>, <code>squash</code>…), and the details tabs, <span class="ui">💨 slash</span> among them.</figcaption>
   </figure>
 
   <h2>Monsters</h2>
@@ -69,6 +69,7 @@
       <tr><td><span class="ui">⬡</span></td><td>The picked state, by name (the tab says <code>⬡ chase</code>). Its fields, then <b>❓ go to … when all of …</b> (its transitions, each with conditions, and <span class="ui">+ transition</span>), then <b>▶ at tick … do …</b> (its sequence, with <span class="ui">add step</span>).</td></tr>
       <tr><td><span class="ui">🧠 brain</span></td><td>The monster's own fields: <span class="ui">initial state</span>, health, turn speed, sight and the rest. Then <b>💢 the flinch</b> and <b>🎁 drops</b>.</td></tr>
       <tr><td><span class="ui">🌀 swing</span></td><td>The claw as a swept collider. <span class="ui">+ swing</span> adds one.</td></tr>
+      <tr><td><span class="ui">💨 slash</span></td><td>How this monster's swing <b>looks</b> in the game (see <a href="#slash">The slash</a>).</td></tr>
       <tr><td><span class="ui">👤 body</span></td><td>The body that draws it: <span class="ui">radius</span>, <span class="ui">height</span>, <span class="ui">scale</span>, <span class="ui">speed</span>, <span class="ui">solid</span>, the <span class="ui">sprite sheet</span>, and which animation each of the five states 0–4 plays.</td></tr>
       <tr><td><span class="ui"># vars</span></td><td>The brain's own counters, such as the <code>ready</code> cooldown. <span class="ui">+ var</span> adds one.</td></tr>
       <tr><td><span class="ui">☄ missiles</span></td><td>The module's missiles, shared by every monster: speed, gravity, life, and what happens <code>on_hit</code> and <code>on_expire</code>. <span class="ui">+ missile</span> adds one.</td></tr>
@@ -84,6 +85,13 @@
 
   <h3>The swing</h3>
   <p>A swing is a collider that sweeps through an arc over several ticks, so a player who steps aside is missed. The preview <em>plays</em> it on a loop at the game's tick rate: from above for its reach and arc, from the side for its pitch, with the part already covered and the cooldown between swings. A monster's claw and the player's fist use the same swing, edited the same way.</p>
+  <h3 id="slash">The slash</h3>
+  <p>In the game every melee swing is drawn as a <b>slash</b>: a streak near the tip of the swept arc that fades. Its look has its own <span class="ui">💨 slash</span> tab in Monsters, Weapons and Player, under <b>🌀 how it looks in the game</b>: <span class="ui">show</span>, colour, opacity, fade, width, blend and a texture (a picture under <code>sprites/</code>).</p>
+  <ul>
+    <li><b>Player → 💨 slash</b> sets the <b>default</b> every swing starts from (and other players' swings use as it is). <span class="ui">↺ back to the engine's look</span> clears it.</li>
+    <li><b>A monster's or weapon's 💨 slash</b> sets only what differs from the default. Each field shows the look the swing really has, and marks what is its own; <span class="ui">↺ back to the default look</span> clears it.</li>
+  </ul>
+  <p>The studio writes these into <code>assets/sprites/swings.json</code>, only when something is set. The <a href="../weapons/01-first-weapon.html">Weapons track</a> covers it in depth.</p>
 
   <ol class="steps">
     <li><p>Open <b>☠ Monsters</b> and press <span class="ui">+ new monster</span>. Call it <code>grunt</code>.</p></li>
@@ -101,6 +109,8 @@
       <tr><td><span class="ui">⬡</span></td><td>The picked phase: its fields, transitions and sequence, as for a state. A phase can carry <b>its own swing</b>, replacing the weapon's while it is in that phase. That is what makes a combo's third blow different from its first.</td></tr>
       <tr><td><span class="ui">🔫 weapon</span></td><td>The weapon's own fields (label, order, which ammunition pool it uses …), <b>🔊 heard at once by the one firing</b> (<span class="ui">+ predicted sound</span>: played by the player's own client at once, rather than a round trip later), and <b>🎒 what its own pickup grants</b>.</td></tr>
       <tr><td><span class="ui">🌀 swing</span></td><td>The weapon's swing, for every phase that has none of its own.</td></tr>
+      <tr><td><span class="ui">💨 slash</span></td><td>How the weapon's swing looks in the game, over the default (see <a href="#slash">The slash</a>).</td></tr>
+      <tr><td><span class="ui">🎞 first person</span></td><td>How the weapon is drawn over the view when the module is played in first person: <b>pictures, frame by frame</b> (at rest and firing, each shown for some tics at 35 a second, with an optional muzzle flash, and where each picture sits on a 320 × 200 screen), or <b>a sprite</b> (a ThreeSprite project: an animation at rest and one firing, and one per animation state its phases set). A preview plays it, with <span class="ui">▶ fire</span>. The <a href="../weapons/01-first-weapon.html">Weapons track</a> covers it in depth.</td></tr>
       <tr><td><span class="ui"># vars</span></td><td>The weapon's own counters.</td></tr>
       <tr><td><span class="ui">🎒 arsenal</span></td><td>Shared by every weapon: <b>🔢 ammunition</b> pools (<span class="ui">+ ammunition pool</span>), <b>❤ health</b> ceilings, and <b>📦 pickups</b> (<span class="ui">+ pickup</span>).</td></tr>
     </tbody>
@@ -108,10 +118,11 @@
   <p>The weapons run once for the whole game, not per level, so a player keeps what they hold from map to map.</p>
 
   <h2>Player</h2>
-  <figure class="shot" data-src="../assets/shots/studio-player.png" data-alt="The player window with its tabs and the every map / only this map switch">
-    <figcaption>The player: one for the module, with parts a map may override.</figcaption>
+  <figure class="shot" data-src="../assets/shots/studio-player.png" data-alt="Gem Hollow's player window on the moves tab">
+    <figcaption>Gem Hollow's player, drawn by the <code>hero</code> prop, on <span class="ui">🏃 moves</span>: one for the module, with parts a map may override.</figcaption>
   </figure>
-  <p>The player has no graph, because nothing about a player is a state machine. The window is a preview and five tabs: <span class="ui">🧍 skin</span>, <span class="ui">📏 size</span>, <span class="ui">🏃 moves</span>, <span class="ui">🎒 kit</span> and <span class="ui">🔊 sounds</span>.</p>
+  <p>The player has no graph, because nothing about a player is a state machine. The window is a preview and six tabs: <span class="ui">🧍 skin</span>, <span class="ui">📏 size</span>, <span class="ui">🏃 moves</span>, <span class="ui">🎒 kit</span>, <span class="ui">🔊 sounds</span> and <span class="ui">💨 slash</span> (the default look of every swing; see <a href="#slash">The slash</a>).</p>
+  <div class="callout"><p><b>Long lists cope.</b> A list of more than 12 chips (the props that can draw the player, the sheets for a body, the things to place) gets a <b>find</b> field, such as <em>"find among 31…"</em> on Gem Hollow's <span class="ui">drawn by</span>, and scrolls in a box of its own. The picked chip and the <span class="ui">+ …</span> ones always stay in view.</p></div>
 
   <h3>Every map, or only this map</h3>
   <p>The player is set up once, for every map. A map that needs it different (a giant's level, a low-gravity one) overrides only the parts it names. The size, moves and kit tabs open with a switch:</p>
@@ -138,6 +149,25 @@
     <li><p>On <span class="ui">🏃 moves</span>, with <span class="ui">🌐 every map</span>, switch on a jumping parameter and raise it a little.</p></li>
     <li><p>Switch to <span class="ui">🗺 only <i>map</i></span>. Turn on <span class="ui"><i>the same parameter</i> — own here</span> and give this map a different value. The other maps keep the module's.</p></li>
     <li><p>Press <span class="ui">▶ Play</span> and jump.</p></li>
+  </ol>
+
+  <h2 id="gem-hollow">In Gem Hollow</h2>
+  <ul>
+    <li><b>Monsters.</b> <code>slime</code> (20 health), <code>bee</code> (10) and <code>snail</code> (40). Each brain starts in <code>look</code>, wandering, and has <code>chase</code>, <code>attack</code>, <code>pain</code>, <code>gone</code> and <code>death</code>. The slime adds <code>squash</code>: when the target is above it (a player landing on it), it goes flat and is gone, the classic platformer stomp.</li>
+    <li><b>Weapons.</b> <code>fists</code>, labelled <em>Bonk</em>: <code>ready</code> → <code>swing</code> (18 ticks) on the button. <code>startoss</code>, the <em>Star Toss</em>: <code>ready</code> → <code>throw</code> when the button is pressed <b>and</b> there is ammunition, which consumes a star, launches the missile <code>star_shot</code> and switches away when empty. On <span class="ui">🎒 arsenal</span>: one pool, <code>stars</code> (up to 30), and three pickups, <code>heart</code> (heals 25), <code>star_pouch</code> (gives the Star Toss and 12 stars) and <code>star_ammo</code> (5 stars).</li>
+    <li><b>Player.</b> Drawn by the <code>hero</code> prop with a 0.08 s cross-fade, and with the jump, fall and run conditions mapped to the hero's own animations. Its rules are four <code>player</code> lines in <code>module.txt</code>, set on <span class="ui">🏃 moves</span> with <span class="ui">🌐 every map</span>:
+<pre><code>player move_speed 8
+player jump_impulse 9.5
+player max_jumps 2
+player max_dashes 1</code></pre>
+      so the hero runs at 8, double-jumps and has one dash. On <span class="ui">🎒 kit</span> it starts with <code>fists</code> only; the Star Toss is found in the Isles.</li>
+    <li><b>Controls.</b> <code>platformer — third person</code>, with no keys of its own.</li>
+  </ul>
+  <ol class="steps">
+    <li><p>In your copy of Gem Hollow, open <b>☠ Monsters</b> and pick <code>slime</code>. Tap the <code>squash</code> state and read its transitions and sequence on <span class="ui">⬡ squash</span>.</p></li>
+    <li><p>Open <span class="ui">💨 slash</span> and change the colour. Then open <b>🧍 Player</b> → <span class="ui">💨 slash</span>: the default is unchanged, and the slime's field is marked as its own.</p></li>
+    <li><p>Open <b>🔫 Weapons</b>, pick <code>startoss</code>, and read the <code>throw</code> phase's steps.</p></li>
+    <li><p>On <b>🧍 Player</b> → <span class="ui">🏃 moves</span>, find <code>max_jumps</code> (2) and set it to 3. If you are in the app, press <span class="ui">▶ Play</span> and triple-jump.</p></li>
   </ol>
 
   <h2 id="controls">Controls</h2>

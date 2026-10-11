@@ -56,6 +56,7 @@
   <p>Between them, the bar names the plugin and the file, and says <em>changed</em>, <em>saving…</em> or a problem.</p>
   <p>Leaving any other way, by the rail or the phone's back button, asks: <span class="ui">save and go</span>, <span class="ui">discard</span> or <span class="ui">stay</span>.</p>
   <p>Opening a file in a plugin is an address of its own, so reloading the page comes back to the plugin.</p>
+  <p><b>Plugins wear the studio's style.</b> When you change the studio's style, mode or pointer (Settings → Look, or the Style card on Home), every bundled editor follows: its own colours, fonts and colour scheme are mapped onto the style's. A few canvases an editor paints in fixed colours, such as the DAW's lanes and waveforms, keep them. A plugin you write receives the style through the <code>skin</code> message if it asks for it (<code>onSkin</code> in the SDK; see <code>docs/PLUGINS.md</code>).</p>
 
   <h3>Drafts</h3>
   <p>A phone often closes an app that is in the background. So while a plugin works, it sends the studio a <b>draft</b> every couple of seconds, and the studio also asks for one when the app goes to the background. Drafts are kept on the device, by file, not by plugin.</p>
@@ -67,7 +68,7 @@
   <p>Back or discard clears the draft. Drafts that are left over are listed on the Plugins page.</p>
 
   <ol class="steps">
-    <li><p>Open <b>🧱 Textures</b>, tap a texture, and press <span class="ui">✎ edit in qPainter</span>.</p></li>
+    <li><p>In your copy of Gem Hollow, open <b>🧱 Textures</b>, tap <code>CRATE</code>, and press <span class="ui">✎ edit in qPainter</span>. qPainter opens in the studio's style.</p></li>
     <li><p>Paint a few pixels. The bar says <em>changed</em>.</p></li>
     <li><p>Press <span class="ui">✕</span>, then <span class="ui">keep editing</span>.</p></li>
     <li><p>Press <span class="ui">‹ studio</span>. The texture's thumbnail shows your change.</p></li>
@@ -76,7 +77,7 @@
 
   <h2>The Plugins page</h2>
   <figure class="shot" data-src="../assets/shots/studio-plugins.png" data-alt="The Plugins page: one card per plugin with its switch">
-    <figcaption>The Plugins page: what the studio has besides itself.</figcaption>
+    <figcaption>The Plugins page (here with Gem Hollow open): what the studio has besides itself, six bundled plugins.</figcaption>
   </figure>
   <p>Home's <span class="ui">🧩 plugins</span> opens it. It shows:</p>
   <ul>
@@ -145,6 +146,14 @@
   <p>On a workstation, you can run the studio's own bakers by hand. The tool prints each file it makes with its SHA-256, and makes the same bytes the studio does:</p>
 <pre><code>node studio/tools/bake.mjs modules/mymod/sources/textures/brick.texproj.json -o /tmp/baked</code></pre>
   <p>It works for textures (<code>.texproj.json</code>) and sprites (<code>.tsprite</code>), guessing the kind from the extension. <code>-o</code> writes the files to a folder; without it, it only prints them.</p>
+
+  <h3>Duplicate and export</h3>
+  <p>A texture's card (in 🧱 Textures) and a sprite's card (in 🎞 Sprites) have two more buttons:</p>
+  <ul>
+    <li><span class="ui">⧉ duplicate</span> copies every file it is made of under a new name (the first free <code>NAME_2</code> is offered): a texture's picture, settings and qPainter project; a sprite's sheet, ThreeSprite project and bake record. The copy is a variant of its own, and its project bakes to the copy.</li>
+    <li><span class="ui">⇪ export PNG</span>, <span class="ui">⇪ export project</span>, <span class="ui">⇪ export .tsprite</span> and <span class="ui">⇪ export sheet</span> send each file it has out of the studio (a download in a browser, the share sheet in the app). An exported sheet is a <code>.zip</code> of its json and png, which can be imported again.</li>
+  </ul>
+  <p>The <a href="../textures/01-first-texture.html">Textures</a> and <a href="../sprites/01-first-sprite.html">Sprites</a> tracks show them on Gem Hollow's own art.</p>
 
   <h2>Writing your own plugin</h2>
   <p>A plugin is a folder with a <code>plugin.json</code> and its pages. It can bring three things: <b>editors</b> (a page that edits one document and hands it back), <b>bakers</b> (a function from a source to what the game loads), and <b>sections</b> (a page in the rail). Here is the bundled Code plugin's manifest:</p>

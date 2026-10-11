@@ -25,8 +25,8 @@
   </div>
 
   <h2>The Triggers sheet</h2>
-  <figure class="shot" data-src="../assets/shots/studio-triggers.png" data-alt="The Triggers sheet with preset chips and a list of triggers">
-    <figcaption>The Triggers sheet: preset chips along the top, then panels, then one row per trigger.</figcaption>
+  <figure class="shot" data-src="../assets/shots/studio-triggers.png" data-alt="The Triggers sheet over Gem Hollow's world map: preset chips, panels, and no triggers yet">
+    <figcaption>The Triggers sheet on Gem Hollow's <code>world</code>: preset chips along the top, then panels (2 in the module), then one row per trigger. Gem Hollow has none: its levers are graphs.</figcaption>
   </figure>
   <p>Choose <span class="ui">⚡ Triggers</span> (key <kbd>4</kbd>). A sheet titled <b>Triggers</b> opens. From top to bottom it has:</p>
   <ol>
@@ -116,9 +116,19 @@
   <h2 id="panels">Panels</h2>
   <p>The <b>▢ panels</b> part of the sheet counts the module's panels and names the ones this map's cards open. <span class="ui">design panels…</span> goes to the Panels section. A card opens a panel with <code>ui_open</code> and the panel's name. A press on it arrives as the event <code>on_ui_event</code>, and the condition <code>widget_is</code> says which widget was pressed. Panels are covered in <a href="08-look-and-feel.html">Sky, screens and weather</a>.</p>
 
+  <h2 id="gem-hollow">In Gem Hollow: a lever and a gate, without triggers</h2>
+  <p>Gem Hollow's <code>world</code> has no trigger cards at all. Its three levers and gates are written as a graph, <code>levers</code>, in the same words (see <a href="06-graphs.html#gem-hollow">Graphs</a>). The red one reads:</p>
+  <ul>
+    <li><b>WHEN</b> the prop <code>lever_red</code> is used (the player presses use, <kbd>E</kbd>, beside it),</li>
+    <li><b>once</b>,</li>
+    <li><b>THEN</b> flip the lever's picture, play <code>world.lever</code>, show the gate on camera path 2, <b>open the door tagged 11</b> (the red gate room), shake the camera, and say <em>"The red gate grinds open to the east."</em></li>
+  </ul>
+  <p>As a trigger card, the heart of it is an <code>on_prop_use</code> event, the condition <code>target_name_is</code> with <code>lever_red</code>, <b>once</b> switched on, and a <code>sector_move</code> raising the ceiling of the room tagged 11. A graph was chosen because the cutscene around it (bars, a camera flight, subtitles in turn) is easier to draw as a chain of nodes.</p>
+  <div class="callout tip"><p>The gate itself is a plain room whose ceiling sits on its floor, the shape the <span class="ui">🚪 door</span> preset makes. Tap it in <code>world</code> to see its tag, 11.</p></div>
+
   <h2>Exercise: a door and a switch</h2>
   <ol class="steps">
-    <li><p>Draw a narrow room between two rooms, so it shares a wall with each. This is the door.</p></li>
+    <li><p>In your copy of Gem Hollow, open the <code>first</code> map you made (or any map with two joined rooms). Draw a narrow room between two rooms, so it shares a wall with each. This is the door.</p></li>
     <li><p>Choose <span class="ui">⚡ Triggers</span>, tap the narrow room to select it, then tap <span class="ui">🚪 door</span>. The status says how many triggers were written, and the door's ceiling drops to its floor.</p></li>
     <li><p>Tap a <b>door: open</b> row (with a room on each side there is one per side, named <em>open from …</em>). Read its WHEN, IF and THEN. Find the <code>run_after</code> that shuts it, and change its <code>ticks</code> from 90 to 150.</p></li>
     <li><p>Press <span class="ui">‹ all triggers</span>. Tap a wall of one of the rooms, then <span class="ui">⏻ switch</span>, then tap the room it should move.</p></li>

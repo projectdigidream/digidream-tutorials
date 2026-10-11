@@ -25,8 +25,8 @@
   </div>
 
   <h2>The Place palette</h2>
-  <figure class="shot" data-src="../assets/shots/studio-map-place.png" data-alt="The Place palette open beside the map">
-    <figcaption>The Place palette: one chip for each thing you can put down.</figcaption>
+  <figure class="shot" data-src="../assets/shots/studio-map-place.png" data-alt="The Place palette open beside Gem Hollow's world map, with its find field">
+    <figcaption>The Place palette in Gem Hollow: one chip for each thing you can put down, and a find field because there are 33 of them.</figcaption>
   </figure>
   <p>Choose <span class="ui">✦ Place</span> (key <kbd>3</kbd>). A sheet titled <b>Place</b> opens. It says: <em>"Tap one, then tap the floor to place it. Tap it again to stop placing."</em></p>
   <p>The chips are, in order:</p>
@@ -36,6 +36,7 @@
     <li><b>Each monster</b> the module defines, by name. You make monsters in the rail's <b>☠ Monsters</b> section.</li>
     <li><b>Each prop</b>: the module's own props first, then the ones the app ships.</li>
   </ul>
+  <p>When there are more than 12 chips, a <b>find</b> field sits above them (<em>"find among 33…"</em> in Gem Hollow) and the chips scroll in a box of their own. Type part of a name to narrow them. The armed chip always stays in view.</p>
   <p>Below the chips, <span class="ui">✎ props…</span> opens the <b>📦 Props</b> section.</p>
   <p>Tap a chip to <em>arm</em> it. The status line says <em>"tap the floor to place …"</em>. Every tap on the floor now places one, at the height of the floor you tapped. It stays armed, so you can place several. Tap the chip again to stop.</p>
   <div class="callout"><p>If you tap the floor with nothing armed, the studio says <em>"pick something to place first"</em> and opens the palette.</p></div>
@@ -103,11 +104,21 @@
     <li><p>Tap outside the room. Nothing is placed: things go on a floor.</p></li>
   </ol>
 
+  <h2 id="gem-hollow">In Gem Hollow: what is placed</h2>
+  <p>Gem Hollow's <code>world</code> holds 246 things. Tap a few with <span class="ui">⌖ Select</span> to read their forms:</p>
+  <ul>
+    <li><b>Four spawns.</b> <code>start</code> at the Meadow's west end, where the level begins, and <code>cp1</code>, <code>cp2</code> and <code>cp3</code> at the start of the Isles, the Cliffs and the Keep. The map shows each as a ⚑ badge with its tag. The checkpoint tags are for the graphs; the server only spawns players at <code>start</code>.</li>
+    <li><b>Props for everything you touch.</b> Rows of <code>coin</code>, five hidden <code>gem</code>s, three <code>key</code>s in the Keep, the levers <code>lever_red</code>, <code>lever_blue</code> and <code>lever_gold</code>, the checkpoint flags <code>flag1</code>–<code>flag3</code>, <code>spring</code>s and <code>spikes</code>, and the <code>star</code> in the vault. The props themselves do nothing: graphs answer when a player touches or uses them.</li>
+    <li><b>Scenery props</b>: <code>bush</code>, <code>mushroom</code>, <code>rock</code>, <code>tuft</code>, <code>sign</code>, <code>torch</code>, <code>fence</code>, <code>chest</code>.</li>
+    <li><b>Monsters</b>: <code>slime</code>, <code>bee</code> and <code>snail</code>, placed through every zone.</li>
+    <li><b>Four lights</b>, all in the Keep: warm orange (255, 170, 90) with radius 12, one of them at <code>cp3</code>. The outdoor zones need none: their rooms have <span class="ui">light</span> 255.</li>
+  </ul>
+
   <h2>Exercise: a start, a light and a guard</h2>
   <ol class="steps">
-    <li><p>Open your map and choose <span class="ui">✦ Place</span>. Tap <span class="ui">spawn: start</span>, then tap the floor of the first room. Tap the chip again to stop.</p></li>
+    <li><p>Open your map (the <code>first</code> map from <a href="02-first-map.html">Your first map</a>, in your copy of Gem Hollow, works well) and choose <span class="ui">✦ Place</span>. Tap <span class="ui">spawn: start</span>, then tap the floor of the first room. Tap the chip again to stop.</p></li>
     <li><p>Tap <span class="ui">light</span> and place it in the second room. Set its <span class="ui">radius</span> to 10 and pick a warm colour.</p></li>
-    <li><p>Tap a monster's chip and place it in the second room. In its form, turn on <span class="ui">dormant</span> and set <span class="ui">facing (°)</span> to 180, so its arrow points back at the door.</p></li>
+    <li><p>Type <code>sl</code> in the find field, tap the <code>slime</code> chip and place it in the second room. In its form, turn on <span class="ui">dormant</span> and set <span class="ui">facing (°)</span> to 180, so its arrow points back at the door.</p></li>
     <li><p>Place a prop beside it and set its facing too. A prop takes its facing in the game now.</p></li>
     <li><p>Choose <span class="ui">⌖ Select</span> and drag the monster somewhere else. Then press <kbd>⌘Z</kbd> to put it back.</p></li>
   </ol>

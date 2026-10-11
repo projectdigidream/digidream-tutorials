@@ -25,7 +25,7 @@
   </div>
 
   <h2>The Maps section</h2>
-  <p>Open <b>🗺 Maps</b> from the rail, or tap the map's name at the top of the map editor. Each map has a row with a thumbnail, its name, and a count of its sectors, things and triggers. The map you are editing is marked <b>▶</b>.</p>
+  <p>Open <b>🗺 Maps</b> from the rail, or tap the map's name at the top of the map editor. (On Home, a map's thumbnail opens it straight away.) Each map has a row with a thumbnail, its name, and a count of its sectors, things and triggers. The map you are editing is marked <b>▶</b>.</p>
   <ul>
     <li><b>Tap a row</b> to open that map in the map editor.</li>
     <li><span class="ui">+ new map</span> asks for a name (letters, digits, dashes) and makes a map with a single room.</li>
@@ -42,8 +42,8 @@
   <div class="callout tip"><p>You do not need the metamap for a first map. Leave it off until you have two maps that should join.</p></div>
 
   <h2>The map editor</h2>
-  <figure class="shot" data-src="../assets/shots/studio-map-select.png" data-hotspots='[{"x": 23, "y": 2.4, "t": "Where you are", "d": "module / map, and how many rooms (sectors) it has"}, {"x": 21.5, "y": 37.5, "t": "A spawn", "d": "where players start; its tag is start"}, {"x": 52.5, "y": 25, "t": "Corner handles", "d": "drag to move a corner; long-press a wall to add one"}, {"x": 61, "y": 3.3, "t": "Undo / redo", "d": "in the map editor they undo the map"}, {"x": 68, "y": 3.3, "t": "PLAN", "d": "plan view ⇄ game view (V)"}, {"x": 88, "y": 8, "t": "The inspector", "d": "the form for what is selected — here a room: floor, ceiling, light, textures, edges, patterns"}, {"x": 42, "y": 90, "t": "The toolbar", "d": "Select, Room, Place, Triggers, Camera, Graph, Play (keys 1–6)"}, {"x": 42.7, "y": 96.5, "t": "⋯ More", "d": "Map settings, Play log, Camera, Import texture, Fit view, Help"}]' data-alt="The map editor with the Select tool on and a room selected">
-    <figcaption>The map editor: the viewport, the tool bar along the bottom, and the form of what is selected.</figcaption>
+  <figure class="shot" data-src="../assets/shots/studio-map-select.png" data-hotspots='[{"x":37,"y":2.3,"t":"Where you are","d":"module / map, and how many rooms (sectors) it has: gemhollow / world, 81 sectors"},{"x":27.2,"y":50.3,"t":"A spawn","d":"cp1, the Isles checkpoint; the level starts at the spawn tagged start"},{"x":35.2,"y":29.7,"t":"Corner handles","d":"the selected room’s corners: drag to move one; long-press a wall to add one"},{"x":62.4,"y":3.3,"t":"Undo / redo","d":"in the map editor they undo the map"},{"x":68.1,"y":3.3,"t":"PLAN","d":"plan view ⇄ game view (V)"},{"x":85.4,"y":33,"t":"The inspector","d":"the form for what is selected: here the Isles’ lake, its floor at −3 in WATER, open to the sky"},{"x":42.6,"y":89.4,"t":"The toolbar","d":"Select, Room, Place, Triggers, Camera, Graph, Play (keys 1–6)"},{"x":42.8,"y":96.1,"t":"⋯ More","d":"Map settings, Play log, Camera, Import texture, Fit view, Help"}]' data-alt="The map editor on Gem Hollow's world map, with the Isles' lake selected">
+    <figcaption>The map editor on Gem Hollow's <code>world</code>: the viewport, the tool bar along the bottom, and the form of what is selected (the Isles' lake).</figcaption>
   </figure>
   <p>The map editor has three parts: the <b>viewport</b> where you draw, the <b>tool bar</b>, and a <b>sheet</b> that shows the form of whatever you selected.</p>
 
@@ -86,7 +86,7 @@
 
   <h2>Drawing a room</h2>
   <figure class="shot" data-src="../assets/shots/studio-map-room.png" data-alt="The Room tool drawing a new room corner by corner">
-    <figcaption>The Room tool: corners tapped so far, waiting for the first one to be tapped again.</figcaption>
+    <figcaption>The Room tool below Gem Hollow's Cliffs: three corners tapped so far, waiting for the first one to be tapped again. The status line says what to do.</figcaption>
   </figure>
   <p>Choose <span class="ui">▭ Room</span>. The status line says <em>"tap corners, tap the first one again to close -- or drag a rectangle"</em>. There are two ways to draw:</p>
   <ul>
@@ -204,9 +204,24 @@
     <li>A line saying how many of the map's script slots are used, and on what.</li>
   </ul>
 
+  <h2 id="gem-hollow">In Gem Hollow: the world map</h2>
+  <p>Open Gem Hollow (Home → <span class="ui">◆ examples</span> → <span class="ui">📂 Gem Hollow</span>), then its <code>world</code> map. It has 81 rooms. The whole level does not fit on screen at first: use <span class="ui">⋯ More</span> → <span class="ui">Fit view</span>, then pan with the right button or two fingers.</p>
+  <ul>
+    <li><b>Four zones, left to right</b>: the grassy <b>Meadow</b>, the <b>Isles</b> in their lake, the stone <b>Cliffs</b> with their ring terraces, and the <b>Keep</b> in its lava. Short corridors join them, and each holds a gate.</li>
+    <li><b>The gates are rooms</b> whose ceiling is down on their floor, like a closed door: <code>GATERED</code> with tag 11, <code>GATEBLUE</code> with tag 12, <code>GATEGOLD</code> with tag 13, and the vault door (<code>VAULTDOOR</code>) with tag 14. A graph opens each one by its tag (see <a href="06-graphs.html#gem-hollow">Graphs</a>).</li>
+    <li><b>Water and lava are rooms too</b>, tagged 900 (water) and 901 (lava), with their floor below the ground around them. The Isles' lake is a room with <span class="ui">edges</span> set to a room; the small pools in the Meadow are <b>cut into the floor of the room around it</b>.</li>
+    <li><b>The rafts and spinning platforms</b> are rooms with <span class="ui">edges</span> set to <b>floating platform</b>, tagged 31–33 and 41–43, so a graph can move them.</li>
+    <li>Every outdoor room has <span class="ui">ceiling open to the sky</span> on, so the hills of the module's sky show above.</li>
+  </ul>
+  <ol class="steps">
+    <li><p>In <code>world</code>, choose <span class="ui">⌖ Select</span> and tap the Isles' lake. Its form says floor −3, <code>WATER</code>, tag 900.</p></li>
+    <li><p>Tap the red gate between the Meadow and the Isles (zoom in on the corridor). Its floor and ceiling are both 0, and its tag is 11.</p></li>
+    <li><p>Press <kbd>V</kbd> to see the zones in the game view, and <kbd>Q</kbd> / <kbd>E</kbd> to turn round them.</p></li>
+  </ol>
+
   <h2>Exercise: two joined rooms</h2>
   <ol class="steps">
-    <li><p>On <b>🗺 Maps</b>, press <span class="ui">+ new map</span> and call it <code>first</code>. The map editor opens with one room.</p></li>
+    <li><p>In your copy of Gem Hollow (or any module), on <b>🗺 Maps</b>, press <span class="ui">+ new map</span> and call it <code>first</code>. The map editor opens with one room.</p></li>
     <li><p>Choose <span class="ui">▭ Room</span> and drag a rectangle that touches one side of the first room. They now share a wall.</p></li>
     <li><p>In the new room's form, raise <span class="ui">floor</span> to 1 and set <span class="ui">light</span> to about 160.</p></li>
     <li><p>Choose <span class="ui">⌖ Select</span>, then long-press the outer wall of the new room. A corner appears in its middle. Drag it outwards.</p></li>

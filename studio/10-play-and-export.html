@@ -63,10 +63,12 @@
 
   <h2>Export and import</h2>
   <p><span class="ui">⇪ export</span> bakes the module and writes it as a <b>pack</b>: a zip of the module's folder, named <code><i>id</i>.zip</code>. In a browser it downloads; in the app it is shared or saved. The status line says how to run it: unzip it into <code>modules/</code> and start the engine with <code>--module <i>id</i></code>.</p>
-<pre><code>unzip starter.zip -d modules/
-./engine/scripts/run_stack.sh --module starter</code></pre>
+<pre><code>unzip gemhollow.zip -d modules/
+./engine/scripts/run_stack.sh --module gemhollow</code></pre>
   <p>A pack holds every map of the module and everything it uses. The engine loads it unchanged.</p>
   <p><span class="ui">⇩ import pack</span> opens a pack someone exported. Only packs the studio wrote can be opened (they carry the module's studio documents). If a module with the same id is already here, the pack <b>replaces</b> it, and the studio takes a snapshot of the old one first.</p>
+
+  <div class="callout"><p><b>In Gem Hollow</b> Play starts the map you have open. To play it as a player would, open <code>menu</code> first and press <span class="ui">▶ Play</span>: the title panel's <b>Play</b> takes you to <code>world</code> (the server has every map running), and its <b>Quit</b>, the <code>quit_game</code> node, brings a studio play-test back to the studio. In a packaged app the same button quits the app.</p></div>
 
   <h2 id="snapshots">Snapshots</h2>
   <p>Undo is for the last few minutes. For anything older, the studio keeps <b>snapshots</b>: copies of the module kept on the device. Open them from Home's <span class="ui">🕘 snapshots</span>, or from Settings.</p>
@@ -109,7 +111,7 @@
       <tr><td><span class="ui">levels keep their state</span>, <span class="ui">save and load games</span>, <span class="ui">survive a server restart</span></td><td>which kinds of saving the module wants</td></tr>
     </tbody>
   </table>
-  <p>At the bottom, <span class="ui">🕘 snapshots: the module as it was…</span> opens the snapshots.</p>
+  <p>Below them, <span class="ui">🕘 snapshots: the module as it was…</span> opens the snapshots. Last comes <b>Look — this device, not the module</b>: the studio's own style, mode and pointer, the same card as Home's Style (see <a href="01-getting-started.html#style">Getting started</a>). It is not part of the module.</p>
 
   <h2 id="package">The Packager: an app from the module</h2>
   <p>The rail's <span class="ui">📦 Package</span> page is the Packager, a bundled plugin. It turns the module into a game people can install: an app for Android, Windows, macOS or Linux. It builds the app in the page itself, from prebuilt <b>engine kits</b>, so the device needs no SDK, compiler or Docker. Nothing is uploaded.</p>
