@@ -26,9 +26,6 @@
 
   <h2>Hitscan: an instant ray</h2>
   <p><a href="../reference/weapon-vocab.html#hitscan"><code>hitscan</code></a> is a sequence step. On the tick it runs, the engine casts rays from the player and each ray stops at the first wall or body it meets. No travel time. The pistol, the shotgun, the chaingun and even DOOM's chainsaw are hitscans.</p>
-  <figure class="shot" data-src="../assets/shots/weapon-phase-fire.png" data-alt="The fire phase: anim, ticks 12, next ready, and a hitscan step with damage, range, count, spread, tracer and knockback" data-hotspots='[{"x":76,"y":59,"t":"at","d":"the tick after entering the phase when this step runs"},{"x":86,"y":65,"t":"damage","d":"per ray that hits"},{"x":86,"y":70,"t":"range","d":"world units; fractions like 2048/48 are fine"},{"x":81,"y":77,"t":"count?","d":"rays per shot"},{"x":81,"y":82,"t":"spread?","d":"degrees, rolled per ray"},{"x":81,"y":88,"t":"tracer?","d":"a tracer style, or none"}]'>
-    <figcaption>A <code>hitscan</code> step in the <code>fire</code> phase's sequence.</figcaption>
-  </figure>
   <table>
     <thead><tr><th>Argument</th><th>What it does</th></tr></thead>
     <tbody>
@@ -59,6 +56,9 @@
 
   <h2>Missiles: things that fly</h2>
   <p><a href="../reference/weapon-vocab.html#launch"><code>launch</code></a> fires a missile. The missile itself is declared once for the module, in the <b>☠ Monsters</b> workshop's <span class="ui">☄ missiles</span> tab, and monsters and weapons share them. A rocket launcher and a cyberdemon can fire the same rocket.</p>
+  <figure class="shot" data-src="../assets/shots/weapon-phase-fire.png" data-alt="The throw phase of Gem Hollow's startoss: consume 1 at 0, launch star_shot at 0, a predicted sound at 0, switch_if_empty at 10" data-hotspots='[{"x":86,"y":17,"t":"consume at 0","d":"takes one star"},{"x":87,"y":37,"t":"launch at 0","d":"fires a missile"},{"x":89,"y":43,"t":"missile","d":"chosen from the module&#39;s missiles: star_shot"},{"x":89,"y":60,"t":"offset?","d":"how far in front it appears; empty here"},{"x":82,"y":86,"t":"predicted?","d":"the thrower hears the sound at once"},{"x":87,"y":95,"t":"switch_if_empty at 10","d":"to the fists after the last star"}]'>
+    <figcaption>The <code>throw</code> phase of Gem Hollow's <code>startoss</code>: a <code>launch</code> between a <code>consume</code> and a sound.</figcaption>
+  </figure>
   <table>
     <thead><tr><th>Argument</th><th>What it does</th></tr></thead>
     <tbody>
@@ -90,8 +90,8 @@ on_hit   vfx (fireball) · vfx (smoke)
 
   <h2 id="swings">Swings: melee you can dodge</h2>
   <p>A <b>swing</b> is a collider that sweeps through an arc over several ticks. A target that steps out of the way mid-swing is missed. It's the same thing a monster's claw uses, and it's edited the same way, in the <span class="ui">🌀 swing</span> tab.</p>
-  <figure class="shot" data-src="../assets/shots/weapon-swing.png" data-alt="The swing tab: an animated preview from above and from the side, then the swing fields" data-hotspots='[{"x":80,"y":29,"t":"From above","d":"reach and arc; the swing plays on a loop at the tick rate"},{"x":91,"y":29,"t":"From the side","d":"pitch; says no height check when half_pitch is empty"},{"x":81,"y":42,"t":"damage","d":"what a connected swing costs"},{"x":81,"y":54,"t":"half_arc / sweep","d":"turn fractions: 1/8 is 45°"},{"x":81,"y":78,"t":"ticks?","d":"how long the collider is live"}]'>
-    <figcaption>A new swing: a short jab. The preview plays it, so you see a volume moving through time.</figcaption>
+  <figure class="shot" data-src="../assets/shots/weapon-swing.png" data-alt="The swing of Gem Hollow's fists, on its swing phase: the animated preview from above and from the side, then damage 10, reach 1.6, half_arc 1/3, sweep_from -1/3, sweep_to 1/3, ticks 8" data-hotspots='[{"x":80,"y":37,"t":"From above","d":"reach and arc; the swing plays on a loop at the tick rate"},{"x":92,"y":37,"t":"From the side","d":"pitch; says no height check when half_pitch is empty"},{"x":88,"y":50,"t":"damage","d":"what a connected swing costs: 10"},{"x":88,"y":68,"t":"half_arc / sweep","d":"turn fractions: 1/3 is 120°, so the fist sweeps a wide arc"},{"x":88,"y":86,"t":"ticks?","d":"how long the collider is live: 8"}]'>
+    <figcaption>The <code>fists</code>' swing, on its <code>swing</code> phase. The preview plays it, so you see a volume moving through time.</figcaption>
   </figure>
   <p><span class="ui">+ swing</span> starts one shaped like a short jab: <span class="ui">damage</span> 10, <span class="ui">reach?</span> 1.5, <span class="ui">half_arc?</span> 1/8, <span class="ui">sweep_from?</span> −1/8 to <span class="ui">sweep_to?</span> 1/8, <span class="ui">ticks?</span> 12, <span class="ui">cooldown?</span> 20. <span class="ui">remove the swing</span> takes it away.</p>
   <table>
@@ -119,6 +119,42 @@ on_hit   vfx (fireball) · vfx (smoke)
     <li><b>One swing per phase.</b> DOOM II's fists are a three-blow combo (<code>jab1</code>, <code>jab2</code>, <code>hook</code>) where each phase has its own swing, so the third blow hits for 30 instead of 10 and knocks the target down. See <a href="05-recipes.html">Recipes</a>.</li>
   </ul>
   <div class="callout"><p>Behind the scenes, a player's swing is written through the world's effect stack, which has 256 slots shared by the whole world; a monster's swing goes into its own body instead, so a level of a hundred monsters doesn't use them up. You don't set anything for this. It is why switching weapons replaces the swing cleanly.</p></div>
+
+  <h3 id="slash">How a swing looks in the game</h3>
+  <p>The game draws every swing as a <b>slash streak</b>: a band near the tip of the swept wedge, laid tick by tick between where the blade was and where it is, fading behind it. It is built from the swing's own numbers, so it shows exactly where the collider went, and it is drawn whether the debug overlay is on or not. Your own swing is drawn from what your client predicts, except in first person, where the weapon on screen is the swing. Other players' and monsters' swings are drawn from what the server sends.</p>
+  <figure class="shot" data-src="../assets/shots/weapon-slash.png" data-alt="The slash tab of Gem Hollow's fists with a blue colour of its own: show, color (own), opacity, fade, width, blend, texture, and back to the default look" data-hotspots='[{"x":86,"y":34,"t":"Whose look","d":"this weapon&#39;s, over the default look (Player → slash)"},{"x":88,"y":46,"t":"color (own)","d":"set for this weapon; the rest comes from the default"},{"x":86,"y":58,"t":"opacity, fade, width","d":"how solid, how long it lasts, how much of the wedge"},{"x":88,"y":70,"t":"blend and texture","d":"add glows; a texture is a picture under sprites/"},{"x":86,"y":85,"t":"back to the default look","d":"clears everything this weapon set"}]'>
+    <figcaption>The <span class="ui">💨 slash</span> tab of Gem Hollow's <code>fists</code>, with a colour of its own.</figcaption>
+  </figure>
+  <p>The weapon's <span class="ui">💨 slash</span> tab sets its look: <span class="ui">show</span> (off draws nothing; the swing still hits), <span class="ui">color</span>, <span class="ui">opacity</span> (0 to 1), <span class="ui">fade</span> (seconds), <span class="ui">width</span> (how much of the wedge, from the tip inward: 1 is all of it), <span class="ui">blend</span> (<code>add</code> glows, <code>normal</code> paints over) and <span class="ui">texture</span> (a picture under <code>sprites/</code>, or <code>(none: a plain band)</code>). Each field shows the look the swing really has; one you set reads <b>(own)</b>, and <span class="ui">back to the default look</span> clears them.</p>
+  <ul>
+    <li><b>The default</b> every swing starts from is on <b>🧍 Player</b> → <span class="ui">💨 slash</span>, with <span class="ui">back to the engine's look</span>. Other players' swings always use it, because your client does not know what they are holding.</li>
+    <li><b>Monsters</b> have the same tab (<a href="../enemies/03-attacks.html#slash">Attacks</a>).</li>
+    <li>The studio writes <code>assets/sprites/swings.json</code> only when something is set, and a deleted weapon takes its look with it.</li>
+  </ul>
+
+  <h2 id="gem-hollow">In Gem Hollow: a wide fist and a star with no sting</h2>
+  <p><b>The fists' swing is on the phase.</b> Pick <code>fists</code> and open <span class="ui">🌀 swing</span>: it says <em>"Every phase has no swing: …"</em>, because the weapon itself has none. Tap the <code>swing</code> phase instead, and its tab ends with the swing it brings with it:</p>
+  <table>
+    <thead><tr><th>Field</th><th>Value</th><th>What it makes</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">damage</span></td><td>10</td><td>a bee in one punch, a slime in two, a snail in four</td></tr>
+      <tr><td><span class="ui">reach?</span></td><td>1.6</td><td>a little longer than the slime's own bump (1.2)</td></tr>
+      <tr><td><span class="ui">half_arc?</span>, <span class="ui">sweep_from?</span>, <span class="ui">sweep_to?</span></td><td>1/3, −1/3, 1/3</td><td>a very wide wedge, 120° each side, sweeping right to left: in a side-on platformer, it hits whatever is in front, above or below</td></tr>
+      <tr><td><span class="ui">ticks?</span></td><td>8</td><td>a quick blow, inside the phase's 18 ticks</td></tr>
+      <tr><td><span class="ui">knockback?</span>, <span class="ui">lift?</span></td><td>6, 3</td><td>pops the monster back and up</td></tr>
+    </tbody>
+  </table>
+  <p>The swing starts on the press, on your client and the server alike, and entering <code>swing</code> is what puts this shape in place. Its sound, <code>player.swing</code>, is marked <span class="ui">predicted?</span>, so you hear it on the press. Gem Hollow sets no slash look, so the punch draws the engine's warm white streak.</p>
+  <p><b>The Star Toss launches <code>star_shot</code></b>, declared in <b>☠ Monsters</b> → <span class="ui">☄ missiles</span>: <code>prop</code> star_shot (a small star, the <code>STAR</code> sheet at scale 0.3), <code>speed</code> 22, <code>radius</code> 0.3, <code>z_offset</code> 1.1 (about the hero's chest), <code>life</code> 50 ticks, so it flies about 18 units and vanishes. It also sets the missile's own <code>damage</code> field to 20.</p>
+  <div class="callout warn"><p><b>That <code>damage</code> field does nothing yet.</b> The vocabulary accepts a missile's own <code>damage</code>, but the runtime hurts only through the actions in <code>on_hit</code>, and <code>star_shot</code> has none. So a thrown star hits a slime, bursts, and costs it nothing. The exercise below fixes it the way a new missile is made: with an <code>on_hit</code> <code>damage</code> step.</p></div>
+
+  <h2>Exercise: make the stars sting, and the fist glow</h2>
+  <ol class="steps">
+    <li><p>Open Gem Hollow, choose <b>☠ Monsters</b> and open <span class="ui">☄ missiles</span>. On the card <b>Missile: star_shot</b>, under <span class="ui">add on_hit</span>, choose <code>damage</code>, and set its <code>amount</code> to <code>20</code>.</p></li>
+    <li><p>Choose <b>🔫 Weapons</b>, pick <code>fists</code> and open <span class="ui">💨 slash</span>. Set <span class="ui">color</span> to a gold, drag <span class="ui">width</span> to 0.7 and <span class="ui">fade</span> to 0.4. Each now reads <b>(own)</b>.</p></li>
+    <li><p>Give yourself stars: <b>🧍 Player</b> → <span class="ui">🎒 kit</span>, tick <code>startoss</code> and set <code>stars</code> to 10.</p></li>
+    <li><p>Press <span class="ui">▶ Play</span>. Throw a star at a slime (20 hp): one star now kills it, and a snail (40 hp) takes two. Switch to the fists with <kbd>1</kbd> and punch a bee: a wide golden streak sweeps across in front of you and lingers.</p></li>
+  </ol>
 
   <h2 id="prediction">What is instant, and what the server decides</h2>
   <p>Your own weapon runs <b>twice</b>: on the server, and on your own client, which predicts it from the same weapon table and the same rules. When the two agree, which is almost always, you see your shot the moment you press. When they don't, your client is corrected to the server's version. Other players' weapons are never predicted: you see them as the server reports them.</p>

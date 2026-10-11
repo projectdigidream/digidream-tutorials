@@ -26,8 +26,8 @@
 
   <h2>The arsenal tab</h2>
   <p>Open <b>🔫 Weapons</b> and the <span class="ui">🎒 arsenal</span> tab. It's the same for every weapon, because it belongs to the whole module. It has three sections: <b>🔢 ammunition</b>, <b>❤ health</b> and <b>📦 pickups</b>.</p>
-  <figure class="shot" data-src="../assets/shots/weapon-arsenal.png" data-alt="The arsenal tab: the bullets pool, the health ceilings, and a new pickup called clip" data-hotspots='[{"x":86,"y":24,"t":"A pool","d":"label, max, initial, order"},{"x":86,"y":57,"t":"+ ammunition pool","d":"asks for a name"},{"x":86,"y":74,"t":"health","d":"max and bonus_max"},{"x":86,"y":86,"t":"A pickup","d":"what walking over a prop of this name grants"},{"x":96,"y":9,"t":"1 problem(s)","d":"a new pickup starts with a bad ceiling; see below"}]'>
-    <figcaption>The arsenal: one pool, the health ceilings and a new pickup. The red count is the pickup's starting <code>ceiling</code>, explained below.</figcaption>
+  <figure class="shot" data-src="../assets/shots/weapon-arsenal.png" data-alt="The arsenal tab in Gem Hollow: the stars pool (label Stars, max 30, initial 0, order 1), + ammunition pool, and the health ceilings" data-hotspots='[{"x":86,"y":36,"t":"A pool","d":"stars: label, max 30, initial 0, order 1"},{"x":86,"y":65,"t":"delete pool","d":"asks first"},{"x":86,"y":71,"t":"+ ammunition pool","d":"asks for a name"},{"x":88,"y":92,"t":"health","d":"max 100; bonus_max left empty"}]'>
+    <figcaption>The top of Gem Hollow's arsenal: one pool, <code>stars</code>, and the health ceilings.</figcaption>
   </figure>
 
   <h2>Ammunition pools</h2>
@@ -77,9 +77,13 @@
   <div class="callout warn"><p><b>A new pickup starts with a problem.</b> <span class="ui">+ pickup</span> (which suggests the name <code>medkit</code>) makes a pickup with <span class="ui">heal?</span> 25 and <code>ceiling</code> set to <code>normal</code>, which isn't one of the allowed values. The bar shows <em>pickup "medkit": `ceiling` should be one of max, bonus_max, got "normal"</em>, and the server would refuse the arsenal. Set <span class="ui">ceiling?</span> to <code>max</code> right away, or to <code>(default)</code> for a pickup that doesn't heal.</p></div>
   <div class="callout soon"><p><b>Armour is counted but not used yet.</b> An <span class="ui">armour?</span> pickup raises the player's armour, and the number is saved with the game, but nothing reads it yet: damage isn't reduced, and the HUD isn't told. Use it for a pickup that should work later, or leave it out for now.</p></div>
 
+  <figure class="shot" data-src="../assets/shots/weapon-pickups.png" data-alt="Gem Hollow's pickups at the bottom of the arsenal tab: the end of star_pouch granting 12 stars, then star_ammo with sound pickup.coin granting 5 stars, then + pickup" data-hotspots='[{"x":89,"y":20,"t":"star_pouch","d":"its last row: 12 stars, with the Star Toss"},{"x":86,"y":33,"t":"star_ammo","d":"a pickup named after its prop"},{"x":88,"y":51,"t":"ceiling?","d":"(default): it does not heal, so it needs none"},{"x":86,"y":62,"t":"sound?","d":"pickup.coin, with ▶ to hear it"},{"x":89,"y":76,"t":"ammunition it grants","d":"5 stars, every time"},{"x":86,"y":89,"t":"+ pickup","d":"a new pickup; see the warning above"}]'>
+    <figcaption>The bottom of Gem Hollow's arsenal: its pickups.</figcaption>
+  </figure>
   <h3>The rules of taking</h3>
   <ul>
     <li><b>Players only.</b> Monsters walking over a medikit don't take it.</li>
+    <li><b>A prop that is already gone gives nothing.</b> If something else removed the prop earlier in the same touch, such as a graph's <code>remove</code> node on a coin, the pickup is skipped quietly. (It used to raise an error on every such touch.)</li>
     <li><b>A weapon once, its ammunition every time.</b> That's why a second shotgun on a map is still worth walking over: you already have the gun, but you get its shells.</li>
     <li><b>A refused pickup stays on the floor.</b> At full health, a medikit isn't used up. A full pool doesn't take more. The pickup only disappears if it gave something, and only then does it make its sound.</li>
     <li><b>Which sound</b>, when the pickup has none of its own: weapon first, then armour, then health, then ammunition. A shotgun pickup that also gives shells sounds like a weapon.</li>
@@ -116,6 +120,33 @@
     </tbody>
   </table>
   <p>A graph's change is a real change to the inventory: it is saved with the game, and the player's client takes it from the next update. The basics of building graphs are in <a href="../studio/06-graphs.html">Graphs</a>.</p>
+
+  <h2 id="gem-hollow">In Gem Hollow: stars, a pouch and hearts</h2>
+  <p>Gem Hollow's whole economy is one pool and three pickups:</p>
+  <table>
+    <thead><tr><th>Pickup</th><th>Gives</th><th><span class="ui">sound?</span></th><th>Where it comes from</th></tr></thead>
+    <tbody>
+      <tr><td><code>heart</code></td><td><span class="ui">heal?</span> 25, up to the <span class="ui">max</span> of 100</td><td><code>pickup.heart</code></td><td>four placed in the <code>world</code> map</td></tr>
+      <tr><td><code>star_pouch</code></td><td><span class="ui">weapon?</span> <code>startoss</code>, and 12 stars</td><td><code>world.secret</code></td><td>one placed in the map: the Star Toss is found, not carried from the start</td></tr>
+      <tr><td><code>star_ammo</code></td><td>5 stars</td><td><code>pickup.coin</code></td><td>six placed in the map, and one dropped by every snail that dies (<a href="../enemies/04-pain-death-drops.html#gem-hollow">Pain, death and drops</a>)</td></tr>
+    </tbody>
+  </table>
+  <ul>
+    <li><b>The pool is small on purpose.</b> <code>stars</code> has <span class="ui">max</span> 30 and starts at 0, so the pouch's 12 and a few boxes of 5 are a real limit. With a full pouch of 30, a box stays on the floor until you have thrown some.</li>
+    <li><b>The pouch is a weapon once, stars every time.</b> It has only one copy in the map, but if a second were placed, it would still give its 12 stars.</li>
+    <li><b>Each pickup is named after its prop.</b> The catalogue (<b>📦 Props</b>) has <code>heart</code>, <code>star_pouch</code> (the <code>STAR</code> sheet at scale 0.5) and <code>star_ammo</code> (the same star at 0.35), so a pouch and a box look like a big and a small star.</li>
+    <li><b>The heart sets no ceiling.</b> Its <span class="ui">ceiling?</span> is <code>(default)</code>, which fills to <span class="ui">max</span>; the arsenal has no <span class="ui">bonus_max</span> at all.</li>
+    <li><b>Coins are not pickups.</b> Gem Hollow's 152 coins and its gems are counted by graphs, which remove the prop when you touch it. That is the case the "already gone" rule above is for.</li>
+    <li><b>Default sounds</b> are set in <b>🧍 Player</b> → <span class="ui">🔊 sounds</span>: <code>world.secret</code> for a weapon, <code>pickup.coin</code> for ammunition, <code>pickup.heart</code> for health. Each pickup here also names its own.</li>
+  </ul>
+
+  <h2>Exercise: a bigger pouch, and a mega heart</h2>
+  <ol class="steps">
+    <li><p>Open Gem Hollow, choose <b>🔫 Weapons</b> and open <span class="ui">🎒 arsenal</span>. On the <code>stars</code> pool, set <span class="ui">max</span> to <code>50</code>.</p></li>
+    <li><p>Set <span class="ui">bonus_max?</span> under <b>❤ health</b> to <code>150</code>.</p></li>
+    <li><p>On the <code>heart</code> pickup, set <span class="ui">heal?</span> to <code>50</code> and <span class="ui">ceiling?</span> to <code>bonus_max</code>.</p></li>
+    <li><p>Check the bar says <em>loads clean</em>, then press <span class="ui">▶ Play</span>. Take a heart at full health: it is used up now, and takes you to 150. Collect the pouch and every box of stars you can find: the count now climbs past 30.</p></li>
+  </ol>
 
   <h2>Exercise: a cell rifle, a box of cells, and an armoury</h2>
   <ol class="steps">

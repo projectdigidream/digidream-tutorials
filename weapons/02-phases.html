@@ -46,13 +46,13 @@
   <p>DOOM's whole pistol is two sequence steps (take a bullet, fire a ray) and a phase that lasts 24 ticks.</p>
 
   <h2>The six phase fields</h2>
-  <figure class="shot" data-src="../assets/shots/weapon-phase-ready.png" data-alt="The ready phase's tab: anim, ticks, next, one transition to fire when button_pressed, and an empty sequence" data-hotspots='[{"x":81,"y":28,"t":"anim?","d":"the player&#39;s animation state in this phase"},{"x":81,"y":34,"t":"ticks?","d":"empty: the phase waits"},{"x":81,"y":40,"t":"next?","d":"where to go when the ticks run out"},{"x":81,"y":50,"t":"A transition","d":"its target, then its conditions: all must hold"},{"x":92,"y":56,"t":"not","d":"leave this off for weapons: the server refuses negate"},{"x":81,"y":67,"t":"add when","d":"adds a condition to this transition"},{"x":81,"y":84,"t":"add step","d":"adds an action to the sequence"}]'>
-    <figcaption>The <code>ready</code> phase of a new weapon: no ticks, so it waits, and one transition.</figcaption>
+  <figure class="shot" data-src="../assets/shots/weapon-phase-ready.png" data-alt="The ready phase of Gem Hollow's startoss: anim 0, no ticks, no next, and one transition to throw when button_pressed and has_ammo" data-hotspots='[{"x":88,"y":32,"t":"anim?","d":"the player&#39;s animation state in this phase: 0"},{"x":88,"y":38,"t":"ticks?","d":"empty: the phase waits"},{"x":88,"y":44,"t":"next?","d":"where to go when the ticks run out"},{"x":84,"y":56,"t":"A transition","d":"to throw; its conditions all must hold"},{"x":92,"y":62,"t":"not","d":"leave this off for weapons: the server refuses negate"},{"x":89,"y":85,"t":"add when","d":"adds a condition to this transition"},{"x":76,"y":92,"t":"+ transition","d":"adds another card; a new one has no conditions yet"}]'>
+    <figcaption>The <code>ready</code> phase of Gem Hollow's <code>startoss</code>: no ticks, so it waits, and one transition with two conditions.</figcaption>
   </figure>
   <table>
     <thead><tr><th>Field</th><th>What it does</th></tr></thead>
     <tbody>
-      <tr><td><a href="../reference/weapon-vocab.html#phase_fields.anim"><span class="ui">anim?</span></a></td><td>The animation state the player is put in for this phase, by number. In the default five, 0 is idle and 2 is attack. The client times the frames.</td></tr>
+      <tr><td><a href="../reference/weapon-vocab.html#phase_fields.anim"><span class="ui">anim?</span></a></td><td>The animation state the player is put in for this phase, by number. In the default five, 0 is idle and 2 is attack. It is set on the tick the phase is entered, before its steps; empty leaves the state as it was. The same number picks the weapon's first-person animation (<a href="#first-person">below</a>). The client times the frames.</td></tr>
       <tr><td><a href="../reference/weapon-vocab.html#phase_fields.ticks"><span class="ui">ticks?</span></a></td><td>How long the phase lasts. <b>Empty means it waits</b> until a transition fires. When set, it is also a <b>window</b>: the phase's transitions can only fire while it is running.</td></tr>
       <tr><td><a href="../reference/weapon-vocab.html#phase_fields.next"><span class="ui">next?</span></a></td><td>Where to go when the ticks run out and no transition matched. Empty goes back to the weapon's initial phase.</td></tr>
       <tr><td><a href="../reference/weapon-vocab.html#phase_fields.sequence">sequence</a></td><td><b>▶ at tick … do …</b>: the steps. <span class="ui">at</span> is a <b>deadline from entering the phase</b>, not a delay after the step before it.</td></tr>
@@ -180,6 +180,46 @@ dry    ticks 1, next ready
     <li><b>Why first</b>: transitions are tried in order. Put <code>dry</code> below <code>fire</code> and the press fires first.</li>
   </ul>
   <p>Instead of switching, <code>dry</code> could play a click: a <code>sound</code> step and no <code>switch_if_empty</code>. Either way it's a phase you can see in the graph, not a branch hidden in code.</p>
+
+  <h2 id="first-person">Phases in first person</h2>
+  <p>A phase's <span class="ui">anim?</span> (and any <a href="../reference/weapon-vocab.html#set_anim"><code>set_anim</code></a> step) puts the player in an animation state. The third-person body animates by that number, and so does the weapon in first person: on the weapon's <span class="ui">first person</span> tab, under <b>per phase</b>, each state the weapon's phases set gets an animation of its own.</p>
+  <figure class="shot" data-src="../assets/shots/weapon-per-phase.png" data-alt="The per phase part of the first person tab for Gem Hollow's startoss: state 0 set by ready, looping, and state 2 set by throw, played once" data-hotspots='[{"x":89,"y":22,"t":"at rest / firing (fallback)","d":"played in any state with no animation of its own"},{"x":83,"y":38,"t":"canvas at","d":"where the sprite&#39;s canvas sits on the 320 x 200 screen"},{"x":76,"y":52,"t":"per phase","d":"one card per animation state the phases set"},{"x":86,"y":71,"t":"state 0 · ready","d":"the state, and the phases that set it"},{"x":82,"y":76,"t":"loops","d":"state 0 loops by default"},{"x":82,"y":94,"t":"plays once","d":"every other state plays once and holds its last frame"}]'>
+    <figcaption><b>per phase</b> for Gem Hollow's <code>startoss</code>: <code>ready</code> sets state 0, <code>throw</code> sets state 2.</figcaption>
+  </figure>
+  <ul>
+    <li>Each card is titled <b>state <i>n</i> · <i>phases</i></b>: the number, and every phase that sets it. Several phases can share one state; renaming a phase changes nothing here.</li>
+    <li>Drawn from pictures, a card has a frame list like <b>at rest</b>. Drawn from a sprite, it has an <span class="ui">animation</span> list: one of the sprite's animations, or <code>(none: at rest / firing)</code>.</li>
+    <li>The switch under it says <span class="ui">loops</span> or <span class="ui">plays once, holds its last frame</span>. State 0 loops by default and the rest hold.</li>
+    <li>The game plays a state's animation while the player is in it, from the start each time the state is entered again, so a second swing of the same phase restarts it. It follows your own predicted state, so it changes on the tick you press, not a round trip later.</li>
+    <li>A state with nothing of its own falls back to <b>at rest</b> and <b>firing</b>, which is also what engines that do not play per phase use. If at rest and firing are empty, the studio writes them from state 0 and the next state.</li>
+    <li>With no phase setting a state, the section says so: give the phases an <span class="ui">anim?</span> in the graph first.</li>
+  </ul>
+  <p>The preview's <span class="ui">▶ state <i>n</i></span> buttons play each state as the game would; a dimmed one has nothing of its own yet.</p>
+
+  <h2 id="gem-hollow">In Gem Hollow: two small machines</h2>
+  <p>Both of Gem Hollow's weapons are two phases, the smallest useful machine:</p>
+  <pre><code>fists     ready ★  anim 0, waits      1. button_pressed            → swing
+          swing    anim 2, 18 ticks → ready    at 0: sound player.swing (predicted)
+                                                its own swing: damage 10, 8 ticks
+
+startoss  ready ★  anim 0, waits      1. button_pressed ∧ has_ammo (n 1) → throw
+          throw    anim 2, 14 ticks → ready    at 0: consume 1, launch star_shot,
+                                                     sound player.swing (predicted)
+                                                at 10: switch_if_empty</code></pre>
+  <ul>
+    <li><b>Both are semi-automatic.</b> <code>button_pressed</code> is an event, so holding the button gives one punch or one throw. A punch every 18 ticks is at most 3⅓ a second; a throw every 14, just over 4.</li>
+    <li><b>The dry check is a condition, not a phase.</b> Instead of DOOM's <code>dry</code> phase, <code>startoss</code> puts <code>has_ammo</code> beside the press. With no stars, pressing does nothing at all: no click.</li>
+    <li><b>The switch happens after the last throw.</b> <code>switch_if_empty</code> at 10 of <code>throw</code> swaps to the highest-order weapon with ammunition, the fists, right after the throw that used the last star. A throw with stars left does nothing at that step.</li>
+    <li><b>Each phase sets an animation state</b>: 0 at rest, 2 (the hero's attack) while punching or throwing. That is what the third-person hero plays, and what <b>per phase</b> above offers in first person.</li>
+  </ul>
+
+  <h2>Exercise: a Star Toss you can hold</h2>
+  <ol class="steps">
+    <li><p>Open Gem Hollow, choose <b>🔫 Weapons</b> and pick <code>startoss</code>. Tap <code>ready</code>.</p></li>
+    <li><p>In its transition card, remove <code>button_pressed</code> with its <span class="ui">✕</span>, then <span class="ui">add when</span> <code>button_held</code>. Leave <code>has_ammo</code> where it is.</p></li>
+    <li><p>Tap <code>throw</code> and set <span class="ui">ticks?</span> to <code>20</code>, so a held button throws three stars a second. Check the bar says <em>loads clean</em>.</p></li>
+    <li><p>Press <span class="ui">▶ Play</span>, pick up the star pouch in the level (or give yourself stars in the kit, as in <a href="01-first-weapon.html#gem-hollow">Your first weapon</a>), and hold the button: a stream of stars, until the last one switches you to the fists.</p></li>
+  </ol>
 
   <h2>Exercise: a carbine, step by step</h2>
   <p>You'll turn the pistol from lesson 1 into a carbine: semi-automatic, then automatic, with a recovery, and a dry phase. Keep the demo above open in another tab to compare.</p>

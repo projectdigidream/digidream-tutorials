@@ -19,9 +19,9 @@
   <h1>Attacks: swings and missiles</h1>
   <p class="lede">An attack is a state with a sequence: turn to the target, wait, strike, start a cooldown. What the strike <em>is</em> decides how the player fights back: step out of reach, step aside, take cover, or dodge a ball of fire. This lesson covers all four kinds of attack and the timing around them.</p>
   <div class="goal">
-    <b>You'll learn</b><span>how an attack state is built; the difference between <code>melee</code> and a swing; how to tune a swing on the <span class="ui">🌀 swing</span> tab; hitscan bullets; missiles on the <span class="ui">☄ missiles</span> tab; cooldowns, wind-ups and warnings; and how aim and turning work</span>
+    <b>You'll learn</b><span>how an attack state is built; the difference between <code>melee</code> and a swing; how to tune a swing on the <span class="ui">🌀 swing</span> tab, and how it looks in the game on the <span class="ui">💨 slash</span> tab; hitscan bullets; missiles on the <span class="ui">☄ missiles</span> tab; cooldowns, wind-ups and warnings; and how aim and turning work</span>
     <b>Time</b><span>45 minutes</span>
-    <b>Needs</b><span>the <code>grunt</code> from the earlier lessons, and a prop in the module to draw a fireball with (a small sheet with a flying animation and a burst)</span>
+    <b>Needs</b><span>Gem Hollow open in the studio; for the last exercise, the <code>grunt</code> from the earlier lessons, and a prop in the module to draw a fireball with (a small sheet with a flying animation and a burst)</span>
   </div>
 
   <h2>The shape of an attack</h2>
@@ -98,6 +98,30 @@
   </ul>
   <div class="callout warn"><p>A monster with a <code>swing</code> step and no swing on the <span class="ui">🌀 swing</span> tab is refused when it loads. It would otherwise swing with the engine's defaults, which nobody chose.</p></div>
 
+  <h3 id="slash">How a swing looks in the game: the slash tab</h3>
+  <p>Every swing is drawn in the game as a <b>slash streak</b>: a band near the tip of the swept wedge, laid down tick by tick between where the blade was and where it is, fading behind it. It is built from the same numbers as the collider, so what the player sees is what can hit them. It is drawn whether or not the debug overlay is on; the overlay's faint wedge and red collider are for tuning, and go with the overlay.</p>
+  <figure class="shot" data-src="../assets/shots/enemy-slash.png" data-alt="The slash tab of Gem Hollow's slime: show, color, opacity 0.6, fade 0.22, width 0.4, blend add, texture none" data-hotspots='[{"x":86,"y":30,"t":"Whose look","d":"This monster&#39;s, over the default look set in Player → slash"},{"x":80,"y":36,"t":"show","d":"Off draws nothing; the collider still hits"},{"x":88,"y":42,"t":"color","d":"The streak&#39;s colour; it tints a texture"},{"x":86,"y":54,"t":"fade and width","d":"Seconds to fade; how much of the wedge the band covers"},{"x":88,"y":66,"t":"blend","d":"add glows; normal paints over"},{"x":88,"y":72,"t":"texture","d":"A picture under sprites/, or a plain band"}]'>
+    <figcaption>The <span class="ui">💨 slash</span> tab for Gem Hollow's <code>slime</code>, showing the engine's look, since nothing is set.</figcaption>
+  </figure>
+  <p>The <span class="ui">💨 slash</span> tab, beside <span class="ui">🌀 swing</span>, sets this monster's look under <b>how it looks in the game</b>:</p>
+  <table>
+    <thead><tr><th>Field</th><th>What it does</th><th>Engine's look</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">show</span></td><td>Off: this swing is not drawn at all. The collider still hits.</td><td>on</td></tr>
+      <tr><td><span class="ui">color</span></td><td>The streak's colour. With a texture, it tints the texture.</td><td>#fff2c8, a warm white</td></tr>
+      <tr><td><span class="ui">opacity</span></td><td>How solid a new piece of the streak is, 0 to 1.</td><td>0.6</td></tr>
+      <tr><td><span class="ui">fade</span></td><td>Seconds a piece takes to fade away.</td><td>0.22</td></tr>
+      <tr><td><span class="ui">width</span></td><td>How much of the swept wedge the band covers, from the tip inward: 1 is all of it, 0.4 the outer 40%.</td><td>0.4</td></tr>
+      <tr><td><span class="ui">blend</span></td><td><code>add</code> glows and lightens what is behind it; <code>normal</code> paints over it.</td><td>add</td></tr>
+      <tr><td><span class="ui">texture</span></td><td>A picture under <code>sprites/</code> (.png or .webp), stretched along the sweep and across the band. <code>(none: a plain band)</code> draws a flat band.</td><td>none</td></tr>
+    </tbody>
+  </table>
+  <p>Each field shows the look the swing really has. A field you set is marked <b>(own)</b>, and the rest comes from the <b>default</b>, which is set once for the module in <b>🧍 Player</b> → <span class="ui">💨 slash</span> (it is also how other players' swings look). <span class="ui">back to the default look</span> clears everything this monster set. A monster that is deleted takes its look with it.</p>
+  <ul>
+    <li><b>Only swings are drawn.</b> A <code>melee</code> step, a <code>hitscan</code> or a missile has no streak: the streak follows the swept collider, and only a swing has one.</li>
+    <li><b>The name is the catalogue name.</b> A monster's look is stored under its body's name in <code>assets/sprites/swings.json</code>, which the studio writes only when something is set. A module that sets nothing gets the engine's look.</li>
+  </ul>
+
   <h2>Hitscan: bullets</h2>
   <p><a href="../reference/monster-vocab.html#hitscan"><code>hitscan</code></a> is an instant shot along a ray. Whatever the ray reaches first, a wall or a body, is where it ends. The player dodges it by not being in the line: cover, corners, distance.</p>
   <table>
@@ -167,6 +191,35 @@
     <li>Because shots follow the body, use <code>target_in_front</code> on the transition into a ranged attack.</li>
   </ul>
 
+  <h2 id="gem-hollow">In Gem Hollow: three bumps and a dash</h2>
+  <p>Gem Hollow's monsters all attack with <code>melee</code>, each with its own timing. Open each one's <code>attack</code> state to read it:</p>
+  <table>
+    <thead><tr><th>Monster</th><th>Into <code>attack</code> from <code>chase</code> when</th><th>The <code>attack</code> state</th><th>When it lands</th></tr></thead>
+    <tbody>
+      <tr><td><code>slime</code></td><td><code>target_within</code> 1.4, <code>cooldown_ready</code> ready</td><td><code>ticks</code> 24. At 10: <code>melee</code> damage 10, range 1.2, knockback 6; a sound; <code>set_cooldown</code> ready 60.</td><td>16 ticks in; back to <code>chase</code> at 24</td></tr>
+      <tr><td><code>bee</code></td><td><code>target_within</code> 2.5, <code>cooldown_ready</code> ready</td><td><code>ticks</code> 30. At 0: a buzz. At 6: <a href="../reference/monster-vocab.html#impulse"><code>impulse</code></a> speed 9 <code>towards</code> target. At 14: <code>melee</code> damage 8, range 1.3, knockback 5; <code>set_cooldown</code> ready 90.</td><td>the buzz at 8, the dash at 8 too, the sting at 16</td></tr>
+      <tr><td><code>snail</code></td><td><code>target_within</code> 1.5, <code>cooldown_ready</code> ready</td><td><code>ticks</code> 30. At 14: <code>melee</code> damage 12, range 1.4, knockback 7; a sound; <code>set_cooldown</code> ready 50.</td><td>16 ticks in</td></tr>
+    </tbody>
+  </table>
+  <figure class="shot" data-src="../assets/shots/enemy-bee-attack.png" data-alt="The bee's attack state: a sound at 0, an impulse at 6 with speed 9 towards the target, a melee at 14 with damage 8, range 1.3 and knockback 5" data-hotspots='[{"x":82,"y":30,"t":"sound at 0","d":"The buzz, heard as the wind-up starts"},{"x":82,"y":50,"t":"impulse at 6","d":"A shove of 9 towards you: the bee dives"},{"x":82,"y":80,"t":"melee at 14","d":"The sting, 8 damage, if you are still within 1.3"}]'>
+    <figcaption>The bee's <code>attack</code>: it buzzes, dives at you, then stings.</figcaption>
+  </figure>
+  <ul>
+    <li><b>The bee starts from further away.</b> It enters <code>attack</code> at 2.5 but only stings within 1.3. The <code>impulse</code> closes the gap: a shove of 9 units a second towards you, which makes the dive. Step sideways during the buzz and the dive goes past you, so the sting finds nobody.</li>
+    <li><b>All three land on a decision.</b> Steps at 10 and 14 both run at the decision 16 ticks in, so the slime and the snail hit at the same moment after they stop; what differs is how long they then stand still (8 and 16 ticks, since a state also ends on a decision) and their cooldowns (60 and 50).</li>
+    <li><b>None of them has a swing</b>, so none draws a slash streak, and their <span class="ui">💨 slash</span> tabs change nothing yet. The exercise below gives the snail one.</li>
+    <li><b>Gem Hollow's one missile, <code>star_shot</code></b>, on <span class="ui">☄ missiles</span>, is the player's: the Star Toss weapon throws it. No monster fires it. It sets the missile's own <code>damage</code> field to 20 and has no <code>on_hit</code>.</li>
+  </ul>
+  <div class="callout warn"><p><b>A missile's own <code>damage</code> field does nothing yet.</b> The vocabulary accepts it, but the runtime hurts only through the actions in <code>on_hit</code>. So Gem Hollow's <code>star_shot</code> flies and bursts and costs nothing. Give a missile its damage as an <code>on_hit</code> <code>damage</code> step, as a new missile has; <a href="../weapons/03-hitscan-missiles-swings.html#gem-hollow">Hitscan, missiles and swings</a> fixes the star this way.</p></div>
+
+  <h2>Exercise: a snail that swipes</h2>
+  <ol class="steps">
+    <li><p>Open Gem Hollow, choose <b>☠ Monsters</b> and pick <code>snail</code>. Open <span class="ui">🌀 swing</span> and press <span class="ui">+ swing</span>. Set <code>damage</code> 12, <code>reach</code> 1.2, <code>half_arc</code> 1/6, <code>sweep_from</code> 1/6, <code>sweep_to</code> −1/6 and <code>ticks</code> 12. Watch the preview sweep.</p></li>
+    <li><p>Tap the <code>attack</code> state. Delete its <code>melee</code> step with <span class="ui">✕</span>, and use <span class="ui">add step</span> to add <code>swing</code> at 8.</p></li>
+    <li><p>Open <span class="ui">💨 slash</span>. Set <span class="ui">color</span> to a slime green and drag <span class="ui">width</span> to 0.7. Both now read <b>(own)</b>.</p></li>
+    <li><p>Check <em>"loads clean"</em> and press <span class="ui">▶ Play</span>. Go to the third zone and let a snail come to you. You now see a green streak sweep from its left to its right; step to its left just after the streak starts, and it misses you.</p></li>
+  </ol>
+
   <h2>Exercise: claws you can dodge, and a fireball</h2>
   <ol class="steps">
     <li><p>Pick <code>grunt</code> and open <span class="ui">🌀 swing</span>. Press <span class="ui">+ swing</span>. Set <code>damage</code> 12, <code>reach</code> 1.2, <code>half_arc</code> 1/6, <code>sweep_from</code> 1/6, <code>sweep_to</code> −1/6, and <code>ticks</code> 10. Watch the preview sweep from its left to its right.</p></li>
@@ -205,6 +258,15 @@
       <li><code>ticks</code> 0</li>
     </ul>
     <p class="why">Equal sweep values make a thrust that does not rotate. A narrow arc makes it a line you can step out of. <code>ticks</code> 0 is an instant hit, not a thrust.</p>
+  </div>
+  <div class="quiz" data-answer="1">
+    <p class="q">You set Gem Hollow's <code>slime</code> slash colour to red on its <span class="ui">💨 slash</span> tab and play. No red streak appears when it bumps you. Why?</p>
+    <ul>
+      <li>The streak is only drawn with the debug overlay on</li>
+      <li>The slime attacks with <code>melee</code>; only a swing, the swept collider, draws a streak</li>
+      <li>The colour only applies to weapons</li>
+    </ul>
+    <p class="why">The streak follows the swing's sweep, debug or not. A <code>melee</code> step has no sweep to draw. Give the slime a swing and use a <code>swing</code> step, and the red shows.</p>
   </div>
 </article>
 </body>

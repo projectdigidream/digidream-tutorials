@@ -350,6 +350,52 @@ mobs = {
     <li><b>Minions:</b> <code>spawn</code> needs an <code>imp</code> in the module (recipe 1). <code>limit</code> 4 caps how many it has alive at once. <code>count_within</code> with <span class="ui">not</span> means "no imps within 20", and <code>chance</code> 5 makes the summon an occasional choice rather than the first one.</li>
     <li><b>The effect has no <code>ticks</code></b>, so the speed-up lasts for the rest of its life. The <code>tag</code> means a second enrage would replace it, not stack.</li>
   </ul>
+  <div class="callout tip"><p><b>Make the stomp readable.</b> The boss's stomp is a swing, so the game draws it as a slash streak. On the boss's <span class="ui">💨 slash</span> tab, a red <span class="ui">color</span>, <span class="ui">width</span> 1 (the whole wedge) and a longer <span class="ui">fade</span> such as 0.5 make the danger zone stay on screen long enough to read (<a href="03-attacks.html#slash">Attacks</a>).</p></div>
+
+  <h2 id="slime">6. Gem Hollow's slime: a monster you jump on</h2>
+  <p>Not a recipe to build but one to open: the <code>slime</code> in the example project, as the studio writes it into Gem Hollow's <code>maps/module.lua</code>. It is the platformer's oldest enemy: walk into it and it bumps you; land on it and it bounces you up and is gone. (The <code>pain</code>, <code>death</code> and <code>gone</code> states are shortened here; <a href="02-the-brain.html#gem-hollow">The brain</a> lists them.)</p>
+  <pre><code>slime = {
+  hp = 20, sight = "14", turn_speed = 8, pain_chance = 200,
+  initial = "look", corpse = false,
+  vars = { ready = 0 },
+  states = {
+    look = { anim = 0, move = "wander", face = "movement",
+      transitions = {
+        { to = "squash", when = { { cond = "target_above", by = "0.6" },
+                                  { cond = "target_within", distance = "1.3" } } },
+        { to = "chase",  when = { { cond = "has_target" }, { cond = "target_visible" },
+                                  { cond = "target_within", distance = "9" } } },
+      } },
+    chase = { anim = 1, move = "chase", face = "target", interruptible = true,
+      transitions = {
+        { to = "squash", when = { { cond = "target_above", by = "0.6" },
+                                  { cond = "target_within", distance = "1.3" } } },
+        { to = "look",   when = { { cond = "has_target", negate = true } } },
+        { to = "attack", when = { { cond = "target_within", distance = "1.4" },
+                                  { cond = "cooldown_ready", var = "ready" } } },
+      } },
+    attack = { anim = 2, move = "stop", face = "target", ticks = 24, next = "chase",
+      sequence = {
+        { at = 10, action = "melee", damage = 10, range = "1.2", knockback = "6" },
+        { at = 10, action = "sound", name = "monster.attack" },
+        { at = 10, action = "set_cooldown", var = "ready", ticks = 60 },
+      } },
+    squash = { anim = 4, move = "stop", face = "hold", solid = false, ticks = 40, next = "gone",
+      sequence = {
+        { at = 0, action = "sound", name = "monster.slime.death" },
+        { at = 0, action = "melee", damage = 1, range = "2", lift = "14" },
+      } },
+    -- pain (12 ticks), death (a sound at 0), gone (despawn at 0)
+  },
+  drops = { { item = "coin" } },
+}</code></pre>
+  <ul>
+    <li><b>Body:</b> radius 0.55, height 1, speed 2.5, drawn with the sheet <code>SLIME</code>.</li>
+    <li><b>The stomp comes first</b> in both <code>look</code> and <code>chase</code>, so landing on it wins over anything else.</li>
+    <li><b>The bounce is a 1-point <code>melee</code> with <code>lift</code> 14.</b> The hero loses a point of health and is thrown up, which reads as a bounce.</li>
+    <li><b>Make it yours:</b> give <code>squash</code> a <a href="../reference/monster-vocab.html#vfx"><code>vfx</code></a> step at 0 for a splash. Note that a stomped slime drops nothing: drops are rolled only when hits take its <code>hp</code> to 0, and <code>squash</code> ends in <code>despawn</code> instead (<a href="04-pain-death-drops.html#gem-hollow">Pain, death and drops</a>).</li>
+  </ul>
+
   <div class="callout warn"><p><b>A <code>lua</code> condition or action moves a monster to the slower runtime.</b> None of these recipes needs one. The server prints at load how many monster kinds run on the fast C++ loop and how many fall back, with the reason. Keep the escape hatch for what the vocabulary truly cannot say.</p></div>
 
   <h2>Exercise: build the turret</h2>

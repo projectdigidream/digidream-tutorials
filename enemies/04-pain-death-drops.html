@@ -21,7 +21,7 @@
   <div class="goal">
     <b>You'll learn</b><span>the order of events when a hit lands; how <code>pain_chance</code> and the flinch length work; how death, corpses and revival work; drops and weighted choices; the <span class="ui"># vars</span> tab; and how to give a monster sounds</span>
     <b>Time</b><span>35 minutes</span>
-    <b>Needs</b><span>the <code>grunt</code> from the earlier lessons, a pickup prop in the module (a medikit, say), and a sound pack with a few monster sounds (<a href="../sounds/04-mix-and-ship.html">Mix, test and ship</a>)</span>
+    <b>Needs</b><span>Gem Hollow open in the studio; for the last exercise, the <code>grunt</code> from the earlier lessons, a pickup prop in the module (a medikit, say), and a sound pack with a few monster sounds (<a href="../sounds/04-mix-and-ship.html">Mix, test and ship</a>)</span>
   </div>
 
   <h2>When a hit lands</h2>
@@ -35,8 +35,8 @@
   <p>The hit is also remembered for the brain's own conditions: <a href="../reference/monster-vocab.html#was_hurt"><code>was_hurt</code></a> (something hurt it within the last few ticks), <a href="../reference/monster-vocab.html#hurt_by_mob"><code>hurt_by_mob</code></a> (another monster did) and <a href="../reference/monster-vocab.html#hp_below"><code>hp_below</code></a> (health under a percent of its start).</p>
   <div class="callout tip"><p><b>Give <code>was_hurt</code> a window.</b> Its <code>within</code> defaults to 1 tick, and a monster only decides every 8, so with the default it almost never sees the hit. Set <code>within</code> to 8 or more.</p></div>
 
-  <figure class="shot" data-src="../assets/shots/enemy-brain.png" data-alt="The brain tab: initial state, hp, sight, pain_chance, turn_speed, jump_height, flying, hover_z, infighting, blood, corpse, mass, then the flinch" data-hotspots='[{"x":89,"y":28,"t":"hp","d":"Starting health. The engine has none of its own"},{"x":89,"y":40,"t":"pain_chance","d":"Out of 256: how often a hit makes it flinch"},{"x":89,"y":76,"t":"blood","d":"The particle kind it sprays when hurt, whatever hit it"},{"x":89,"y":82,"t":"corpse","d":"Whether the body stays after it dies"},{"x":83,"y":96,"t":"the flinch","d":"a bigger hit, a longer flinch"}]'>
-    <figcaption>The <span class="ui">🧠 brain</span> tab of the starter module's <code>spirit</code>, a flyer. Optional fields end in <b>?</b>.</figcaption>
+  <figure class="shot" data-src="../assets/shots/enemy-brain.png" data-alt="The lower half of the slime's brain tab: flying, hover_z, infighting, blood, corpse and mass, then the flinch, then its drop: a coin" data-hotspots='[{"x":89,"y":32,"t":"blood","d":"The particle kind it sprays when hurt, whatever hit it"},{"x":80,"y":38,"t":"corpse","d":"Off for the slime: the body goes the moment it dies"},{"x":80,"y":55,"t":"the flinch","d":"a bigger hit, a longer flinch; off, so every flinch is the pain state&#39;s 12 ticks"},{"x":86,"y":72,"t":"A drop","d":"item coin, dropped every time it dies"},{"x":79,"y":84,"t":"+ weighted choice","d":"Turns the drop into one_of, a choice by weights"},{"x":86,"y":91,"t":"+ drop","d":"Another entry"}]'>
+    <figcaption>The lower half of the <span class="ui">🧠 brain</span> tab for Gem Hollow's <code>slime</code>: its body flags, the flinch and its one drop. Optional fields end in <b>?</b>.</figcaption>
   </figure>
   <h2>Pain: the flinch</h2>
   <p>A flinch tells the player a hit landed, and gives them a moment. It happens only when <b>all</b> of these are true:</p>
@@ -126,6 +126,33 @@
     </tbody>
   </table>
   <div class="callout"><p>A sound may be dropped on a busy or distant client. So a sound is never the only sign of anything: a wind-up should also show in the animation, or a <code>telegraph</code>. Sound packs are made in the Sounds track; see <a href="../sounds/04-mix-and-ship.html">Mix, test and ship</a> for how a pack's names reach the game.</p></div>
+
+  <h2 id="gem-hollow">In Gem Hollow: soft monsters that vanish</h2>
+  <p>Open each monster's <span class="ui">🧠 brain</span> and read its numbers:</p>
+  <table>
+    <thead><tr><th>Monster</th><th><code>hp</code></th><th><code>pain_chance</code></th><th><code>pain</code> state</th><th><code>corpse</code></th><th>Drops</th></tr></thead>
+    <tbody>
+      <tr><td><code>slime</code></td><td>20</td><td>200</td><td>12 ticks, sound <code>monster.slime.hurt</code></td><td>off</td><td><code>coin</code>, always</td></tr>
+      <tr><td><code>bee</code></td><td>10</td><td>255</td><td>10 ticks, no sound</td><td>off</td><td>none</td></tr>
+      <tr><td><code>snail</code></td><td>40</td><td>120</td><td>14 ticks, sound <code>monster.snail.hurt</code></td><td>off</td><td><code>star_ammo</code>, always</td></tr>
+    </tbody>
+  </table>
+  <p>The hero's fists hit for 10 (<a href="../weapons/03-hitscan-missiles-swings.html#gem-hollow">Hitscan, missiles and swings</a>), so a bee dies to one punch, a slime to two and a snail to four. What to notice:</p>
+  <ul>
+    <li><b>The bee always flinches</b> (255 of 256), which would be a stun-lock on a tough monster. On a 10-hp bee it never matters: the first punch kills it.</li>
+    <li><b>No corpses.</b> With <code>corpse</code> off, the body is removed the moment it dies. Each <code>death</code> state still matters for one thing: its step at 0, the death sound (<code>monster.slime.death</code> and so on), which runs as it dies. Its <code>ticks</code> 40 and <code>next</code> gone never run, because the dead do not think. The <code>gone</code> state is reached only from the slime's <code>squash</code>.</li>
+    <li><b>A stomped slime leaves no coin.</b> Drops are rolled only when hits take <code>hp</code> to 0. A slime you land on goes through <code>squash</code> and <code>gone</code>, whose <code>despawn</code> removes it without dying, so nothing drops. Punch it to death and it drops its coin.</li>
+    <li><b>The snail feeds the Star Toss.</b> Its <code>star_ammo</code> is a pickup that gives 5 stars (<a href="../weapons/04-ammo-and-pickups.html#gem-hollow">Ammo, pickups and the arsenal</a>), so the hardest monster pays for the ranged weapon.</li>
+    <li><b>No vars beyond <code>ready</code></b>, the attack cooldown each one shares with this track's grunt.</li>
+  </ul>
+
+  <h2>Exercise: snails that sometimes heal you</h2>
+  <ol class="steps">
+    <li><p>Open Gem Hollow, choose <b>☠ Monsters</b>, pick <code>snail</code> and open <span class="ui">🧠 brain</span>. Scroll to <b>🎁 drops</b>: one entry, <code>star_ammo</code>.</p></li>
+    <li><p>Press <span class="ui">+ drop</span> for a second entry. Press <span class="ui">+ weighted choice</span>, type <code>heart</code> in the choice's <code>item</code>, weight 1. Press <span class="ui">+ weighted choice</span> again, leave its <code>item</code> empty and give it weight 2. The tab says <em>"Something drops 33% of the time."</em></p></li>
+    <li><p>Under <b>💢 the flinch</b>, switch on <span class="ui">a bigger hit, a longer flinch</span> and read what it says a 10-point hit (one punch) does to the snail's 14-tick flinch.</p></li>
+    <li><p>Check <em>"loads clean"</em>, press <span class="ui">▶ Play</span>, and punch the four snails of the third zone to death. Each leaves its stars, and about one in three also leaves a heart.</p></li>
+  </ol>
 
   <h2>Exercise: make the grunt feel hits</h2>
   <ol class="steps">
