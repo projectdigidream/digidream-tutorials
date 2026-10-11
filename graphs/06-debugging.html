@@ -108,6 +108,19 @@
     <li><p><b>Is it a cutscene?</b> Use <span class="ui">▶ scene</span> in the graph window to see the timing without playing.</p></li>
   </ol>
 
+  <h2>In Gem Hollow</h2>
+  <p>Open the bundled example, Gem Hollow, and break its <code>levers</code> graph on purpose (on the <code>world</code> map). Each lever runs one chain: <a href="../reference/graph-nodes.html#when_prop_used"><code>when_prop_used</code></a> → <a href="../reference/graph-nodes.html#once"><code>once</code></a> → a lever animation → a <a href="../reference/graph-nodes.html#camera_flythrough"><code>camera_flythrough</code></a> along path 2 → <a href="../reference/graph-nodes.html#open_door"><code>open_door</code></a> with tag 11 → a <a href="../reference/graph-nodes.html#subtitle"><code>subtitle</code></a>. Undo each break before you try the next.</p>
+  <h3>A link the studio catches</h3>
+  <p>Pick the red lever's <code>open_door</code> node and clear its <code>tag</code>. The door is now tied to nothing, and the engine would refuse the whole graph. Home lists it under <span class="ui">to fix (N)</span>:</p>
+  <pre><code>world: graph levers: node 'opendoor7': a open_door needs a sector -- picked on the map, linked from sector_of, or a tag</code></pre>
+  <p>Play refuses to start until you fix it. Tap the line to go to the graph. Delete camera path 2 from the map instead, and you get <em>node 'cameraflyt6': no camera path with tag 2 on this map (Camera → camera paths)</em>. The graph didn't change, but the map it needs did.</p>
+  <h3>A link nobody catches</h3>
+  <p>Now give the red lever's <code>when_prop_used</code> a misspelt <code>prop</code>, such as <code>lever_rd</code>. Nothing checks prop names, so Home says <em>nothing wrong that the studio can see</em>. Play starts, and <code>play-server.log</code> still says the graph loaded:</p>
+  <pre><code>[graphs] levers: 39 nodes, 36 links</code></pre>
+  <p>You pull the lever and nothing happens. The <span class="ui">what looks wrong</span> list is empty, because nothing failed: the start node never matched. This is step 2 of the checklist. Put a <span class="ui">do log</span> straight after the start node and play again. If its line never shows up, the start node's filter is wrong.</p>
+  <h3>A value that does not fit</h3>
+  <p>The <code>vault</code> graph counts keys in the variable <code>keys</code>, and its <a href="../reference/graph-nodes.html#compare"><code>compare</code></a> asks <code>keys &gt;= 3</code> before the vault opens. Type <code>2.5</code> into its <code>b</code> instead. A typed decimal is kept as text, and comparing a number with text is always false, so the vault never opens. The studio says nothing about it, and neither does the log. Keep compared numbers whole (see the table below).</p>
+
   <h2>Common mistakes</h2>
   <table>
     <thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
