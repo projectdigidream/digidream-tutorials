@@ -91,6 +91,20 @@
   </ul>
   <div class="callout tip"><p>A grate is usually symmetric and must tile. Use <span class="ui">Mirror XY</span> with <span class="ui">Wrap</span> on, and erase one quarter of the holes. The other three quarters appear by themselves.</p></div>
 
+  <h2 id="gem-hollow">In Gem Hollow</h2>
+  <p>Gem Hollow's projects keep their seam setting. The 20 floor, wall, door and liquid textures, STONE, DIRT, GRASSEDGE, BRICKGREY, PLANKS, LAVA and the rest, are saved with <span class="ui">Wrap</span> on, so they open ready to paint across the edges. The four HUD icons and the sky SKYHILLS have it off: they are never repeated side by side.</p>
+  <p>The same split shows on the studio's cards. HUDCOIN, HUDGEM, HUDHEART and HUDKEY have <span class="ui">cut out (see-through where transparent)</span> on, so their transparent corners stay holes. Every floor and wall leaves it off.</p>
+
+  <h2>Exercise: a crack across STONE's edge</h2>
+  <ol class="steps">
+    <li><p>On <b>Home</b>, under <b>Examples</b>, press <span class="ui">📂 Gem Hollow</span>. In <b>🧱 Textures</b>, click <b>STONE</b> and press <span class="ui">duplicate</span>, keeping <code>STONE_2</code>, so the stone on the map stays as it is.</p></li>
+    <li><p>Press <span class="ui">edit in qPainter</span>. <span class="ui">Wrap</span> is already ticked; tick <span class="ui">Tiles</span> and set the 3D preview to <span class="ui">wall</span>.</p></li>
+    <li><p>Press <span class="ui">Offset ½</span>. The tile's edges now cross in the middle of the canvas.</p></li>
+    <li><p>With <kbd>P</kbd> and a dark grey from the palette, draw a crack straight through the middle cross. Watch it continue on the dimmed copies.</p></li>
+    <li><p>Press <span class="ui">Offset ½</span> again. The crack now runs off one edge and back in on the other, with no seam on the wall.</p></li>
+    <li><p>Press <span class="ui">‹ studio</span>, then <span class="ui">export PNG</span> on STONE_2's card if you want the tile outside the studio.</p></li>
+  </ol>
+
   <h2>Check yourself</h2>
   <div class="quiz" data-answer="1">
     <p class="q">You want to repaint the seam of a finished tile where the edges meet. What is the quickest way?</p>

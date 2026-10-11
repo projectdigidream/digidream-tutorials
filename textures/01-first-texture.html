@@ -37,8 +37,8 @@
   </table>
 
   <h3>From the studio</h3>
-  <figure class="shot" data-src="../assets/shots/studio-textures-page.png" data-alt="The studio's Textures page">
-    <figcaption>The Textures page: the module's own textures, then the app's.</figcaption>
+  <figure class="shot" data-src="../assets/shots/studio-textures-page.png" data-alt="The studio's Textures page in Gem Hollow, with LAVA's card open" data-hotspots='[{"x": 26, "y": 10, "t": "Add a texture", "d": "+ new texture opens qPainter; + import texture (PNG) brings a picture in"}, {"x": 50, "y": 24, "t": "The module's own (25)", "d": "Gem Hollow's textures, LAVA selected"}, {"x": 28, "y": 67, "t": "The card", "d": "size, where it is used, cut out, and the sheet line"}, {"x": 82, "y": 67, "t": "cut & speed…", "d": "how the picture is cut into frames"}, {"x": 48, "y": 74, "t": "duplicate and export", "d": "a copy under a new name; the PNG or the qPainter project out of the studio"}, {"x": 20, "y": 81, "t": "The app's (2)", "d": "textures from the engine build, filtered by name"}]'>
+    <figcaption>The Textures page in Gem Hollow: its 25 textures, then the app's two. LAVA's card is open: 256×1024, used once on <code>world</code>, animated as 4 stacked frames at 4 a second.</figcaption>
   </figure>
   <p>Open <b>🧱 Textures</b> from the rail or from Home. The page has two lists:</p>
   <ul>
@@ -50,7 +50,12 @@
     <li><span class="ui">+ new texture</span> asks for a name and opens qPainter on an empty texture. A name is capital letters, digits and <code>_</code>, up to 24 characters. Anything else is dropped, so <code>my wall-2</code> becomes <code>MYWALL2</code>.</li>
     <li><span class="ui">+ import texture (PNG)</span> brings in a PNG you already have.</li>
   </ul>
-  <p>Click one of the module's own textures to open its card. The card shows the size and where the texture is used, and has <span class="ui">✎ edit in qPainter</span>, <span class="ui">rename</span> and <span class="ui">delete</span>. A rename follows the texture onto every map surface that uses it.</p>
+  <p>Click one of the module's own textures to open its card. The card shows the size and where the texture is used, the <span class="ui">cut out (see-through where transparent)</span> switch, and whether it is animated (<span class="ui">animate…</span> or <span class="ui">cut &amp; speed…</span>, see <a href="04-frames-and-skies.html">Animation and skies</a>). Its buttons are <span class="ui">edit in qPainter</span>, <span class="ui">open with…</span> (when a plugin can open it too), <span class="ui">duplicate</span>, the export buttons, <span class="ui">rename</span> and <span class="ui">delete</span>. A rename follows the texture onto every map surface that uses it.</p>
+  <h3 id="duplicate-export">Duplicate and export</h3>
+  <ul>
+    <li><span class="ui">duplicate</span> asks for <em>the copy's name</em> and offers the first free <code>NAME_2</code>, <code>NAME_3</code> … A taken name is refused. The copy takes every file the texture is made of: the PNG, its settings (cut out, animation) and its qPainter project, so it is a variant you can change without touching the original. Its card opens next.</li>
+    <li><span class="ui">export PNG</span> sends <code>NAME.png</code> out of the studio, and <span class="ui">export project</span> sends <code>NAME.texproj.json</code>, which standalone qPainter opens. The export goes through the app's share sheet, or downloads in a browser. A texture imported as a PNG and never edited has no project, so it shows <span class="ui">export PNG</span> alone.</li>
+  </ul>
 
   <figure class="shot" data-src="../assets/shots/texture-new.png" data-alt="qPainter's New texture dialog inside the studio">
     <figcaption>The <b>New texture</b> dialog that qPainter shows when the studio opens it on an empty texture.</figcaption>
@@ -72,8 +77,8 @@
   <div class="callout tip"><p>Standalone qPainter saves every change to its <span class="ui">Recent</span> list about a second after you make it. <span class="ui">Recent</span> lives in the browser's storage, though, so clearing site data loses it. <span class="ui">Save</span> anything you want to keep to a file.</p></div>
 
   <h2>The screen</h2>
-  <figure class="shot" data-src="../assets/shots/texture-editor.png" data-hotspots='[{"x": 12.5, "y": 5.8, "t": "Export…", "d": "PNG at 1×–16×, sprite sheets, animated PNG"}, {"x": 28.5, "y": 5.8, "t": "Wrap and Tiles", "d": "paint across edges; show the texture tiled"}, {"x": 36, "y": 5.8, "t": "Offset ½", "d": "bring the seams to the middle"}, {"x": 42, "y": 5.8, "t": "Symmetry", "d": "No sym, Mirror X/Y/XY, Diagonal, Radial (S)"}, {"x": 51, "y": 5.8, "t": "Lock", "d": "snap colours to the palette — nearest or dithered"}, {"x": 1.7, "y": 40, "t": "Tools", "d": "16 tools, each with a key"}, {"x": 41, "y": 50, "t": "The canvas", "d": ""}, {"x": 85, "y": 25, "t": "Palette", "d": "swatches, ramps, import and export"}, {"x": 82, "y": 47, "t": "Frames", "d": "animation frames and FPS"}, {"x": 82, "y": 68.5, "t": "Layers", "d": "composited bottom-up when baked"}, {"x": 90, "y": 94, "t": "3D preview", "d": "the texture on a cube, wall, sphere or your own model"}]' data-alt="qPainter with a texture open">
-    <figcaption>The top bar, the tool bar down the left, the canvas, and the side panel with the 3D preview.</figcaption>
+  <figure class="shot" data-src="../assets/shots/texture-editor.png" data-hotspots='[{"x": 14.2, "y": 5.8, "t": "Export…", "d": "PNG at 1×–16×, sprite sheets, animated PNG"}, {"x": 31, "y": 5.8, "t": "Wrap and Tiles", "d": "paint across edges; show the texture tiled"}, {"x": 37.6, "y": 5.8, "t": "Offset ½", "d": "bring the seams to the middle"}, {"x": 43.4, "y": 5.8, "t": "Symmetry", "d": "No sym, Mirror X/Y/XY, Diagonal, Radial (S)"}, {"x": 52, "y": 5.8, "t": "Lock", "d": "snap colours to the palette — nearest or dithered"}, {"x": 1.7, "y": 40, "t": "Tools", "d": "16 tools, each with a key"}, {"x": 41, "y": 50, "t": "The canvas", "d": "BRICKGREY, tiled: the middle copy is the texture"}, {"x": 89, "y": 36.5, "t": "Palette", "d": "swatches, ramps, import and export"}, {"x": 82, "y": 67.5, "t": "Frames", "d": "animation frames and FPS"}, {"x": 82, "y": 86, "t": "Layers", "d": "composited bottom-up when baked"}, {"x": 90, "y": 95, "t": "3D preview", "d": "the texture on a cube, wall, sphere or your own model"}]' data-alt="qPainter with Gem Hollow's BRICKGREY open, Tiles on">
+    <figcaption>Gem Hollow's BRICKGREY (256×256, one layer, 60 colours) open from the studio, with <span class="ui">Wrap</span> and <span class="ui">Tiles</span> on: the top bar, the tool bar down the left, the canvas, and the side panel down to the 3D preview.</figcaption>
   </figure>
   <p>qPainter has three parts around the canvas.</p>
   <h3>The top bar</h3>
@@ -165,6 +170,29 @@
     <li><p>In the studio, press <span class="ui">‹ studio</span>. The texture is saved as a project and baked to <code>assets/textures/BRICK1.png</code>, and its card appears under <span class="ui">🧱 the module's own (N)</span>. Standalone, press <kbd>⌘S</kbd> and pick where to save it.</p></li>
   </ol>
   <div class="callout"><p>The studio always keeps what qPainter returns as a <b>project</b>, <code>sources/textures/NAME.texproj.json</code>, with its layers and frames, and bakes the PNG from it. The PNG is a composite of the visible layers. A texture that started as an imported PNG becomes a project the first time you edit it in qPainter.</p></div>
+
+  <h2 id="gem-hollow">In Gem Hollow</h2>
+  <p>The studio's example project, Gem Hollow, has 25 textures of its own, every one a qPainter project in <code>sources/textures/NAME.texproj.json</code>, baked to <code>assets/textures/NAME.png</code>:</p>
+  <table>
+    <thead><tr><th>Textures</th><th>Size</th><th>What they are</th></tr></thead>
+    <tbody>
+      <tr><td>GRASSEDGE, STONEEDGE, DIRT, STONE, BLOCKWOOD, BRICKGREY, GRASS, PLANKS, SAND, CRATE, BLOCKGREEN, BRICKBROWN, SNOWROCK</td><td>256 × 256</td><td>tiling floors and walls; the first five cover most of the <code>world</code> map</td></tr>
+      <tr><td>DOOR, VAULTDOOR, GATERED, GATEBLUE, GATEGOLD</td><td>256 × 256</td><td>doors and coloured gates</td></tr>
+      <tr><td>LAVA, WATER</td><td>256 × 256, 4 frames</td><td>animated liquids, baked as 256 × 1024 sheets (see <a href="04-frames-and-skies.html#gem-hollow">Animation and skies</a>)</td></tr>
+      <tr><td>HUDCOIN, HUDGEM, HUDHEART, HUDKEY</td><td>128 × 128</td><td>icons for the HUD</td></tr>
+      <tr><td>SKYHILLS</td><td>2048 × 512</td><td>the sky strip</td></tr>
+    </tbody>
+  </table>
+  <p>Each has one layer, <b>Kenney tile</b> (<b>Kenney icon</b> for the HUD icons, <b>Sky</b> for the sky), so they are a good place to see what a finished texture looks like before you paint your own.</p>
+
+  <h2>Exercise: a variant of a Gem Hollow wall</h2>
+  <ol class="steps">
+    <li><p>On <b>Home</b>, under <b>Examples</b>, press <span class="ui">📂 Gem Hollow</span>, then open <b>🧱 Textures</b>. You work on the example's own copy, so the bundled one stays as it was.</p></li>
+    <li><p>Click <b>BRICKGREY</b>, press <span class="ui">duplicate</span> and accept the offered name, <code>BRICKGREY_2</code>. Its card opens.</p></li>
+    <li><p>Press <span class="ui">edit in qPainter</span>. Tick <span class="ui">Tiles</span> to see the bricks repeat, then use <kbd>R</kbd> (Replace color brush) to recolour the light stones a warmer grey.</p></li>
+    <li><p>Press <span class="ui">‹ studio</span>. BRICKGREY is unchanged; BRICKGREY_2 is the new tile.</p></li>
+    <li><p>On BRICKGREY_2's card, press <span class="ui">export PNG</span> and then <span class="ui">export project</span>. You now have <code>BRICKGREY_2.png</code> and <code>BRICKGREY_2.texproj.json</code> outside the studio.</p></li>
+  </ol>
 
   <h2>Practise the keys</h2>
   <p>The trainer names a tool, and you press its key.</p>

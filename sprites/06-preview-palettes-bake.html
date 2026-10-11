@@ -83,7 +83,7 @@
   </table>
 
   <h2>Baking in the studio</h2>
-  <p>Inside the studio you don't export. Pressing <span class="ui">‹ studio</span> saves the project as <code>sources/sprites/NAME.tsprite</code> and bakes it into <code>assets/sprites/NAME.json</code> and <code>NAME.png</code>. Play and Export bake again any sprite whose project changed. ThreeSprite's own runtime composes the sheet, in the same layout as its Atlas + JSON export: every view of every frame, mirrored views included, trimmed and packed, with each frame's feet, every animation's fps and loop, and the world height.</p>
+  <p>Inside the studio you don't use the Export tab. Pressing <span class="ui">‹ studio</span> saves the project as <code>sources/sprites/NAME.tsprite</code> and bakes it into <code>assets/sprites/NAME.json</code> and <code>NAME.png</code>. Play and Export bake again any sprite whose project changed. ThreeSprite's own runtime composes the sheet, in the same layout as its Atlas + JSON export: every view of every frame, mirrored views included, trimmed and packed, with each frame's feet, every animation's fps and loop, and the world height. To take a sprite out of the studio, its card on the Sprites page has <span class="ui">export .tsprite</span> (the project) and <span class="ui">export sheet</span> (the baked sheet, <code>NAME-sheet.zip</code> of json + png, which imports again), and <span class="ui">duplicate</span> copies all of it under a new name.</p>
   <ul>
     <li>The sheet is named after the studio's name for it, whatever the project's sprite id says.</li>
     <li>Props and monsters choose a sheet by that name. In a monster's body card, <b>sprite sheet</b> picks it, and the five states are matched to its animations.</li>

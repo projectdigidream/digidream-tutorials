@@ -44,7 +44,7 @@
   <div class="callout tip"><p>For a smooth loop, <b>duplicate</b> the first frame, change it a little, duplicate again, and so on. Keep <span class="ui">Onion skin</span> on. Set the 3D shape to <span class="ui">wall</span> with <span class="ui">Wrap</span> on to watch the animation tile. A liquid also has to tile in <em>time</em>: the last frame must lead back into the first.</p></div>
 
   <h2>The Export… menu</h2>
-  <p><span class="ui">Export…</span> writes a copy of the texture without changing which file it is linked to. Inside the studio it downloads the file.</p>
+  <p><span class="ui">Export…</span> writes a copy of the texture without changing which file it is linked to. Inside the studio it downloads the file. To take the studio's own files out instead, the baked PNG or the whole project, use <span class="ui">export PNG</span> and <span class="ui">export project</span> on the texture's card (see <a href="01-first-texture.html#duplicate-export">Duplicate and export</a>).</p>
   <table>
     <thead><tr><th>Choice</th><th>Result</th></tr></thead>
     <tbody>
@@ -90,8 +90,8 @@
   <div class="callout"><p>The card says what a texture is: <em>a still picture</em>, or for example <em>🎞 animated: 4 frames stacked, 8 a second</em>. Only the map's own textures animate. A picture put up later by a switch or a graph is cut too, but does not move.</p></div>
 
   <h2 id="skies">Skyboxes</h2>
-  <figure class="shot" data-src="../assets/shots/texture-skybox.png" data-alt="qPainter painting a cube sky, with the 3D preview inside it">
-    <figcaption>A cube sky laid out as a cross, and the preview from inside it.</figcaption>
+  <figure class="shot" data-src="../assets/shots/texture-skybox.png" data-alt="qPainter painting Gem Hollow's SKYHILLS strip sky, with the 3D preview inside it" data-hotspots='[{"x": 26, "y": 43, "t": "Compass guides", "d": "where north, east, south and west fall on the strip"}, {"x": 13, "y": 62, "t": "The horizon", "d": "the dashed line the strip's horizon sits on"}, {"x": 91.5, "y": 54.9, "t": "Skybox", "d": "the kind: Strip — DOOM sky round the horizon"}, {"x": 83, "y": 58.1, "t": "Repeat, Height, Yaw", "d": "the strip's settings in the preview"}, {"x": 84, "y": 61.3, "t": "Export to engine…", "d": "standalone: write the pictures and the sky line"}, {"x": 90, "y": 84, "t": "The 3D preview", "d": "from inside the sky; drag to look round"}]'>
+    <figcaption>Gem Hollow's SKYHILLS, a 2048×512 strip, with its compass and horizon guides, and the preview from inside it.</figcaption>
   </figure>
   <p>qPainter paints skies in exactly the formats and orientation the engine uses. What its 3D preview shows is what the game draws.</p>
   <table>
@@ -152,6 +152,26 @@
     <li>The <span class="ui">wall</span> is a large plane tiled 3×3: the best check for seams and for animated textures.</li>
     <li>When painting on a model, a stroke that crosses a seam in the model's UVs is split, instead of drawing a line across the texture. Brushes and dither work best; shapes and selections are meant for the flat canvas.</li>
   </ul>
+
+  <h2 id="gem-hollow">In Gem Hollow</h2>
+  <figure class="shot" data-src="../assets/shots/texture-lava.png" data-alt="qPainter with Gem Hollow's LAVA open: four frames at FPS 4" data-hotspots='[{"x": 41, "y": 50, "t": "Frame 1", "d": "256×256, tiled with Wrap and Tiles on"}, {"x": 85, "y": 58.7, "t": "Four frames", "d": "click one to paint it"}, {"x": 84, "y": 63.3, "t": "1/4 and FPS 4", "d": "the current frame, and the speed the studio writes"}, {"x": 80, "y": 77, "t": "One layer", "d": "Kenney tile: one picture per frame"}]'>
+    <figcaption>Gem Hollow's LAVA in qPainter: one layer, four 256×256 frames, <span class="ui">FPS</span> 4, 33 colours.</figcaption>
+  </figure>
+  <p>Gem Hollow has two animated textures, both qPainter projects with four frames on one layer. The studio baked each as a vertical sheet, 256 × 1024, and wrote their lines to <code>assets/animations.txt</code>:</p>
+<pre><code>sheet LAVA vertical 4 fps 4
+sheet WATER vertical 4 fps 3</code></pre>
+  <p>The speeds come from each project's <span class="ui">FPS</span>. On the Textures page, LAVA's card reads <em>🎞 animated: 4 frames stacked, 4 a second</em>, and <span class="ui">cut &amp; speed…</span> opens the sheet dialog on it with <span class="ui">frames stacked ↓ (vertical)</span>, 4 <span class="ui">frames</span> (256 <span class="ui">each frame, px</span>) and 4 <span class="ui">frames a second</span>.</p>
+  <p>Its sky is <b>SKYHILLS</b>, a 2048 × 512 strip painted in qPainter on one layer, <b>Sky</b>. The 🌌 Sky page wrote this line to <code>module.txt</code>:</p>
+<pre><code>sky default strip SKYHILLS repeat 2 height 0.7</code></pre>
+  <p><code>default</code> makes it the sky of every level without one of its own. The picture goes round the horizon twice, and reaches a little higher than the 0.625 default. The <span class="ui">Repeat</span> and <span class="ui">Height</span> in qPainter's preview only change the preview; the game reads the line.</p>
+
+  <h3>Exercise: slow Gem Hollow's water</h3>
+  <ol class="steps">
+    <li><p>On <b>Home</b>, under <b>Examples</b>, press <span class="ui">📂 Gem Hollow</span> and open <b>🧱 Textures</b>. Click <b>WATER</b>: <em>🎞 animated: 4 frames stacked, 3 a second</em>.</p></li>
+    <li><p>Press <span class="ui">edit in qPainter</span>. Press <kbd>F</kbd> to play, then <kbd>F</kbd> again to stop. Turn on <span class="ui">Onion skin</span> and step through with <kbd>,</kbd> and <kbd>.</kbd> to see how each wave moves on.</p></li>
+    <li><p>Set <span class="ui">FPS</span> to 2 and press <span class="ui">‹ studio</span>. The card now reads <em>2 a second</em>, and <code>animations.txt</code> gets <code>sheet WATER vertical 4 fps 2</code>.</p></li>
+    <li><p>Press <span class="ui">cut &amp; speed…</span>, set <span class="ui">frames a second</span> back to 3 and press <span class="ui">save</span>. Watch <span class="ui">a frame, tiled as on a wall</span> play as you change it.</p></li>
+  </ol>
 
   <h2>Exercise: an animated lava floor</h2>
   <ol class="steps">

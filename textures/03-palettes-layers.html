@@ -99,7 +99,7 @@
       <tr><td><code>.hex</code></td><td>✓</td><td>✓</td><td>One <code>rrggbb</code> per line: Lospec's download format.</td></tr>
       <tr><td><code>.pal</code></td><td>✓</td><td>✓</td><td>JASC-PAL: Aseprite, Paint Shop Pro and many pixel-art tools.</td></tr>
       <tr><td><code>.png</code></td><td>✓ (swatches)</td><td>✓</td><td>A strip with one pixel per colour. On import, any image works: its colours in order, exact up to 256.</td></tr>
-      <tr><td><code>.texproj.json</code></td><td>—</td><td>✓</td><td>Takes the palette of another qPainter project.</td></tr>
+      <tr><td><code>.texproj.json</code></td><td>—</td><td>✓</td><td>Takes the palette of another qPainter project, such as one you took out of the studio with <span class="ui">export project</span> on a texture's card.</td></tr>
       <tr><td><code>.aseprite</code> / <code>.ase</code></td><td>—</td><td>✓</td><td>Takes the Aseprite file's palette.</td></tr>
     </tbody>
   </table>
@@ -128,10 +128,24 @@
   <h2>Recolour an existing texture</h2>
   <p>Turn a photo or someone else's texture into one that matches your palette.</p>
   <ol class="steps">
-    <li><p>Open the texture: <span class="ui">✎ edit in qPainter</span> on its card in the studio, or <span class="ui">Open</span> standalone.</p></li>
+    <li><p>Open the texture: <span class="ui">edit in qPainter</span> on its card in the studio, or <span class="ui">Open</span> standalone.</p></li>
     <li><p>Palette <span class="ui">Import…</span> → <span class="ui">Replace palette…</span>, and pick the target palette: a <code>.hex</code> from Lospec, a <code>.gpl</code>, a <code>.pal</code> or a swatch PNG.</p></li>
     <li><p><span class="ui">Remap…</span>: <span class="ui">Floyd–Steinberg</span> for photos and gradients, <span class="ui">ordered dither</span> for a retro look, <span class="ui">nearest</span> for flat art. With <span class="ui">Wrap</span> on, Floyd–Steinberg carries its error across the edges, so the result still tiles.</p></li>
     <li><p>Turn on <span class="ui">Lock</span>, so any touch-ups stay in the palette.</p></li>
+  </ol>
+
+  <h2 id="gem-hollow">In Gem Hollow</h2>
+  <p>Gem Hollow's textures each carry their own palette, the colours of that picture and no more: 3 for PLANKS, 5 for GRASS, 16 for CRATE and the HUD icons, 33 for LAVA and WATER, 60 for BRICKGREY and BRICKBROWN. Every one has a single layer, <b>Kenney tile</b> (<b>Kenney icon</b> on the HUD icons, <b>Sky</b> on SKYHILLS), so a new detail layer on top is yours to add or hide.</p>
+  <p>Open BRICKGREY and the line under the palette reads <em>60 colors used · 60 in palette</em>: nothing off-palette. SKYHILLS is the exception. Its palette holds 16 colours but its soft clouds use 1617, so it reads <em>1615 off-palette</em>. A sky is a smooth picture, not pixel art, so that is expected; don't turn on <span class="ui">Lock</span> there.</p>
+
+  <h2>Exercise: snowy grass from two Gem Hollow textures</h2>
+  <ol class="steps">
+    <li><p>On <b>Home</b>, under <b>Examples</b>, press <span class="ui">📂 Gem Hollow</span> and open <b>🧱 Textures</b>.</p></li>
+    <li><p>Click <b>SNOWROCK</b> and press <span class="ui">export project</span>. You now have <code>SNOWROCK.texproj.json</code>.</p></li>
+    <li><p>Click <b>GRASS</b>, press <span class="ui">duplicate</span> and keep <code>GRASS_2</code>. Press <span class="ui">edit in qPainter</span>.</p></li>
+    <li><p>Palette <span class="ui">Import…</span> → <span class="ui">Replace palette…</span>, and pick <code>SNOWROCK.texproj.json</code>. The swatches turn to SNOWROCK's greys and whites; the picture doesn't change yet.</p></li>
+    <li><p><span class="ui">Remap…</span> → <span class="ui">nearest</span>. The grass is now drawn in snow colours, and still tiles.</p></li>
+    <li><p>Press <span class="ui">+</span> under <b>Layers</b> for a detail layer, and scatter a few white specks with <kbd>N</kbd>. Hide and show the layer to compare, leave it visible, and press <span class="ui">‹ studio</span>.</p></li>
   </ol>
 
   <h2>Check yourself</h2>
