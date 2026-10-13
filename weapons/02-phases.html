@@ -213,6 +213,43 @@ startoss  ready ★  anim 0, waits      1. button_pressed ∧ has_ammo (n 1) →
     <li><b>Each phase sets an animation state</b>: 0 at rest, 2 (the hero's attack) while punching or throwing. That is what the third-person hero plays, and what <b>per phase</b> above offers in first person.</li>
   </ul>
 
+  <h2 id="cinderfall">In Cinderfall: five machines for a shooter</h2>
+  <p>Cinderfall, a new example first-person shooter that is <b>still being tested</b> (<a href="../examples/02-cinderfall.html">the tour</a> says how to import it), has five weapons, and each shows a shape Gem Hollow's two do not. Open <b>🔫 Weapons</b> and tap the phases as you read.</p>
+  <pre><code>wrench    ready ★  waits                       button_pressed → swing
+          swing    anim 10, 16 ticks → recover   its own swing: damage 25, sweeping right to left
+          recover  anim 12, 10 ticks → ready     button_pressed → swing2
+          swing2   anim 11, 18 ticks → ready     its own swing: damage 35, sweeping left to right
+
+revolver  ready ★  waits                       button_pressed ∧ has_ammo 1 → fire;  button_pressed ∧ no_ammo → dry
+          fire     anim 13, 6 ticks → cock       at 0: sound (predicted), consume, hitscan 22, add_var shots +1
+          cock     anim 14, 8 ticks → ready      var_at_least shots 6 ∧ phase_elapsed 7 → reload
+          reload   anim 15, 40 ticks → ready     at 0: sound, set_var shots 0
+          dry      10 ticks → ready              at 0: sound wpn.dry;  at 9: switch_if_empty
+
+scatter   ready ★  waits                       button_pressed (secondary) ∧ has_ammo 2 → double
+                                                button_pressed ∧ has_ammo 1 → fire;  button_pressed ∧ no_ammo → dry
+          fire     anim 16, 10 ticks → pump      consume 1, hitscan 8 rays
+          double   anim 17, 14 ticks → pump      consume 2, hitscan 18 rays, impulse 6 away
+          pump     anim 18, 18 ticks → ready     at 2: sound
+
+riveter   ready ★  waits                       button_pressed ∧ has_ammo 1 → spinup
+          spinup   anim 19, 8 ticks → fire       button_released → spindown
+          fire     anim 20, 4 ticks → fire       consume, hitscan 11;  button_released → spindown;
+                                                no_ammo ∧ phase_elapsed 3 → spindown
+          spindown anim 21, 12 ticks → ready     at 11: switch_if_empty
+
+flare     ready ★  waits                       button_pressed ∧ has_ammo 1 → fire
+          fire     anim 22, 12 ticks → reload    consume, launch flare_shot, impulse 3 away
+          reload   anim 23, 28 ticks → ready     at 4: sound;  at 27: switch_if_empty</code></pre>
+  <ul>
+    <li><b>A combo in two phases.</b> The wrench's <code>recover</code> listens for a second press. Press during those 10 ticks and you get <code>swing2</code>, which hits harder (35) and sweeps back the other way; wait, and the next press starts over at <code>swing</code>. Each phase brings its own swing (<a href="03-hitscan-missiles-swings.html#swings">Swings</a>).</li>
+    <li><b>A counter the weapon keeps.</b> The revolver declares a weapon var, <code>shots</code>, starting at 0. Every <code>fire</code> runs <a href="../reference/weapon-vocab.html#add_var"><code>add_var</code></a>; after the sixth, <code>cock</code> sees <a href="../reference/weapon-vocab.html#var_at_least"><code>var_at_least</code></a> 6 and goes to <code>reload</code>, which <a href="../reference/weapon-vocab.html#set_var"><code>set_var</code></a>s it back to 0. That is a six-round cylinder over a pool of bullets. <a href="../reference/weapon-vocab.html#phase_elapsed"><code>phase_elapsed</code></a> 7 lets the cock play out first.</li>
+    <li><b>Two triggers on one gun.</b> The scattergun's first card asks for the <b>secondary</b> button (right mouse) and two shells. It is first so that a right click never falls through to the single shot.</li>
+    <li><b>A phase that loops into itself.</b> The riveter's <code>fire</code> has <span class="ui">next?</span> <code>fire</code>: every 4 ticks, a rivet, for as long as you hold. Letting go is a <a href="../reference/weapon-vocab.html#button_released"><code>button_released</code></a> card, in <code>spinup</code> as well, so a tap spins up and down without firing.</li>
+    <li><b>The dry click is a phase.</b> The three guns that can run dry have DOOM's <code>dry</code> phase: a click, then <code>switch_if_empty</code>. The riveter and the flare launcher switch at the end of <code>spindown</code> and <code>reload</code> instead, after the last shot.</li>
+  </ul>
+  <p>Every phase sets its own <span class="ui">anim?</span> (10 to 23), so in first person each one plays an animation of its own. Each weapon is drawn from a ThreeSprite sheet (<code>VM_WRENCH</code>, <code>VM_REVOLVER</code> …) at <span class="ui">scale</span> 1.4, and its <b>per phase</b> cards name the sheet's animations: the riveter's state 20 plays <code>fire</code> with <span class="ui">loops</span> on, so the animation keeps going while <code>fire</code> repeats.</p>
+
   <h2>Exercise: a Star Toss you can hold</h2>
   <ol class="steps">
     <li><p>Open Gem Hollow, choose <b>🔫 Weapons</b> and pick <code>startoss</code>. Tap <code>ready</code>.</p></li>

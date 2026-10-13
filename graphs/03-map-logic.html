@@ -17,7 +17,7 @@
 <body>
 <article>
   <h1>Map logic recipes</h1>
-  <p class="lede">Six graphs that most maps need, wired node by node. The first three are Gem Hollow&#39;s own: open them in the studio and read along. The last three are recipes to build on your own map.</p>
+  <p class="lede">Six graphs that most maps need, wired node by node. The first three are Gem Hollow&#39;s own: open them in the studio and read along. The next three are recipes to build on your own map, and the seventh is read from Cinderfall, a new example.</p>
   <div class="goal">
     <b>You'll learn</b><span>how Gem Hollow's levers open its gates on camera, how its keys open the vault, how its checkpoints bring you back, and how to build an ambush, a wave arena and a timed switch puzzle, with the traps each one hides</span>
     <b>Time</b><span>45 minutes</span>
@@ -230,6 +230,37 @@ vault1.then  → vault.in</code></pre>
     <li><b>The sequence</b> does the check first (exit 0), then starts the timer (exit 1), both in the same tick.</li>
     <li><b>Why chkA is a separate node:</b> in a run from switch A, <code>isLitA</code> was read at the guard, while <code>a_on</code> was still false. A pure node is worked out once per run, so reading <code>isLitA</code> again in the check would still say false. A fresh <code>get_var</code> reads the value <code>setA</code> just wrote.</li>
     <li>Five seconds is 300 ticks. To make the window shorter for a harder puzzle, lower both delays.</li>
+  </ul>
+
+  <h2 id="valves">Recipe 7: one objective across two maps (Cinderfall)</h2>
+  <p>Cinderfall, a new example first-person shooter that is <b>still being tested</b> (<a href="../examples/02-cinderfall.html">the tour</a> says how to import it), splits its foundry into two maps, <code>w_foundry_w</code> and <code>w_foundry_e</code>, joined without a load. Three coolant valves are spread over both: <code>valve_a</code> and <code>valve_c</code> in the west, <code>valve_b</code> in the east. Turning all three drains the slag, in both halves, and brings up a Furnace Core in the east. Neither map can count the other's valves, so the count is the game's.</p>
+  <table>
+    <thead><tr><th>id</th><th>Node</th><th>Fields</th></tr></thead>
+    <tbody>
+      <tr><td colspan="3"><b>Each map's <code>story</code> graph, once per valve</b></td></tr>
+      <tr><td>turn</td><td><a href="../reference/graph-nodes.html#when_prop_used"><code>when_prop_used</code></a></td><td>prop: <code>valve_b</code></td></tr>
+      <tr><td>one</td><td><a href="../reference/graph-nodes.html#once"><code>once</code></a></td><td></td></tr>
+      <tr><td>wheel</td><td><code>action</code></td><td>do: <code>set_animation</code>, state 1, who: <code>target</code></td></tr>
+      <tr><td>hiss</td><td><a href="../reference/graph-nodes.html#play_sound"><code>play_sound</code></a></td><td>sound: <code>valve</code></td></tr>
+      <tr><td>tell</td><td><a href="../reference/graph-nodes.html#call"><code>call</code></a></td><td>to: <code>game</code>, name: <code>got_valve</code></td></tr>
+      <tr><td>wait</td><td><a href="../reference/graph-nodes.html#delay"><code>delay</code></a></td><td>ticks: 60</td></tr>
+      <tr><td>open</td><td><code>action</code></td><td>do: <code>set_animation</code>, state 2, who: <code>target</code> (the valve stays open)</td></tr>
+      <tr><td colspan="3"><b>The game's <code>progress</code> graph</b></td></tr>
+      <tr><td>count</td><td><a href="../reference/graph-nodes.html#on_call"><code>on_call</code></a> → <a href="../reference/graph-nodes.html#add_var"><code>add_var</code></a></td><td>name: <code>got_valve</code>; var: <code>valves</code>, value 1</td></tr>
+      <tr><td>answer</td><td><code>call</code></td><td>to: <code>level</code>, name: <code>valves</code>, value ← <code>get_var valves</code>, entity ← the on_call's entity</td></tr>
+      <tr><td>goal</td><td><a href="../reference/graph-nodes.html#set_hud"><code>set_hud</code></a></td><td>name: <code>objective</code>, value: <code>Coolant valves: catwalk, boiler room, west conveyor.</code></td></tr>
+      <tr><td colspan="3"><b>Each foundry map's <code>story</code> graph, the drain</b></td></tr>
+      <tr><td>heard</td><td><code>on_call</code></td><td>name: <code>valves</code></td></tr>
+      <tr><td>three</td><td><a href="../reference/graph-nodes.html#compare"><code>compare</code></a> → <a href="../reference/graph-nodes.html#branch"><code>branch</code></a></td><td>a ← heard.value, op <code>&gt;=</code>, b 3</td></tr>
+      <tr><td>drain</td><td><code>once</code> → <code>set_var</code> → looks</td><td><code>drained</code> 1; <code>set_floor_texture</code> and <code>set_sector_light</code> on tags 901 and 904, a rumble and a subtitle</td></tr>
+      <tr><td>core</td><td><a href="../reference/graph-nodes.html#spawn"><code>spawn</code></a> (east only)</td><td>what: <code>core</code>, at x 10, y 80, z −1: in the pour pit</td></tr>
+    </tbody>
+  </table>
+  <ul>
+    <li><b>The answer goes where the player is.</b> The game's <code>call</code> to <code>level</code> takes the player who turned the valve, so only the map they stand in hears <code>valves</code> at once.</li>
+    <li><b>The other half hears on arrival.</b> Every map's <code>world</code> graph calls <code>sync</code> when the player enters a sector, and the game answers it with <code>valves</code> too (<a href="05-game-graph-and-calls.html#cinderfall">The game graph, calls and maps</a>). Walk from west to east after the third valve and the east drains as you step in. The <code>once</code> in front of the drain makes the many <code>sync</code> answers harmless.</li>
+    <li><b>The valve's own <code>once</code></b> keeps a second turn from counting twice. With <code>persist levels</code> on, Cinderfall keeps it passed when the map unloads and loads again.</li>
+    <li><b>The floors read <code>drained</code>.</b> How the slag burns until then is in <a href="04-the-world.html#cinderfall">Talking to the world</a>.</li>
   </ul>
 
   <h2>Exercise: kinder lava</h2>

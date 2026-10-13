@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gem Hollow, a tour · Digidream Studio tutorials</title>
+<meta name="description" content="A walk through Gem Hollow, the platformer that ships with the studio: its maps, zones, graphs, monsters, weapons, art, music, sounds and screens, and where each is taught.">
+<link rel="stylesheet" href="../assets/site.css">
+<link rel="stylesheet" href="../assets/skins/skins.css">
+<link rel="icon" type="image/png" href="../assets/logo.png">
+<script src="../assets/skins/skins.js"></script>
+<script src="../assets/skin.js"></script>
+<script defer src="../assets/nav.js"></script>
+<script defer src="../assets/shortcuts.js"></script>
+<script defer src="../assets/site.js"></script>
+</head>
+<body>
+<article>
+  <h1>Gem Hollow, a tour</h1>
+  <p class="lede">Gem Hollow is the small platformer that ships with the studio. It is finished and playable, and every part of it is made in the studio. This page walks through it one section at a time, and points you to the page that teaches each part.</p>
+  <div class="goal">
+    <b>You'll learn</b><span>how to open Gem Hollow, what is in each of its sections, and which tutorial explains each part</span>
+    <b>Time</b><span>20 minutes</span>
+    <b>Needs</b><span>the studio open (see <a href="../studio/01-getting-started.html">Getting started</a>)</span>
+  </div>
+
+  <h2>Open it</h2>
+  <figure class="shot" data-src="../assets/shots/example-gem-home.png" data-alt="Home with Gem Hollow open: its two maps and the module's sections">
+    <figcaption>Home with your copy of Gem Hollow open: two maps, <code>menu</code> and <code>world</code>, and nothing wrong.</figcaption>
+  </figure>
+  <p>On Home, under <span class="ui">◆ examples</span>, press <span class="ui">📂 Gem Hollow</span>. The first time, the studio makes a module of your own from the example and opens it. It is your copy: change anything. Pressing the button again opens the same copy. <span class="ui">a fresh copy</span> makes another, untouched one beside it.</p>
+  <p>Its <em>about</em> line says what it is: <em>"A small example platformer: a title screen, one big level in four zones, levers, gates, keys, gems, slimes, bees and snails, cutscenes at both ends."</em></p>
+
+  <h2>Maps and zones</h2>
+  <figure class="shot" data-src="../assets/shots/example-gem-world.png" data-alt="Gem Hollow's world map in plan view: the Isles' lake, the Cliffs' rings and the Keep in its lava">
+    <figcaption>The <code>world</code> map from above: the Isles in their lake, the stone Cliffs with their rings, and the Keep in its lava. The Meadow is off to the left.</figcaption>
+  </figure>
+  <p>Gem Hollow has two maps:</p>
+  <ul>
+    <li><code>menu</code>, the title screen: 4 rooms. The camera follows a path round an island while the title panel offers <b>Play</b> and <b>Quit</b>.</li>
+    <li><code>world</code>, the whole game: 81 rooms in four zones, left to right. The grassy <b>Meadow</b>, the <b>Isles</b> in their lake, the stone <b>Cliffs</b>, and the <b>Keep</b> in its lava. A lever opens the gate at the end of each of the first three zones. Three keys open the vault in the Keep, where the Star waits.</li>
+  </ul>
+  <p>The gates are rooms whose ceiling sits on their floor (tags 11, 12, 13, and 14 for the vault). Water and lava are rooms tagged 900 and 901. Rafts and spinning platforms are floating rooms that graphs move. The metamap is off: one level holds everything.</p>
+  <p>Taught in <a href="../studio/02-first-map.html#gem-hollow">Your first map</a>, <a href="../studio/03-placing-things.html#gem-hollow">Placing things</a> and <a href="../studio/05-camera.html#gem-hollow">Camera and cinematics</a>.</p>
+
+  <h2>Graphs</h2>
+  <figure class="shot" data-src="../assets/shots/example-gem-graphs.png" data-alt="Gem Hollow's Graphs section: no game graph, main on menu, seven graphs on world">
+    <figcaption>◇ Graphs: no game graph, one graph on <code>menu</code> and seven on <code>world</code>.</figcaption>
+  </figure>
+  <p>Gem Hollow has no triggers. All its logic is graphs, and every graph carries notes that say what each group of nodes does:</p>
+  <ul>
+    <li><code>menu</code> · <code>main</code>: open the title panel, answer <b>Play</b> and <b>Quit</b>.</li>
+    <li><code>world</code> · <code>intro</code>, <code>pickups</code>, <code>levers</code>, <code>vault</code>, <code>checkpoints</code>, <code>moving</code> and <code>ending</code>: the opening flythrough, coins and gems, the three gates, the keys and the vault door, checkpoint flags and hazards, moving platforms and springs, and the closing scene.</li>
+  </ul>
+  <p>Taught in <a href="../studio/06-graphs.html#gem-hollow">Graphs</a> (a table of all eight) and the whole <a href="../graphs/01-thinking-in-graphs.html">Graph scripting</a> track. <a href="../studio/04-triggers.html#gem-hollow">Triggers</a> shows the lever and gate built without triggers.</p>
+
+  <h2>Monsters, weapons and the player</h2>
+  <ul>
+    <li><b>Monsters</b>: <code>slime</code> (20 health), <code>bee</code> (10) and <code>snail</code> (40). The slime can be stomped: when the player lands on it, its <code>squash</code> state flattens it.</li>
+    <li><b>Weapons</b>: <code>fists</code>, labelled <em>Bonk</em>, and <code>startoss</code>, the <em>Star Toss</em>, which throws the missile <code>star_shot</code> and uses one star each time. The arsenal has one ammunition pool, <code>stars</code>, and three pickups: <code>heart</code>, <code>star_pouch</code> and <code>star_ammo</code>.</li>
+    <li><b>Player</b>: drawn by the <code>hero</code> prop. It runs at 8, double-jumps and has one dash. Controls are <code>platformer — third person</code>, with no keys of its own.</li>
+  </ul>
+  <p>Taught in <a href="../studio/07-workshops.html#gem-hollow">Monsters, weapons, player</a>, the <a href="../enemies/02-the-brain.html#gem-hollow">Enemies</a> track (the slime's brain) and the <a href="../weapons/01-first-weapon.html#gem-hollow">Weapons</a> track (a fist and a star).</p>
+
+  <h2>Sprites and textures</h2>
+  <ul>
+    <li><b>23 sprites</b>, made in ThreeSprite. Five are characters and moving parts with 8 views and a rig: <code>HERO</code>, <code>SLIME</code>, <code>BEE</code>, <code>SNAIL</code> and <code>LEVER</code>. The rest are one-view pickups and scenery: <code>COIN</code>, <code>GEM</code>, <code>KEY</code>, <code>STAR</code>, <code>FLAG</code>, <code>TORCH</code> and others.</li>
+    <li><b>25 textures</b>, made in qPainter. The walls and floors (<code>GRASS</code>, <code>STONE</code>, <code>PLANKS</code>…), the gates (<code>GATERED</code>, <code>GATEBLUE</code>, <code>GATEGOLD</code>, <code>VAULTDOOR</code>), four HUD icons, the animated <code>WATER</code> and <code>LAVA</code> (4 frames each), and the sky <code>SKYHILLS</code>.</li>
+  </ul>
+  <p>The art is Kenney's CC0 "New Platformer Pack". Taught in <a href="../sprites/01-first-sprite.html#gem-hollow">Your first sprite</a>, <a href="../sprites/03-rig.html#gem-hollow">Rig, bones and parts</a>, <a href="../textures/01-first-texture.html#gem-hollow">Your first texture</a> and <a href="../textures/04-frames-and-skies.html#gem-hollow">Animation and skies</a>.</p>
+
+  <h2>Music and sounds</h2>
+  <ul>
+    <li><b>5 tracks</b>, CC0 chiptunes imported as MIDI into DigidreamSynth: <code>title</code> on <code>menu</code>; and on <code>world</code>, <code>airship</code> by default, <code>castle</code> for the Cliffs, <code>shrine</code> for the Keep and <code>fairies</code> for the victory.</li>
+    <li><b>30 sounds</b> in one DigidreamSound pack: the player (<code>player.jump</code>, <code>player.swing</code>…), pickups, the world (<code>world.lever</code>, <code>world.door.open</code>, <code>world.spring</code>…), the monsters, the panels (<code>ui.*</code>) and the cutscenes (<code>cine.whoosh</code>, <code>cine.victory</code>).</li>
+  </ul>
+  <p>Taught in <a href="../music/01-daw-tour.html#gemhollow">A tour of the DAW</a>, <a href="../music/05-loops-and-cues.html#gemhollow">Loops, cuts and cues</a> and <a href="../sounds/01-first-sound.html#gemhollow">Your first sound</a>.</p>
+
+  <h2>Screens, panels and sky</h2>
+  <ul>
+    <li><b>Screens</b>: a HUD of its own along the top, with health, coins (<code>{hud.coins} / 152</code>), gems (<code>{hud.gems} / 5</code>), keys and stars. The <code>menu</code> map has its own screens, with no HUD and no touch buttons.</li>
+    <li><b>Panels</b>: <code>title</code> (<em>GEM HOLLOW</em>, with <b>Play</b> and <b>Quit</b>) and <code>theend</code>.</li>
+    <li><b>Sky</b>: a strip, <code>SKYHILLS</code>, twice round the horizon. Every outdoor room is open to it.</li>
+  </ul>
+  <p>Taught in <a href="../studio/08-look-and-feel.html">Sky, screens and weather</a>.</p>
+
+  <h2>Exercise: find each part</h2>
+  <ol class="steps">
+    <li><p>Open <span class="ui">📂 Gem Hollow</span> from Home. Check that Home shows two maps and says <em>"✔ nothing wrong that the studio can see"</em>.</p></li>
+    <li><p>Open <code>world</code>. Use <span class="ui">⋯ More</span> → <span class="ui">Fit view</span>, and find the four zones from left to right.</p></li>
+    <li><p>With <span class="ui">⌖ Select</span>, tap the red gate between the Meadow and the Isles. Its tag is 11.</p></li>
+    <li><p>Open <b>◇ Graphs</b> and tap <code>levers</code>. Find the <code>open_door</code> node whose <code>tag</code> is 11: it is the one that opens the gate you just tapped.</p></li>
+    <li><p>Open <b>☠ Monsters</b> and pick <code>slime</code>. Find the <code>squash</code> state.</p></li>
+    <li><p>Open <b>🌌 Sky</b> and read the last line of the form: <code>sky default strip SKYHILLS repeat 2 height 0.7</code>.</p></li>
+  </ol>
+
+  <div class="quiz" data-answer="1">
+    <p class="q">How does the red gate in Gem Hollow open?</p>
+    <ul>
+      <li>A trigger on the lever's wall</li>
+      <li>A graph: the lever is used, and <code>open_door</code> opens tag 11</li>
+      <li>The engine opens every gate when the player comes near</li>
+    </ul>
+    <p class="why">Gem Hollow has no triggers. The <code>levers</code> graph answers <code>when_prop_used</code> on each lever and opens the gate by its tag.</p>
+  </div>
+  <div class="quiz" data-answer="2">
+    <p class="q">You press 📂 Gem Hollow a second time, after changing things. What opens?</p>
+    <ul>
+      <li>A new, untouched copy</li>
+      <li>The read-only example, with your changes lost</li>
+      <li>Your copy, with your changes</li>
+    </ul>
+    <p class="why">The button opens the copy it made the first time. To start over, press <span class="ui">a fresh copy</span>.</p>
+  </div>
+  <div class="quiz" data-answer="0">
+    <p class="q">Gem Hollow's whole level is one map. How many maps does it have in all?</p>
+    <ul>
+      <li>Two: <code>menu</code> and <code>world</code></li>
+      <li>Four, one per zone</li>
+      <li>One</li>
+    </ul>
+    <p class="why">The four zones are all in <code>world</code>. The title screen is a map of its own, <code>menu</code>.</p>
+  </div>
+</article>
+</body>
+</html>

@@ -17,7 +17,8 @@ Opening `index.html` straight from disk (`file://`) works too. The one differenc
 ## What's inside
 
 - `index.html`: the landing page and learning paths.
-- `studio/`, `sprites/`, `textures/`, `music/`, `sounds/`, `enemies/`, `weapons/`, `graphs/`: the tracks.
+- `studio/`, `examples/`, `sprites/`, `textures/`, `music/`, `sounds/`, `enemies/`, `weapons/`, `graphs/`: the tracks.
+  - `examples/` holds guided tours of the two example projects: Gem Hollow, which ships with the studio, and Cinderfall, which is new and still being tested.
 - `reference/`: all shortcuts, files and baking, and a glossary.
 - `assets/site.css`, `assets/site.js`: the shell (sidebar, search, progress, quizzes, shortcut trainers, screenshot hotspots).
 - `assets/nav.js`: the table of contents. `assets/shortcuts.js`: every shortcut.
@@ -33,6 +34,12 @@ Pages can wear any of the five skins uikit ships (claude, paper, 90s, ps1, aero)
 
 ```sh
 node tutorials/tools/build-skins.mjs
+```
+
+Cinderfall isn't bundled with the studio yet. To open it, pack it with the command below, then use **⇩ import pack** on the studio's Home:
+
+```sh
+node tutorials/tools/pack-example.mjs cinderfall
 ```
 
 The logo (`assets/logo.png`) is a copy of `branding/digidream-logo.png`.

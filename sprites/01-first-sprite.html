@@ -144,6 +144,26 @@
     <li><p>Press <span class="ui">✕</span> to go back without changing anything.</p></li>
     <li><p>Press <span class="ui">⇪ export .tsprite</span> on HERO's card. In a browser, <code>HERO.tsprite</code> downloads: open it in ThreeSprite on its own, or import it into another module.</p></li>
   </ol>
+  <h2 id="cinderfall">In Cinderfall</h2>
+  <div class="callout soon"><p><b>New, and still being tested.</b> Cinderfall is a second example, a first-person shooter. It is not bundled with the studio yet: make its pack with <code>node tutorials/tools/pack-example.mjs cinderfall</code> and bring it in with Home → <span class="ui">⇩ import pack</span>. The <a href="../examples/02-cinderfall.html">Cinderfall tour</a> walks round it.</p></div>
+  <p>Cinderfall has 57 sprites, and makes one choice Gem Hollow does not: <b>everything has 8 views</b>, pickups and props included. In a first-person game you walk right round a crate or a medkit, so a one-view picture would turn with you like a cardboard cut-out. None of the 57 is mirrored, and not one pixel in them is drawn by hand: every part is a solids part, so each view is rendered from the same shapes.</p>
+  <table>
+    <thead><tr><th>Kind</th><th>Sprites</th><th>Canvas · views</th></tr></thead>
+    <tbody>
+      <tr><td>Monsters</td><td><code>HUSK</code>, <code>GUNNER</code>, <code>HOUND</code>, <code>SPITTER</code>, <code>BRUTE</code>, and the boss <code>SMELTER</code></td><td>96 px (BRUTE 128, SMELTER 176) · 8</td></tr>
+      <tr><td>People you talk to</td><td><code>MAGS</code>, <code>IMRE</code>, <code>PIP</code>, <code>VOS</code>, <code>RUSK</code>, <code>CARROW</code>; <code>WARDEN</code> is the player as others see them</td><td>96 px · 8, with <code>idle</code> and <code>talk</code></td></tr>
+      <tr><td>Weapons in first person</td><td><code>VM_WRENCH</code>, <code>VM_REVOLVER</code>, <code>VM_SCATTER</code>, <code>VM_RIVETER</code>, <code>VM_FLARE</code></td><td>128 px · <b>1</b>: you only ever see them from behind</td></tr>
+      <tr><td>Weapons on the floor, ammo, pickups</td><td><code>PK_REVOLVER</code> …, <code>AMMOSHELL</code> …, <code>MEDKIT</code>, <code>STIM</code>, <code>KEYCARD</code>, <code>CORE</code></td><td>40–48 px · 8</td></tr>
+      <tr><td>Props and missiles</td><td><code>BARREL</code>, <code>CRATES</code>, <code>LAMPPOST</code>, <code>VALVE</code>, <code>WINCH</code>, <code>SHELL</code>, <code>GLOB</code> …</td><td>48–96 px · 8</td></tr>
+      <tr><td>Starting rigs</td><td><code>HUMANOID</code>, <code>QUADRUPED</code></td><td>96 px · 8. No prop uses them: they are the rigs the people and the hound were built from.</td></tr>
+    </tbody>
+  </table>
+  <ol class="steps">
+    <li><p>Import Cinderfall, open <b>🎞 Sprites</b>, type <code>gun</code> in the find box and click <code>GUNNER</code>. Its card lists 6 animations: idle, walk, aim, fire, pain, death.</p></li>
+    <li><p>Press <span class="ui">✎ edit in ThreeSprite</span>. The top bar reads <code>96px · 8 views</code>. Press <kbd>.</kbd> seven times to walk round him: the rifle stays in his right hand in every view, which mirroring could not give you.</p></li>
+    <li><p>Press <span class="ui">✕</span>, then open <code>VM_REVOLVER</code> the same way. It has one view: the gun and hand as you hold them.</p></li>
+  </ol>
+
   <div class="callout tip"><p>A sprite can also be a weapon's picture in first person. In the Weapons workshop's <span class="ui">first person</span> tab, choose <span class="ui">a sprite (ThreeSprite project): its animations</span>, then pick one animation for the weapon at rest and one for firing. The studio cuts the front view of each frame from the baked sheet. See the <a href="../weapons/01-first-weapon.html">Weapons</a> track.</p></div>
 
   <h2>Running ThreeSprite on its own</h2>

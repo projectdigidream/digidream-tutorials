@@ -161,6 +161,29 @@ dry    anim 0 · ticks 1 · next ready      0: switch_if_empty</code></pre>
     <li>A charge waits for the release, so the small shot comes when you let go, not when you press. That delay is the feel of a charge weapon.</li>
   </ul>
 
+  <h2 id="cinderfall">From Cinderfall: a revolver with a cylinder</h2>
+  <p>Not a DOOM weapon but one to open: the revolver of Cinderfall, a new example first-person shooter that is <b>still being tested</b> (<a href="../examples/02-cinderfall.html">the tour</a> says how to import it). It draws from a pool of bullets like any gun, and also counts its own shots in a weapon var, so every sixth shot is followed by a reload. Its <code>ready</code> checks the press first and the empty pool second; the two cards can't both match, so their order doesn't matter here.</p>
+  <p><b>Weapon:</b> <span class="ui">label</span> Revolver · <span class="ui">order</span> 2 · <span class="ui">ammo?</span> bullets · <span class="ui">per?</span> 1 · <span class="ui">initial?</span> ready · <span class="ui">icon?</span> WPNREVOLVER · <b>what its own pickup grants</b> bullets 18 · <b>vars</b> <code>shots</code> = 0. <b>Pool</b> <code>bullets</code>: max 150, initial 0. <b>Pickups</b> <code>revolver_pickup</code> (weapon revolver), <code>ammo_bullets</code> (bullets 12).</p>
+  <figure class="shot" data-src="../assets/shots/cinder-revolver.png" data-alt="Cinderfall's revolver in the Weapons workshop: ready, fire, cock, reload and dry, with cock picked and its transition to reload, var_at_least shots 6 and phase_elapsed 7" data-hotspots='[{"x": 33.2, "y": 22.8, "t": "ready ★", "d": "Two cards: fire with a bullet, dry without."}, {"x": 45, "y": 22.8, "t": "fire", "d": "6 ticks: a sound, consume, a hitscan of 22, and add_var shots +1."}, {"x": 57.9, "y": 22.8, "t": "cock", "d": "8 ticks back to ready, unless the cylinder is empty."}, {"x": 70.8, "y": 22.8, "t": "reload", "d": "40 ticks; set_var shots back to 0."}, {"x": 45, "y": 33.8, "t": "dry", "d": "A click, then switch_if_empty at 9."}, {"x": 82.3, "y": 55.7, "t": "var_at_least", "d": "shots at least 6: the sixth shot was fired."}, {"x": 82.8, "y": 71.3, "t": "phase_elapsed", "d": "7 ticks: one before cock ends, so it never reaches ready."}, {"x": 88.7, "y": 17.9, "t": "# vars", "d": "Where shots is declared, starting at 0."}]'>
+    <figcaption>Cinderfall's <code>revolver</code>, with <code>cock</code> picked.</figcaption>
+  </figure>
+  <table>
+    <thead><tr><th>Phase</th><th>anim · ticks · next</th><th>Transitions</th><th>Sequence</th></tr></thead>
+    <tbody>
+      <tr><td>★ <code>ready</code></td><td>— · — · —</td><td>1. <code>button_pressed</code> ∧ <code>has_ammo</code> n 1 → fire<br>2. <code>button_pressed</code> ∧ <code>no_ammo</code> → dry</td><td>—</td></tr>
+      <tr><td><code>fire</code></td><td>13 · 6 · cock</td><td>—</td><td>0: <code>sound</code> wpn.revolver.fire, predicted<br>0: <code>consume</code><br>0: <code>hitscan</code> damage 22, range 90, spread 1<br>0: <code>add_var</code> shots, 1</td></tr>
+      <tr><td><code>cock</code></td><td>14 · 8 · ready</td><td>1. <code>var_at_least</code> shots 6 ∧ <code>phase_elapsed</code> 7 → reload</td><td>0: <code>sound</code> wpn.revolver.cock</td></tr>
+      <tr><td><code>reload</code></td><td>15 · 40 · ready</td><td>—</td><td>0: <code>sound</code> wpn.revolver.reload<br>0: <code>set_var</code> shots, 0</td></tr>
+      <tr><td><code>dry</code></td><td>— · 10 · ready</td><td>—</td><td>0: <code>sound</code> wpn.dry<br>9: <code>switch_if_empty</code></td></tr>
+    </tbody>
+  </table>
+  <ul>
+    <li><b>The rate.</b> A shot and its cock take 6 + 8 = 14 ticks, so the revolver fires at most just over four times a second, then pauses 40 ticks (two thirds of a second) after the sixth.</li>
+    <li><b>The cylinder is not the pool.</b> <code>shots</code> counts shots since the last reload, not bullets carried. Pick up a box mid-cylinder and the reload still comes after the sixth shot. A weapon may have 4 vars; this one uses one.</li>
+    <li><b>One step in the same tick.</b> <code>cock</code> ends at 8 ticks, but its transition at <code>phase_elapsed</code> 7 comes first, so after the sixth shot it never goes back to <code>ready</code>.</li>
+    <li><b>A real dry click.</b> With no bullets, a press goes to <code>dry</code>: a click, and 9 ticks later a switch to the best weapon with ammunition, the wrench if nothing else is loaded.</li>
+  </ul>
+
   <h2>The limits</h2>
   <p>Your own weapons are predicted by your client from a fixed-size table. These are its sizes. Going past one is not refused: the server says so at load, and the whole weapon set then runs on the server only, without prediction.</p>
   <table>

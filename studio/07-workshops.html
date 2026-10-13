@@ -191,6 +191,21 @@ player max_dashes 1</code></pre>
   <p>Renaming a key renames it in every graph that answers it. Graphs answer keys with <code>when_button_pressed</code>, <code>when_button_released</code> and <code>button_held</code>: see <a href="06-graphs.html">Graphs</a>.</p>
   <div class="callout soon"><p>Players cannot rebind keys yet. The module's list is the key map.</p></div>
 
+  <h2 id="cinderfall">In Cinderfall: a first-person player and two keys</h2>
+  <div class="callout soon"><p><b>Cinderfall is new and still being tested</b>, and not bundled yet. To get it, see <a href="01-getting-started.html#cinderfall">Getting started</a>.</p></div>
+  <figure class="shot" data-src="../assets/shots/cinder-controls.png" data-alt="Cinderfall's Controls: first person, and two keys of its own, arms on Tab and swap on X"
+    data-hotspots='[{"x":55.5,"y":10.1,"t":"how it is played","d":"first person (fps)"},{"x":31.3,"y":27.3,"t":"arms","d":"key 1, on Tab, touch button ARMS"},{"x":31.3,"y":35.8,"t":"swap","d":"key 2, on X, touch button SWAP"},{"x":27,"y":43,"t":"place the touch buttons…","d":"opens Screens to place ARMS and SWAP"}]'>
+    <figcaption>🎮 Controls in Cinderfall: <code>first person (fps)</code>, and <span class="ui">⌨ the module's own keys (2 of 8)</span>.</figcaption>
+  </figure>
+  <p>Gem Hollow is a third-person platformer with no keys of its own. Cinderfall shows the other side:</p>
+  <ul>
+    <li><b>Controls.</b> <span class="ui">how it is played</span> is <code>first person (fps)</code>. Two keys of its own: <code>arms</code> on Tab, with the touch button <code>ARMS</code>, and <code>swap</code> on X, with <code>SWAP</code>. They are written as <code>key arms Tab touch ARMS</code> and <code>key swap KeyX touch SWAP</code> in <code>module.txt</code>.</li>
+    <li><b>Who answers them.</b> The game graph <code>arms</code>: <code>when_button_pressed</code> on <code>arms</code> opens the weapon wheel (the <code>arms</code> panel), or closes it; on <code>swap</code> it selects the weapon held before.</li>
+    <li><b>Player.</b> Drawn by the <code>warden</code> prop. On <span class="ui">🏃 moves</span>: <code>move_speed</code> 10, <code>jump_impulse</code> 7, <code>max_jumps</code> 1 and <code>max_dashes</code> 0, so one jump and no dash. On <span class="ui">🎒 kit</span> it starts with the <code>wrench</code> only.</li>
+    <li><b>Weapons.</b> Five: <code>wrench</code>, <code>revolver</code>, <code>scatter</code>, <code>riveter</code> and <code>flare</code>. In first person, each is drawn by its own sprite (<code>VM_WRENCH</code>, <code>VM_REVOLVER</code>…) with an animation per phase, such as the revolver's <code>cock</code> and <code>reload</code> (see <a href="../weapons/02-phases.html#first-person">Phases in first person</a>).</li>
+    <li><b>Monsters.</b> Six: <code>husk</code>, <code>gunner</code>, <code>hound</code>, <code>spitter</code> (it flies), <code>brute</code>, and the boss <code>smelter</code> (2400 health, with a <code>brood</code> state below half health).</li>
+  </ul>
+
   <div class="quiz" data-answer="2">
     <p class="q">You want a low-gravity moon level, with the player's jump higher only there. Where do you set it?</p>
     <ul>

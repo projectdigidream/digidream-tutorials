@@ -136,6 +136,48 @@ when_panel_used (title › quit) → close_panel title → quit_game</code></pre
   </ul>
   <p>So a score, quest flags and unlocked doors belong in a game graph. A map's own puzzle state belongs in the map's graph, kept by <span class="ui">levels keep their state</span>.</p>
 
+  <h2 id="cinderfall">In Cinderfall: two game graphs and nine maps that ask them</h2>
+  <div class="callout soon"><p><b>Cinderfall is new and still being tested</b>, and it is not bundled with the studio yet. To open it, run <code>node tutorials/tools/pack-example.mjs cinderfall</code> in the repository, then on <b>Home</b> press <span class="ui">⇩ import pack</span> and choose the zip. <a href="../examples/02-cinderfall.html">Cinderfall, the tour</a> walks through the whole game.</p></div>
+  <p>Gem Hollow is one level, so it never needs the game's side. Cinderfall, an example first-person shooter, is built around it. Its <code>maps/metamap.txt</code> lays nine maps on one grid, so its five districts (the mine, the foundry, the old town with the hub, the railhead and the Heart) are walked into without a load. Each map's graphs run in its own level, and two game graphs hold everything that has to cross from one map to the next:</p>
+  <ul>
+    <li><code>arms</code>: the weapon wheel on <kbd>Tab</kbd> and the quick swap on <kbd>X</kbd>. It is taken apart in <a href="../weapons/01-first-weapon.html#cinderfall">Your first weapon</a>.</li>
+    <li><code>progress</code>: the story's state. Its variables are <code>key_red</code>, <code>key_blue</code>, <code>key_yellow</code>, <code>cores</code>, <code>valves</code>, <code>secrets</code> and <code>kills</code>, all starting at 0.</li>
+  </ul>
+  <p>In <b>◇ Graphs</b>, the <code>progress</code> row lists what it calls (<code>open_red</code>, <code>need_red</code> … <code>respawn</code>) and what it answers (<code>got_red</code>, <code>try_red</code> … <code>died</code>).</p>
+  <figure class="shot" data-src="../assets/shots/cinder-progress.png" data-alt="Cinderfall's progress game graph at 64%: the red keycard note, with got_red kept in key_red and shown on the HUD, and try_red answered with open_red or need_red; call16 is picked" data-hotspots='[{"x":32.7,"y":23.5,"t":"One note per question","d":"The red keycard. The blue and yellow notes below are the same chains with their own names."},{"x":18.1,"y":27.2,"t":"A level reports","d":"on_call got_red: a map&#39;s graph saw the red card picked up."},{"x":26.9,"y":27.2,"t":"The game keeps it","d":"set_var key_red to 1. A game variable is kept from level to level."},{"x":35.6,"y":27.2,"t":"On the HUD","d":"set_hud key_red 1: the HUD shows the card while it is above 0."},{"x":18.1,"y":40.1,"t":"A door asks","d":"on_call try_red: the player used a red door, in whatever map it is."},{"x":18.4,"y":52.9,"t":"Has it?","d":"compare key_red &gt;= 1, into the branch."},{"x":36.2,"y":40.1,"t":"Yes: open_red","d":"call, to level, name open_red."},{"x":44.3,"y":40.1,"t":"No: need_red","d":"call, to level, name need_red."},{"x":29.7,"y":48.7,"t":"Which level","d":"Both calls take their entity from the on_call: the player who asked, so the answer goes to the level that player is in."},{"x":86.5,"y":36.6,"t":"to: level","d":"A call to a level from the game needs an entity to say which."}]'>
+    <figcaption>Cinderfall's <code>progress</code> graph at 64%, on the red keycard, with <code>call16</code> picked.</figcaption>
+  </figure>
+  <h3>Ask, and be answered</h3>
+  <p>The key is the game's, but the door is a level's, and the game cannot name a sector. So each locked door is a question and an answer:</p>
+  <pre><code>w_foundry_w, graph world:
+  when_wall_used (the red door's faces) → call (to: game, name: try_red)
+  on_call open_red → open_door (tag 100, slow) → play_sound door.open → subtitle "The red keycard opens it."
+  on_call need_red → play_sound door.locked → subtitle "Locked. It wants the red keycard."
+
+the game, graph progress:
+  on_call try_red → branch (compare get_var key_red &gt;= 1)
+      true  → call (to: level, name: open_red, entity ← on_call.entity)
+      false → call (to: level, name: need_red, entity ← on_call.entity)</code></pre>
+  <p>Picking up a card is the other half: the map's <code>world</code> graph runs <a href="../reference/graph-nodes.html#when_prop_touched"><code>when_prop_touched</code></a> (<code>key_blue</code>) → <code>remove</code> → <code>call</code> (to game, <code>got_blue</code>). The Heart's seal in the hub works the same way, with <code>try_seal</code> answered by <code>open_seal</code> or <code>need_seal</code> at three Cores.</p>
+  <h3>Keeping a copy: sync</h3>
+  <p>A map's graph cannot read a game variable. When it needs one to decide by, it asks for a copy. Every district's <code>world</code> graph has the same chain: <a href="../reference/graph-nodes.html#when_sector_entered"><code>when_sector_entered</code></a> (any sector, players) → <code>call</code> (to game, <code>sync</code>). The game answers with two calls back: <code>progress</code>, with <code>cores</code> as its value, and <code>valves</code>, with the valve count. Each map keeps the first in its own variable <code>cores</code>. In the hub, the <code>story</code> graph reads that copy to choose what Doc Imre says, and to let hounds into the square, once, when the second Core comes back.</p>
+  <h3>Story and world, in every district</h3>
+  <p>Each district map has exactly two graphs, two of its eight slots:</p>
+  <ul>
+    <li><b><code>world</code></b> is the plumbing every map shares: its doors, its keycards and secrets, reporting kills (<code>got_kill</code>) and deaths, and the <code>sync</code> above. The chains are nearly the same from map to map.</li>
+    <li><b><code>story</code></b> is what is particular to that place: the people you talk to, the objective text, the valves in the foundry, the fuse and the winch at the railhead, the boss in the Heart.</li>
+  </ul>
+  <p>Splitting them this way keeps the story readable, and lets the plumbing be copied to a new map without the story coming with it.</p>
+  <h3>Dying in one world</h3>
+  <p>Near a seam, the monster that kills you may stand in the next map over, and a death is told to the killer's level. So no map handles its own deaths alone:</p>
+  <pre><code>every map's world graph:
+  when_dies (players) → call (to: game, name: died)
+  on_call respawn → delay 30 ticks → teleport (spawn: start)
+
+the game, graph progress:
+  on_call died → call (to: level, name: respawn) → fade black (0.4 s) ─done→ delay 36 ticks → fade clear (1 s)</code></pre>
+  <p>The game's <code>call</code> goes to the level of its entity, the player who died, so the map they died in moves them to its own start. The fade is done by the game, as the graph's note says, because a fade sent by a map reaches only a player the server counts as in that map, and a moved player is counted there a tick later.</p>
+
   <h2>Graphs or Lua?</h2>
   <p>Graphs cover most map logic. Reach for Lua when you need what the vocabulary does not say:</p>
   <ul>

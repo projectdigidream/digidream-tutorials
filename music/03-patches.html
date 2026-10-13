@@ -189,6 +189,28 @@
     <li><p>Leave with <span class="ui">✕</span> to throw it away. With <span class="ui">‹ studio</span>, the patch is saved in <code>airship</code>'s own bank only; the other four tracks keep theirs.</p></li>
   </ol>
 
+  <h2 id="cinderfall">In Cinderfall: guitars that fall back</h2>
+  <div class="callout soon"><p><b>New, and still being tested.</b> Cinderfall, the first-person shooter example, is not bundled yet: see <a href="01-daw-tour.html#cinderfall">A tour of the DAW</a> for how to import it, and the <a href="../examples/02-cinderfall.html">Cinderfall tour</a>.</p></div>
+  <figure class="shot" data-src="../assets/shots/cinder-synth-fallback.png" data-alt="The Synth tab on Cinderfall's boss with ovr selected: program 29 Overdriven Guitar is marked fallback, and the editor shows a plain new patch" data-hotspots='[{"x":21,"y":36,"t":"ovr #2 and ovr","d":"both play program 29, so both light up"},{"x":63,"y":22,"t":"29 Overdriven Guitar ·fallback","d":"the bank has no patch 29"},{"x":72,"y":28.7,"t":"name: new","d":"a blank patch: edit it and it becomes program 29"}]'>
+    <figcaption>The Synth tab on <code>boss</code>: <code>ovr</code> and <code>ovr #2</code> play program 29, which the shipped bank does not have.</figcaption>
+  </figure>
+  <p>Cinderfall's nine projects carry the shipped bank unchanged, like Gem Hollow's. But Freedoom's metal tunes ask for programs a chiptune never needs, and some of them are not among the bank's 71:</p>
+  <table>
+    <thead><tr><th>Program</th><th>Played by</th></tr></thead>
+    <tbody>
+      <tr><td><code>29 Overdriven Guitar</code></td><td><code>boss</code> (two tracks), <code>foundry</code>, <code>oldtown</code>, <code>railhead</code> (two tracks)</td></tr>
+      <tr><td><code>31 Guitar Harmonics</code></td><td><code>foundry</code>, <code>hub</code></td></tr>
+      <tr><td><code>10 Music Box</code>, <code>86 Lead 7 (fifths)</code>, <code>36 Slap Bass 1</code>, <code>96 FX 1 (rain)</code>, <code>122 Seashore</code></td><td><code>oldtown</code>'s <code>bellz</code>, <code>foundry</code>'s <code>5th</code>, <code>mine</code>'s <code>basu</code>, <code>boss</code>'s <code>rain</code>, <code>victory</code></td></tr>
+    </tbody>
+  </table>
+  <p>Every one of these plays the bank's <code>fallback</code> patch, <code>fallback_pad</code>: two soft, detuned saw layers with a slow 40–55 ms attack. So the overdriven guitars of <code>boss</code> come out as a soft pad. A distorted guitar <b>is</b> in the bank: <code>30 Distortion Guitar</code> (<code>distortion_guitar</code>, two hard-driven waveshaper layers panned left and right), which <code>heart</code>, <code>hub</code>, <code>oldtown</code> and <code>railhead</code> use. The program list marks the missing ones with <b>·fallback</b>, and selecting one opens a blank patch called <code>new</code>: nothing is saved for that program until you edit it.</p>
+  <ol class="steps">
+    <li><p>Import Cinderfall, open <code>boss</code> from <b>♪ Music</b>, and go to the <span class="ui">Synth</span> tab. Click <code>ovr</code>: the program list at the top reads <code>29 Overdriven Guitar ·fallback</code>.</p></li>
+    <li><p>Pick <code>30 Distortion Guitar</code> in the program list. Picking a program makes the selected track play it, so <code>ovr</code> now plays 30: press <kbd>Space</kbd> and hear the difference. Open <span class="ui">JSON ▾</span> and copy the text.</p></li>
+    <li><p>Pick <code>29 Overdriven Guitar ·fallback</code> in the list: <code>ovr</code> is back on 29, and the editor shows the blank <code>new</code> patch. Open <span class="ui">JSON ▾</span>, paste over it, change <code>"name"</code> to <code>"overdriven_guitar"</code> and press <span class="ui">Apply JSON</span>.</p></li>
+    <li><p>Play: both <code>ovr</code> tracks now crunch. Leave with <span class="ui">‹ studio</span> to keep the patch, in <code>boss</code>'s bank only, or <span class="ui">✕</span> to throw it away.</p></li>
+  </ol>
+
   <h2 id="fit">Fit: a patch from a recording</h2>
   <p>The <span class="ui">Fit</span> tab searches for a patch that sounds like a short recorded sample:</p>
   <ol class="steps">

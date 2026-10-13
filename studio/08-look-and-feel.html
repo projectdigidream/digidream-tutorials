@@ -124,6 +124,23 @@
     <li><p>Switch to <span class="ui">▶ try</span> and press the button. Read what a graph would hear.</p></li>
   </ol>
 
+  <h2 id="cinderfall">In Cinderfall: fonts, panel skins and a dusk sky</h2>
+  <div class="callout soon"><p><b>Cinderfall is new and still being tested</b>, and not bundled yet. To get it, see <a href="01-getting-started.html#cinderfall">Getting started</a>.</p></div>
+  <figure class="shot" data-src="../assets/shots/cinder-style.png" data-alt="Cinderfall's Style: two imported fonts, Special Elite and Bebas Neue, each with a sample line">
+    <figcaption>🎨 Style in Cinderfall: two fonts, each shown as a sample.</figcaption>
+  </figure>
+  <p>Gem Hollow uses the engine's own font and plain panels. Cinderfall dresses its screens:</p>
+  <ul>
+    <li><b>🔤 fonts.</b> Two, in <code>assets/ui/fonts/</code>: <em>Special Elite</em> (<code>special_elite.ttf</code>), a typewriter face for the UI, the objective and the subtitles, and <em>Bebas Neue</em> (<code>bebas_neue.ttf</code>) for the HUD numbers, panels and buttons.</li>
+    <li><b>▢ panel styles.</b> <code>rust</code> has a 9-slice picture for the box (<code>skins/panel.png</code>), the title bar (<code>skins/title.png</code>) and the buttons (<code>skins/button.png</code>, and <code>skins/button_down.png</code> when pressed). The pictures are cut from Freedoom textures. <code>wheel</code> is a round, see-through box with no picture, for the weapon wheel.</li>
+    <li><b>▢ Panels.</b> <code>title</code> (<em>CINDERFALL</em>, with <b>NEW GAME</b> and <b>QUIT</b>) and <code>theend</code> wear <code>rust</code>. <code>arms</code>, the weapon wheel, wears <code>wheel</code>. It is not modal, so the player keeps moving while it is up.</li>
+    <li><b>💬 subtitles.</b> Special Elite at 20, the speaker's name in amber, in a dark box.</li>
+    <li><b>🌌 Sky.</b> A strip, <code>SKYDUSK</code>, from Freedoom, 4 times round the horizon at height 0.625. Both are DOOM's defaults, so the form's last line leaves them out: <code>sky default strip SKYDUSK</code>.</li>
+  </ul>
+  <figure class="shot" data-src="../assets/shots/cinder-wheel.png" data-alt="The arms panel in the designer: five weapon buttons in a circle, in the wheel style">
+    <figcaption>The <code>arms</code> panel in the <code>wheel</code> style. The weapon icons are textures of the module, which the designer does not draw yet; the game does.</figcaption>
+  </figure>
+
   <h2>Weather and fog</h2>
   <p>Rain, snow, dust, embers and fog belong to a <b>room</b>. In the map editor, select a room. Its inspector has a <b>🌦 weather and fog</b> section with a chip for each kind:</p>
   <p><span class="ui">+ 🌧 rain</span> <span class="ui">+ ❄ snow</span> <span class="ui">+ · dust</span> <span class="ui">+ ✦ embers</span> <span class="ui">+ 🌫 fog</span></p>

@@ -142,6 +142,36 @@
     <li><p>Drag the tip of <code>armR</code> forward, then press <kbd>,</kbd> twice: in the front view the arm now points at you. Press <span class="ui">✕</span> to throw the change away.</p></li>
   </ol>
 
+  <h2 id="cinderfall">In Cinderfall: rigs for a shooter</h2>
+  <div class="callout soon"><p><b>New, and still being tested.</b> Cinderfall, the first-person shooter example, is not bundled yet: see <a href="01-first-sprite.html#cinderfall">Make your first sprite</a> for how to import it, and the <a href="../examples/02-cinderfall.html">Cinderfall tour</a>.</p></div>
+  <figure class="shot" data-src="../assets/shots/cinder-sprite-gunner-rig.png" data-alt="ThreeSprite's Rig tab with Cinderfall's GUNNER seen from view 3, the left side: his bones over the soldier, the rifle held forward, hips selected at Pos up 33" data-hotspots='[{"x":12.4,"y":11,"t":"View 3","d":"the left side: the arms and legs overlap, as one 3D skeleton seen side on"},{"x":36,"y":67,"t":"The rifle","d":"a solids part on handR, held forward"},{"x":85,"y":24,"t":"Bones","d":"hips → torso → armR → foreR → handR …"},{"x":88.5,"y":59.5,"t":"Pos up 33","d":"the root, 33 px above the feet"}]'>
+    <figcaption>Cinderfall's <code>GUNNER</code> in the Rig tab, from view 3: the 13-bone rig, with <code>hips</code> selected.</figcaption>
+  </figure>
+  <p>Cinderfall's people and most of its monsters share one rig of 13 bones. It is HERO's rig with two more bones, <code>handR</code> and <code>handL</code>, 3 px long, at the end of each forearm. Here is <code>GUNNER</code>:</p>
+<pre><code>hips          root, Pos up 33, length 4
+├─ torso      length 22
+│  ├─ head    Pos up 22, length 12
+│  ├─ armR    Pos right 8.5, Pos up 20, length 11
+│  │  └─ foreR   Pos up −11, length 10
+│  │     └─ handR   Pos up −10, length 3   ← the rifle hangs here
+│  └─ armL    (the same, Pos right −8.5)
+├─ thighR     Pos right 3.6, length 16
+│  └─ shinR   Pos up −16, length 16
+└─ thighL     Pos right −3.6, length 16
+   └─ shinL   …</code></pre>
+  <ul>
+    <li><b>A hand bone holds what the hand carries.</b> The <code>rifle</code> part (4 shapes) hangs on <code>handR</code>, so it follows the arm through aim, fire and death. HUSK's pick, WARDEN's gun, BRUTE's and SMELTER's cannon hang the same way; MAGS's lantern and CARROW's staff hang on <code>handL</code>.</li>
+    <li><b>Clothes hang on the hips.</b> MAGS's <code>skirt</code>, WARDEN's <code>duster</code> and CARROW's <code>robe</code> are parts on <code>hips</code>, not bones of their own.</li>
+    <li><b>Big is the same rig, scaled.</b> BRUTE (128 px) and SMELTER, the boss (176 px), have the same 13 bones as GUNNER at larger sizes: SMELTER's hips stand 44.55 up and its arms start 17.85 out.</li>
+  </ul>
+  <p>Not everything is a person. <code>HOUND</code>'s 13 bones are a dog's: <code>body</code> at Pos up 18 is the root, with <code>neck</code> → <code>head</code> → <code>jaw</code> at its front (Pos forward 11.5), <code>tail</code> at its back (Pos forward −11.5), and four two-bone legs, <code>upFR</code>/<code>loFR</code> … <code>upBL</code>/<code>loBL</code>, at Pos forward ±8.05 and Pos right ±4. <code>SPITTER</code> is a sac with a <code>mouth</code> and four two-bone tentacles. <code>HUMANOID</code> and <code>QUADRUPED</code> are kept in the module as the starting rigs these were built from.</p>
+  <p>A first-person weapon has a rig too. <code>VM_REVOLVER</code> hangs everything from a root called <code>rig</code>, at Pos right −22 and Pos up 18 and turned (Rot pitch −40, Rot yaw −20), so the gun sits low on the right and points into the screen. Its children are <code>body</code>, then <code>hammer</code>, <code>cyl</code> (the cylinder) and <code>flash</code> on the body, and <code>hand</code>. <code>flash</code> sits at Pos forward −17, out at the muzzle: the muzzle flash is a part of its own, so an animation can show it on one frame only.</p>
+  <ol class="steps">
+    <li><p>Open Cinderfall's <code>HOUND</code> in ThreeSprite and open <span class="ui">Rig</span>. Press <kbd>.</kbd> twice for view 3, the side: the legs are now spread front to back, where in view 1 they hid behind each other.</p></li>
+    <li><p>Click <code>jaw</code> in the Bones panel and drag its tip down. The jaw opens in every view. Press <span class="ui">✕</span> to throw the change away.</p></li>
+    <li><p>Open <code>VM_REVOLVER</code>, open <span class="ui">Rig</span> and click <code>rig</code>. Set <span class="ui">Rot yaw</span> to 0: the gun swings to point straight away from you. Leave with <span class="ui">✕</span>.</p></li>
+  </ol>
+
   <h2>Exercise: an arm that bends</h2>
   <ol class="steps">
     <li><p>Open the <span class="ui">Rig</span> tab and select <code>body</code> in the Bones panel. Press <b>+</b> twice to add a chain of two child bones. Name them <code>upper</code> and <code>lower</code> in the Inspector.</p></li>

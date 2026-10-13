@@ -396,6 +396,60 @@ mobs = {
     <li><b>Make it yours:</b> give <code>squash</code> a <a href="../reference/monster-vocab.html#vfx"><code>vfx</code></a> step at 0 for a splash. Note that a stomped slime drops nothing: drops are rolled only when hits take its <code>hp</code> to 0, and <code>squash</code> ends in <code>despawn</code> instead (<a href="04-pain-death-drops.html#gem-hollow">Pain, death and drops</a>).</li>
   </ul>
 
+  <h2 id="smelter">7. Cinderfall's Smelter: a boss in one chase</h2>
+  <p>Another one to open rather than build: the boss of Cinderfall, a new example first-person shooter that is <b>still being tested</b> (<a href="../examples/02-cinderfall.html">the tour</a> says how to import it). Recipe 5 changes phase through a var and two chases. The Smelter does it with one chase whose first card only opens below half health. (<code>pain</code> and <code>death</code> are shortened.)</p>
+  <figure class="shot" data-src="../assets/shots/cinder-smelter.png" data-alt="The Smelter's brain in the Monsters workshop at 66%: look, roar, chase, then aim, volley, slam and brood off chase, with pain and death on the right; chase is picked" data-hotspots='[{"x": 31.3, "y": 20.2, "t": "look ★", "d": "Stands still until it sees you."}, {"x": 39.5, "y": 20.2, "t": "roar", "d": "60 ticks of roar instead of a wake: the fight&#39;s opening."}, {"x": 48, "y": 20.2, "t": "chase", "d": "Three cards: brood, slam, aim, in that order."}, {"x": 56.1, "y": 20.2, "t": "aim", "d": "16 ticks still, facing you, then volley."}, {"x": 64.7, "y": 20.2, "t": "volley", "d": "Four shells over 30 ticks, then back to chase."}, {"x": 56.2, "y": 27.5, "t": "slam", "d": "Within 5: a blast of 25 with a big throw."}, {"x": 56.3, "y": 34.8, "t": "brood", "d": "Below half health, every 600 ticks: three husks."}, {"x": 73.2, "y": 20.2, "t": "pain, death", "d": "Reached by hits, not by arrows."}, {"x": 27.4, "y": 8.4, "t": "Six monsters", "d": "husk, gunner, hound, spitter, brute and smelter share the module&#39;s missiles."}, {"x": 81.8, "y": 82.6, "t": "The first card", "d": "go to brood when hp_below 50 and cooldown_ready brood."}]'>
+    <figcaption>The Smelter's brain, fitted with <span class="ui">⤢</span> (66%), with <code>chase</code> picked.</figcaption>
+  </figure>
+  <pre><code>smelter = {
+  hp = 2400, sight = "60", turn_speed = 4, pain_chance = 12, mass = 12,
+  initial = "look", corpse = true,
+  vars = { ready = 0, slam = 0, brood = 0 },
+  states = {
+    look  = { anim = 0, move = "stop", face = "hold",
+      transitions = { { to = "roar", when = { { cond = "has_target" }, { cond = "target_visible" } } } } },
+    roar  = { anim = 7, move = "stop", face = "target", ticks = 60, next = "chase",
+      sequence = { { at = 0, action = "sound", name = "smelter.roar" } } },
+    chase = { anim = 1, move = "chase", face = "target", interruptible = true,
+      transitions = {
+        { to = "brood", when = { { cond = "hp_below", percent = 50 }, { cond = "cooldown_ready", var = "brood" } } },
+        { to = "slam",  when = { { cond = "target_within", distance = "5" }, { cond = "cooldown_ready", var = "slam" } } },
+        { to = "aim",   when = { { cond = "target_visible" }, { cond = "cooldown_ready", var = "ready" } } },
+      } },
+    aim    = { anim = 2, move = "stop", face = "target", ticks = 16, next = "volley" },
+    volley = { anim = 5, move = "stop", face = "target", ticks = 44, next = "chase",
+      sequence = {
+        { at = 0,  action = "missile", kind = "cinder_shell", offset = -12 },
+        { at = 10, action = "missile", kind = "cinder_shell", offset = -4 },
+        { at = 20, action = "missile", kind = "cinder_shell", offset = 4 },
+        { at = 30, action = "missile", kind = "cinder_shell", offset = 12 },
+        { at = 0,  action = "set_cooldown", var = "ready", ticks = 70, jitter = 30 },
+        -- and a brute.fire sound with each shell
+      } },
+    slam  = { anim = 6, move = "stop", face = "target", ticks = 36, next = "chase",
+      sequence = {
+        { at = 16, action = "sound", name = "brute.slam" },
+        { at = 16, action = "damage_area", damage = 25, radius = "5.5", knockback = "14", lift = "6" },
+        { at = 0,  action = "set_cooldown", var = "slam", ticks = 80 },
+      } },
+    brood = { anim = 7, move = "stop", face = "target", ticks = 50, next = "chase",
+      sequence = {
+        { at = 0,  action = "sound", name = "smelter.roar" },
+        { at = 20, action = "spawn", mob = "husk", count = 3, limit = 9, offset = "4", jitter = "2" },
+        { at = 0,  action = "set_cooldown", var = "brood", ticks = 600 },
+      } },
+    -- pain: anim 3, 10 ticks, back to chase · death: anim 4, solid off, a sound
+  },
+}</code></pre>
+  <ul>
+    <li><b>Body:</b> radius 1.4, height 4.4, speed 2, drawn with the sheet <code>SMELTER</code>, which has states up to 7 (<code>roar</code>). Placed once, in <code>w_heart_w</code>.</li>
+    <li><b>The second phase is a card, not a var.</b> <a href="../reference/monster-vocab.html#hp_below"><code>hp_below</code></a> 50 is the first card in <code>chase</code>. Above half health it never matches, and the Smelter only slams and shoots. Below, every 600 ticks (10 seconds) it stops, roars and brings three husks, never more than 9 of its own alive at once (<code>limit</code>). Nothing else changes, so there is no <code>regroup</code> to write.</li>
+    <li><b>Three cooldown vars</b>, <code>ready</code>, <code>slam</code> and <code>brood</code>, so no attack waits on another's timer.</li>
+    <li><b>Heavy and hard to stagger.</b> <code>pain_chance</code> 12 (out of 255) flinches about one hit in twenty; and <code>mass</code> 12 makes it heavy to shove, so your scattergun's knockback hardly moves it.</li>
+    <li><b>The volley's <code>offset</code>s are distances.</b> They put the four shells from 12 units behind the Smelter to 12 in front, not at four angles (<a href="03-attacks.html#cinderfall">Attacks</a>). A fan is <code>count</code> 4 with an <code>arc</code>.</li>
+    <li><b>The bar on the HUD</b> is not the brain's: the map's graph writes it from <code>when_hurt</code> (<a href="../graphs/04-the-world.html#cinderfall">Talking to the world</a>).</li>
+  </ul>
+
   <div class="callout warn"><p><b>A <code>lua</code> condition or action moves a monster to the slower runtime.</b> None of these recipes needs one. The server prints at load how many monster kinds run on the fast C++ loop and how many fall back, with the reason. Keep the escape hatch for what the vocabulary truly cannot say.</p></div>
 
   <h2>Exercise: build the turret</h2>

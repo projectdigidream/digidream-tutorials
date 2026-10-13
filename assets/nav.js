@@ -18,6 +18,13 @@ window.DNP_NAV = [
     ],
   },
   {
+    id: 'examples', title: 'Examples', icon: '📂', blurb: 'Two finished games to open and take apart: Gem Hollow, a platformer, and Cinderfall, a shooter.',
+    pages: [
+      { file: 'examples/01-gem-hollow.html', title: 'Gem Hollow, a tour', kw: 'example gem hollow platformer title menu world zones levers gates keys gems slimes bees snails cutscenes' },
+      { file: 'examples/02-cinderfall.html', title: 'Cinderfall, a tour', kw: 'example cinderfall shooter fps districts hub metamap one world npc talk boss arms swap persist freedoom' },
+    ],
+  },
+  {
     id: 'sprites', title: 'Sprites · ThreeSprite', icon: '🎞', blurb: 'Rigged, multi-angle pixel sprites that the studio bakes into atlases.',
     pages: [
       { file: 'sprites/01-first-sprite.html', title: 'Your first sprite', kw: 'new sprite views mirror canvas size sprite id' },

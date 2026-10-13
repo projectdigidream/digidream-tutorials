@@ -140,6 +140,31 @@
     <li><b>Default sounds</b> are set in <b>🧍 Player</b> → <span class="ui">🔊 sounds</span>: <code>world.secret</code> for a weapon, <code>pickup.coin</code> for ammunition, <code>pickup.heart</code> for health. Each pickup here also names its own.</li>
   </ul>
 
+  <h2 id="cinderfall">In Cinderfall: four pools and ten pickups</h2>
+  <p>Cinderfall, a new example first-person shooter that is <b>still being tested</b> (<a href="../examples/02-cinderfall.html">the tour</a> says how to import it), has an economy closer to DOOM's: one pool per gun, all starting empty.</p>
+  <table>
+    <thead><tr><th>Pool</th><th><span class="ui">label?</span></th><th><span class="ui">max</span></th><th><span class="ui">order?</span></th><th>Eaten by</th><th>Its box</th></tr></thead>
+    <tbody>
+      <tr><td><code>bullets</code></td><td>Bullets</td><td>150</td><td>1</td><td><code>revolver</code></td><td><code>ammo_bullets</code>: 12</td></tr>
+      <tr><td><code>shells</code></td><td>Shells</td><td>40</td><td>2</td><td><code>scatter</code> (1 a shot, 2 for the double)</td><td><code>ammo_shells</code>: 6</td></tr>
+      <tr><td><code>rivets</code></td><td>Rivets</td><td>300</td><td>3</td><td><code>riveter</code></td><td><code>ammo_rivets</code>: 40</td></tr>
+      <tr><td><code>flares</code></td><td>Flares</td><td>20</td><td>4</td><td><code>flare</code></td><td><code>ammo_flares</code>: 3</td></tr>
+    </tbody>
+  </table>
+  <p>Health has a <span class="ui">max</span> of 100 and no <span class="ui">bonus_max</span>. The other six pickups:</p>
+  <ul>
+    <li><b>Four weapon pickups</b>, <code>revolver_pickup</code>, <code>scatter_pickup</code>, <code>riveter_pickup</code> and <code>flare_pickup</code>, each with only a <span class="ui">weapon?</span>. The ammunition comes from each weapon's own <b>what its own pickup grants</b>: 18 bullets, 8 shells, 60 rivets, 4 flares.</li>
+    <li><b>Two heals</b>: <code>stim</code> (<span class="ui">heal?</span> 15) and <code>medkit</code> (40), both filling to <span class="ui">max</span>.</li>
+    <li><b>Sounds</b>: every pickup names its own (<code>pickup.weapon</code>, <code>pickup.ammo</code>, <code>pickup.health</code>), and <b>🧍 Player</b> → <span class="ui">🔊 sounds</span> sets the same three as the defaults.</li>
+  </ul>
+  <p>The numbers are tuned to the pools: a box of shells is six blasts, or three doubles, and a riveter burst of 40 rivets lasts under three seconds. Boxes lie about every map, and some monsters drop them (<a href="../enemies/04-pain-death-drops.html">Pain, death and drops</a>).</p>
+  <div class="callout warn"><p><b>Drops with a chance.</b> The gunner always drops <code>ammo_bullets</code>, and the brute <code>ammo_shells</code>. The husk's bullets, the spitter's rivets and the brute's flares are written with a <code>chance</code> field, which a drop does not have: the server refuses those entries at load and logs <em>has no field named `chance`</em>, so they never drop, even though the studio says <em>loads clean</em>. A drop that happens one time in four is a <code>one_of</code> with an empty choice: <code>{ {item = "ammo_bullets", weight = 1}, {weight = 3} }</code>.</p></div>
+  <ul>
+    <li><b>Not everything you pick up is a pickup.</b> The keycards, the Furnace Cores and the fuse are props that graphs remove when touched, and report to the game's <code>progress</code> graph (<a href="../graphs/05-game-graph-and-calls.html#cinderfall">The game graph, calls and maps</a>). They are in no pool.</li>
+    <li><b>Healing from a person.</b> Doc Imre, in the hub, heals you to full with the graph node <a href="../reference/graph-nodes.html#heal"><code>heal</code></a> (amount 100) each time you bring her a Core she has not seen.</li>
+    <li><b>The HUD.</b> Cinderfall's HUD shows <code>{hud.weapon}</code> and, only while <code>hud.ammo_type</code> is not empty, <code>{hud.ammo}</code>. The wrench eats no pool, so with it in hand the count goes away.</li>
+  </ul>
+
   <h2>Exercise: a bigger pouch, and a mega heart</h2>
   <ol class="steps">
     <li><p>Open Gem Hollow, choose <b>🔫 Weapons</b> and open <span class="ui">🎒 arsenal</span>. On the <code>stars</code> pool, set <span class="ui">max</span> to <code>50</code>.</p></li>

@@ -139,6 +139,35 @@
     <li><p>Select <code>door.open</code> and scroll the panel down to <span class="ui">Fade</span>. Compare it with <span class="ui">Even</span> later in <a href="04-mix-and-ship.html#test">Test in the engine</a>.</p></li>
   </ol>
 
+  <h2 id="cinderfall">In Cinderfall: settings for a shooter</h2>
+  <div class="callout soon"><p><b>New, and still being tested.</b> Cinderfall, the first-person shooter example, is not bundled yet: see <a href="02-shape-and-layers.html#cinderfall">Shape and layers</a> for how to import it, and the <a href="../examples/02-cinderfall.html">Cinderfall tour</a>.</p></div>
+  <figure class="shot" data-src="../assets/shots/cinder-sound-roar.png" data-alt="DigidreamSound with Cinderfall's smelter.roar: world group, at most 1, minimum gap 1.5 s, pitch ±1.5 st, full volume to 3 and silent from 30 units with a Natural fade" data-hotspots='[{"x":93,"y":20.4,"t":"world","d":"placed in the world: it fades with distance"},{"x":97,"y":38,"t":"At most 1","d":"one boss, one roar"},{"x":95,"y":47.8,"t":"Minimum gap 1.50 s","d":"the brood roar and the opening roar cannot pile up"},{"x":95,"y":56,"t":"± 1.5 st","d":"a little different each time"},{"x":93,"y":76.6,"t":"3 to 30 units","d":"the same range as a husk&#39;s groan"},{"x":88,"y":84.3,"t":"Natural","d":"the fade between"},{"x":31,"y":46.3,"t":"too loud: +2.3 dB","d":"see below"}]'>
+    <figcaption>In the game for <code>smelter.roar</code>: one at a time, at least 1.5 s apart, heard from 3 to 30 units.</figcaption>
+  </figure>
+  <p>A shooter fires a lot of sounds at once, so Cinderfall's pack leans on these settings far more than Gem Hollow's. Its three groups are <b>world</b> (placed in the world, with 0.22 sent to the room reverb, up to 24 sounds at once), <b>player</b> (up to 10) and <b>ui</b> (−2 dB, up to 6).</p>
+  <table>
+    <thead><tr><th>Sounds</th><th>Settings</th><th>Why</th></tr></thead>
+    <tbody>
+      <tr><td><code>wpn.revolver.fire</code>, <code>wpn.scatter.fire</code>, <code>wpn.flare.fire</code></td><td>player · importance 220 · at most 4 (flare 2) · gap 40 / 100 / 200 ms · pitch ± 60 / 40 / 50¢</td><td>Your own gun is on <b>player</b>: it is in your hands, so it never fades. High importance keeps it when the pool is full.</td></tr>
+      <tr><td><code>wpn.riveter.fire</code></td><td>player · at most 4 · gap <b>0</b> · pitch ± 120¢</td><td>A rivet gun firing many times a second must not lose shots to a gap; the wide pitch spread keeps a burst from sounding like a buzz.</td></tr>
+      <tr><td><code>gunner.fire</code></td><td>world · importance 220 · at most 5 · gap 30 ms · full to 5, silent from 60 · pitch ± 100¢</td><td>An enemy's gun carries twice as far as its voice: you hear the gunner shooting before you see him.</td></tr>
+      <tr><td><code>husk.*</code>, <code>gunner.*</code>, <code>hound.*</code> … voices</td><td>world · importance 140 · at most 3 · gap 200 ms (bite 100) · full to 3, silent from 30, Natural · pitch ± 150¢, volume ± 1.5 dB</td><td>A pack of husks groans as a crowd, not a copy, and a voice never outranks a gunshot.</td></tr>
+      <tr><td><code>boom</code>, <code>brute.slam</code></td><td>world · full to 6, silent from 70 (slam 60) · lower music −3 dB for 500 ms (400)</td><td>Explosions duck the music a little so they land.</td></tr>
+      <tr><td><code>door.open</code>, <code>door.close</code></td><td>world · full to 4, silent from 45 · muffled to 1.5 kHz far away</td><td>A door across the district is a dull thud.</td></tr>
+      <tr><td><code>train</code>, <code>alarm</code></td><td>world · 10 to 100 units; 8 to 80</td><td>The two loudest things in town carry furthest.</td></tr>
+      <tr><td><code>rumble</code></td><td>ui · importance 230 · gap 3 s</td><td>The earth shaking is felt everywhere at once, so it is not placed in the world.</td></tr>
+      <tr><td><code>pickup.core</code>, <code>core.place</code>, <code>secret</code>, <code>cine.sting</code></td><td>lower music −8 dB for 1.8 s; −6 dB for 1.5 s; −5 dB for 0.9 s; −6 dB for 2 s</td><td>The big moments step out of the soundtrack; the bigger the moment, the deeper and longer the duck.</td></tr>
+      <tr><td><code>voice.*</code></td><td>ui · importance 200 · at most 2 · no gap · pitch ± 180¢</td><td>A typed subtitle plays the voice on every step, so it must never be skipped, and the wide pitch spread makes the blips sound like speech.</td></tr>
+    </tbody>
+  </table>
+  <p>Nothing repeats until stopped, and nothing is rendered live: even the train is a one-shot.</p>
+  <div class="callout warn"><p>Many rows in the library say <em>too loud</em>: the four <code>player</code> sounds, <code>revolver.reload</code>, <code>smelter.roar</code> (<em>+2.3 dB</em>) and others. Unlike Gem Hollow, Cinderfall's <b>world</b> and <b>player</b> groups are at 0 dB, so nothing brings them back down in the game. Press <span class="ui">Fix level</span> on each before you ship.</p></div>
+  <ol class="steps">
+    <li><p>Import Cinderfall and open its pack in DigidreamSound. Click <code>roar</code> under SMELTER. The arena is wide: set <span class="ui">Silent from</span> to 60 and <span class="ui">Full volume to</span> to 8, so the boss is heard from across it.</p></li>
+    <li><p>Press <span class="ui">Fix level</span>: the badge turns into a plain peak.</p></li>
+    <li><p>Click <code>riveter.fire</code> and set <span class="ui">At most, at once</span> to 1, <span class="ui">Then</span> to <span class="ui">Cut the oldest</span>. Test it in the game: a burst now cuts each rivet short, a harder, drier rattle. Decide which you like, and leave with <span class="ui">‹ studio</span> or <span class="ui">✕</span>.</p></li>
+  </ol>
+
   <div class="quiz" data-answer="1">
     <p class="q">Eight zombies fire the same pistol on the same tick. Which setting turns that into one shot heard and seven skipped, without touching the voice pool?</p>
     <ul>

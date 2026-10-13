@@ -162,6 +162,40 @@
     <li><p>Press <span class="ui">✕</span> to throw the change away.</p></li>
   </ol>
 
+  <h2 id="cinderfall">In Cinderfall</h2>
+  <div class="callout soon"><p><b>New, and still being tested.</b> Cinderfall, the first-person shooter example, is not bundled yet: see <a href="01-first-sprite.html#cinderfall">Make your first sprite</a> for how to import it, and the <a href="../examples/02-cinderfall.html">Cinderfall tour</a>.</p></div>
+  <p>A shooter needs animations a platformer does not: an <b>aim</b> before the shot, and for the boss, moves of its own. Every one is seen from 8 views, so each pose has to read from the back as well as the front.</p>
+  <table>
+    <thead><tr><th>Sprite</th><th>Animations (frames @ fps)</th></tr></thead>
+    <tbody>
+      <tr><td><code>GUNNER</code></td><td><code>idle</code> 6@6 · <code>walk</code> 8@10 · <code>aim</code> 3@8 · <code>fire</code> 3@14 · <code>pain</code> 3@10 · <code>death</code> 10@10</td></tr>
+      <tr><td><code>HOUND</code></td><td><code>idle</code> 6@6 · <code>walk</code> 8@14 · <code>leap</code> 6@12 · <code>attack</code> 5@14 · <code>pain</code> 3@10 · <code>death</code> 8@10</td></tr>
+      <tr><td><code>SMELTER</code> (the boss)</td><td><code>idle</code> 6@6 · <code>walk</code> 8@7 · <code>aim</code> 3@8 · <code>fire</code> 3@14 · <code>slam</code> 8@10 · <code>roar</code> 8@8 · <code>pain</code> 3@10 · <code>death</code> 10@10</td></tr>
+      <tr><td><code>MAGS</code> and the other people</td><td><code>idle</code> 6@6 · <code>talk</code> 8@8, both looping</td></tr>
+      <tr><td><code>VALVE</code>, <code>WINCH</code></td><td><code>shut</code> · <code>turn</code> · <code>open</code>; <code>off</code> · <code>pull</code> · <code>on</code>, like Gem Hollow's lever</td></tr>
+    </tbody>
+  </table>
+  <p>The heavy ones move slowly: SMELTER and BRUTE walk at 7 fps where GUNNER walks at 10 and HOUND at 14. The same 8 frames at a lower speed make a heavier step.</p>
+  <p>A monster with more than five animations is wired by number: each of SMELTER's eight is a <code>state</code> line in <code>assets/props.txt</code> (<code>idle</code> is state 0, <code>walk</code> 1, <code>aim</code> 2, <code>pain</code> 3, <code>death</code> 4, <code>fire</code> 5, <code>slam</code> 6, <code>roar</code> 7), and its brain asks for <code>anim = 7</code> when it roars. See <a href="../enemies/03-attacks.html">Attacks</a>.</p>
+  <h3>The revolver in your hand</h3>
+  <figure class="shot" data-src="../assets/shots/cinder-sprite-revolver-fire.png" data-alt="ThreeSprite's Animate tab with Cinderfall's VM_REVOLVER, fire at frame 2 of 6: the gun kicked up with the muzzle flash on, rig keys Rot pitch -16, Move up 3, Move forward 4, Scale 3.4" data-hotspots='[{"x":51,"y":34,"t":"flash","d":"the muzzle flash, shown on frames 1 and 2 only"},{"x":89,"y":24,"t":"Rot pitch −16","d":"the kick, on frame 2"},{"x":89,"y":30.4,"t":"Move up 3, forward 4","d":"the gun jumps up and back towards you"},{"x":89,"y":36.8,"t":"Scale 3.4","d":"on every frame of every animation"},{"x":3,"y":73.3,"t":"fire · 2 / 6 · fps 18","d":"six frames at 18 a second, no loop"},{"x":12,"y":79.5,"t":"rig, hammer, flash","d":"the bones with keys"}]'>
+    <figcaption><code>VM_REVOLVER</code>'s <code>fire</code> at frame 2 of 6: the kick and the flash.</figcaption>
+  </figure>
+  <p><code>VM_REVOLVER</code> has one view and five animations: <code>ready</code> (8@6, looping), <code>draw</code> (5@14), <code>fire</code> (6@18), <code>cock</code> (5@14) and <code>reload</code> (14@12).</p>
+  <ul>
+    <li><b>ready</b> sways: <code>rig</code>'s <span class="ui">Move right</span> goes 0, 0.42, 0.6, 0.42, 0, −0.42, −0.6, −0.42 while <span class="ui">Move up</span> rises and falls by half a pixel. The gun drifts in a slow figure of eight.</li>
+    <li><b>draw</b> brings it up from 60 px below, turning from <span class="ui">Rot pitch</span> 30 to 0.</li>
+    <li><b>fire</b> drops the <code>hammer</code> from −40 on frame 1 to 0 on frame 2, kicks <code>rig</code> up to <span class="ui">Rot pitch</span> −16 (and 3 px up, 4 towards you) on frame 2, and eases back to rest by frame 6.</li>
+    <li><b>cock</b> pulls the hammer back to −45 by frame 3, then lets it settle at −40, ready to fire; <b>reload</b> rolls the gun over (<span class="ui">Rot roll</span> 70) to show the cylinder, which turns and swings out.</li>
+  </ul>
+  <p>Every animation also keys <code>rig</code>'s <span class="ui">Scale</span> at 3.4 on every frame: the gun is modelled small and blown up to fill the 128 px canvas. The keys are added to the rest pose, so <span class="ui">Rot yaw</span> 0 in <b>Keys at frame</b> means the rig's own −20.</p>
+  <p>The muzzle flash is the <code>flash</code> bone, keyed by <span class="ui">Scale</span>: 1 on the first frame of <code>fire</code>, 0.6 on the second, and 0.01, too small to see, on every other frame of every animation. A <span class="ui">Visible</span> key on the flash part would do the same job, and is the simpler way when you make your own.</p>
+  <ol class="steps">
+    <li><p>Open Cinderfall's <code>VM_REVOLVER</code> in ThreeSprite and open <span class="ui">Animate</span>. Choose <code>fire</code> and step through with <kbd>]</kbd>: the flash on frames 1 and 2, the kick on frame 2.</p></li>
+    <li><p>Click <code>rig</code> in the timeline, go to frame 2 and set <span class="ui">Rot pitch</span> to −30. Play with <kbd>Space</kbd>: a much heavier gun.</p></li>
+    <li><p>Open <code>SMELTER</code> and choose <code>roar</code>. Step round it with <kbd>.</kbd> while it plays: check the pose reads from the back too. Leave both with <span class="ui">✕</span>.</p></li>
+  </ol>
+
   <h2>What the studio does with animations</h2>
   <p>Each animation becomes one animation in the baked sheet, with its frame count, fps and loop. A monster's body card picks one animation for each of its five states. When a sheet is chosen, the studio guesses from the names:</p>
   <table>

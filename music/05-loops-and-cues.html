@@ -195,6 +195,43 @@
     <li><p>Open <span class="ui">✎ edit in DigidreamSynth</span> on <code>airship</code> and go to <span class="ui">Cut &amp; Loop</span>. Press <span class="ui">Bake project → load here</span>, drag across bars 1–16 and press <span class="ui">▶ Loop region</span> to hear how the seam sounds when those 16 bars repeat. Add it as a slice called <code>meadow</code>, then try it against the whole song in <span class="ui">Cues</span>. Leave with <span class="ui">✕</span>.</p></li>
   </ol>
 
+  <h2 id="cinderfall">In Cinderfall: a tune per district, and a boss</h2>
+  <div class="callout soon"><p><b>New, and still being tested.</b> Cinderfall, the first-person shooter example, is not bundled yet: see <a href="01-daw-tour.html#cinderfall">A tour of the DAW</a> for how to import it, and the <a href="../examples/02-cinderfall.html">Cinderfall tour</a>.</p></div>
+  <figure class="shot" data-src="../assets/shots/cinder-music-cues.png" data-alt="The Music page in Cinderfall with w_heart_w open: three cues, default on heart, boss on boss and victory on victory, above the module's nine tracks" data-hotspots='[{"x":30,"y":10,"t":"w_heart_w: cues","d":"the map picked in Maps"},{"x":60,"y":15.3,"t":"default → heart","d":"the Heart&#39;s own tune, from the moment you arrive"},{"x":60,"y":21.3,"t":"boss → boss","d":"asked for by the story graph on the arena island"},{"x":60,"y":27.3,"t":"victory → victory","d":"asked for when the Smelter dies"},{"x":36,"y":45.8,"t":"in 2 cue(s)","d":"both halves of the Heart name the boss track"}]'>
+    <figcaption>The Music page in Cinderfall, with <code>w_heart_w</code> open: three cues, then the module's nine tracks.</figcaption>
+  </figure>
+  <p>Cinderfall has twelve maps, and the soundtrack is laid out by place. Its <code>assets/music/index.json</code>, in short:</p>
+<pre><code>menu                     default: title
+n_arrival                default: railhead      (the train in)
+w_railhead               default: railhead
+w_hub                    default: hub
+w_foundry_e, w_foundry_w default: foundry
+w_mine_e,    w_mine_w    default: mine
+w_oldtown                default: oldtown
+w_heart_e,   w_heart_w   default: heart, boss: boss, victory: victory
+n_epilogue               default: victory       (the morning after)</code></pre>
+  <ul>
+    <li><b>One tune per district.</b> A district made of two maps gives both halves the same <code>default</code>, so the district has one tune whichever half you are in.</li>
+    <li><b>The story continues in the music.</b> <code>railhead</code> plays on the train in and at the station; <code>victory</code> plays after the boss and again in the epilogue.</li>
+  </ul>
+  <h3>The boss switch</h3>
+  <p>Only the Heart has more than one cue, and the <code>w_heart_w.story</code> graph switches them:</p>
+  <table>
+    <thead><tr><th>When</th><th>The graph's chain</th><th>The music</th></tr></thead>
+    <tbody>
+      <tr><td>A player steps onto the arena island</td><td><code>when_sector_entered</code> sector 1, <code>players</code> → <code>once</code> → <code>set_hud</code> <code>boss_on</code>, <code>boss_hp_max</code>, <code>boss_hp</code> → <code>action</code> <code>music</code> → <code>subtitle</code> “THE SMELTER”</td><td>cue <code>boss</code>, fade 800, at <code>now</code></td></tr>
+      <tr><td>The Smelter dies</td><td><code>when_dies</code> <code>monsters</code>, kind <code>smelter</code> → <code>set_hud</code> <code>boss_on</code> 0 → <code>start_cinematic</code> → <code>action</code> <code>music</code> → <code>play_sound</code> <code>rumble</code> → <code>camera_shake</code> → <code>subtitle</code> → <code>fade</code> → <code>change_map</code> <code>n_epilogue</code></td><td>cue <code>victory</code>, fade 1500, at <code>now</code></td></tr>
+    </tbody>
+  </table>
+  <p>The choices are the opposite of Gem Hollow's zone changes. A boss can't wait for the next bar: both switches are <code>now</code>. The boss fades in fast (0.8 s) because the fight starts at once; the victory takes 1.5 s, under the rumble and the shake, as the furnace dies. <code>everyone</code> is off on both, so a second player elsewhere in the world keeps their own district's tune. The roar comes from the Smelter's own <code>roar</code> state, which plays <code>smelter.roar</code> when it first sees you.</p>
+  <div class="callout warn"><p><code>w_heart_e</code> has the same <code>boss</code> and <code>victory</code> cues, but its graphs never ask for them: only the west half has the arena. They are harmless, and ready if you move the fight.</p></div>
+  <ol class="steps">
+    <li><p>Import Cinderfall. In <b>🗺 Maps</b>, tap <code>w_heart_w</code>, then open <b>♪ Music</b>. The top part reads <b>w_heart_w: cues</b>, with three cues.</p></li>
+    <li><p>Press <span class="ui">▶</span> beside <code>boss</code>, then beside <code>victory</code>, to hear the two ends of the fight. <span class="ui">■</span> stops.</p></li>
+    <li><p>Open the map's <code>story</code> graph (<a href="../graphs/01-thinking-in-graphs.html">Graphs</a> shows how). On the first <code>action</code> node, change <code>at</code> from <code>now</code> to <code>next_bar</code>. Play to the arena: the boss music now waits for the Heart's bar to end, up to 2.7 s at 88 bpm. Decide which you prefer.</p></li>
+    <li><p>Give <code>w_hub</code> a second cue, <code>dread</code>, on the <code>heart</code> track. In the hub's <code>story</code> graph, after the Heart seal opens, add an <code>action</code> node with <code>music</code>, cue <code>dread</code>, fade 1500, at <code>next_bar</code>. Now the square changes mood once the way down is open.</p></li>
+  </ol>
+
   <div class="quiz" data-answer="2">
     <p class="q">A trigger's music action has only <code>cue = "fight"</code>. When does the change land, and for whom?</p>
     <ul>

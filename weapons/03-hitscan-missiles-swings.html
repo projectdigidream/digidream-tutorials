@@ -148,6 +148,55 @@ on_hit   vfx (fireball) · vfx (smoke)
   <p><b>The Star Toss launches <code>star_shot</code></b>, declared in <b>☠ Monsters</b> → <span class="ui">☄ missiles</span>: <code>prop</code> star_shot (a small star, the <code>STAR</code> sheet at scale 0.3), <code>speed</code> 22, <code>radius</code> 0.3, <code>z_offset</code> 1.1 (about the hero's chest), <code>life</code> 50 ticks, so it flies about 18 units and vanishes. It hurts through its <code>on_hit</code>: one <code>damage</code> step of 20 on arrival.</p>
   <div class="callout"><p><b>A missile hurts only through <code>on_hit</code>.</b> There is no damage field on a missile: everything it does on arrival, damage included, is a step in its <code>on_hit</code> list. The engine refuses a missile table that still carries a <code>damage</code> field of its own.</p></div>
 
+  <h2 id="cinderfall">In Cinderfall: three kinds of ray, a flare and a two-way wrench</h2>
+  <p>Cinderfall, a new example first-person shooter that is <b>still being tested</b> (<a href="../examples/02-cinderfall.html">the tour</a> says how to import it), uses all three ways to hurt. Its rays:</p>
+  <table>
+    <thead><tr><th>Weapon, phase</th><th><span class="ui">damage</span></th><th><span class="ui">range</span></th><th><span class="ui">count?</span></th><th><span class="ui">spread?</span></th><th><span class="ui">knockback?</span></th><th>Most per trigger pull</th></tr></thead>
+    <tbody>
+      <tr><td><code>revolver</code>, <code>fire</code></td><td>22</td><td>90</td><td>1</td><td>1</td><td></td><td>22, a near-perfect rifle</td></tr>
+      <tr><td><code>scatter</code>, <code>fire</code></td><td>9</td><td>40</td><td>8</td><td>6</td><td>1.2</td><td>72, if all eight land</td></tr>
+      <tr><td><code>scatter</code>, <code>double</code></td><td>9</td><td>34</td><td>18</td><td>10</td><td>1.5</td><td>162, at point blank</td></tr>
+      <tr><td><code>riveter</code>, <code>fire</code></td><td>11</td><td>70</td><td>1</td><td>3</td><td></td><td>11 every 4 ticks: 165 a second</td></tr>
+    </tbody>
+  </table>
+  <ul>
+    <li><b>No tracers.</b> None sets <span class="ui">tracer?</span>, so every gun reads as a punch, as DOOM's did. The first-person picture and the sound carry the shot.</li>
+    <li><b>Up and down is the view's.</b> Cinderfall is played first person, so every ray follows your pitch: aim at the spitters overhead.</li>
+    <li><b>The double blast is wider and shorter.</b> More rays, more spread and less range than the single shot, plus an <a href="../reference/weapon-vocab.html#impulse"><code>impulse</code></a> of 6 <code>away</code> that shoves you back.</li>
+  </ul>
+  <p><b>The flare launcher</b> launches <code>flare_shot</code>, declared in <b>☠ Monsters</b> → <span class="ui">☄ missiles</span> beside the monsters' own:</p>
+  <pre><code>flare_shot  speed 24   radius 0.3   z_offset 1.45   life 90   gravity 0
+            anim_fly 0   anim_burst 1   burst_ticks 14
+on_hit      damage_area  damage 90, radius 3.2, falloff on, knockback 8, lift 3
+            sound boom</code></pre>
+  <ul>
+    <li><b>All blast, no direct hit.</b> Its only harm is the <code>damage_area</code>: 90 at the middle, falling to nothing 3.2 units out. A brute (300 hp) takes four flares, fewer with the scattergun between.</li>
+    <li><b>It hurts you too.</b> The blast does not set <code>hurts_owner</code>, and the default is on, so a flare fired into a wall in front of you takes up to 90 of your 100 health. Keep your distance, or change the blast, as in the exercise below.</li>
+    <li><b>A little recoil.</b> The <code>fire</code> phase also runs <code>impulse</code> 3 <code>away</code>.</li>
+    <li>It flies 24 units a second for 90 ticks: 36 units before it expires. With no <code>on_expire</code>, an expired flare simply goes.</li>
+  </ul>
+  <p><b>The wrench has a swing on each of its two blow phases</b> and none on the weapon:</p>
+  <table>
+    <thead><tr><th>Field</th><th><code>swing</code></th><th><code>swing2</code></th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">damage</span></td><td>25</td><td>35</td></tr>
+      <tr><td><span class="ui">reach?</span></td><td>1.4</td><td>1.5</td></tr>
+      <tr><td><span class="ui">half_arc?</span></td><td>1/6 (60° each side)</td><td>1/6</td></tr>
+      <tr><td><span class="ui">sweep_from?</span> → <span class="ui">sweep_to?</span></td><td>−1/6 → 1/6</td><td>1/6 → −1/6: back the other way</td></tr>
+      <tr><td><span class="ui">ticks?</span></td><td>6</td><td>7</td></tr>
+      <tr><td><span class="ui">knockback?</span></td><td>5</td><td>8</td></tr>
+    </tbody>
+  </table>
+  <p>No <span class="ui">half_pitch?</span>, so no height check, which suits a wrench. Two blows kill a husk (40 hp), and the second blow's sweep runs back across the first, so a monster that stepped aside from one meets the other.</p>
+
+  <h2>Exercise: a flare that spares you</h2>
+  <ol class="steps">
+    <li><p>Import Cinderfall (<a href="../examples/02-cinderfall.html">the tour</a> says how), choose <b>☠ Monsters</b> and open <span class="ui">☄ missiles</span>. Find the card <b>Missile: flare_shot</b>.</p></li>
+    <li><p>On its <code>damage_area</code> step in <code>on_hit</code>, switch <code>hurts_owner</code> off and <code>shoves_owner</code> on. With only the first, the blast would leave you out altogether; with both, it throws you without hurting you: a rocket jump.</p></li>
+    <li><p>Check the bar says <em>loads clean</em>, then give yourself the launcher: <b>🧍 Player</b> → <span class="ui">🎒 kit</span>, tick <code>flare</code> and set <code>flares</code> to 10.</p></li>
+    <li><p>Press <span class="ui">▶ Play</span>, face a wall a few steps away and fire. You are thrown back, and your health stays where it was.</p></li>
+  </ol>
+
   <h2>Exercise: tune the stars, and make the fist glow</h2>
   <ol class="steps">
     <li><p>Open Gem Hollow, choose <b>☠ Monsters</b> and open <span class="ui">☄ missiles</span>. On the card <b>Missile: star_shot</b>, find the <code>damage</code> step in its <code>on_hit</code> and set its <code>amount</code> to <code>10</code>.</p></li>

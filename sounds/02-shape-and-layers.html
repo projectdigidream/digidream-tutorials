@@ -158,6 +158,43 @@
     <li><p>Lower <b>dry strike</b> to about 0.4: less clunk, more ring. Then press <span class="ui">✕</span> at the top right to leave without saving.</p></li>
   </ol>
 
+  <h2 id="cinderfall">In Cinderfall</h2>
+  <div class="callout soon"><p><b>New, and still being tested.</b> Cinderfall is a second example, a first-person shooter. It is not bundled with the studio yet: make its pack with <code>node tutorials/tools/pack-example.mjs cinderfall</code> and bring it in with Home → <span class="ui">⇩ import pack</span>. The <a href="../examples/02-cinderfall.html">Cinderfall tour</a> walks round it.</p></div>
+  <figure class="shot" data-src="../assets/shots/cinder-sound-scatter.png" data-alt="DigidreamSound with Cinderfall's wpn.scatter.fire: four lanes, a white-noise crack, a pink-noise body, a falling tone and a brown-noise boom, 601 ms" data-hotspots='[{"x":31,"y":36.7,"t":"1 · the crack","d":"white noise, band 2.0 kHz, 35 ms"},{"x":31,"y":40,"t":"2 · the blast","d":"pink noise, low-pass 1.4 kHz, 600 ms, crackled by a 30 Hz LFO"},{"x":31,"y":43.2,"t":"3 · the kick","d":"a sine at A1 that drops 14 semitones in 60 ms"},{"x":31,"y":46.4,"t":"4 · the boom","d":"brown noise below 300 Hz, 500 ms"},{"x":26,"y":52.3,"t":"601 ms, peak −5.4 dB","d":"no too loud badge here"},{"x":90,"y":38,"t":"At most 4","d":"see Takes and in-game rules"}]'>
+    <figcaption>Cinderfall's <code>wpn.scatter.fire</code>: four layers and two rings make one shotgun blast.</figcaption>
+  </figure>
+  <p>Cinderfall's pack, <code>cinderfall</code>, is 71 sounds for a gritty shooter, every one synthesized, no samples. It shows three recipes worth copying.</p>
+  <h3>A gun is four layers and a body</h3>
+  <p><code>wpn.scatter.fire</code>, the scattergun, is built the way a real shot is heard:</p>
+  <ol>
+    <li><b>the crack</b>: white noise through a 2 kHz band, gone in 35 ms;</li>
+    <li><b>the blast</b>: pink noise below 1.4 kHz, 600 ms, with a sample-and-hold LFO at 30 Hz chopping its volume, so the tail crackles;</li>
+    <li><b>the kick</b>: a pure tone at A1 whose pitch envelope starts 14 semitones up and falls in 60 ms, the thump in your chest;</li>
+    <li><b>the boom</b>: brown noise below 300 Hz for 500 ms, chopped by the same kind of LFO.</li>
+  </ol>
+  <p>Two rings, 240 Hz for 180 ms and 760 Hz for 100 ms with dry strike 1.00, add the ring of the barrel. The other guns are the same recipe tuned: <code>wpn.scatter.double</code> rings lower and longer (200 and 700 Hz); <code>wpn.revolver.fire</code> rings higher (380 and 1150 Hz); <code>wpn.riveter.fire</code> has one short ring at 900 Hz, since it fires many times a second.</p>
+  <h3>Monster voices: one recipe, many sizes</h3>
+  <p>Every monster cry, from <code>husk.sight</code> to <code>smelter.death</code>, has the same two lanes: a <b>Tone · Harmonics (morph)</b> through a <b>vowel</b> filter that slides from one vowel to another, ring-modulated at half its pitch for a growl, with a sample-and-hold LFO on the pitch and a sine LFO on the volume; and a band of pink noise for breath. What changes is size:</p>
+  <table>
+    <thead><tr><th>Sound</th><th>Note</th><th>Vowels</th><th>Length</th><th>LFOs</th><th>Breath</th></tr></thead>
+    <tbody>
+      <tr><td><code>hound.sight</code></td><td>G3</td><td>a → o</td><td>0.56 s</td><td>75 Hz · 25 Hz</td><td>2 kHz</td></tr>
+      <tr><td><code>gunner.sight</code></td><td>D3</td><td>a → e</td><td>0.43 s</td><td>60 Hz · 20 Hz</td><td>1.8 kHz</td></tr>
+      <tr><td><code>husk.sight</code></td><td>F2</td><td>u → a</td><td>0.83 s</td><td>18 Hz · 6 Hz</td><td>900 Hz</td></tr>
+      <tr><td><code>brute.sight</code></td><td>G1</td><td>o → a</td><td>1.19 s</td><td>15 Hz · 5 Hz</td><td>400 Hz</td></tr>
+      <tr><td><code>smelter.roar</code></td><td>D1</td><td>o → a</td><td>2.00 s</td><td>12 Hz · 4 Hz</td><td>300 Hz</td></tr>
+    </tbody>
+  </table>
+  <p>The bigger the monster, the lower the note, the slower the wobble, the darker the breath and the longer the cry. The hound yaps; the Smelter roars for two seconds.</p>
+  <h3>People: one blip each</h3>
+  <p>The six people and the radio do not speak. Each has a <b>voice</b>: one 52 ms blip of a pulse wave through a vowel filter, played with every step of their typed subtitles. What tells them apart is pitch, pulse width and vowel: Pip is high (A4, <i>i → e</i>), Old Mags in the middle (A3, <i>o → a</i>), Brother Carrow lowest (G2, <i>u → o</i>, the narrowest pulse). <code>voice.radio</code> adds a white-noise layer: the voice comes over a radio. See <a href="04-mix-and-ship.html#cinderfall">Mix and ship</a> for how the subtitles play them.</p>
+  <ol class="steps">
+    <li><p>Import Cinderfall, open <b>🔊 Sounds</b> and press <span class="ui">✎ edit in DigidreamSound</span> on <code>Cinderfall (generated) (cinderfall)</code>. Click <code>scatter.fire</code> under WPN.</p></li>
+    <li><p>Press <span class="ui">S</span> on each lane in turn: crack, blast, kick, boom. Then <span class="ui">M</span> on lane 3: without the kick, the shot loses its weight.</p></li>
+    <li><p>Click <code>roar</code> under SMELTER and play it. Then click <code>sight</code> under HUSK: the same recipe, more than an octave higher and under half the length.</p></li>
+    <li><p>Click <code>pip</code> under VOICE and press <kbd>Space</kbd> a few times: a little high blip, a different pitch each time. Leave with <span class="ui">✕</span>.</p></li>
+  </ol>
+
   <h2>Timing &amp; notes, and the JSON</h2>
   <p><span class="ui">Timing &amp; notes</span> holds the take's notes. With none, it plays once at its own pitch. Each step is a time, a note, a strength and, for a sound that does not repeat, how long it is held. Use it for parts at <em>different pitches</em>, such as a jingle, or a door's thunk then its creak. For a many-part hit (click, boom, tail), use layers instead: they are one note and cheaper.</p>
   <p><span class="ui">Everything, as JSON</span>, at the bottom of Layers, is the take exactly as the file stores it. Copy it to paste a take between sounds or banks, and press <span class="ui">Apply JSON</span> to take an edit in.</p>

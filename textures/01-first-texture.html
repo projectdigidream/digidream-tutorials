@@ -37,7 +37,7 @@
   </table>
 
   <h3>From the studio</h3>
-  <figure class="shot" data-src="../assets/shots/studio-textures-page.png" data-alt="The studio's Textures page in Gem Hollow, with LAVA's card open" data-hotspots='[{"x": 26, "y": 10, "t": "Add a texture", "d": "+ new texture opens qPainter; + import texture (PNG) brings a picture in"}, {"x": 50, "y": 24, "t": "The module's own (25)", "d": "Gem Hollow's textures, LAVA selected"}, {"x": 28, "y": 67, "t": "The card", "d": "size, where it is used, cut out, and the sheet line"}, {"x": 82, "y": 67, "t": "cut & speed…", "d": "how the picture is cut into frames"}, {"x": 48, "y": 74, "t": "duplicate and export", "d": "a copy under a new name; the PNG or the qPainter project out of the studio"}, {"x": 20, "y": 81, "t": "The app's (2)", "d": "textures from the engine build, filtered by name"}]'>
+  <figure class="shot" data-src="../assets/shots/studio-textures-page.png" data-alt="The studio's Textures page in Gem Hollow, with LAVA's card open" data-hotspots='[{"x": 26, "y": 10, "t": "Add a texture", "d": "+ new texture opens qPainter; + import texture (PNG) brings a picture in"}, {"x": 50, "y": 24, "t": "The module&#39;s own (25)", "d": "Gem Hollow&#39;s textures, LAVA selected"}, {"x": 28, "y": 67, "t": "The card", "d": "size, where it is used, cut out, and the sheet line"}, {"x": 82, "y": 67, "t": "cut & speed…", "d": "how the picture is cut into frames"}, {"x": 48, "y": 74, "t": "duplicate and export", "d": "a copy under a new name; the PNG or the qPainter project out of the studio"}, {"x": 20, "y": 81, "t": "The app&#39;s (2)", "d": "textures from the engine build, filtered by name"}]'>
     <figcaption>The Textures page in Gem Hollow: its 25 textures, then the app's two. LAVA's card is open: 256×1024, used once on <code>world</code>, animated as 4 stacked frames at 4 a second.</figcaption>
   </figure>
   <p>Open <b>🧱 Textures</b> from the rail or from Home. The page has two lists:</p>
@@ -192,6 +192,35 @@
     <li><p>Press <span class="ui">edit in qPainter</span>. Tick <span class="ui">Tiles</span> to see the bricks repeat, then use <kbd>R</kbd> (Replace color brush) to recolour the light stones a warmer grey.</p></li>
     <li><p>Press <span class="ui">‹ studio</span>. BRICKGREY is unchanged; BRICKGREY_2 is the new tile.</p></li>
     <li><p>On BRICKGREY_2's card, press <span class="ui">export PNG</span> and then <span class="ui">export project</span>. You now have <code>BRICKGREY_2.png</code> and <code>BRICKGREY_2.texproj.json</code> outside the studio.</p></li>
+  </ol>
+
+  <h2 id="cinderfall">In Cinderfall</h2>
+  <div class="callout soon"><p><b>New, and still being tested.</b> Cinderfall is a second example, a first-person shooter. It is not bundled with the studio yet: make its pack with <code>node tutorials/tools/pack-example.mjs cinderfall</code> and bring it in with Home → <span class="ui">⇩ import pack</span>. The <a href="../examples/02-cinderfall.html">Cinderfall tour</a> walks round it.</p></div>
+  <figure class="shot" data-src="../assets/shots/cinder-texture-brickred.png" data-alt="qPainter with Cinderfall's BRICKRED open, tiled: red bricks, one layer called Freedoom BRICK11, 26 colours" data-hotspots='[{"x":30.5,"y":5.8,"t":"Wrap and Tiles","d":"saved on, so it opens ready to paint across the edges"},{"x":41,"y":50,"t":"64 × 128","d":"the middle copy is the texture; the rest is the tiling"},{"x":86,"y":52,"t":"26 colours","d":"the palette is exactly the colours in the picture"},{"x":85,"y":77,"t":"Freedoom BRICK11","d":"one layer, named after the Freedoom texture it was built from"}]'>
+    <figcaption>Cinderfall's BRICKRED in qPainter, tiled: one layer, <b>Freedoom BRICK11</b>, 64 × 128 and 26 colours.</figcaption>
+  </figure>
+  <p>Cinderfall has 122 textures, every one a qPainter project in <code>sources/textures/</code>. Gem Hollow's were painted from Kenney tiles; Cinderfall's are almost all <b>Freedoom</b>'s, the free replacement for DOOM's art, so they have DOOM's sizes and DOOM's look:</p>
+  <table>
+    <thead><tr><th>Textures</th><th>Size</th><th>What they are</th></tr></thead>
+    <tbody>
+      <tr><td>BRICKRED, BRICKGREY, METALDARK, RUSTGREEN, STUCCO, PIPES, WOODWALL …</td><td>64 × 128, 128 × 128, a few 256 × 128</td><td>walls. Each was <b>composited</b> from Freedoom's patches the way Freedoom's <code>textures.cfg</code> lays them out, then flattened into one picture</td></tr>
+      <tr><td>FLOORMETAL, FLOORGRATE, FLOORTILE, ROCKFLOOR, CEILLIGHT, CEILGRID …</td><td>64 × 64</td><td>floors and ceilings: Freedoom's flats, as they are</td></tr>
+      <tr><td>DOORMETAL, BIGDOOR, DOORTRACK, JAMBRED, JAMBBLUE, JAMBYELLOW, EXITSIGN</td><td>8 × 128 to 128 × 128</td><td>doors, door tracks and the coloured jambs of keyed doors</td></tr>
+      <tr><td>LAVA, WATER, SLUDGE, BLOOD and their falls</td><td>64 × 64 to 128 × 112, 3 or 4 frames</td><td>animated liquids (see <a href="04-frames-and-skies.html#cinderfall">Animation and skies</a>)</td></tr>
+      <tr><td>SKYDUSK, SKYASH</td><td>256 × 128</td><td>DOOM-style sky strips</td></tr>
+      <tr><td>HUDCORE, HUDHEALTH, HUDKEYRED …; WPNREVOLVER, WPNSCATTER …</td><td>32 × 32; 64 × 32</td><td>icons for the HUD and the weapon wheel, made for the module (layer <b>Icon</b>)</td></tr>
+    </tbody>
+  </table>
+  <p>Each Freedoom texture has <b>one layer, named after the Freedoom texture it came from</b>: BRICKRED's layer is <b>Freedoom BRICK11</b>, FLOORMETAL's is <b>Freedoom FLOOR4_8</b>, LAVA's is <b>Freedoom LAVA1+LAVA2+LAVA3+LAVA4</b>, one frame each. The names were changed for the module, so the layer is where you find the original. Everything tiling is saved with <span class="ui">Wrap</span> on; the icons and skies have it off.</p>
+  <div class="callout warn"><p>These pictures are not CC0. Freedoom is under a BSD-style licence, which <code>LICENSE</code> in the module repeats. If you ship a game with them, ship that notice with it.</p></div>
+  <p>The module's panel skins come from the same place. <code>assets/ui/skins/</code> holds <code>panel.png</code> (96 × 96), <code>title.png</code>, <code>button.png</code> and <code>button_down.png</code> (64 × 24 each), cut from these textures and used by the module's <code>rust</code> panel style as 9-slice pictures. See <a href="../studio/08-look-and-feel.html">Sky, screens and weather</a>.</p>
+
+  <h2>Exercise: a sooty variant of a Cinderfall wall</h2>
+  <ol class="steps">
+    <li><p>Import Cinderfall and open <b>🧱 Textures</b>. Click <b>BRICKRED</b>, press <span class="ui">duplicate</span> and keep <code>BRICKRED_2</code>.</p></li>
+    <li><p>Press <span class="ui">edit in qPainter</span>. The layer reads <b>Freedoom BRICK11</b>; <span class="ui">Wrap</span> is already on. Tick <span class="ui">Tiles</span>.</p></li>
+    <li><p>Pick the darkest grey of the mortar as the primary colour. With <kbd>R</kbd> (Replace color brush), paint over the lower rows of bricks: they turn to soot, and the strokes run on across the edges into the tiled copies.</p></li>
+    <li><p>Press <span class="ui">‹ studio</span>. Put BRICKRED_2 on the lower wall of a room, BRICKRED above it.</p></li>
   </ol>
 
   <h2>Practise the keys</h2>

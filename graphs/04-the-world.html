@@ -211,6 +211,46 @@ camera_flythrough.done → fade black (0.8 s) ─done→ camera_follow → end_c
   <p>A <code>button</code> is one of the engine's (<code>jump</code>, <code>dash</code>, <code>grab</code>, <code>hover</code>, <code>fly</code>, <code>grapple</code>, <code>use</code>, <code>attack</code>, <code>alt_attack</code>, <code>crouch</code>) or one of the module's own keys, made in <b>Controls</b> (<a href="../studio/07-workshops.html#controls">Controls</a>). A module key can have a touch button too. A button nobody has is a problem: <em>no button or key called …</em></p>
   <p>The weapon nodes follow the same pattern: act (<a href="../reference/graph-nodes.html#give_weapon"><code>give_weapon</code></a>, <a href="../reference/graph-nodes.html#take_weapon"><code>take_weapon</code></a>, <a href="../reference/graph-nodes.html#select_weapon"><code>select_weapon</code></a>, <a href="../reference/graph-nodes.html#give_ammo"><code>give_ammo</code></a>, <a href="../reference/graph-nodes.html#set_ammo"><code>set_ammo</code></a>), read (<a href="../reference/graph-nodes.html#held_weapon"><code>held_weapon</code></a>, <a href="../reference/graph-nodes.html#has_weapon"><code>has_weapon</code></a>, <a href="../reference/graph-nodes.html#ammo_of"><code>ammo_of</code></a>) and start (<a href="../reference/graph-nodes.html#when_weapon_changed"><code>when_weapon_changed</code></a>, <a href="../reference/graph-nodes.html#when_fired"><code>when_fired</code></a>, <a href="../reference/graph-nodes.html#when_out_of_ammo"><code>when_out_of_ammo</code></a>). See the <a href="../weapons/04-ammo-and-pickups.html">Weapons</a> track.</p>
 
+  <h2 id="cinderfall">In Cinderfall: people to talk to, burning floors and a boss bar</h2>
+  <div class="callout soon"><p><b>Cinderfall is new and still being tested</b>, and not bundled with the studio yet. <a href="../examples/02-cinderfall.html">Cinderfall, the tour</a> says how to import it with <span class="ui">⇩ import pack</span>.</p></div>
+  <p>Cinderfall, an example first-person shooter, uses the same nodes as Gem Hollow for things Gem Hollow never does. Each district map has a <code>story</code> graph for them; open one with <b>◇ Graphs</b>, under the map's name.</p>
+  <h3>A conversation</h3>
+  <p>Cinderfall's people (Doc Imre and Pip in the hub, Old Mags at the railhead, Engineer Vos in the foundry, Rusk in the mine, Carrow in the old town) are props. You press use (<kbd>E</kbd>) on them, and the map's <code>story</code> graph answers with typed subtitles. Every conversation has this shape:</p>
+  <pre><code>when_prop_used (mags) → do set_animation (state 1, who: target)       she turns to talk
+  → branch (compare get_var talked_mags == 0)
+      true  → subtitle "So the Company sent a warden…" ─done→ subtitle ─done→ subtitle ─done→ subtitle
+              → do set_animation (state 0, target) → add_var talked_mags +1 → set_hud objective "Find a fuse…"
+      false → branch (compare talked_mags == 1) → …the next thing she has to say</code></pre>
+  <ul>
+    <li><b>The person, not the player.</b> <span class="ui">do set_animation</span> with <code>who</code> <code>target</code> plays a state on the prop that was used: state 1 while talking, state 0 after.</li>
+    <li><b>Typed, with a voice.</b> Each line is a <a href="../reference/graph-nodes.html#subtitle"><code>subtitle</code></a> with a <code>speaker</code> (<code>Old Mags</code>), <code>mode</code> <code>typed</code>, <code>speed</code> 38, <code>pack</code> 2 and a <code>sound</code> of its own per person (<code>voice.mags</code>, <code>voice.imre</code> …). Lines are chained by <b>done</b>, so each waits for the last to be read.</li>
+    <li><b>A counter decides what is said.</b> <code>talked_mags</code> goes up after each conversation, and a ladder of <a href="../reference/graph-nodes.html#compare"><code>compare</code></a> and <a href="../reference/graph-nodes.html#branch"><code>branch</code></a> nodes picks the next one. Pip, in the hub, has five: each new talk gives away one secret, and the last says <em>That's all I know. Honest.</em></li>
+    <li><b>The objective is a HUD value.</b> <code>set_hud</code> <code>objective</code> writes the line Cinderfall's HUD shows at the top right (<code>{hud.objective}</code>). Mags, the fuse, the winch and the seal each write the next goal.</li>
+    <li><b>Two start nodes on one prop.</b> The hub's <code>story</code> has two <a href="../reference/graph-nodes.html#when_prop_used"><code>when_prop_used</code></a> for <code>imre</code>. One talks; the other compares the hub's copy of <code>cores</code> with <code>healed</code>, and for every Core she has not seen yet runs <a href="../reference/graph-nodes.html#heal"><code>heal</code></a> 100 and sets <code>healed</code> to the count. Both run on the same press.</li>
+  </ul>
+  <p>Cinderfall talks in subtitles, not panels. Its three panels are the title screen (<code>title</code>, on the <code>menu</code> map), the end panel (<code>theend</code>, on <code>n_epilogue</code>, whose decor shows <code>{hud.cores} / 3</code>, <code>{hud.secrets} / {hud.secrets_total}</code> and <code>{hud.kills}</code>), and the weapon wheel <code>arms</code>, which the game's graph opens and answers (<a href="../weapons/01-first-weapon.html#cinderfall">Your first weapon</a>).</p>
+  <h3>A floor that burns until it doesn't</h3>
+  <p>The foundry's slag channel (tag 901) and pour pit (tag 904) are floors with a variable in front of them:</p>
+  <pre><code>when_floor_touched (tag 901, players) → branch (get_var drained)
+    false → damage 15 → push (up, strength 9) → play_sound player.pain
+when_floor_touched (tag 901, monsters) → kill
+
+on_call valves → branch (compare value &gt;= 3) → once → set_var drained 1
+  → set_floor_texture (tag 901, ASHFLOOR) → set_sector_light (tag 901, 120, over 3 s)
+  → set_floor_texture (tag 904, FLOORPLATE) → play_sound rumble → subtitle "The slag hisses and sets…"</code></pre>
+  <p>The burning is a graph, not a sector special, so turning it off is one variable. The new pictures and light are kept by the server like any look. How the three valves are counted across two maps is <a href="03-map-logic.html#valves">Recipe 7</a>.</p>
+  <h3>A boss bar</h3>
+  <p>The Smelter, Cinderfall's boss, waits in <code>w_heart_w</code>. Its <code>story</code> graph drives a bar on the HUD with three values:</p>
+  <pre><code>when_sector_entered (the arena island, players) → once → set_hud boss_on 1 → set_hud boss_hp_max 2400 → set_hud boss_hp 2400
+  → do music (cue boss, fade 800, at now) → subtitle "THE SMELTER" (2.5 s)
+when_hurt (monsters, kind smelter) → set_hud boss_hp (value ← health_of, entity ← when_hurt.entity)
+when_dies (monsters, kind smelter) → set_hud boss_on 0 → start_cinematic → do music victory → play_sound rumble
+  → camera_shake (0.5, 4 s) → subtitle ─done→ fade black (2 s) ─done→ change_map n_epilogue</code></pre>
+  <figure class="shot" data-src="../assets/shots/cinder-boss-bar.png" data-alt="Cinderfall's story graph on w_heart_w at 64%: the Smelter wakes, the boss bar, and the end, each in its own note; sethud10 is picked" data-hotspots='[{"x":20.6,"y":29.4,"t":"The arena","d":"when_sector_entered: the sector of the arena island, players only."},{"x":27.9,"y":29.4,"t":"once","d":"The bar and the roar come once."},{"x":36.5,"y":29.4,"t":"Bar on","d":"set_hud boss_on 1, then boss_hp_max and boss_hp 2400: the Smelter&#39;s hp."},{"x":63.9,"y":29.4,"t":"Boss music","d":"do music: cue boss, fade 800, at now."},{"x":72.6,"y":29.4,"t":"Its name","d":"subtitle THE SMELTER, 2.5 seconds."},{"x":20.6,"y":46.6,"t":"Every hit","d":"when_hurt, what monsters, kind smelter."},{"x":19.9,"y":59.4,"t":"How much is left","d":"health_of, its entity linked from when_hurt&#39;s entity."},{"x":29.2,"y":46.6,"t":"Bar follows","d":"set_hud boss_hp, its value linked from healthof9."},{"x":20.6,"y":76.7,"t":"It dies","d":"when_dies, what monsters, kind smelter."},{"x":29.2,"y":76.7,"t":"Bar off","d":"set_hud boss_on 0."},{"x":44.3,"y":76.7,"t":"Victory","d":"do music victory, then a rumble, a shake and a line."},{"x":29.2,"y":89.5,"t":"Morning after","d":"After a fade to black, change_map to n_epilogue."}]'>
+    <figcaption>The <code>story</code> graph on <code>w_heart_w</code>, at 64%, with <code>sethud10</code> picked.</figcaption>
+  </figure>
+  <p>In <b>▣ Screens</b>, the HUD's <code>bossname</code> text and <code>bossbar</code> bar are shown only while <code>hud.boss_on</code> is above 0, and the bar is bound to <code>hud.boss_hp</code>, with <code>hud.boss_hp_max</code> as its max. <a href="../reference/graph-nodes.html#when_hurt"><code>when_hurt</code></a> fires on every hit, so the bar follows each one. The Smelter's own brain is in <a href="../enemies/05-recipes.html#smelter">Monster recipes</a>.</p>
+
   <h2>Exercise: spikes that bite, and a story that types</h2>
   <ol class="steps">
     <li><p>Open Gem Hollow (<b>Home</b>, <span class="ui">examples</span>, <span class="ui">Gem Hollow</span>), then <b>◇ Graphs</b>, and tap <span class="ui">moving</span> under <span class="ui">world</span>.</p></li>

@@ -158,6 +158,28 @@
     <li><b>The bee and the snail</b> have the same <code>look</code>, <code>chase</code>, <code>attack</code>, <code>pain</code>, <code>gone</code> and <code>death</code>, and no <code>squash</code>: you cannot stomp them. The snail's <code>look</code> uses <code>anim</code> 1, so it crawls with its walk animation even before it has seen you.</li>
   </ul>
 
+  <h2 id="cinderfall">In Cinderfall: brains for a shooter</h2>
+  <p>Cinderfall, a new example first-person shooter that is <b>still being tested</b> (<a href="../examples/02-cinderfall.html">the tour</a> says how to import it), has five monsters and a boss. Their brains fight at range, which Gem Hollow's never do. Open <b>☠ Monsters</b> and pick each chip.</p>
+  <table>
+    <thead><tr><th>Monster</th><th>🧠 brain</th><th>States, and what is new in them</th></tr></thead>
+    <tbody>
+      <tr><td><code>husk</code></td><td>hp 40, sight 22, turn_speed 6</td><td><code>look</code> (wander) → <code>wake</code> → <code>chase</code> → <code>attack</code> within 1.7: a plain shambler with one claw (<code>melee</code> 9 at 12).</td></tr>
+      <tr><td><code>gunner</code></td><td>hp 30, sight 30, turn_speed 10</td><td><code>look</code> (stop) → <code>wake</code> → <code>move</code>, which <b>strafes</b>: <code>move</code> strafe, <code>face</code> target. From <code>move</code>: to <code>close</code> when <span class="ui">not</span> <code>target_within</code> 20; to <code>aim</code> when visible and ready. <code>close</code> chases until <code>target_within</code> 14, then back to <code>move</code>. <code>aim</code> (18 ticks) → <code>shoot</code>.</td></tr>
+      <tr><td><code>hound</code></td><td>hp 28, sight 26, turn_speed 14</td><td><code>chase</code> has two attacks: <code>leap</code> between 2.5 and 6 away, on a cooldown and a <code>chance</code> of 40; <code>bite</code> within 1.5. <code>leap</code> has <code>move</code> free, so the body flies where its <code>impulse</code> threw it.</td></tr>
+      <tr><td><code>spitter</code></td><td>hp 60, <code>flying</code>, <code>hover_z</code> 2.4</td><td><code>drift</code> (strafe) → <code>spit</code> when visible, ready and within 24. No corpse: <code>death</code> (16 ticks) → <code>gone</code>, which runs <code>despawn</code>.</td></tr>
+      <tr><td><code>brute</code></td><td>hp 300, mass 4, pain_chance 40</td><td><code>chase</code> chooses <code>slam</code> within 3.2 on its own cooldown var <code>slam</code>, else <code>aim</code> → <code>fire</code> on <code>ready</code>. Two cooldowns, so a slam does not delay a shot.</td></tr>
+      <tr><td><code>smelter</code></td><td>hp 2400, sight 60, mass 12</td><td>The boss: <code>roar</code> instead of <code>wake</code>, three attacks and a brood below half health. See <a href="05-recipes.html#smelter">Recipes</a>.</td></tr>
+    </tbody>
+  </table>
+  <p>What to notice:</p>
+  <ul>
+    <li><b>A wake state.</b> Every Cinderfall monster but the Smelter goes from <code>look</code> to <code>wake</code>, not straight to the chase: <code>move</code> stop, <code>face</code> target, a sight sound at 0, 6 to 20 ticks, <code>next</code> the chase. You hear it before it comes, and you get a beat to shoot first. Gem Hollow's monsters have no such pause.</li>
+    <li><b>Strafing, and a range band.</b> The gunner and the spitter use <code>move</code> strafe: they side-step while facing you. The gunner's two numbers, 20 to start closing in and 14 to stop, are a band on purpose: with one number it would flick between the two states at the edge every decision.</li>
+    <li><b>A chance on a transition.</b> The hound's leap card ends with <a href="../reference/monster-vocab.html#chance"><code>chance</code></a> 40, so in the band it does not always leap.</li>
+    <li><b>Wander, as in Gem Hollow.</b> The husk, the hound and the spitter <code>look</code> with <code>move</code> wander and have no <code>wander</code> var, so they walk the way they face until something stops them.</li>
+    <li><b>Waiting in place.</b> The gunner and the brute <code>look</code> with <code>move</code> stop: they stand guard where they were put until they see you.</li>
+  </ul>
+
   <h2>Exercise: a snail that really wanders</h2>
   <ol class="steps">
     <li><p>Open Gem Hollow, choose <b>☠ Monsters</b> and pick <code>snail</code>. On <span class="ui"># vars</span>, press <span class="ui">+ var</span> and name it <code>wander</code>.</p></li>

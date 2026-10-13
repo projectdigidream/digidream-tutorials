@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cinderfall, a tour · Digidream Studio tutorials</title>
+<meta name="description" content="A walk through Cinderfall, an example first-person shooter: districts joined without a load, a hub, game graphs, people to talk to, a boss, its own keys, fonts and panel skins.">
+<link rel="stylesheet" href="../assets/site.css">
+<link rel="stylesheet" href="../assets/skins/skins.css">
+<link rel="icon" type="image/png" href="../assets/logo.png">
+<script src="../assets/skins/skins.js"></script>
+<script src="../assets/skin.js"></script>
+<script defer src="../assets/nav.js"></script>
+<script defer src="../assets/shortcuts.js"></script>
+<script defer src="../assets/site.js"></script>
+</head>
+<body>
+<article>
+  <h1>Cinderfall, a tour</h1>
+  <p class="lede">Cinderfall is an example first-person shooter. A smelting colony has gone wrong. You walk through five districts and a hub without a load, in any order, talk to the people who are left, and fight a boss at the bottom. It was made in the studio alone: no Lua or JavaScript was written by hand, and all its logic is graphs with notes.</p>
+  <div class="goal">
+    <b>You'll learn</b><span>how to get Cinderfall into the studio, how its one world is laid out, how its graphs are split, how people talk and the boss fights, its keys, saving, fonts and panel skins, and what it shows that Gem Hollow does not</span>
+    <b>Time</b><span>30 minutes</span>
+    <b>Needs</b><span>a checkout of the repository with Node.js, and the studio open (see <a href="../studio/01-getting-started.html">Getting started</a>)</span>
+  </div>
+
+  <div class="callout soon"><p><b>New, and still being tested.</b> Cinderfall is not bundled with the studio yet, so it is not under <span class="ui">◆ examples</span> on Home. You bring it in as a pack (below). This page describes the files as they are now; details may still change.</p></div>
+
+  <h2>Get it</h2>
+  <ol class="steps">
+    <li><p>From the repository root, pack it:</p>
+<pre><code>node tutorials/tools/pack-example.mjs cinderfall</code></pre>
+      <p>It writes <code>cinderfall.zip</code> (about 5 MB) and says how many files went in.</p></li>
+    <li><p>In the studio, on Home, press <span class="ui">⇩ import pack</span> and choose <code>cinderfall.zip</code>. The studio opens it as a module of its own, <code>cinderfall</code>, beside your others.</p></li>
+    <li><p>Check Home: 12 maps, and <em>"✔ nothing wrong that the studio can see"</em>. Under <b>other modules</b> there is now a <code>cinderfall</code> chip, to come back to it later.</p></li>
+  </ol>
+  <figure class="shot" data-src="../assets/shots/cinder-home.png" data-alt="Home with Cinderfall imported: its about text and the first twelve map thumbnails">
+    <figcaption>Home with Cinderfall imported: 12 maps, from <code>menu</code> to <code>w_railhead</code>.</figcaption>
+  </figure>
+  <p>Importing a pack again over it <b>replaces</b> the module, after a snapshot of the old one (see <a href="../studio/10-play-and-export.html">Play and export</a>).</p>
+
+  <h2>One world: five districts and a hub</h2>
+  <figure class="shot" data-src="../assets/shots/cinder-metamap.png" data-alt="Cinderfall's metamap: nine w_ maps on a grid, drawn as one world"
+    data-hotspots='[{"x":28.5,"y":18.3,"t":"one shared world","d":"on: the maps are one world you walk across"},{"x":29.7,"y":24.4,"t":"cell width / depth","d":"112 × 112: each map sits in a 112-unit cell"},{"x":55.6,"y":30.4,"t":"kept around a player","d":"3 cells each way: all nine maps stay in memory"},{"x":45,"y":73,"t":"w_hub","d":"the town square, in the middle"},{"x":53.5,"y":73,"t":"w_railhead","d":"where the game starts, off the last train"},{"x":34,"y":59,"t":"w_heart_w","d":"the boss arena, under the seal"}]'>
+    <figcaption>🗺 Maps → <span class="ui">▦ metamap</span>: nine <code>w_</code> maps on a grid, drawn as one world.</figcaption>
+  </figure>
+  <p>Cinderfall has 12 maps. Nine of them, the ones named <code>w_…</code>, are the world. On <b>🗺 Maps</b>, the <span class="ui">▦ metamap</span> has <span class="ui">put the maps on a grid</span> and <span class="ui">one shared world (walk from map to map)</span> both on, with cells 112 × 112:</p>
+  <table>
+    <thead><tr><th>Row</th><th>Cells, west to east</th></tr></thead>
+    <tbody>
+      <tr><td>north (y 0)</td><td><code>w_mine_w</code>, <code>w_mine_e</code>, <code>w_foundry_w</code>, <code>w_foundry_e</code></td></tr>
+      <tr><td>middle (y 1)</td><td><code>w_oldtown</code>, <code>w_hub</code>, <code>w_railhead</code></td></tr>
+      <tr><td>south (y 2)</td><td><code>w_heart_w</code>, <code>w_heart_e</code></td></tr>
+    </tbody>
+  </table>
+  <p>So the five districts are the <b>Railhead</b>, <b>Old Town</b>, the <b>Mine</b>, the <b>Foundry</b> and the <b>Heart</b>. The Mine, the Foundry and the Heart are two maps each, an east and a west half. The <b>hub</b>, <code>w_hub</code>, is the town square in the middle. Its doors lead into every district, and the seal to the Heart is south of it. Each district has its own music track.</p>
+  <p>Where two maps share an open side along the same line, they join, and the player walks across with no load. In the map editor, the neighbours are drawn around the map you are editing, with their names on them.</p>
+  <figure class="shot" data-src="../assets/shots/cinder-hub.png" data-alt="The hub map in the map editor, with the Railhead drawn beside it">
+    <figcaption><code>w_hub</code> in the map editor: the square, its doors, the start spawn, and <code>w_railhead</code> drawn to the east.</figcaption>
+  </figure>
+  <p>The other three maps are not in the world:</p>
+  <ul>
+    <li><code>menu</code>, the title screen. Its camera tracks along a platform (path 1) while the <code>title</code> panel offers <b>NEW GAME</b> and <b>QUIT</b>.</li>
+    <li><code>n_arrival</code>, a short scene: the last train, a slow flight along the platform, and the warden's thoughts typed out. Then on to <code>w_railhead</code>.</li>
+    <li><code>n_epilogue</code>, the morning after the boss: Mags on the platform, then the <code>theend</code> panel with what you found.</li>
+  </ul>
+  <p>Taught in <a href="../studio/02-first-map.html">Your first map</a> (the metamap).</p>
+
+  <h2>Story graphs and world graphs</h2>
+  <figure class="shot" data-src="../assets/shots/cinder-graphs.png" data-alt="Cinderfall's Graphs section: the game's graphs arms and progress, then each map's graphs">
+    <figcaption>◇ Graphs: two graphs for the game, then each map's. A row lists the calls a graph makes and answers.</figcaption>
+  </figure>
+  <p>Cinderfall has no triggers: every map says <em>0 triggers</em>. Each world map has <b>two graphs</b>, split by job:</p>
+  <ul>
+    <li><b><code>world</code></b>: the plumbing every map needs. Doors that grind open when used, coloured doors that ask the game for a keycard, secrets, kills, dying near a seam, and asking the game how far the player has got (<code>sync</code>).</li>
+    <li><b><code>story</code></b>: what makes that map itself. The people, the Cores, the Foundry's valves and slag, the winch at the Railhead, the seal in the hub, the boss.</li>
+  </ul>
+  <p>Every group of nodes sits in a note that says what it does, in plain words. Open any graph and read the notes first.</p>
+  <p>Taught in <a href="../studio/06-graphs.html">Graphs</a> and the <a href="../graphs/01-thinking-in-graphs.html">Graph scripting</a> track.</p>
+
+  <h2>The game's graphs: arms and progress</h2>
+  <p>Two graphs belong to the whole game, not to a map: <code>arms</code> and <code>progress</code>. They run once for the game, and their variables follow the player from map to map.</p>
+  <ul>
+    <li><b><code>progress</code></b> (70 nodes) keeps what the player has found: the three keycards (<code>key_red</code>, <code>key_blue</code>, <code>key_yellow</code>), the Furnace <code>cores</code>, the Foundry <code>valves</code>, <code>secrets</code> and <code>kills</code>. Maps talk to it with <code>call</code> and <code>on_call</code>. A map reports <code>got_red</code>; a red door asks <code>try_red</code>, and the game answers that map <code>open_red</code> or <code>need_red</code>. The seal asks <code>try_seal</code>, and opens only with three Cores. It also handles dying near a seam: a death is told to the map of whatever killed you, so the game passes it back to the map you died in (<code>respawn</code>) and fades the screen.</li>
+    <li><b><code>arms</code></b> (81 nodes) is the weapon wheel and the quick swap, answering the module's own keys (below).</li>
+  </ul>
+  <figure class="shot" data-src="../assets/shots/cinder-graph-arms.png" data-alt="The arms graph: when the arms key is pressed, open or close the arms panel, and hide the weapons the player does not carry">
+    <figcaption>The game's <code>arms</code> graph: <code>when_button_pressed</code> on <code>arms (Tab)</code> opens the wheel, or shuts it if it is open.</figcaption>
+  </figure>
+  <p>Taught in <a href="../graphs/05-game-graph-and-calls.html">The game graph, calls and maps</a>.</p>
+
+  <h2>Talking to people</h2>
+  <figure class="shot" data-src="../assets/shots/cinder-talk.png" data-alt="The story graph of w_mine_e: Rusk is used, plays his talk animation, and says three typed lines the first time, one line after">
+    <figcaption><code>w_mine_e</code> · <code>story</code>: Rusk's conversation. Three lines the first time, one line after.</figcaption>
+  </figure>
+  <p>Six people are placed as props: <code>mags</code> at the Railhead, <code>imre</code> (Doc Imre) and <code>pip</code> in the hub, <code>rusk</code> in the Mine, <code>vos</code> in the Foundry and <code>carrow</code> in Old Town. A conversation is a chain in the map's <code>story</code> graph, with no panel:</p>
+  <ol>
+    <li><code>when_prop_used</code> on the person: the player pressed use (<kbd>E</kbd>) on them.</li>
+    <li>An <code>action</code> with <code>set_animation</code> state 1, so they talk.</li>
+    <li>A <code>branch</code> on a variable such as <code>talked_rusk</code>: the first time, or again?</li>
+    <li><code>subtitle</code> nodes, one per line, with <code>speaker</code> set (<em>Rusk</em>), <code>mode</code> <code>typed</code>, and a <code>sound</code> for the voice (<code>voice.rusk</code>).</li>
+    <li><code>set_animation</code> state 0 again, and <code>add_var</code> to remember the talk.</li>
+  </ol>
+  <p>Some people do more. Doc Imre heals you to full each time you bring a Core she has not seen. Pip gives one more hint each time you ask: four secrets, one per district, then <em>"That's all I know. Honest."</em> The subtitle line's look (font, colours, speaker colour) is set in <b>🎨 Style</b> under <span class="ui">💬 subtitles</span>.</p>
+  <p>The game's three panels are for the screens around the play: <code>title</code>, <code>theend</code>, and the <code>arms</code> wheel.</p>
+  <p>Taught in <a href="../graphs/04-the-world.html">Talking to the world</a> (typed subtitles).</p>
+
+  <h2>The boss</h2>
+  <p>The <b>Smelter</b> waits in <code>w_heart_w</code>, on an island in the lava. It is a monster like any other, in <b>☠ Monsters</b>, with 2400 health and nine states: <code>look</code>, <code>roar</code>, <code>chase</code>, <code>aim</code>, <code>volley</code>, <code>slam</code>, <code>brood</code>, <code>pain</code> and <code>death</code>.</p>
+  <ul>
+    <li><code>volley</code> fires <code>cinder_shell</code> missiles, one every 10 ticks, each aimed a little differently. <code>slam</code> hits everything within 5.5 and throws it back, when the target is close.</li>
+    <li>Below half health (<code>hp_below</code> 50), <code>brood</code> spawns three husks, at most nine, every 600 ticks.</li>
+  </ul>
+  <figure class="shot" data-src="../assets/shots/cinder-boss.png" data-alt="The story graph of w_heart_w, in three notes: the Smelter wakes, the boss bar, and the end">
+    <figcaption><code>w_heart_w</code> · <code>story</code>: the Smelter wakes, the boss bar, the end.</figcaption>
+  </figure>
+  <p>The fight's staging is the map's <code>story</code> graph. Stepping onto the island switches the music to the <code>boss</code> cue and turns on the HUD's boss bar (<code>set_hud</code> on <code>boss_on</code>, <code>boss_hp</code>, <code>boss_hp_max</code>). <code>when_hurt</code> sends its health to the bar each time it is hit. When it dies, the bar goes, the cavern shakes, the music turns to <code>victory</code>, and <code>change_map</code> goes to <code>n_epilogue</code>.</p>
+  <p>Taught in <a href="../enemies/05-recipes.html#boss">Recipes: five enemies</a> (a boss with two phases).</p>
+
+  <h2>First person, and keys of its own</h2>
+  <ul>
+    <li><b>🎮 Controls</b>: <span class="ui">how it is played</span> is <code>first person (fps)</code>, so the camera is at the eyes and aims where the player looks.</li>
+    <li>Two keys of its own: <code>arms</code> on <kbd>Tab</kbd> (touch button <code>ARMS</code>) opens the weapon wheel, and <code>swap</code> on <kbd>X</kbd> (touch button <code>SWAP</code>) goes back to the weapon held before. The <code>arms</code> game graph answers both.</li>
+    <li><b>🧍 Player</b>: drawn by the <code>warden</code> prop. Its moves: <code>move_speed</code> 10, <code>jump_impulse</code> 7, one jump and no dash. It starts with the <code>wrench</code>.</li>
+    <li><b>🔫 Weapons</b>: <em>Wrench</em>, <em>Revolver</em>, <em>Scattergun</em>, <em>Riveter</em> and <em>Flare Launcher</em>, with four ammunition pools (bullets, shells, rivets, flares). Each has a first-person sprite (<code>VM_WRENCH</code>, <code>VM_REVOLVER</code>…) with an animation for each phase: the revolver cocks and reloads, the scattergun pumps, the riveter spins up and down.</li>
+  </ul>
+  <p>Taught in <a href="../studio/07-workshops.html#controls">Workshops: Controls</a> and <a href="../weapons/02-phases.html#first-person">Phases in first person</a>.</p>
+
+  <h2>Saving</h2>
+  <p>In <b>⚙ Settings</b>, <span class="ui">levels keep their state</span> is on (<code>persist levels</code> in <code>module.txt</code>). A district that unloads keeps what happened in it, such as doors opened and things taken, and gets it back when it loads again. <span class="ui">save and load games</span> and <span class="ui">survive a server restart</span> are off. What the player has found across the whole game lives in the <code>progress</code> graph's variables.</p>
+  <p>Taught in <a href="../studio/10-play-and-export.html">Play and export</a> and <a href="../graphs/02-variables-and-numbers.html">Variables, numbers and saving</a>.</p>
+
+  <h2>Fonts and panel skins</h2>
+  <figure class="shot" data-src="../assets/shots/cinder-panels.png" data-alt="The title panel in the panel designer, in the rust style: a wooden frame, a title bar and two metal buttons in Bebas Neue">
+    <figcaption>The <code>title</code> panel in the <code>rust</code> style: 9-slice pictures for the box, the title bar and the buttons, in Bebas Neue.</figcaption>
+  </figure>
+  <ul>
+    <li><b>Two fonts</b> in <code>assets/ui/fonts/</code>: <em>Special Elite</em> (typewriter, for the whole UI, subtitles and the objective) and <em>Bebas Neue</em> (for the HUD numbers, panels and buttons).</li>
+    <li><b>Two panel styles</b> in <b>🎨 Style</b>. <code>rust</code> uses four pictures from <code>assets/ui/skins/</code>, cut from Freedoom textures: <code>panel.png</code>, <code>title.png</code>, <code>button.png</code> and <code>button_down.png</code> (for a pressed button). <code>wheel</code> is a round, see-through box for the weapon wheel.</li>
+    <li><b>The HUD</b>: a crosshair, health, the three keycards once found, the weapon and its ammunition, the Cores (<code>{hud.cores}/3</code>), the objective, and the boss bar, shown only during the fight.</li>
+    <li><b>The sky</b>: a strip, <code>SKYDUSK</code>, four times round the horizon.</li>
+  </ul>
+  <p>Taught in <a href="../studio/08-look-and-feel.html">Sky, screens and weather</a>.</p>
+
+  <h2>Assets</h2>
+  <table>
+    <thead><tr><th>Section</th><th>Count</th><th>Made with</th></tr></thead>
+    <tbody>
+      <tr><td>🎞 Sprites</td><td>57</td><td>ThreeSprite: monsters, people, weapons in hand and on the floor, props</td></tr>
+      <tr><td>🧱 Textures</td><td>122</td><td>qPainter projects, from Freedoom's walls, flats and skies, renamed</td></tr>
+      <tr><td>♪ Music</td><td>9 tracks</td><td>Freedoom's MIDI, imported into DigidreamSynth: <code>title</code>, one per district, <code>boss</code> and <code>victory</code></td></tr>
+      <tr><td>🔊 Sounds</td><td>71</td><td>one DigidreamSound pack: weapons, monsters, doors, pickups, voices (<code>voice.mags</code>…)</td></tr>
+      <tr><td>☠ Monsters</td><td>6</td><td><code>husk</code>, <code>gunner</code>, <code>hound</code>, <code>spitter</code>, <code>brute</code>, <code>smelter</code></td></tr>
+      <tr><td>📦 Props</td><td>54</td><td>the people, pickups, keycards, Cores, valves, scenery</td></tr>
+    </tbody>
+  </table>
+  <p>The textures and music are Freedoom's, under its BSD licence; the fonts are under the Apache and OFL licences. The module's <code>LICENSE</code> lists each one. Everything else was made for the module and is CC0.</p>
+
+  <h2>What it shows that Gem Hollow does not</h2>
+  <table>
+    <thead><tr><th></th><th>Gem Hollow</th><th>Cinderfall</th></tr></thead>
+    <tbody>
+      <tr><td>Controls</td><td>platformer, third person</td><td>first person, two keys of its own, view models per phase</td></tr>
+      <tr><td>Layout</td><td>one big level</td><td>nine maps on a metamap, one shared world, no loads</td></tr>
+      <tr><td>Graphs</td><td>map graphs only</td><td>two game graphs, <code>call</code> and <code>on_call</code> between maps and the game, <code>story</code> and <code>world</code> split</td></tr>
+      <tr><td>People</td><td>none</td><td>six, with typed, voiced conversations</td></tr>
+      <tr><td>Boss</td><td>none</td><td>the Smelter, with a boss bar and a phase below half health</td></tr>
+      <tr><td>Saving</td><td>none</td><td><code>persist levels</code></td></tr>
+      <tr><td>Look</td><td>the engine's font</td><td>two fonts, skinned panels, a styled subtitle line</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Exercise: follow a keycard</h2>
+  <ol class="steps">
+    <li><p>Open <b>🗺 Maps</b> and scroll to <span class="ui">▦ metamap</span>. Find <code>w_oldtown</code>, west of the hub.</p></li>
+    <li><p>Open <b>◇ Graphs</b> and tap <code>world</code> under <code>w_oldtown</code>. Find the note <em>The red keycard</em>: picking it up calls <code>got_red</code>.</p></li>
+    <li><p>Go back and tap <code>progress</code> under <span class="ui">the game's graphs</span>. Find the <code>on_call</code> for <code>got_red</code>: it sets <code>key_red</code> and shows it on the HUD.</p></li>
+    <li><p>Back in the list, open <code>world</code> under <code>w_foundry_w</code>. Find <em>The red door</em>: using it calls <code>try_red</code>, and <code>on_call</code> nodes for <code>open_red</code> and <code>need_red</code> answer.</p></li>
+    <li><p>Open <code>story</code> under <code>w_mine_e</code>. Tap the first <code>subtitle</code> and read its <code>speaker</code>, <code>mode</code> and <code>sound</code> in the side panel.</p></li>
+    <li><p>Open <b>🎮 Controls</b> and read the two keys. Then open <b>▢ Panels</b> and pick <code>arms</code> to see the wheel the <code>arms</code> key opens.</p></li>
+  </ol>
+
+  <div class="quiz" data-answer="1">
+    <p class="q">You pick up the red keycard in Old Town, then use the red door in the Foundry. How does the Foundry know you have the card?</p>
+    <ul>
+      <li>Both maps read the same variable in the Foundry's graph</li>
+      <li>The door asks the game's <code>progress</code> graph (<code>try_red</code>), which kept the card and answers <code>open_red</code></li>
+      <li>The keycard prop opens every red door by itself</li>
+    </ul>
+    <p class="why">A map's variables stay in that map. The game graph runs once for the whole game, so it is where the cards are kept, and maps ask it with calls.</p>
+  </div>
+  <div class="quiz" data-answer="2">
+    <p class="q">Where is Rusk's conversation written?</p>
+    <ul>
+      <li>In a panel with a button per line</li>
+      <li>In a Lua script</li>
+      <li>In <code>w_mine_e</code>'s <code>story</code> graph, as typed <code>subtitle</code> nodes</li>
+    </ul>
+    <p class="why">People talk with <code>subtitle</code> nodes, after <code>when_prop_used</code> on them. Cinderfall has no hand-written scripts.</p>
+  </div>
+  <div class="quiz" data-answer="0">
+    <p class="q">Why does the player walk from the hub into the Railhead without a load?</p>
+    <ul>
+      <li>Both are cells of a metamap with <span class="ui">one shared world</span> on, and they share an open side</li>
+      <li>The hub's graph runs <code>change_map</code> at the edge</li>
+      <li>They are one map</li>
+    </ul>
+    <p class="why">With one shared world, maps in neighbouring cells join where both have an open side on the same line. <code>change_map</code> is only used for the title, the two scenes and the epilogue.</p>
+  </div>
+</article>
+</body>
+</html>

@@ -138,6 +138,19 @@
     </tbody>
   </table>
 
+  <h3 id="cinderfall">In Cinderfall: flags that cross districts</h3>
+  <p>Cinderfall, an example first-person shooter that is <b>new and still being tested</b> (not bundled with the studio yet; <a href="../examples/02-cinderfall.html">the tour</a> says how to import it), is nine maps joined into one world. You walk from the mine into the foundry without a load, and a level you walked away from may unload behind you. It splits its state three ways:</p>
+  <table>
+    <thead><tr><th>What</th><th>Where it lives</th><th>Why there</th></tr></thead>
+    <tbody>
+      <tr><td>Keycards, Furnace Cores, coolant valves, secrets, kills</td><td>the game graph <code>progress</code>: <code>key_red</code>, <code>key_blue</code>, <code>key_yellow</code>, <code>cores</code>, <code>valves</code>, <code>secrets</code>, <code>kills</code></td><td>the red card lies in the old town and opens a door in the foundry, so the flag must outlive every level</td></tr>
+      <tr><td>Who you have talked to, and how often</td><td>each map's <code>story</code> graph: <code>talked_pip</code>, <code>talked_mags</code>, <code>talked_vos</code> …</td><td>only that map's person needs it</td></tr>
+      <tr><td>Whether the foundry's slag has drained</td><td>both foundry maps' <code>story</code> graphs: <code>drained</code></td><td>that map's floors read it, every time somebody steps on them</td></tr>
+      <tr><td>A copy of the Core count</td><td>each map's <code>world</code> graph and the hub's <code>story</code>: <code>cores</code></td><td>a map's graph cannot read a game variable, so it asks for a copy (<a href="05-game-graph-and-calls.html#cinderfall">sync</a>)</td></tr>
+    </tbody>
+  </table>
+  <p>Of the three switches, Cinderfall turns on only <span class="ui">levels keep their state</span> (<code>persist levels</code> in its <code>module.txt</code>). So a level that unloads and loads again keeps <code>drained</code>, <code>talked_pip</code>, its passed <code>once</code> nodes (the seal's cutscene, the hounds let into the square) and its looks, such as the drained channel's <code>ASHFLOOR</code>. The game graph's flags are kept from level to level anyway. But there are no save slots and nothing written to disk: a new game, or closing it, starts Cinderfall over.</p>
+
   <h2>Saved on disk, on purpose</h2>
   <p>A save game is the world at one moment, and a new game forgets it. A high score, an unlocked level or a setting should outlive both. Three nodes, in the menu's <span class="ui">other</span> group, write variables to a <b>store</b> on the disk:</p>
   <ul>

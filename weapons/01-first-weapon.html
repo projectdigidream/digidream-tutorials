@@ -152,7 +152,48 @@
     <li><b>Running dry.</b> A phase that runs <a href="../reference/weapon-vocab.html#switch_if_empty"><code>switch_if_empty</code></a> swaps to the highest-order weapon that still has ammunition. A weapon only does this if you build it in, as the next lesson shows.</li>
     <li><b>A graph.</b> The graph nodes <a href="../reference/graph-nodes.html#select_weapon"><code>select_weapon</code></a>, <a href="../reference/graph-nodes.html#give_weapon"><code>give_weapon</code></a> (with <code>select</code>) and <a href="../reference/graph-nodes.html#take_weapon"><code>take_weapon</code></a>. See <a href="04-ammo-and-pickups.html#graphs">Ammo and pickups</a>.</li>
   </ul>
-  <div class="callout soon"><p><b>No weapon panel or wheel from the studio yet.</b> The weapons runtime has an opt-in panel listing what a player holds (<code>weapons.load{ panel = true }</code>), but the studio's arsenal doesn't write that switch. In a studio-made module, players switch with the number keys, pickups and graphs.</p></div>
+  <div class="callout soon"><p><b>No weapon panel or wheel from the studio yet.</b> The weapons runtime has an opt-in panel listing what a player holds (<code>weapons.load{ panel = true }</code>), but the studio's arsenal doesn't write that switch. In a studio-made module, players switch with the number keys, pickups and graphs. A graph and a panel of your own can make a wheel: <a href="#cinderfall">Cinderfall</a> does.</p></div>
+
+  <h2 id="cinderfall">In Cinderfall: five weapons, a wheel and a swap</h2>
+  <div class="callout soon"><p><b>Cinderfall is new and still being tested</b>, and not bundled with the studio yet. Run <code>node tutorials/tools/pack-example.mjs cinderfall</code>, then press <span class="ui">⇩ import pack</span> on <b>Home</b> and choose the zip. <a href="../examples/02-cinderfall.html">Cinderfall, the tour</a> shows the whole game.</p></div>
+  <p>Cinderfall is an example first-person shooter (<code>controls fps</code>), so it is the arsenal to read after Gem Hollow's. Open <b>🔫 Weapons</b>: five chips, in this order.</p>
+  <table>
+    <thead><tr><th>Weapon</th><th><span class="ui">order</span></th><th><span class="ui">ammo?</span></th><th>What its pickup grants</th><th>How you get it</th></tr></thead>
+    <tbody>
+      <tr><td><code>wrench</code> (Wrench)</td><td>1</td><td>none: it never runs out</td><td></td><td>the kit: every game starts with it, and nothing else</td></tr>
+      <tr><td><code>revolver</code> (Revolver)</td><td>2</td><td><code>bullets</code></td><td>18 bullets</td><td><code>revolver_pickup</code>, in the railhead's ticket office</td></tr>
+      <tr><td><code>scatter</code> (Scattergun)</td><td>3</td><td><code>shells</code></td><td>8 shells</td><td><code>scatter_pickup</code>, in the hub</td></tr>
+      <tr><td><code>riveter</code> (Riveter)</td><td>4</td><td><code>rivets</code></td><td>60 rivets</td><td><code>riveter_pickup</code>, in the west foundry</td></tr>
+      <tr><td><code>flare</code> (Flare Launcher)</td><td>5</td><td><code>flares</code></td><td>4 flares</td><td><code>flare_pickup</code>, in the west mine (<code>w_mine_w</code>), whose armoury, Engineer Vos says, the blue keycard opens</td></tr>
+    </tbody>
+  </table>
+  <p>Every pool starts at 0, so the wrench is the only thing that works until you find a gun. How each gun fires is in <a href="02-phases.html#cinderfall">The phase machine</a>; its pools and pickups in <a href="04-ammo-and-pickups.html#cinderfall">Ammo and pickups</a>.</p>
+  <h3>The wheel on Tab</h3>
+  <p>The number keys work as in any module. Cinderfall adds two keys of its own in <b>🎮 Controls</b>: <code>arms</code> on <kbd>Tab</kbd> (touch button <code>ARMS</code>) and <code>swap</code> on <kbd>X</kbd> (touch button <code>SWAP</code>). Neither does anything by itself: a game graph, <code>arms</code>, answers both. The wheel is a panel, also called <code>arms</code>, made in <b>▢ Panels</b>: five buttons in a ring (<code>wrench</code>, <code>revolver</code>, <code>scatter</code>, <code>riveter</code>, <code>flare</code>), each with an icon beside it as decor. It is <b>not modal</b>, so you keep moving and aiming while it is up.</p>
+  <pre><code>when_button_pressed (arms) → branch (panel_is_open arms)
+    true  → close_panel arms
+    false → open_panel arms → play_sound ui.open
+            → branch (has_weapon wrench)   true: show_element wrench, icon_wrench   false: hide_element both
+            → branch (has_weapon revolver) …  and so on for all five
+
+when_panel_used (arms › revolver) → select_weapon revolver → close_panel arms → play_sound ui.select</code></pre>
+  <p>So the wheel shows only what you carry, checked each time it opens with <a href="../reference/graph-nodes.html#has_weapon"><code>has_weapon</code></a>. The panel was opened by a game graph, so it is answered by the game's graphs and can stay open as you cross into the next map.</p>
+  <h3>Quick swap on X</h3>
+  <figure class="shot" data-src="../assets/shots/cinder-arms.png" data-alt="The bottom of Cinderfall's arms game graph at 51%: the last two wheel buttons, then the quick swap note with when_weapon_changed and two set_var nodes, and a row of five compare and branch pairs ending in select_weapon" data-hotspots='[{"x":3.8,"y":24.5,"t":"A wheel button","d":"when_panel_used, panel arms, widget flare."},{"x":10.8,"y":24.5,"t":"Into your hands","d":"select_weapon flare."},{"x":17.6,"y":24.5,"t":"Shut the wheel","d":"close_panel arms, then a ui.select sound."},{"x":20.1,"y":35.2,"t":"Quick swap","d":"The note says how the swap works."},{"x":3.9,"y":38.3,"t":"Any change","d":"when_weapon_changed: chosen, picked up or run dry. Its weapon output is the new one."},{"x":10.3,"y":38.3,"t":"Remember the last","d":"set_var previous, from get_var current: before current changes."},{"x":17.4,"y":38.3,"t":"Remember this one","d":"set_var current, linked from when_weapon_changed&#39;s weapon."},{"x":3.9,"y":48.7,"t":"X pressed","d":"when_button_pressed, button swap (X)."},{"x":3.5,"y":58.9,"t":"Was it the wrench?","d":"compare previous == wrench, into branch64."},{"x":17.9,"y":48.7,"t":"Then take it","d":"select_weapon wrench."},{"x":24.4,"y":48.7,"t":"If not, ask again","d":"Each false leads to the next weapon&#39;s compare and branch."},{"x":73.4,"y":48.7,"t":"The last one","d":"select_weapon flare, at the end of the ladder."},{"x":85.5,"y":17.2,"t":"The picked node","d":"when_weapon_changed, explained in the side panel."}]'>
+    <figcaption>The quick swap at the bottom of Cinderfall's <code>arms</code> graph, at 51%, with <code>whenweapon57</code> picked.</figcaption>
+  </figure>
+  <p>The graph keeps two variables, <code>current</code> and <code>previous</code>, both starting at <code>wrench</code>.</p>
+  <pre><code>when_weapon_changed → set_var previous (← get_var current) → set_var current (← when_weapon_changed.weapon)
+
+when_button_pressed (swap) → branch (compare previous == wrench)   true: select_weapon wrench
+                               false → branch (previous == revolver) true: select_weapon revolver
+                                 false → … scatter, riveter, flare</code></pre>
+  <ul>
+    <li><b>The order of the two set_var nodes matters.</b> <code>previous</code> is written first, from the old <code>current</code>; then <code>current</code> takes the new weapon.</li>
+    <li><b>One branch per weapon</b>, because <a href="../reference/graph-nodes.html#select_weapon"><code>select_weapon</code></a> takes its weapon as a typed name. A sixth weapon needs a sixth pair.</li>
+    <li><b>Swapping is a change too.</b> The swap itself fires <code>when_weapon_changed</code>, so pressing <kbd>X</kbd> again goes back: two weapons, one key.</li>
+    <li><b>Per game, not per player.</b> <code>current</code> and <code>previous</code> are the game graph's own, shared by everyone in it. In single player that is the same thing.</li>
+  </ul>
 
   <h2>Seeing it: first person and the HUD</h2>
   <p>How the module is played is chosen in <b>🎮 Controls</b>, under <span class="ui">how it is played</span>: <code>platformer — third person</code> or <code>first person (fps)</code> (see <a href="../studio/07-workshops.html#controls">Controls</a>). In first person, the gun is drawn over the view, and it kicks on the tick your client predicts the shot, not a round trip later.</p>

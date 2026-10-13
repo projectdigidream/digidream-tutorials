@@ -138,6 +138,20 @@
   <p>Gem Hollow's textures each carry their own palette, the colours of that picture and no more: 3 for PLANKS, 5 for GRASS, 16 for CRATE and the HUD icons, 33 for LAVA and WATER, 60 for BRICKGREY and BRICKBROWN. Every one has a single layer, <b>Kenney tile</b> (<b>Kenney icon</b> on the HUD icons, <b>Sky</b> on SKYHILLS), so a new detail layer on top is yours to add or hide.</p>
   <p>Open BRICKGREY and the line under the palette reads <em>60 colors used · 60 in palette</em>: nothing off-palette. SKYHILLS is the exception. Its palette holds 16 colours but its soft clouds use 1617, so it reads <em>1615 off-palette</em>. A sky is a smooth picture, not pixel art, so that is expected; don't turn on <span class="ui">Lock</span> there.</p>
 
+  <h2 id="cinderfall">In Cinderfall</h2>
+  <div class="callout soon"><p><b>New, and still being tested.</b> Cinderfall, the first-person shooter example, is not bundled yet: see <a href="01-first-texture.html#cinderfall">Make your first texture</a> for how to import it, and the <a href="../examples/02-cinderfall.html">Cinderfall tour</a>.</p></div>
+  <p>Cinderfall's 122 textures also carry their own palettes, made from their own pixels: from 3 colours (HUDCROSS, HUDSECRET) through 16 for many, such as TECHTAN, MACHINE2 and PIPEWALL, 26 for BRICKRED and 38 for ROCKBROWN, up to 59 for PIPES and RUSTPANEL. Each line under the palette reads <em>N colors used · N in palette</em>, the sky SKYDUSK included (<em>21 colors used · 21 in palette</em>): unlike Gem Hollow's soft sky, it is pixel art like everything else.</p>
+  <p>The Freedoom pictures were drawn for DOOM's one 256-colour palette, but after compositing and renaming they do not share one here: together the 108 Freedoom textures use 427 different colours. That leaves you free to pull any of them towards a look of your own, which is what the exercise below does.</p>
+  <p>Every texture has one layer: <b>Freedoom <i>NAME</i></b> for the Freedoom ones (the original's name), <b>Sky</b> for the two skies, <b>Icon</b> for the HUD and weapon icons. Nothing is <span class="ui">Lock</span>ed.</p>
+
+  <h3>Exercise: a hot rock wall in lava's colours</h3>
+  <ol class="steps">
+    <li><p>Import Cinderfall and open <b>🧱 Textures</b>. Click <b>LAVA</b> and press <span class="ui">export project</span>: you get <code>LAVA.texproj.json</code>, 19 colours.</p></li>
+    <li><p>Click <b>STONEDARK</b>, press <span class="ui">duplicate</span> and keep <code>STONEDARK_2</code>. Press <span class="ui">edit in qPainter</span>.</p></li>
+    <li><p>Palette <span class="ui">Import…</span> → <span class="ui">Replace palette…</span>, and pick <code>LAVA.texproj.json</code>. Then <span class="ui">Remap…</span> → <span class="ui">ordered dither</span>. The stone is now drawn in lava's reds and yellows, and still tiles.</p></li>
+    <li><p>Turn on <span class="ui">Lock</span> and add a few bright cracks with <kbd>P</kbd>: every stroke stays in the lava palette. Press <span class="ui">‹ studio</span> and use it round the boss arena's lava.</p></li>
+  </ol>
+
   <h2>Exercise: snowy grass from two Gem Hollow textures</h2>
   <ol class="steps">
     <li><p>On <b>Home</b>, under <b>Examples</b>, press <span class="ui">📂 Gem Hollow</span> and open <b>🧱 Textures</b>.</p></li>

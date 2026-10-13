@@ -219,6 +219,20 @@
     <li><p>Press <kbd>V</kbd> to see the zones in the game view, and <kbd>Q</kbd> / <kbd>E</kbd> to turn round them.</p></li>
   </ol>
 
+  <h2 id="cinderfall">In Cinderfall: districts joined without a load</h2>
+  <div class="callout soon"><p><b>Cinderfall is new and still being tested</b>, and not bundled yet. To get it, see <a href="01-getting-started.html#cinderfall">Getting started</a>.</p></div>
+  <figure class="shot" data-src="../assets/shots/cinder-metamap.png" data-alt="Cinderfall's metamap: nine maps on a grid, drawn as one world">
+    <figcaption>Cinderfall's <span class="ui">▦ metamap</span>: nine maps, one world.</figcaption>
+  </figure>
+  <p>Gem Hollow puts its whole level in one map. Cinderfall splits its world into nine maps, the ones named <code>w_…</code>, and joins them with the metamap:</p>
+  <ul>
+    <li><span class="ui">put the maps on a grid</span> and <span class="ui">one shared world (walk from map to map)</span> are both on. The cells are 112 × 112, and <span class="ui">kept around a player</span> is 3 cells each way, so every district stays in memory.</li>
+    <li>The hub, <code>w_hub</code>, is in the middle cell. Old Town is west of it, the Railhead east, the Mine and the Foundry north (two maps each), and the Heart south (two maps).</li>
+    <li>Neighbouring maps join where both have an open side on the same line. The player walks across, with no load and no <code>change_map</code>.</li>
+    <li>Open <code>w_hub</code> in the map editor: the neighbours are drawn round it, with their names on them, such as <code>w_railhead</code> to the east.</li>
+  </ul>
+  <p>Its other three maps, <code>menu</code>, <code>n_arrival</code> and <code>n_epilogue</code>, are not on the grid. Graphs move the player into and out of them with <code>change_map</code>.</p>
+
   <h2>Exercise: two joined rooms</h2>
   <ol class="steps">
     <li><p>In your copy of Gem Hollow (or any module), on <b>🗺 Maps</b>, press <span class="ui">+ new map</span> and call it <code>first</code>. The map editor opens with one room.</p></li>

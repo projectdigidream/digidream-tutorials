@@ -96,6 +96,39 @@
     <li><p>In the studio, open a monster's body card and choose your sheet under <b>sprite sheet</b>. Its <b>sprite height</b> reads 1.5, and the preview stands it against a ruler.</p></li>
   </ol>
 
+  <h2 id="cinderfall">In Cinderfall</h2>
+  <div class="callout soon"><p><b>New, and still being tested.</b> Cinderfall, the first-person shooter example, is not bundled yet: see <a href="01-first-sprite.html#cinderfall">Make your first sprite</a> for how to import it, and the <a href="../examples/02-cinderfall.html">Cinderfall tour</a>.</p></div>
+  <figure class="shot" data-src="../assets/shots/cinder-sprite-smelter-3d.png" data-alt="ThreeSprite's 3D tab with Cinderfall's boss SMELTER: a hulking furnace-chested figure with a cannon arm, built from solids, and its 9-colour palette" data-hotspots='[{"x":5,"y":6,"t":"176px · 8 views","d":"the biggest canvas in the module"},{"x":60,"y":6,"t":"3D","d":"walk round the model to catch a view that jumps"},{"x":37,"y":60,"t":"SMELTER","d":"BRUTE&#39;s 13-bone rig, scaled up; the cannon on handR"},{"x":80,"y":11,"t":"SMELTER colours","d":"9 swatches"},{"x":40,"y":98,"t":"idle · Spread 8","d":"play an animation, or lay all eight views out round it"}]'>
+    <figcaption>Cinderfall's boss, <code>SMELTER</code>, in the 3D tab: 11 solids parts on a 13-bone rig, 9 colours.</figcaption>
+  </figure>
+  <h3>One small palette each</h3>
+  <p>Each of the 57 sprites carries a single palette named after it: <b>GUNNER colours</b> has 16 swatches, HUSK's 19, MAGS's 12, SMELTER's 9 and SPITTER's 6. Every part is made of solids, so the palette is the set of colours the shapes are painted with: rust, soot, khaki, a little brass. A few colours per sprite is what makes them read as one dirty, worn town.</p>
+  <h3>How tall they stand</h3>
+  <table>
+    <thead><tr><th>Sprite</th><th>Canvas</th><th><span class="ui">World height</span></th></tr></thead>
+    <tbody>
+      <tr><td><code>PK_FLARE</code> … <code>MEDKIT</code> (pickups)</td><td>40–48 px</td><td>1.15 – 2.06</td></tr>
+      <tr><td><code>GUNNER</code>, <code>HUSK</code>, <code>MAGS</code>, <code>WARDEN</code></td><td>96 px</td><td>2.45 – 2.72</td></tr>
+      <tr><td><code>HOUND</code></td><td>96 px</td><td>3.46</td></tr>
+      <tr><td><code>BRUTE</code></td><td>128 px</td><td>4.78</td></tr>
+      <tr><td><code>SMELTER</code>, the boss</td><td>176 px</td><td>9.21</td></tr>
+      <tr><td><code>VM_REVOLVER</code> and the other first-person weapons</td><td>128 px, 1 view</td><td>1.42 – 1.73 (not used in first person: the screen placement is)</td></tr>
+    </tbody>
+  </table>
+  <p>The world height sizes the picture only. What a bullet hits is the prop's body in <code>assets/props.txt</code>, so SMELTER's is <code>radius 1.4 height 4.4</code>.</p>
+  <h3>Weapons in first person</h3>
+  <p>The five <code>VM_</code> sprites are baked like any other sheet. The Weapons workshop's <span class="ui">first person</span> tab then picks, for each weapon, the sheet, the <span class="ui">at rest (fallback)</span> and <span class="ui">firing (fallback)</span> animations, and one animation per state its phases set. For the revolver it saved:</p>
+<pre><code>sheet    VM_REVOLVER   at rest: ready   firing: fire   scale 1.4   canvas at 96, 40
+state 13 → fire     (set by the fire phase)
+state 14 → cock     (set by the cock phase)
+state 15 → reload   (set by the reload phase)</code></pre>
+  <p>Every weapon uses scale 1.4 at x 96, y 40, so all five sit in the same place on the 320 × 200 screen. The riveter's <code>fire</code> state is set to loop, for as long as the trigger is held. See <a href="../weapons/02-phases.html#first-person">Phases in first person</a>.</p>
+  <ol class="steps">
+    <li><p>Open Cinderfall's <code>SMELTER</code> in ThreeSprite, open the 3D tab and drag round it. Then open Project settings: <span class="ui">World height</span> reads 9.21.</p></li>
+    <li><p>Set it to <code>7</code>, press <span class="ui">Apply</span> and <span class="ui">‹ studio</span>. Play to the boss arena in <code>w_heart_w</code>: the boss is smaller, but it fills as much floor as before, since its body did not change.</p></li>
+    <li><p>Undo it on the studio's page with <span class="ui">↶ Undo</span>.</p></li>
+  </ol>
+
   <h2 id="export-standalone">The Export tab (standalone)</h2>
   <p>On its own, ThreeSprite writes files from the <span class="ui">Export</span> tab. Pick a format, tick the animations to include, set the format's option, and check the file list on the right before writing.</p>
   <table>

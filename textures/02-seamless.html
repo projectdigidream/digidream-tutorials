@@ -105,6 +105,28 @@
     <li><p>Press <span class="ui">‹ studio</span>, then <span class="ui">export PNG</span> on STONE_2's card if you want the tile outside the studio.</p></li>
   </ol>
 
+  <h2 id="cinderfall">In Cinderfall</h2>
+  <div class="callout soon"><p><b>New, and still being tested.</b> Cinderfall, the first-person shooter example, is not bundled yet: see <a href="01-first-texture.html#cinderfall">Make your first texture</a> for how to import it, and the <a href="../examples/02-cinderfall.html">Cinderfall tour</a>.</p></div>
+  <p>Cinderfall's walls and floors are Freedoom's, and Freedoom's tiles were made to repeat on DOOM's walls, so every one of them is already seamless. They are a good set to study how a tile hides its edges:</p>
+  <table>
+    <thead><tr><th>Texture</th><th>Size</th><th>How it tiles</th></tr></thead>
+    <tbody>
+      <tr><td><b>ROCKBROWN</b>, <b>BRICKTAN</b>, <b>RUSTPANEL</b></td><td>128 × 128, 64 × 128, 128 × 128</td><td>the three most-used walls in the maps. BRICKTAN's bricks are cut by the left and right edges and finish on the other side, so each course runs on unbroken, shifted from the one above. RUSTPANEL is rusted plates with dark joints running edge to edge and a riveted band along the top, so where two copies meet the eye sees one more joint, not a seam.</td></tr>
+      <tr><td><b>BEAM</b>, <b>DOORTRACK</b>, <b>LIGHTSTRIP</b></td><td>64 × 128, 8 × 128, 16 × 128</td><td>narrow strips for door sides, supports and lights: they only have to tile top to bottom.</td></tr>
+      <tr><td><b>FLOORPLATE</b>, <b>ROCKFLOOR</b>, <b>FLOORGRILL</b>, <b>CEILMETAL</b></td><td>64 × 64</td><td>DOOM's flats: square, and seamless both ways because a floor repeats in every direction.</td></tr>
+    </tbody>
+  </table>
+  <p>All 108 Freedoom textures are saved with <span class="ui">Wrap</span> on. The skies and the twelve icons have it off, and only the icons have <span class="ui">cut out (see-through where transparent)</span> on their cards.</p>
+  <div class="callout warn"><p><b>BARS</b> and <b>GRATE</b> are Freedoom's see-through textures: about half of their pixels are transparent. Their cards have <b>cut out</b> off, so on a wall they would draw as solid squares. No map in Cinderfall uses them yet. Turn <b>cut out</b> on before you do.</p></div>
+
+  <h2>Exercise: bars over a window</h2>
+  <ol class="steps">
+    <li><p>Import Cinderfall and open <b>🧱 Textures</b>. Click <b>BARS</b> and press <span class="ui">edit in qPainter</span>. Tick <span class="ui">Tiles</span>: the bars repeat side by side, with the gaps between them transparent.</p></li>
+    <li><p>Press <span class="ui">Offset ½</span>. A bar now sits on the middle line; check it lines up with its copy. Press <span class="ui">Offset ½</span> again and leave with <span class="ui">‹ studio</span>.</p></li>
+    <li><p>On BARS's card, turn on <span class="ui">cut out (see-through where transparent)</span>.</p></li>
+    <li><p>In a map, tap the side two rooms share and set its <span class="ui">middle</span> to BARS. On a shared side, the middle texture hangs across the opening like a grate. Press <span class="ui">▶ Play</span>: you see through the bars to the room beyond.</p></li>
+  </ol>
+
   <h2>Check yourself</h2>
   <div class="quiz" data-answer="1">
     <p class="q">You want to repaint the seam of a finished tile where the edges meet. What is the quickest way?</p>
