@@ -208,9 +208,9 @@
     <li><b>The bee starts from further away.</b> It enters <code>attack</code> at 2.5 but only stings within 1.3. The <code>impulse</code> closes the gap: a shove of 9 units a second towards you, which makes the dive. Step sideways during the buzz and the dive goes past you, so the sting finds nobody.</li>
     <li><b>All three land on a decision.</b> Steps at 10 and 14 both run at the decision 16 ticks in, so the slime and the snail hit at the same moment after they stop; what differs is how long they then stand still (8 and 16 ticks, since a state also ends on a decision) and their cooldowns (60 and 50).</li>
     <li><b>None of them has a swing</b>, so none draws a slash streak, and their <span class="ui">💨 slash</span> tabs change nothing yet. The exercise below gives the snail one.</li>
-    <li><b>Gem Hollow's one missile, <code>star_shot</code></b>, on <span class="ui">☄ missiles</span>, is the player's: the Star Toss weapon throws it. No monster fires it. It sets the missile's own <code>damage</code> field to 20 and has no <code>on_hit</code>.</li>
+    <li><b>Gem Hollow's one missile, <code>star_shot</code></b>, on <span class="ui">☄ missiles</span>, is the player's: the Star Toss weapon throws it. No monster fires it. Its <code>on_hit</code> has one step, <code>damage</code> 20, so a star kills a slime and takes two to a snail.</li>
   </ul>
-  <div class="callout warn"><p><b>A missile's own <code>damage</code> field does nothing yet.</b> The vocabulary accepts it, but the runtime hurts only through the actions in <code>on_hit</code>. So Gem Hollow's <code>star_shot</code> flies and bursts and costs nothing. Give a missile its damage as an <code>on_hit</code> <code>damage</code> step, as a new missile has; <a href="../weapons/03-hitscan-missiles-swings.html#gem-hollow">Hitscan, missiles and swings</a> fixes the star this way.</p></div>
+  <div class="callout"><p><b>A missile hurts only through <code>on_hit</code>.</b> A missile has no damage field of its own; its harm is a <code>damage</code> step in <code>on_hit</code>, as on <code>star_shot</code>. See <a href="../weapons/03-hitscan-missiles-swings.html#gem-hollow">Hitscan, missiles and swings</a>.</p></div>
 
   <h2>Exercise: a snail that swipes</h2>
   <ol class="steps">

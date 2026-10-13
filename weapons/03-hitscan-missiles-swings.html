@@ -132,7 +132,7 @@ on_hit   vfx (fireball) · vfx (smoke)
     <li>The studio writes <code>assets/sprites/swings.json</code> only when something is set, and a deleted weapon takes its look with it.</li>
   </ul>
 
-  <h2 id="gem-hollow">In Gem Hollow: a wide fist and a star with no sting</h2>
+  <h2 id="gem-hollow">In Gem Hollow: a wide fist and a stinging star</h2>
   <p><b>The fists' swing is on the phase.</b> Pick <code>fists</code> and open <span class="ui">🌀 swing</span>: it says <em>"Every phase has no swing: …"</em>, because the weapon itself has none. Tap the <code>swing</code> phase instead, and its tab ends with the swing it brings with it:</p>
   <table>
     <thead><tr><th>Field</th><th>Value</th><th>What it makes</th></tr></thead>
@@ -145,15 +145,15 @@ on_hit   vfx (fireball) · vfx (smoke)
     </tbody>
   </table>
   <p>The swing starts on the press, on your client and the server alike, and entering <code>swing</code> is what puts this shape in place. Its sound, <code>player.swing</code>, is marked <span class="ui">predicted?</span>, so you hear it on the press. Gem Hollow sets no slash look, so the punch draws the engine's warm white streak.</p>
-  <p><b>The Star Toss launches <code>star_shot</code></b>, declared in <b>☠ Monsters</b> → <span class="ui">☄ missiles</span>: <code>prop</code> star_shot (a small star, the <code>STAR</code> sheet at scale 0.3), <code>speed</code> 22, <code>radius</code> 0.3, <code>z_offset</code> 1.1 (about the hero's chest), <code>life</code> 50 ticks, so it flies about 18 units and vanishes. It also sets the missile's own <code>damage</code> field to 20.</p>
-  <div class="callout warn"><p><b>That <code>damage</code> field does nothing yet.</b> The vocabulary accepts a missile's own <code>damage</code>, but the runtime hurts only through the actions in <code>on_hit</code>, and <code>star_shot</code> has none. So a thrown star hits a slime, bursts, and costs it nothing. The exercise below fixes it the way a new missile is made: with an <code>on_hit</code> <code>damage</code> step.</p></div>
+  <p><b>The Star Toss launches <code>star_shot</code></b>, declared in <b>☠ Monsters</b> → <span class="ui">☄ missiles</span>: <code>prop</code> star_shot (a small star, the <code>STAR</code> sheet at scale 0.3), <code>speed</code> 22, <code>radius</code> 0.3, <code>z_offset</code> 1.1 (about the hero's chest), <code>life</code> 50 ticks, so it flies about 18 units and vanishes. It hurts through its <code>on_hit</code>: one <code>damage</code> step of 20 on arrival.</p>
+  <div class="callout"><p><b>A missile hurts only through <code>on_hit</code>.</b> There is no damage field on a missile: everything it does on arrival, damage included, is a step in its <code>on_hit</code> list. The engine refuses a missile table that still carries a <code>damage</code> field of its own.</p></div>
 
-  <h2>Exercise: make the stars sting, and the fist glow</h2>
+  <h2>Exercise: tune the stars, and make the fist glow</h2>
   <ol class="steps">
-    <li><p>Open Gem Hollow, choose <b>☠ Monsters</b> and open <span class="ui">☄ missiles</span>. On the card <b>Missile: star_shot</b>, under <span class="ui">add on_hit</span>, choose <code>damage</code>, and set its <code>amount</code> to <code>20</code>.</p></li>
+    <li><p>Open Gem Hollow, choose <b>☠ Monsters</b> and open <span class="ui">☄ missiles</span>. On the card <b>Missile: star_shot</b>, find the <code>damage</code> step in its <code>on_hit</code> and set its <code>amount</code> to <code>10</code>.</p></li>
     <li><p>Choose <b>🔫 Weapons</b>, pick <code>fists</code> and open <span class="ui">💨 slash</span>. Set <span class="ui">color</span> to a gold, drag <span class="ui">width</span> to 0.7 and <span class="ui">fade</span> to 0.4. Each now reads <b>(own)</b>.</p></li>
     <li><p>Give yourself stars: <b>🧍 Player</b> → <span class="ui">🎒 kit</span>, tick <code>startoss</code> and set <code>stars</code> to 10.</p></li>
-    <li><p>Press <span class="ui">▶ Play</span>. Throw a star at a slime (20 hp): one star now kills it, and a snail (40 hp) takes two. Switch to the fists with <kbd>1</kbd> and punch a bee: a wide golden streak sweeps across in front of you and lingers.</p></li>
+    <li><p>Press <span class="ui">▶ Play</span>. Throw stars at a slime (20 hp): it now takes two, and a snail (40 hp) takes four. Set the amount back to 20 when you're done. Switch to the fists with <kbd>1</kbd> and punch a bee: a wide golden streak sweeps across in front of you and lingers.</p></li>
   </ol>
 
   <h2 id="prediction">What is instant, and what the server decides</h2>
