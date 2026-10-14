@@ -108,6 +108,14 @@ window.DNP_NAV = [
     ],
   },
   {
+    id: 'luaref', title: 'Lua reference', icon: '📖', blurb: 'Every function, method, hook and table a script can reach, checked against the engine.',
+    pages: [
+      { file: 'luaref/01-environment.html', title: 'The Lua environment', kw: 'luajit lua 5.1 standard library string table math sandbox trust budget print error load order globals' },
+      { file: 'luaref/02-every-function.html', title: 'Every function', kw: 'dnp entity prop sector hook fx vec3 mobs triggers graphs weapons reference api' },
+      { file: 'luaref/03-cheat-sheet.html', title: 'Cheat sheet', kw: 'cheat sheet signatures printable one page' },
+    ],
+  },
+  {
     id: 'reference', title: 'Reference', icon: '⌘', blurb: 'Every shortcut, every file, every word.',
     pages: [
       { file: 'reference/shortcuts.html', title: 'All shortcuts', kw: 'keys keyboard shortcut trainer' },

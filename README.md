@@ -17,7 +17,7 @@ Opening `index.html` straight from disk (`file://`) works too. The one differenc
 ## What's inside
 
 - `index.html`: the landing page and learning paths.
-- `studio/`, `examples/`, `sprites/`, `textures/`, `music/`, `sounds/`, `enemies/`, `weapons/`, `graphs/`, `advanced/` (Lua scripting): the tracks. Each track folder's `index.html` is that track's overview page.
+- `studio/`, `examples/`, `sprites/`, `textures/`, `music/`, `sounds/`, `enemies/`, `weapons/`, `graphs/`, `advanced/` (Lua scripting), `luaref/` (the Lua reference): the tracks. Each track folder's `index.html` is that track's overview page.
   - `examples/` holds guided tours of the two example projects: Gem Hollow, which ships with the studio, and Cinderfall, the newer one. Both are bundled with the studio (Home → examples).
 - `reference/`: all shortcuts, files and baking, and a glossary.
 - `assets/site.css`, `assets/site.js`: the shell (sidebar, search, progress, quizzes, shortcut trainers, screenshot hotspots).
@@ -30,6 +30,12 @@ Opening `index.html` straight from disk (`file://`) works too. The one differenc
   ```sh
   node tutorials/tools/build-vocab.mjs
   ```
+
+The Lua reference (`luaref/`) is hand-written data in `assets/data/lua-api-world.js` (the engine's bindings) and `assets/data/lua-api-libs.js` (the runtime libraries). It's checked against the engine's source: every name a script can reach must be documented or listed as internal. After the engine changes, run:
+
+```sh
+node tutorials/tools/check-lua-ref.mjs     # exits 1 and names what is missing or gone
+```
 
 Pages can wear any of the five skins uikit ships (claude, paper, 90s, ps1, aero), in any of each skin's modes. Readers choose from the skin button in the top bar, and Auto follows the system's light or dark setting. The skin CSS in `assets/skins/` is generated from `uikit/skins` by uikit's own compiler. After a skin changes, regenerate it:
 

@@ -40,7 +40,7 @@
   <p><span class="ui">+ script</span> asks for a file name. It suggests <code>module_hooks.lua</code>. The new script starts with one line:</p>
   <pre><code>-- Runs in every level of the module, after its monsters are loaded.</code></pre>
   <p>Tap a script in the list to edit it in the text box. Below it are <span class="ui">rename</span> and <span class="ui">delete</span>. With the <b>Code</b> plugin on, you also get <span class="ui">✎ edit in Code</span> and <span class="ui">open with…</span>. Code is a real Lua editor: line numbers, colours, and a warning when a block is never closed. See <a href="../studio/09-plugins.html">Plugins</a>.</p>
-  <p>Each script has its own scope. The studio wraps it in <code>do … end</code>, so a <code>local</code> in one script is invisible to the others. A hook such as <code>on_tick</code> must be a <b>global</b> function: write <code>function on_tick()</code>, never <code>local function on_tick()</code>. If two scripts both define <code>on_tick</code>, both run, one after the other.</p>
+  <p>Each script has its own scope. The studio wraps it in <code>do … end</code>, so a <code>local</code> in one script is invisible to the others. A hook such as <a href="../luaref/02-every-function.html#hook.on_tick"><code>on_tick</code></a> must be a <b>global</b> function: write <code>function on_tick()</code>, never <code>local function on_tick()</code>. If two scripts both define <code>on_tick</code>, both run, one after the other.</p>
 
   <h3>Extra Lua</h3>
   <p>In the map editor, open <span class="ui">⋯ More</span> → <span class="ui">Map settings…</span>. The <span class="ui">extra Lua</span> box is kept exactly as you type it. It goes at the very top of the file the studio writes for that map. The same sheet shows how many of the map's script slots are used.</p>
@@ -70,9 +70,9 @@
     <li><b>Your 📜 scripts</b>, one after another, after the module's monster definitions.</li>
     <li>The map's own file: first its <span class="ui">extra Lua</span>, then its camera, the props and monsters you placed, and its triggers.</li>
   </ol>
-  <div class="callout warn"><p><b>At load, the map's things don't exist yet.</b> The top of a 📜 script runs before the map places its props and monsters. So <code>dnp.props()</code> finds nothing there. Look things up later, inside a hook, the first time you need them. Every example in this track does it that way.</p></div>
+  <div class="callout warn"><p><b>At load, the map's things don't exist yet.</b> The top of a 📜 script runs before the map places its props and monsters. So <a href="../luaref/02-every-function.html#dnp.props"><code>dnp.props()</code></a> finds nothing there. Look things up later, inside a hook, the first time you need them. Every example in this track does it that way.</p></div>
   <p>There is also one <b>game</b> machine, which runs once for the whole server. The studio writes what runs there for you: the weapons, the player's sounds and the game's graphs. The studio has no editor for hand-written game-wide Lua. For game-wide logic, use a game graph (<a href="../graphs/05-game-graph-and-calls.html">The game graph, calls and maps</a>). Your level scripts can still reach it, as <a href="05-state-and-bridges.html#game">page 5</a> shows.</p>
-  <div class="callout"><p><b>In Cinderfall</b> nine maps are walked as one world. Each map is still its own level with its own Lua machine, so your script runs nine times, side by side. A player standing in the next district shows up in <code>dnp.players()</code> with <code>e:sector()</code> equal to <code>-1</code>. <a href="02-events-and-time.html#arrivals">Events and time</a> shows how to skip them.</p></div>
+  <div class="callout"><p><b>In Cinderfall</b> nine maps are walked as one world. Each map is still its own level with its own Lua machine, so your script runs nine times, side by side. A player standing in the next district shows up in <a href="../luaref/02-every-function.html#dnp.players"><code>dnp.players()</code></a> with <a href="../luaref/02-every-function.html#entity.sector"><code>e:sector()</code></a> equal to <code>-1</code>. <a href="02-events-and-time.html#arrivals">Events and time</a> shows how to skip them.</p></div>
 
   <h2 id="first">Your first script</h2>
   <p>This script says hello when its level starts. Then, when a player uses a prop, it names the prop and plays Gem Hollow's lever sound on it.</p>
@@ -85,7 +85,7 @@ function on_prop_use(e, p)
 end
 </script>
   <div class="widget" data-widget="lua-playground" data-title="Your first script" data-code="lua-first" data-events="use"></div>
-  <p>Press <b>use</b> in the playground to fire <code>on_prop_use</code> with the toy level's lever. Now do it for real:</p>
+  <p>Press <b>use</b> in the playground to fire <a href="../luaref/02-every-function.html#hook.on_prop_use"><code>on_prop_use</code></a> with the toy level's lever. Now do it for real:</p>
   <ol class="steps">
     <li><p>On Home, open <span class="ui">◆ examples</span> and choose Gem Hollow.</p></li>
     <li><p>Open <b>📜 Scripts</b>. Gem Hollow has none: it does everything with graphs. Press <span class="ui">+ script</span> and type <code>hello</code>. The studio adds <code>.lua</code>.</p></li>
@@ -93,16 +93,16 @@ end
     <li><p>Open <b>🗺 Maps</b>, open <code>world</code>, and press <span class="ui">▶ Play</span>.</p></li>
     <li><p>Walk to a lever and press use (<kbd>E</kbd>). The first time, you hear the lever sound twice: once from the <code>levers</code> graph, and once from your script.</p></li>
     <li><p>Come back with <b>◀ Studio</b>. On Home, open <span class="ui">📋 play log</span> and scroll to <code>play-server.log</code>. Find your two lines. They start with <code>[lua:</code> and the name of the file the studio wrote your scripts into, <code>module.lua</code>.</p></li>
-    <li><p>Back in 📜 Scripts, change <code>p:name()</code> to <code>p:nme()</code>, play again and use the lever. Then read the Play log again. The error is at the top, under <span class="ui">✖ what looks wrong</span>.</p></li>
+    <li><p>Back in 📜 Scripts, change <a href="../luaref/02-every-function.html#prop.name"><code>p:name()</code></a> to <code>p:nme()</code>, play again and use the lever. Then read the Play log again. The error is at the top, under <span class="ui">✖ what looks wrong</span>.</p></li>
   </ol>
-  <div class="callout tip"><p>A player has no catalogue name, so the script prints <code>e:index()</code>, the player's slot number in the level. <code>e:name()</code> answers for monsters, and is <code>nil</code> for a player.</p></div>
+  <div class="callout tip"><p>A player has no catalogue name, so the script prints <a href="../luaref/02-every-function.html#entity.index"><code>e:index()</code></a>, the player's slot number in the level. <a href="../luaref/02-every-function.html#entity.name"><code>e:name()</code></a> answers for monsters, and is <code>nil</code> for a player.</p></div>
 
   <h2 id="errors">How errors look</h2>
   <p>Every line Lua prints, and every error, goes into <code>play-server.log</code>. The Play log page shows lines that look like failures first, in red. The shapes to know:</p>
   <table>
     <thead><tr><th>You see</th><th>It means</th><th>What happens</th></tr></thead>
     <tbody>
-      <tr><td><code>[lua:…/module.lua] hello from level 1</code></td><td>your <code>print</code></td><td>nothing; it is just a message</td></tr>
+      <tr><td><code>[lua:…/module.lua] hello from level 1</code></td><td>your <a href="../luaref/02-every-function.html#lua.print"><code>print</code></a></td><td>nothing; it is just a message</td></tr>
       <tr><td><code>[srv] …/world.dnpm asked for …/module.lua and it failed: …module.lua:41: 'end' expected …</code></td><td>the script could not load: a typo, or an error at its top level</td><td>the <b>level does not load</b>, and the Play log opens by itself</td></tr>
       <tr><td><code>[lua] on_prop_use error (tick 2210): …module.lua:47: attempt to call method 'nme' (a nil value)</code></td><td>a hook failed while it ran</td><td>that call stops; the level carries on. The line repeats at most every 300 ticks</td></tr>
       <tr><td><code>instruction budget exceeded in '…'</code></td><td>a hook ran far too long, usually an endless loop</td><td>the call is stopped (see <a href="02-events-and-time.html#budgets">budgets</a>)</td></tr>
@@ -133,7 +133,7 @@ local p = e:pos()            -- a vec3 of fx
 print(p.z + 2)               -- fx plus a whole number works; prints like "4.500000"
 print(p.z.int)               -- the whole part, rounded down
 if p.z &lt; fx.int(10) then end -- compare fx with fx</code></pre>
-  <div class="callout warn"><p>In Lua 5.1, <code>p.z &lt; 10</code> is an error ("attempt to compare"), and <code>p.z == 10</code> is always <code>false</code>. Turn the number into fx first: <code>fx.int(10)</code>. And never pass a fraction such as <code>0.5</code> where the engine wants fx. It refuses it and tells you to use <code>fx.frac</code> or <code>fx.parse</code>.</p></div>
+  <div class="callout warn"><p>In Lua 5.1, <code>p.z &lt; 10</code> is an error ("attempt to compare"), and <code>p.z == 10</code> is always <code>false</code>. Turn the number into fx first: <a href="../luaref/02-every-function.html#fx.int"><code>fx.int(10)</code></a>. And never pass a fraction such as <code>0.5</code> where the engine wants fx. It refuses it and tells you to use <a href="../luaref/02-every-function.html#fx.frac"><code>fx.frac</code></a> or <a href="../luaref/02-every-function.html#fx.parse"><code>fx.parse</code></a>.</p></div>
   <p>The playgrounds on this site run Lua 5.3 in your browser, against a toy level. Code written to the 5.1 rules above runs in both.</p>
 
   <div class="quiz" data-answer="2">

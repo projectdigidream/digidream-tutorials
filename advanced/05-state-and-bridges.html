@@ -19,7 +19,7 @@
   <h1>State, saving and bridges</h1>
   <p class="lede">A script's variables live as long as its level. This page shows how to keep them longer, and how a script talks to graphs, triggers, the game and other maps.</p>
   <div class="goal">
-    <b>You'll learn</b><span>what the module's saving switches keep on their own, how to save your script's state with <code>dnp.persist</code> and a player's with <code>dnp.persist_player</code>, what <code>dnp.restoring()</code> is for, the store that outlives every game, reading and starting graphs and triggers, how far a level script can reach the game machine, and changing maps</span>
+    <b>You'll learn</b><span>what the module's saving switches keep on their own, how to save your script's state with <a href="../luaref/02-every-function.html#dnp.persist"><code>dnp.persist</code></a> and a player's with <a href="../luaref/02-every-function.html#dnp.persist_player"><code>dnp.persist_player</code></a>, what <a href="../luaref/02-every-function.html#dnp.restoring"><code>dnp.restoring()</code></a> is for, the store that outlives every game, reading and starting graphs and triggers, how far a level script can reach the game machine, and changing maps</span>
     <b>Time</b><span>40 minutes</span>
     <b>Needs</b><span><a href="03-the-world.html">Touching the world</a>; it helps to know <a href="../graphs/02-variables-and-numbers.html">Variables, numbers and saving</a> and <a href="../graphs/05-game-graph-and-calls.html">The game graph, calls and maps</a>; the example Gem Hollow</span>
   </div>
@@ -35,7 +35,7 @@
     </tbody>
   </table>
   <p>With any of them on, the engine keeps by itself: rooms that moved, wall pictures changed, room lights, textures and weather, the level's sky, and the props placed when the level loaded (where they are now, and which were taken). The monster runtime keeps living monsters. The graph runtime keeps graph variables.</p>
-  <p><b>Your script's own variables are not kept.</b> When the level comes back, your script runs again from its first line. To keep something, hand it to the engine with <code>dnp.persist</code>.</p>
+  <p><b>Your script's own variables are not kept.</b> When the level comes back, your script runs again from its first line. To keep something, hand it to the engine with <a href="../luaref/02-every-function.html#dnp.persist"><code>dnp.persist</code></a>.</p>
 
   <h2 id="persist">dnp.persist: a level's state</h2>
   <pre><code>local opened = {}   -- room tag -> true
@@ -55,12 +55,12 @@ end)</code></pre>
   </ul>
 
   <h3 id="restoring">dnp.restoring()</h3>
-  <p>While a level is being put back, its scripts run with <code>dnp.restoring()</code> true. Anything they spawn while they load is held back, because the saved state brings back what was really there. So place things only on a fresh start, and let <code>load</code> put back the rest:</p>
+  <p>While a level is being put back, its scripts run with <a href="../luaref/02-every-function.html#dnp.restoring"><code>dnp.restoring()</code></a> true. Anything they spawn while they load is held back, because the saved state brings back what was really there. So place things only on a fresh start, and let <code>load</code> put back the rest:</p>
   <pre><code>if not dnp.restoring() then
   -- a fresh level: set it up from scratch
   dnp.set_sector_light(0, 80)
 end</code></pre>
-  <p>Things you spawn <em>later</em>, in a hook, are not placements. Keep them through <code>dnp.persist</code> if they should come back.</p>
+  <p>Things you spawn <em>later</em>, in a hook, are not placements. Keep them through <a href="../luaref/02-every-function.html#dnp.persist"><code>dnp.persist</code></a> if they should come back.</p>
 
   <h2 id="player">dnp.persist_player: what a player carries</h2>
   <pre><code>local found = {}   -- player index -> number of secrets
@@ -77,9 +77,9 @@ end)</code></pre>
   <table>
     <thead><tr><th>Function</th><th>Gives</th></tr></thead>
     <tbody>
-      <tr><td><code>dnp.store_save(name, value)</code></td><td><code>true</code>, or <code>false</code> and why</td></tr>
-      <tr><td><code>dnp.store_load(name)</code></td><td>the value, or <code>nil</code> if nothing was ever saved</td></tr>
-      <tr><td><code>dnp.store_delete(name)</code></td><td><code>true</code> if there was one</td></tr>
+      <tr><td><a href="../luaref/02-every-function.html#dnp.store_save"><code>dnp.store_save(name, value)</code></a></td><td><code>true</code>, or <code>false</code> and why</td></tr>
+      <tr><td><a href="../luaref/02-every-function.html#dnp.store_load"><code>dnp.store_load(name)</code></a></td><td>the value, or <code>nil</code> if nothing was ever saved</td></tr>
+      <tr><td><a href="../luaref/02-every-function.html#dnp.store_delete"><code>dnp.store_delete(name)</code></a></td><td><code>true</code> if there was one</td></tr>
     </tbody>
   </table>
   <p>A name is 1 to 48 letters, digits, <code>_</code> or <code>-</code>. A value is plain data, at most 64 KB. The stores are the server's: in the app, on the device; on a server many people share, one for everyone.</p>
@@ -105,10 +105,10 @@ end
   <table>
     <thead><tr><th>From</th><th>To</th><th>How</th></tr></thead>
     <tbody>
-      <tr><td>script</td><td>read a level graph's variable</td><td><code>graphs.var("pickups", "coins")</code>: the graph's name, then the variable's</td></tr>
-      <tr><td>script</td><td>start a level graph</td><td><code>graphs.call("bonus", e, 5)</code> starts its <a href="../reference/graph-nodes.html#on_call"><code>on_call</code></a> nodes named <code>bonus</code>, with that entity and value</td></tr>
+      <tr><td>script</td><td>read a level graph's variable</td><td><a href="../luaref/02-every-function.html#graphs.var"><code>graphs.var("pickups", "coins")</code></a>: the graph's name, then the variable's</td></tr>
+      <tr><td>script</td><td>start a level graph</td><td><a href="../luaref/02-every-function.html#graphs.call"><code>graphs.call("bonus", e, 5)</code></a> starts its <a href="../reference/graph-nodes.html#on_call"><code>on_call</code></a> nodes named <code>bonus</code>, with that entity and value</td></tr>
       <tr><td>graph</td><td>run your Lua</td><td>an <a href="../reference/graph-nodes.html#action"><code>action</code></a> node, <span class="ui">do lua</span>, calling a global function of yours: <code>give_bonus(ev.entity)</code></td></tr>
-      <tr><td>script</td><td>start a game graph</td><td><code>dnp.call_game("graph_call", "bonus", 5, e)</code>: the name, the value, then the entity</td></tr>
+      <tr><td>script</td><td>start a game graph</td><td><a href="../luaref/02-every-function.html#dnp.call_game"><code>dnp.call_game("graph_call", "bonus", 5, e)</code></a>: the name, the value, then the entity</td></tr>
     </tbody>
   </table>
   <p>The <code>graphs</code> table exists only in a level whose map has graphs. Check first: <code>if graphs then … end</code>. A script can't read a <em>game</em> graph's variables directly. Have the game graph <a href="../reference/graph-nodes.html#call"><code>call</code></a> a level graph, whose <span class="ui">do lua</span> passes the value to your function.</p>
@@ -132,22 +132,22 @@ end
   <h2 id="triggers">Talking to triggers</h2>
   <p>The trigger runtime (<b>⚡ Triggers</b> in the map editor) keeps counters and named properties. A script can read them and set properties:</p>
   <ul>
-    <li><code>triggers.counter(name)</code>: a counter's value, <code>0</code> if never counted;</li>
-    <li><code>triggers.property(name)</code>, <code>triggers.set_property(name, value)</code>: a named value;</li>
-    <li><code>triggers.is_enabled(name)</code>, <code>triggers.is_spent(name)</code>: a trigger's state.</li>
+    <li><a href="../luaref/02-every-function.html#triggers.counter"><code>triggers.counter(name)</code></a>: a counter's value, <code>0</code> if never counted;</li>
+    <li><a href="../luaref/02-every-function.html#triggers.property"><code>triggers.property(name)</code></a>, <a href="../luaref/02-every-function.html#triggers.set_property"><code>triggers.set_property(name, value)</code></a>: a named value;</li>
+    <li><a href="../luaref/02-every-function.html#triggers.is_enabled"><code>triggers.is_enabled(name)</code></a>, <a href="../luaref/02-every-function.html#triggers.is_spent"><code>triggers.is_spent(name)</code></a>: a trigger's state.</li>
   </ul>
   <p>Like <code>graphs</code>, <code>triggers</code> exists only where the map has triggers or graphs.</p>
 
   <h2 id="game">The game machine</h2>
   <p>The game machine runs once for the whole server. In the studio, what runs there is written for you: the weapons, the player's sounds, and the game's graphs. You can't add your own Lua to it. A level script reaches it in two ways:</p>
   <ul>
-    <li><code>dnp.call_game("graph_call", name, value, e)</code> starts the game graphs' <code>on_call</code> nodes of that name. This is the way to tell the game something: a secret found, a boss beaten.</li>
-    <li><code>dnp.game_has(name)</code> says whether the game answers a call of that name at all.</li>
+    <li><a href="../luaref/02-every-function.html#dnp.call_game"><code>dnp.call_game("graph_call", name, value, e)</code></a> starts the game graphs' <code>on_call</code> nodes of that name. This is the way to tell the game something: a secret found, a boss beaten.</li>
+    <li><a href="../luaref/02-every-function.html#dnp.game_has"><code>dnp.game_has(name)</code></a> says whether the game answers a call of that name at all.</li>
   </ul>
   <p>Values cross as copies: numbers, strings, true and false, fx, vec3, tables, and entity and prop handles. A function is refused. For a score or quest flags that follow the player from map to map, let a game graph keep them, and call it from your script.</p>
 
   <h2 id="maps">Changing maps</h2>
-  <p><code>e:change_map(level, spawn_tag)</code> sends a player to another map. <code>level</code> is a number: the map's place in <code>dnp.levels()</code>, counting from <b>0</b>. <code>spawn_tag</code> names the spawn point to arrive at. With no arguments, it is the next map.</p>
+  <p><a href="../luaref/02-every-function.html#entity.change_map"><code>e:change_map(level, spawn_tag)</code></a> sends a player to another map. <code>level</code> is a number: the map's place in <a href="../luaref/02-every-function.html#dnp.levels"><code>dnp.levels()</code></a>, counting from <b>0</b>. <code>spawn_tag</code> names the spawn point to arrive at. With no arguments, it is the next map.</p>
   <pre><code>local function level_index(name)
   for i, n in ipairs(dnp.levels()) do
     if n == name then return i - 1 end
@@ -164,7 +164,7 @@ function on_prop_use(e, p)
     end
   end
 end</code></pre>
-  <p>The change is queued, and happens after every level has moved this tick. The player's panels from this level close. <code>dnp.level()</code> is the current level's number, in the same counting.</p>
+  <p>The change is queued, and happens after every level has moved this tick. The player's panels from this level close. <a href="../luaref/02-every-function.html#dnp.level"><code>dnp.level()</code></a> is the current level's number, in the same counting.</p>
 
   <h2>Try it in the studio</h2>
   <ol class="steps">
@@ -185,7 +185,7 @@ end, function(n)
 end)</code></pre></li>
     <li><p>Press <span class="ui">▶ Play</span> on <code>world</code>. Use a lever twice, then press <kbd>F5</kbd> to save. Use a lever once more, then press <kbd>F9</kbd> to load.</p></li>
     <li><p>Come back and open <span class="ui">📋 play log</span>. You see <code>pulls: 1</code>, <code>pulls: 2</code>, <code>pulls: 3</code>, then <code>restored pulls: 2</code>. Loading started the level's scripts again, and your <code>load</code> put the count back.</p></li>
-    <li><p>Remove the <code>dnp.persist</code> call and try again. After <kbd>F9</kbd>, the next pull prints <code>pulls: 1</code>: the count started over with the level.</p></li>
+    <li><p>Remove the <a href="../luaref/02-every-function.html#dnp.persist"><code>dnp.persist</code></a> call and try again. After <kbd>F9</kbd>, the next pull prints <code>pulls: 1</code>: the count started over with the level.</p></li>
   </ol>
   <div class="callout tip"><p><code>load</code> runs after the top of your script, so it has the last word over a starting value. Saving is for one player: with two players connected, <kbd>F5</kbd> is refused, and says why.</p></div>
 

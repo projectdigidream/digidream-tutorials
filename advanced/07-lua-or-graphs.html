@@ -37,8 +37,8 @@
       <tr><td>Going over many things: every monster within 10 units</td><td>Lua</td><td>a loop is one line</td></tr>
       <tr><td>Maths beyond <code>+ - * /</code>, or building text</td><td>Lua</td><td>string functions, tables, exact fx fractions</td></tr>
       <tr><td>A room that follows a plate, a lift that turns round halfway</td><td>Lua</td><td>you need state between ticks (<a href="06-recipes.html#plate">recipe 2</a>)</td></tr>
-      <tr><td>A wait, a repeat</td><td>either</td><td><a href="../reference/graph-nodes.html#delay"><code>delay</code></a> and <a href="../reference/graph-nodes.html#every"><code>every</code></a>, or <code>dnp.tick()</code></td></tr>
-      <tr><td>Keeping something in a save</td><td>either</td><td>graph variables are saved by themselves; Lua uses <code>dnp.persist</code></td></tr>
+      <tr><td>A wait, a repeat</td><td>either</td><td><a href="../reference/graph-nodes.html#delay"><code>delay</code></a> and <a href="../reference/graph-nodes.html#every"><code>every</code></a>, or <a href="../luaref/02-every-function.html#dnp.tick"><code>dnp.tick()</code></a></td></tr>
+      <tr><td>Keeping something in a save</td><td>either</td><td>graph variables are saved by themselves; Lua uses <a href="../luaref/02-every-function.html#dnp.persist"><code>dnp.persist</code></a></td></tr>
     </tbody>
   </table>
 
@@ -59,7 +59,7 @@ function push_away_all(from, strength)
   end
 end</code></pre>
   <p>In the graph: <a href="../reference/graph-nodes.html#when_prop_used"><code>when_prop_used</code></a> → <a href="../reference/graph-nodes.html#once"><code>once</code></a> → an <a href="../reference/graph-nodes.html#action"><code>action</code></a> node, <span class="ui">do lua</span>, with the line <code>push_away_all(ev.entity, 3)</code>.</p>
-  <p>The other way round, a script starts a graph's <a href="../reference/graph-nodes.html#on_call"><code>on_call</code></a> nodes with <code>graphs.call("name", e, value)</code>, or a game graph's with <code>dnp.call_game("graph_call", "name", value, e)</code> (<a href="05-state-and-bridges.html#graphs">page 5</a>).</p>
+  <p>The other way round, a script starts a graph's <a href="../reference/graph-nodes.html#on_call"><code>on_call</code></a> nodes with <a href="../luaref/02-every-function.html#graphs.call"><code>graphs.call("name", e, value)</code></a>, or a game graph's with <a href="../luaref/02-every-function.html#dnp.call_game"><code>dnp.call_game("graph_call", "name", value, e)</code></a> (<a href="05-state-and-bridges.html#graphs">page 5</a>).</p>
 
   <h2 id="trust">The do lua line, and strict trust</h2>
   <ul>
@@ -75,12 +75,12 @@ end</code></pre>
   <table>
     <thead><tr><th>Costly</th><th>Instead</th></tr></thead>
     <tbody>
-      <tr><td>Work in <code>on_touch</code>, which runs every tick per touching pair</td><td>note the tick, and act when a touch starts (<a href="02-events-and-time.html#touch">page 2</a>)</td></tr>
-      <tr><td><code>dnp.sectors()</code>, <code>dnp.props()</code> or <code>dnp.entities()</code> every tick: each builds a new table</td><td>look rooms up once and keep them; <code>dnp.player_count()</code> builds nothing</td></tr>
-      <tr><td><code>dnp.find_path</code> for many things at once</td><td>a level gets 64 route searches a tick, shared with its monsters; spread them over ticks</td></tr>
-      <tr><td><code>s:set_offset</code> every tick to animate a room</td><td><code>move_parametric</code>, which costs nothing while it runs</td></tr>
+      <tr><td>Work in <a href="../luaref/02-every-function.html#hook.on_touch"><code>on_touch</code></a>, which runs every tick per touching pair</td><td>note the tick, and act when a touch starts (<a href="02-events-and-time.html#touch">page 2</a>)</td></tr>
+      <tr><td><a href="../luaref/02-every-function.html#dnp.sectors"><code>dnp.sectors()</code></a>, <a href="../luaref/02-every-function.html#dnp.props"><code>dnp.props()</code></a> or <a href="../luaref/02-every-function.html#dnp.entities"><code>dnp.entities()</code></a> every tick: each builds a new table</td><td>look rooms up once and keep them; <a href="../luaref/02-every-function.html#dnp.player_count"><code>dnp.player_count()</code></a> builds nothing</td></tr>
+      <tr><td><a href="../luaref/02-every-function.html#dnp.find_path"><code>dnp.find_path</code></a> for many things at once</td><td>a level gets 64 route searches a tick, shared with its monsters; spread them over ticks</td></tr>
+      <tr><td><a href="../luaref/02-every-function.html#sector.set_offset"><code>s:set_offset</code></a> every tick to animate a room</td><td><code>move_parametric</code>, which costs nothing while it runs</td></tr>
       <tr><td>Sending the same value again and again</td><td>remember what you sent, and send changes only</td></tr>
-      <tr><td><code>print</code> in <code>on_tick</code>: 60 lines a second</td><td>print when something changes</td></tr>
+      <tr><td><a href="../luaref/02-every-function.html#lua.print"><code>print</code></a> in <a href="../luaref/02-every-function.html#hook.on_tick"><code>on_tick</code></a>: 60 lines a second</td><td>print when something changes</td></tr>
     </tbody>
   </table>
   <p>The warning names the slowest hook: <code>[lua] tick N: … us in callbacks (worst … us in …)</code>. Look there first.</p>
@@ -88,12 +88,12 @@ end</code></pre>
   <h2 id="checklist">When a script does nothing</h2>
   <ol>
     <li><b>Did it load?</b> Open <span class="ui">📋 play log</span>. A script that fails to load stops the level, and the log says <em>asked for … module.lua and it failed</em>, with the reason.</li>
-    <li><b>Does the hook run?</b> Put <code>print("on_prop_use", dnp.tick())</code> as its first line. No line at all? Check the name, and that it is not <code>local function</code>.</li>
-    <li><b>Is it the thing you think?</b> Print <code>p:name()</code>, <code>e:kind()</code>, <code>s:tag()</code> before the <code>if</code> that tests them. Names are case-sensitive.</li>
+    <li><b>Does the hook run?</b> Put <a href="../luaref/02-every-function.html#lua.print"><code>print("on_prop_use", dnp.tick())</code></a> as its first line. No line at all? Check the name, and that it is not <code>local function</code>.</li>
+    <li><b>Is it the thing you think?</b> Print <a href="../luaref/02-every-function.html#prop.name"><code>p:name()</code></a>, <a href="../luaref/02-every-function.html#entity.kind"><code>e:kind()</code></a>, <a href="../luaref/02-every-function.html#sector.tag"><code>s:tag()</code></a> before the <code>if</code> that tests them. Names are case-sensitive.</li>
     <li><b>Is something <code>nil</code>?</b> Something looked up at load, before the map placed it; or a handle gone stale. Check <code>valid()</code>.</li>
     <li><b>Read the red lines.</b> <span class="ui">✖ what looks wrong</span> lists every line with words such as <em>error</em>, <em>failed</em>, <em>missing</em> or <em>not found</em>. Start your own warnings with such a word, as in <code>print("plate: missing room tagged 7")</code>, and they are listed there too.</li>
     <li><b>Where am I?</b> The debug overlay (in <b>⚙ Settings</b>, <span class="ui">when I press Play</span> → <span class="ui">always show it</span>) shows the tick and your position as you play.</li>
-    <li><b>Is another script in the way?</b> A second script that replaces <code>mobs.on_death</code>, or a graph that does the same thing first. Comment out the other one and try again.</li>
+    <li><b>Is another script in the way?</b> A second script that replaces <a href="../luaref/02-every-function.html#mobs.on_death"><code>mobs.on_death</code></a>, or a graph that does the same thing first. Comment out the other one and try again.</li>
   </ol>
 
   <h3>Practise on a broken script</h3>
@@ -105,7 +105,7 @@ end</code></pre>
 end</code></pre></li>
     <li><p>Play <code>world</code> and use a lever. Come back and open <span class="ui">📋 play log</span>. Your script printed nothing, and there is no error either. The hook never ran: it is <code>local</code>. Remove the word <code>local</code>.</p></li>
     <li><p>Play again. Now the log has <code>[lua] on_prop_use error</code> … <code>attempt to call method 'nam' (a nil value)</code>. Fix it to <code>p:name()</code>.</p></li>
-    <li><p>Play again. The next error says the script tried to <em>compare</em> two different types. <code>e:pos().z</code> is fx and <code>0</code> is a Lua number. Write <code>fx.int(0)</code>.</p></li>
+    <li><p>Play again. The next error says the script tried to <em>compare</em> two different types. <a href="../luaref/02-every-function.html#entity.pos"><code>e:pos().z</code></a> is fx and <code>0</code> is a Lua number. Write <a href="../luaref/02-every-function.html#fx.int"><code>fx.int(0)</code></a>.</p></li>
     <li><p>Play once more. The log shows <code>used lever_red</code> (or the lever you chose), and no errors. Delete the script when you are done.</p></li>
   </ol>
 
@@ -113,19 +113,19 @@ end</code></pre></li>
   <table>
     <thead><tr><th>Mistake</th><th>What you see</th><th>Fix</th></tr></thead>
     <tbody>
-      <tr><td><code>local function on_tick()</code></td><td>nothing, no error</td><td>hooks are global: <code>function on_tick()</code></td></tr>
+      <tr><td><code>local function on_tick()</code></td><td>nothing, no error</td><td>hooks are global: <a href="../luaref/02-every-function.html#hook.on_tick"><code>function on_tick()</code></a></td></tr>
       <tr><td>Finding props at the top of the script</td><td><code>nil</code>; "attempt to index a nil value"</td><td>find them in a hook, the first time</td></tr>
       <tr><td><code>p.z &lt; 3</code></td><td>"attempt to compare"</td><td><code>p.z &lt; fx.int(3)</code></td></tr>
-      <tr><td><code>vec3.new(0, 0, 0.5)</code></td><td>"expected fx, got the non-integral number"</td><td><code>fx.frac(1, 2)</code> or <code>fx.parse("0.5")</code></td></tr>
+      <tr><td><a href="../luaref/02-every-function.html#vec3.new"><code>vec3.new(0, 0, 0.5)</code></a></td><td>"expected fx, got the non-integral number"</td><td><a href="../luaref/02-every-function.html#fx.frac"><code>fx.frac(1, 2)</code></a> or <a href="../luaref/02-every-function.html#fx.parse"><code>fx.parse("0.5")</code></a></td></tr>
       <tr><td><code>a // b</code></td><td>the level doesn't load</td><td><code>math.floor(a / b)</code></td></tr>
       <tr><td><code>if dnp.tick() == at</code></td><td>a timer that sometimes never fires</td><td><code>&gt;=</code>, then clear it</td></tr>
-      <tr><td>Doing things in <code>on_touch</code> directly</td><td>a sound or message 60 times a second</td><td>act when a touch starts</td></tr>
-      <tr><td>Setting <code>mobs.on_death</code> without keeping the old one</td><td>another script's counting stops</td><td>keep it and call it first</td></tr>
+      <tr><td>Doing things in <a href="../luaref/02-every-function.html#hook.on_touch"><code>on_touch</code></a> directly</td><td>a sound or message 60 times a second</td><td>act when a touch starts</td></tr>
+      <tr><td>Setting <a href="../luaref/02-every-function.html#mobs.on_death"><code>mobs.on_death</code></a> without keeping the old one</td><td>another script's counting stops</td><td>keep it and call it first</td></tr>
       <tr><td>Reading right after <code>teleport</code></td><td>the old position</td><td>keep the value you wrote</td></tr>
       <tr><td>Expecting one copy of a script</td><td>gold, counts and flags reset in each map</td><td>a game graph for game-wide things</td></tr>
-      <tr><td>Saving a handle with <code>dnp.persist</code></td><td>the save is refused</td><td>save a name and a position</td></tr>
+      <tr><td>Saving a handle with <a href="../luaref/02-every-function.html#dnp.persist"><code>dnp.persist</code></a></td><td>the save is refused</td><td>save a name and a position</td></tr>
       <tr><td>Using a select's value as a list index</td><td>the wrong choice, or <code>nil</code> for the last</td><td><code>value + 1</code></td></tr>
-      <tr><td><code>math.random</code></td><td>different on every run</td><td><code>dnp.random(lo, hi)</code></td></tr>
+      <tr><td><code>math.random</code></td><td>different on every run</td><td><a href="../luaref/02-every-function.html#dnp.random"><code>dnp.random(lo, hi)</code></a></td></tr>
     </tbody>
   </table>
 

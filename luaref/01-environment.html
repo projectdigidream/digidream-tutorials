@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Lua environment · Digidream Studio tutorials</title>
+<meta name="description" content="Which Lua the engine runs, the machines your scripts live in and their load order, the globals and hooks, numbers and fx, determinism, budgets, trust profiles and how errors look in the Play log.">
+<link rel="stylesheet" href="../assets/site.css">
+<link rel="stylesheet" href="../assets/skins/skins.css">
+<link rel="icon" type="image/png" href="../assets/logo.png">
+<script src="../assets/skins/skins.js"></script>
+<script src="../assets/skin.js"></script>
+<script defer src="../assets/nav.js"></script>
+<script defer src="../assets/shortcuts.js"></script>
+<script defer src="../assets/site.js"></script>
+</head>
+<body>
+<article>
+  <h1>The Lua environment</h1>
+  <p class="lede">The rules every script lives by: which Lua it is, which machine runs it and when, what is already defined, and what the engine stops or refuses. A reference page; the <a href="../advanced/01-lua-in-the-studio.html">Advanced</a> track teaches the same things with examples.</p>
+  <div class="goal">
+    <b>Covers</b><span>the language version, where scripts run, load order, globals, hooks, numbers, determinism, budgets, trust and errors</span>
+    <b>Time</b><span>15 minutes to read, then look things up</span>
+    <b>Needs</b><span>nothing; <a href="02-every-function.html">Every function</a> has the details of each name</span>
+  </div>
+
+  <h2 id="glance">At a glance</h2>
+  <table>
+    <tbody>
+      <tr><td>Language</td><td>LuaJIT, Lua 5.1, with the JIT compiler switched off</td></tr>
+      <tr><td>Machines</td><td>one per level, plus one game machine for the whole server</td></tr>
+      <tr><td>Rate</td><td>60 ticks a second; <a href="02-every-function.html#hook.on_tick"><code>on_tick</code></a> runs once per tick</td></tr>
+      <tr><td>Numbers</td><td>Lua numbers for counting; <code>fx</code> fixed point for anything in the world</td></tr>
+      <tr><td>Budgets</td><td>2,000,000 instructions per call, 8,000,000 per tick, 256 MB, a warning past 4 ms</td></tr>
+      <tr><td>Output</td><td><code>print</code> and errors go to the Play log (<code>play-server.log</code>)</td></tr>
+    </tbody>
+  </table>
+
+  <h2 id="version">The language: Lua 5.1</h2>
+  <p>The engine runs <b>LuaJIT</b>, which speaks <b>Lua 5.1</b>. The JIT compiler is switched off: compiled code would slip past the instruction budget, and measured on real levels it made no difference, because scripts spend their time calling into the engine. Lua tutorials on the web mostly teach 5.3 or 5.4. What is not there:</p>
+  <table>
+    <thead><tr><th>Newer Lua</th><th>In this engine</th></tr></thead>
+    <tbody>
+      <tr><td><code>a // b</code> (floor division)</td><td>a syntax error; write <code>math.floor(a / b)</code></td></tr>
+      <tr><td><code>&amp;</code> <code>|</code> <code>~</code> <code>&lt;&lt;</code> <code>&gt;&gt;</code></td><td>syntax errors; use <a href="02-every-function.html#lua.bit"><code>bit.band</code>, <code>bit.bor</code> …</a></td></tr>
+      <tr><td>integers as a separate subtype, <code>math.type</code>, <code>math.tointeger</code></td><td>one number type, a double: whole numbers up to 2^53 are exact</td></tr>
+      <tr><td>the <code>utf8</code> library</td><td>absent; strings are bytes and <code>#s</code> counts bytes</td></tr>
+      <tr><td><code>table.unpack</code>, <code>table.pack</code></td><td>absent; <code>unpack</code> is a global</td></tr>
+      <tr><td><code>goto</code> and labels</td><td>LuaJIT accepts them, but avoid them: the studio's checks and most readers do not expect them</td></tr>
+      <tr><td><code>_ENV</code></td><td>absent; Lua 5.1 has <code>setfenv</code> / <code>getfenv</code></td></tr>
+    </tbody>
+  </table>
+  <p>Which standard libraries are there, and which a strict server removes, is listed under <a href="02-every-function.html#lua.basics">Lua itself</a> in Every function.</p>
+
+  <h2 id="machines">Where Lua lives, and which machine runs it</h2>
+  <p>Each level has its own Lua machine, started when the level loads and thrown away when it unloads. Nothing is shared between levels: no variable, no table. There is also one <b>game</b> machine for the whole server.</p>
+  <table>
+    <thead><tr><th>You write it in</th><th>Runs in</th><th>When</th></tr></thead>
+    <tbody>
+      <tr><td><b>📜 Scripts</b>, <span class="ui">+ script</span></td><td>every level of the module, a copy in each</td><td>once as the level loads, then whenever its hooks are called</td></tr>
+      <tr><td>Map settings → <span class="ui">extra Lua</span></td><td>that one map's level</td><td>once as the level loads, last of all</td></tr>
+      <tr><td>A graph's <code>action</code> node set to <span class="ui">do lua</span>, or a trigger's <code>lua</code> action</td><td>the level; in a game graph, the game machine</td><td>each time the run reaches it</td></tr>
+    </tbody>
+  </table>
+  <p>The game machine runs only what the studio writes for you: the weapons, the player's sounds and the module's game graphs. There is no editor for hand-written game-wide Lua. A level script reaches the game through <a href="02-every-function.html#dnp.call_game"><code>dnp.call_game</code></a>; see <a href="../advanced/05-state-and-bridges.html#game">State and bridges</a>.</p>
+  <p>A <span class="ui">do lua</span> line is compiled once, when the level loads, as the body of a function. It sees one local, <code>ev</code>, the event that started the run (<code>ev.entity</code>, <code>ev.target</code>, <code>ev.side</code>, <code>ev.sector</code>, <code>ev.ui_id</code>, <code>ev.widget_id</code>, <code>ev.value</code>, <code>ev.crush_kind</code>). Returning <code>false</code> means "did nothing", which keeps a following <code>once</code> unspent.</p>
+
+  <h2 id="order">Load order</h2>
+  <p>When a level loads, its scripts run top to bottom, one file after another, in this order:</p>
+  <ol>
+    <li>The engine's runtimes the map needs: the monster runtime (<code>mobs</code>) when the module has monsters or weapons; the trigger runtime (<code>triggers</code>) when the map has triggers or a graph; the graph runtime (<code>graphs</code>) and the map's graphs when it has one.</li>
+    <li>The module's monster definitions, then your 📜 scripts, in the order the Scripts page lists them. Each script is wrapped in <code>do … end</code>, so its <code>local</code>s are its own.</li>
+    <li>The map's own file: its <span class="ui">extra Lua</span>, then its camera, the props and monsters placed in the editor, and its triggers.</li>
+  </ol>
+  <p>So at the top of a 📜 script the map's props and monsters <b>do not exist yet</b>. Look them up inside a hook. A level has 16 script slots; Map settings shows how many are used.</p>
+  <p>When a saved level is being restored, the same files run, but <a href="02-every-function.html#dnp.restoring"><code>dnp.restoring()</code></a> is true while they do, and the placed monsters come from the save rather than from the map.</p>
+  <p>The game machine loads the weapon runtime and the module's arsenal, the player's sounds, and the trigger and graph runtimes with the game graphs, when the module has each of them.</p>
+
+  <h2 id="globals">The globals</h2>
+  <table>
+    <thead><tr><th>Name</th><th>What it is</th><th>Present</th></tr></thead>
+    <tbody>
+      <tr><td><code>dnp</code></td><td>the engine: the world, players, sound, panels, saving, calls between machines</td><td>always, in both machines</td></tr>
+      <tr><td><code>fx</code>, <code>vec3</code></td><td>fixed-point numbers and vectors of them</td><td>always, in both machines</td></tr>
+      <tr><td><a href="02-every-function.html#mobs.spawn"><code>mobs</code></a></td><td>monsters: spawning, health, damage</td><td>in a level, when the module has monsters or weapons</td></tr>
+      <tr><td><a href="02-every-function.html#triggers.counter"><code>triggers</code></a></td><td>the trigger table's counters and state</td><td>in a level with triggers or a graph; in the game with a game graph</td></tr>
+      <tr><td><a href="02-every-function.html#graphs.call"><code>graphs</code></a></td><td>talking to graphs: their variables and <code>on_call</code> nodes</td><td>in a level with a graph; in the game with a game graph</td></tr>
+      <tr><td><a href="02-every-function.html#weapons.api"><code>weapons</code></a></td><td>inventories and ammunition</td><td>in the game machine, when the module has weapons</td></tr>
+    </tbody>
+  </table>
+  <p>A 📜 script runs in every level, and not every level has every runtime. Guard: <code>if mobs ~= nil then … end</code>. Your own globals are shared by every script in the same machine; prefer <code>local</code>.</p>
+
+  <h2 id="hooks">Hooks</h2>
+  <p>A hook is a <b>global</b> function with a name the engine knows, such as <a href="02-every-function.html#hook.on_tick"><code>on_tick</code></a> or <a href="02-every-function.html#hook.on_prop_use"><code>on_prop_use</code></a>. Define it with <code>function on_tick()</code>, never <code>local function</code>.</p>
+  <ul>
+    <li><b>Collected per script.</b> After each script loads, the engine takes the hooks it defined and adds them to a list. Then the global is cleared, so the next script can define its own.</li>
+    <li><b>All of them run.</b> When the event happens, every script's handler runs, in load order. The runtimes register their own handlers the same way, so yours never replaces theirs.</li>
+    <li><b>Errors are separate.</b> A handler that fails is reported and skipped; the others still run.</li>
+    <li><b>You cannot call a hook yourself</b> after load: the global is gone. Put the work in a named function and call that from the hook.</li>
+  </ul>
+  <p><a href="02-every-function.html#hook.on_player_enter"><code>on_player_enter</code></a> and <code>on_player_leave</code> are only sent to the game machine. A level script notices arrivals by watching <code>dnp.players()</code> in <code>on_tick</code>.</p>
+  <p>The monster runtime also has a few <b>callback fields</b> you set rather than define: <a href="02-every-function.html#mobs.on_death"><code>mobs.on_death</code></a>, <a href="02-every-function.html#mobs.on_player_hurt"><code>mobs.on_player_hurt</code></a>, <a href="02-every-function.html#mobs.on_player_death"><code>mobs.on_player_death</code></a>. Those are single slots, not lists: the last script to set one wins.</p>
+
+  <h2 id="numbers">Numbers and fx</h2>
+  <p>Lua numbers are fine for counting: scores, ticks, indexes, health. Anything the world measures (positions, heights, speeds, distances) is <a href="02-every-function.html#fx.int"><code>fx</code></a>, a fixed-point number that is exactly the same on every machine. A <code>vec3</code> holds three of them.</p>
+  <ul>
+    <li>Make one with <code>fx.int(3)</code>, <code>fx.frac(1, 4)</code>, <code>fx.parse("2.5")</code>; <code>fx.approx(0.1)</code> is the one door from a fraction, and it rounds.</li>
+    <li>Wherever the engine wants fx, a whole number or a decimal string is accepted too. A Lua fraction such as <code>0.5</code> is refused with an error.</li>
+    <li><code>+ - * /</code> mix fx with whole numbers. Comparisons do not: in Lua 5.1 <code>p.z &lt; 10</code> is an error and <code>p.z == 10</code> is always false. Compare with <code>fx.int(10)</code>.</li>
+    <li><code>x.int</code> is the whole part (rounded down), <code>tostring(x)</code> the decimal.</li>
+  </ul>
+  <p>Angles are <b>brad</b>: a whole number where 2^32 is a full turn (<code>e:facing()</code>, <code>dnp.atan2</code>, <code>dnp.dir</code>).</p>
+
+  <h2 id="determinism">Determinism</h2>
+  <p>The server's world must come out the same every time from the same inputs: that is what lets players' machines predict it, and saves load back exactly. So:</p>
+  <ul>
+    <li>For chance, use <a href="02-every-function.html#dnp.random"><code>dnp.random(lo, hi)</code></a> (whole numbers, both ends included). It is seeded per level from the map. <code>math.random</code> is not.</li>
+    <li>For time, count ticks with <code>dnp.tick()</code>. There is no timer and no <code>wait</code>: keep a deadline (<code>next_at = dnp.tick() + 120</code>) and compare it in <code>on_tick</code>. <code>os.time</code> and <code>os.clock</code> read the real clock and differ every run.</li>
+    <li>For world maths, use fx and the engine's helpers (<code>dnp.length</code>, <code>dnp.atan2</code>, <code>dnp.dir</code>); <code>math.sin</code> and friends may differ in the last digits between machines.</li>
+    <li>Never let <code>pairs</code> order decide something the game can see. The engine's own lists (<code>dnp.players()</code>, <code>dnp.props()</code> …) come in a fixed order; walk them with <code>ipairs</code>.</li>
+    <li>Reads are immediate. Some writes (<code>teleport</code>, <code>add_impulse</code>, <code>set_velocity</code>, <code>set_offset</code>, <code>change_map</code>) are queued and land when the world steps.</li>
+  </ul>
+
+  <h2 id="budgets">Budgets</h2>
+  <p>A level's Lua shares a tick of about 16 ms with everything else. The engine counts and caps it:</p>
+  <table>
+    <thead><tr><th>Limit</th><th>Past it</th></tr></thead>
+    <tbody>
+      <tr><td>2,000,000 instructions in one call (one hook handler, or one script's load)</td><td>the call stops with <code>instruction budget exceeded in '…' (2000000 per call / 8000000 per tick)</code>. <code>pcall</code> cannot catch it: the script makes no further progress</td></tr>
+      <tr><td>8,000,000 instructions in one tick, for all of a machine's handlers together</td><td>the same error, for every call left in that tick</td></tr>
+      <tr><td>256 MB of memory per machine</td><td>the allocation fails with an ordinary Lua error ("not enough memory")</td></tr>
+      <tr><td>4 ms of Lua in one tick</td><td>not stopped; a warning in the log: <code>[lua] tick N: … us in callbacks (worst … us in on_tick in …)</code></td></tr>
+    </tbody>
+  </table>
+  <p>The counts start again for every call and every tick, so a script that hit a limit runs normally next time. <a href="../advanced/07-lua-or-graphs.html#fast">Keeping scripts fast</a> lists the usual causes of the warning.</p>
+
+  <h2 id="trust">Trust profiles</h2>
+  <p>Whoever hosts a server chooses how much a script may reach. The studio's <span class="ui">▶ Play</span> uses the default.</p>
+  <table>
+    <thead><tr><th></th><th>Default</th><th>Strict</th></tr></thead>
+    <tbody>
+      <tr><td><code>string</code>, <code>table</code>, <code>math</code>, <code>bit</code>, base functions</td><td>yes</td><td>yes</td></tr>
+      <tr><td><code>dnp</code>, <code>fx</code>, <code>vec3</code> and the runtimes</td><td>yes</td><td>yes</td></tr>
+      <tr><td><code>os</code>, <code>io</code></td><td>yes</td><td>removed</td></tr>
+      <tr><td><code>load</code>, <code>loadstring</code>, <code>dofile</code>, <code>loadfile</code>, <code>require</code>, <code>module</code>, <code>package</code></td><td>yes</td><td>removed</td></tr>
+      <tr><td><code>coroutine</code></td><td>yes, but don't: it runs outside the budget</td><td>removed</td></tr>
+      <tr><td><code>debug</code></td><td>yes, without <code>debug.sethook</code></td><td>removed</td></tr>
+      <tr><td><code>ffi</code></td><td>yes</td><td>removed</td></tr>
+      <tr><td><code>collectgarbage</code></td><td>removed</td><td>removed</td></tr>
+      <tr><td>a <span class="ui">do lua</span> line in a graph or trigger</td><td>runs</td><td>refused at load: it needs <code>loadstring</code></td></tr>
+      <tr><td>precompiled bytecode</td><td>refused</td><td>refused</td></tr>
+    </tbody>
+  </table>
+  <p>A module that keeps its Lua in 📜 Scripts and uses only the "yes / yes" rows runs the same under both.</p>
+
+  <h2 id="errors">Errors and the Play log</h2>
+  <p>Everything Lua prints and every Lua error goes into <code>play-server.log</code>, which the studio's Play log page shows (Home → <span class="ui">📋 play log</span>, or a map's <span class="ui">⋯</span> → <span class="ui">Play log…</span>). Lines that look like failures are listed first. The shapes:</p>
+  <table>
+    <thead><tr><th>Line</th><th>Means</th><th>Then</th></tr></thead>
+    <tbody>
+      <tr><td><code>[lua:…/module.lua] text</code></td><td>a <a href="02-every-function.html#lua.print"><code>print</code></a> from that file; values are separated by tabs</td><td>nothing</td></tr>
+      <tr><td><code>[srv] …/world.dnpm asked for …/module.lua and it failed: …module.lua:41: 'end' expected …</code></td><td>a script could not load: a syntax error, or an error while its top level ran</td><td>the level does not load</td></tr>
+      <tr><td><code>[lua] on_tick error (tick 900): …module.lua:212: attempt to index a nil value</code></td><td>a hook handler failed</td><td>that handler stops for this call; the level and the other handlers carry on. Shown for the first three errors, then at most once every 300 ticks</td></tr>
+      <tr><td><code>instruction budget exceeded in '…'</code></td><td>a call ran too long</td><td>see <a href="#budgets">Budgets</a></td></tr>
+      <tr><td><code>[lua] tick N: … us in callbacks (worst …)</code></td><td>Lua took more than 4 ms in one tick</td><td>a warning only</td></tr>
+      <tr><td><code>mobs: …</code>, <code>[graphs] …</code>, <code>[weapons] …</code></td><td>a runtime reporting a problem with its data, such as an unknown monster kind</td><td>usually that one thing is skipped</td></tr>
+    </tbody>
+  </table>
+  <p>Line numbers count lines of the file the studio wrote: all 📜 scripts and the monster definitions share <code>module.lua</code>. Find your place by the hook's name and the message.</p>
+
+  <div class="quiz" data-answer="1">
+    <p class="q">Two 📜 scripts both define <code>function on_tick()</code>. What happens?</p>
+    <ul>
+      <li>The second replaces the first</li>
+      <li>Both run every tick, in load order</li>
+      <li>The level refuses to load</li>
+    </ul>
+    <p class="why">Hooks are collected per script into a list, and every handler in the list runs.</p>
+  </div>
+  <div class="quiz" data-answer="2">
+    <p class="q">Your module will be hosted on a strict server. Which of these still works?</p>
+    <ul>
+      <li>A graph with a <span class="ui">do lua</span> line</li>
+      <li><code>os.time()</code> in a 📜 script</li>
+      <li><code>dnp.random(1, 6)</code> in a 📜 script</li>
+    </ul>
+    <p class="why">Strict removes <code>os</code> and the compiler a <span class="ui">do lua</span> line needs; <code>dnp</code> stays.</p>
+  </div>
+</article>
+</body>
+</html>

@@ -19,7 +19,7 @@
   <h1>Panels, HUD and camera</h1>
   <p class="lede">Everything a player sees on top of the world can come from Lua: a panel with buttons, a number on the HUD, the camera, a fade to black and the sky.</p>
   <div class="goal">
-    <b>You'll learn</b><span>how to open, update and close a panel and answer it in <code>on_ui_event</code>, how to give it a designed look, how HUD values reach the screen, how to set one player's camera or every newcomer's, fades and letterbox bars, and the level's sky</span>
+    <b>You'll learn</b><span>how to open, update and close a panel and answer it in <a href="../luaref/02-every-function.html#hook.on_ui_event"><code>on_ui_event</code></a>, how to give it a designed look, how HUD values reach the screen, how to set one player's camera or every newcomer's, fades and letterbox bars, and the level's sky</span>
     <b>Time</b><span>35 minutes</span>
     <b>Needs</b><span><a href="02-events-and-time.html">Events and time</a>; it helps to know <a href="../studio/08-look-and-feel.html">Sky, screens and weather</a></span>
   </div>
@@ -45,14 +45,14 @@
   <table>
     <thead><tr><th>Function</th><th>Does</th></tr></thead>
     <tbody>
-      <tr><td><code>dnp.ui_set(e, ui, id, value)</code></td><td>changes one widget's value: a toggle's 0 or 1, a slider's position, a select's choice. A label has no value</td></tr>
-      <tr><td><code>dnp.ui_show(e, ui, id, shown)</code></td><td>hides or shows one widget, which keeps its value</td></tr>
-      <tr><td><code>dnp.ui_close(e, ui)</code></td><td>closes it</td></tr>
+      <tr><td><a href="../luaref/02-every-function.html#dnp.ui_set"><code>dnp.ui_set(e, ui, id, value)</code></a></td><td>changes one widget's value: a toggle's 0 or 1, a slider's position, a select's choice. A label has no value</td></tr>
+      <tr><td><a href="../luaref/02-every-function.html#dnp.ui_show"><code>dnp.ui_show(e, ui, id, shown)</code></a></td><td>hides or shows one widget, which keeps its value</td></tr>
+      <tr><td><a href="../luaref/02-every-function.html#dnp.ui_close"><code>dnp.ui_close(e, ui)</code></a></td><td>closes it</td></tr>
     </tbody>
   </table>
 
   <h3>Answering: on_ui_event</h3>
-  <p>When the player uses a widget, the engine calls <code>on_ui_event(e, ui_id, widget_id, value)</code> in the level that opened the panel.</p>
+  <p>When the player uses a widget, the engine calls <a href="../luaref/02-every-function.html#hook.on_ui_event"><code>on_ui_event(e, ui_id, widget_id, value)</code></a> in the level that opened the panel.</p>
   <ul>
     <li><code>value</code> is the toggle's 0 or 1, the slider's number, or the select's choice <b>counting from 0</b>.</li>
     <li>When the player closes the panel with its ×, you get <code>widget_id</code> <code>0</code>.</li>
@@ -119,7 +119,7 @@ end
   <div class="callout"><p>The panels you design in <b>▢ Panels</b> are for graphs, which open them by name with <a href="../reference/graph-nodes.html#open_panel"><code>open_panel</code></a>. A script answers only the panels it opened itself.</p></div>
 
   <h2 id="hud">HUD values</h2>
-  <p><code>dnp.hud</code> sends named values to the HUD of one player, or of everyone in the level with <code>nil</code>:</p>
+  <p><a href="../luaref/02-every-function.html#dnp.hud"><code>dnp.hud</code></a> sends named values to the HUD of one player, or of everyone in the level with <code>nil</code>:</p>
   <pre><code>dnp.hud(e,   { gold = 35, quest = "Find the fuse" })
 dnp.hud(nil, { countdown = 10 })
 dnp.hud(nil, { countdown = false })   -- false clears it</code></pre>
@@ -131,7 +131,7 @@ dnp.hud(nil, { countdown = false })   -- false clears it</code></pre>
   <p>A value shows <b>only where an element is bound to it</b>. In <b>▣ Screens</b>, on the <span class="ui">HUD</span> tab, press <span class="ui">+ element…</span> and add a text whose words include <code>{hud.gold}</code>, or a number or bar bound to <code>hud.gold</code>. The game graph's <a href="../reference/graph-nodes.html#set_hud"><code>set_hud</code></a> node writes the same values, so a graph and a script can share one HUD.</p>
 
   <h2 id="camera">The camera</h2>
-  <p><code>dnp.camera(e, { … })</code> changes how one player's camera follows them. Give only the fields you want to change.</p>
+  <p><a href="../luaref/02-every-function.html#dnp.camera"><code>dnp.camera(e, { … })</code></a> changes how one player's camera follows them. Give only the fields you want to change.</p>
   <table>
     <thead><tr><th>Field</th><th>Unit</th><th>Meaning</th></tr></thead>
     <tbody>
@@ -146,7 +146,7 @@ dnp.hud(nil, { countdown = false })   -- false clears it</code></pre>
   </table>
   <pre><code>dnp.camera(e, { distance = 30, pitch = 0.2, lock_yaw = 1 })   -- a high, fixed view
 dnp.camera(e, { cam_shake = 0.6, cam_shake_time = 0.5 })      -- a jolt</code></pre>
-  <p><code>dnp.level_camera{ … }</code> takes the same fields and sets the camera for <b>everyone who joins</b> the level. The map's own <b>🎥 Camera</b> settings are written the same way, after your scripts, so they win. To change the view for a player who is already here, use <code>dnp.camera</code>.</p>
+  <p><a href="../luaref/02-every-function.html#dnp.level_camera"><code>dnp.level_camera{ … }</code></a> takes the same fields and sets the camera for <b>everyone who joins</b> the level. The map's own <b>🎥 Camera</b> settings are written the same way, after your scripts, so they win. To change the view for a player who is already here, use <code>dnp.camera</code>.</p>
 
   <h2 id="screen">Fades and letterbox</h2>
   <pre><code>dnp.screen(e,   { fade = 1, fade_ms = 600 })            -- to black over 0.6 s
@@ -177,10 +177,10 @@ function on_tick()
 end
 </script>
   <div class="widget" data-widget="lua-playground" data-title="Bars, fade, change, fade back" data-code="lua-fade" data-events="use" data-ticks="300"></div>
-  <p>The list of steps is a small, general tool: each step has a tick and a function, and <code>on_tick</code> runs the ones whose time has come.</p>
+  <p>The list of steps is a small, general tool: each step has a tick and a function, and <a href="../luaref/02-every-function.html#hook.on_tick"><code>on_tick</code></a> runs the ones whose time has come.</p>
 
   <h2 id="sky">The sky</h2>
-  <p><code>dnp.sky</code> changes this level's sky for everyone, now and later. It takes the same words as a sky in <b>🌌 Sky</b>:</p>
+  <p><a href="../luaref/02-every-function.html#dnp.sky"><code>dnp.sky</code></a> changes this level's sky for everyone, now and later. It takes the same words as a sky in <b>🌌 Sky</b>:</p>
   <pre><code>dnp.sky("strip SKYHILLS repeat 2")   -- Gem Hollow's own picture, twice round
 dnp.sky(nil)                         -- back to the module's sky</code></pre>
   <p>The level keeps it, and saves it with its state.</p>
@@ -188,9 +188,9 @@ dnp.sky(nil)                         -- back to the module's sky</code></pre>
   <h2>Try it in the studio</h2>
   <ol class="steps">
     <li><p>Open Gem Hollow from Home → <span class="ui">◆ examples</span>. In <b>📜 Scripts</b>, add a script called <code>travel</code> and paste the travel panel above.</p></li>
-    <li><p>Change <code>"lever"</code> to <code>"lever_gold"</code>. Gem Hollow's tagged rooms are gates, rafts and water, which are poor places to land, so travel to its spawn points instead. Make <code>PLACES</code> <code>{ { name = "Start", spawn = "start" }, { name = "Checkpoint 2", spawn = "cp2" } }</code>, and replace the lines from <code>local room</code> down to the <code>end</code> after the <code>print</code> with <code>local to = place and dnp.spawn_point(place.spawn)</code> and <code>if to then e:teleport(to) end</code>.</p></li>
+    <li><p>Change <code>"lever"</code> to <code>"lever_gold"</code>. Gem Hollow's tagged rooms are gates, rafts and water, which are poor places to land, so travel to its spawn points instead. Make <code>PLACES</code> <code>{ { name = "Start", spawn = "start" }, { name = "Checkpoint 2", spawn = "cp2" } }</code>, and replace the lines from <code>local room</code> down to the <code>end</code> after the <a href="../luaref/02-every-function.html#lua.print"><code>print</code></a> with <code>local to = place and dnp.spawn_point(place.spawn)</code> and <code>if to then e:teleport(to) end</code>.</p></li>
     <li><p>Play <code>world</code>, find the gold lever and use it. The panel opens. Choose a place and press <b>Go</b>.</p></li>
-    <li><p>Add <code>dnp.camera(e, { cam_shake = 0.5, cam_shake_time = 0.4 })</code> just before the teleport. Play again and feel the jolt.</p></li>
+    <li><p>Add <a href="../luaref/02-every-function.html#dnp.camera"><code>dnp.camera(e, { cam_shake = 0.5, cam_shake_time = 0.4 })</code></a> just before the teleport. Play again and feel the jolt.</p></li>
     <li><p>Open the panel and close it with its ×. Use the lever again: it opens, because <code>widget == 0</code> cleared your table.</p></li>
   </ol>
 

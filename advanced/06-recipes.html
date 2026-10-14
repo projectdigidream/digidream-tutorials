@@ -114,10 +114,10 @@ end
   <div class="widget" data-widget="lua-playground" data-title="Wave arena" data-code="lua-arena" data-events="cross" data-ticks="480"></div>
   <p><b>Notes.</b></p>
   <ul>
-    <li><code>on_cross</code> fires for <em>every</em> wall flagged trigger. If the map has others, check <code>side</code> against your entrance's number, which <code>print(side)</code> tells you.</li>
-    <li>The script asks <code>mobs.health</code> rather than <code>m:valid()</code>, because a dead monster may leave its body behind.</li>
-    <li>Calling <code>dnp.hud</code> every tick is fine: only changes are sent.</li>
-    <li>Nothing here is saved. If the level is put back from a save in the middle of a wave, the arena starts again from idle. Wrap <code>state</code> and <code>wave</code> in <code>dnp.persist</code> if that matters to you.</li>
+    <li><a href="../luaref/02-every-function.html#hook.on_cross"><code>on_cross</code></a> fires for <em>every</em> wall flagged trigger. If the map has others, check <code>side</code> against your entrance's number, which <a href="../luaref/02-every-function.html#lua.print"><code>print(side)</code></a> tells you.</li>
+    <li>The script asks <a href="../luaref/02-every-function.html#mobs.health"><code>mobs.health</code></a> rather than <code>m:valid()</code>, because a dead monster may leave its body behind.</li>
+    <li>Calling <a href="../luaref/02-every-function.html#dnp.hud"><code>dnp.hud</code></a> every tick is fine: only changes are sent.</li>
+    <li>Nothing here is saved. If the level is put back from a save in the middle of a wave, the arena starts again from idle. Wrap <code>state</code> and <code>wave</code> in <a href="../luaref/02-every-function.html#dnp.persist"><code>dnp.persist</code></a> if that matters to you.</li>
   </ul>
 
   <h2 id="plate">2. A pressure plate lift</h2>
@@ -181,7 +181,7 @@ end
   <p><b>Notes.</b></p>
   <ul>
     <li>The script never asks the lift where it is. It works out its <b>progress</b> from the tick, the same way the engine moves it, so the next move starts exactly where the last one is.</li>
-    <li><code>fx.frac(-DROP * p, TRIP)</code> is an exact fraction. A Lua division such as <code>-DROP * p / TRIP</code> would be a fraction the engine refuses.</li>
+    <li><a href="../luaref/02-every-function.html#fx.frac"><code>fx.frac(-DROP * p, TRIP)</code></a> is an exact fraction. A Lua division such as <code>-DROP * p / TRIP</code> would be a fraction the engine refuses.</li>
     <li><code>&lt;= 2</code> gives one tick of slack, so the plate doesn't flicker between pressed and not.</li>
     <li><code>"floor"</code> moves only the floor, so the ceiling above stays put.</li>
   </ul>
@@ -248,9 +248,9 @@ function on_ui_event(e, ui_id, widget, value)
 end</code></pre>
   <p><b>Notes.</b></p>
   <ul>
-    <li>The gold lives in this level only. Walk into another map and you start with 50 again. For gold that follows a player, keep it in a game graph and talk to it with <code>dnp.call_game</code> (<a href="05-state-and-bridges.html#game">page 5</a>).</li>
+    <li>The gold lives in this level only. Walk into another map and you start with 50 again. For gold that follows a player, keep it in a game graph and talk to it with <a href="../luaref/02-every-function.html#dnp.call_game"><code>dnp.call_game</code></a> (<a href="05-state-and-bridges.html#game">page 5</a>).</li>
     <li>The panel's labels can't change while it is open, which is why the gold is on the HUD. A template's decor can show <code>{hud.gold}</code> inside the panel too.</li>
-    <li>A player's maximum health comes from <code>mobs.player_max_hp</code> when the module sets it, else 100.</li>
+    <li>A player's maximum health comes from <a href="../luaref/02-every-function.html#mobs.player_max_hp"><code>mobs.player_max_hp</code></a> when the module sets it, else 100.</li>
   </ul>
 
   <h2 id="daynight">4. Day and night</h2>
@@ -290,10 +290,10 @@ end</code></pre>
   <p>To watch it turn quickly while you test, set <code>HALF_DAY</code> to <code>10 * 60</code>: ten seconds.</p>
   <p><b>Notes.</b></p>
   <ul>
-    <li>Each <code>dnp.set_sector_light</code> is one message to every player, sent once per change, and the fade is drawn by each game. Twice in four minutes is cheap even on a big map. Don't do it every tick.</li>
+    <li>Each <a href="../luaref/02-every-function.html#dnp.set_sector_light"><code>dnp.set_sector_light</code></a> is one message to every player, sent once per change, and the fade is drawn by each game. Twice in four minutes is cheap even on a big map. Don't do it every tick.</li>
     <li>It replaces the light you drew. A cave you made dark becomes as bright as day: tag it indoor.</li>
     <li>The engine keeps room lights with the level, so a level put back from a save is lit as it was. The cycle itself starts again from day.</li>
-    <li>For a sky that changes too, call <code>dnp.sky</code> next to the lights (<a href="04-panels-hud-camera.html#sky">page 4</a>).</li>
+    <li>For a sky that changes too, call <a href="../luaref/02-every-function.html#dnp.sky"><code>dnp.sky</code></a> next to the lights (<a href="04-panels-hud-camera.html#sky">page 4</a>).</li>
   </ul>
 
   <h2 id="checkpoint">5. A checkpoint that survives a save</h2>
@@ -334,10 +334,10 @@ end, function(e, t)
 end)</code></pre>
   <p><b>Notes.</b></p>
   <ul>
-    <li><code>on_touch</code> fires every tick on the flag. Comparing positions makes the sound play once per new flag, not 60 times a second.</li>
+    <li><a href="../luaref/02-every-function.html#hook.on_touch"><code>on_touch</code></a> fires every tick on the flag. Comparing positions makes the sound play once per new flag, not 60 times a second.</li>
     <li>Two teleports in one tick: the last one wins. The runtime's trip home comes first, so yours is the one that sticks.</li>
-    <li>The checkpoint lives in this level and in save games. It does not follow the player to another map, and a level that restarts without a save forgets it. Add a <code>dnp.persist</code> part as well if the level should keep everyone's checkpoints when it unloads.</li>
-    <li>If another script sets <code>mobs.on_player_hurt</code>, it owns the whole death, and <code>on_player_death</code> may never be called.</li>
+    <li>The checkpoint lives in this level and in save games. It does not follow the player to another map, and a level that restarts without a save forgets it. Add a <a href="../luaref/02-every-function.html#dnp.persist"><code>dnp.persist</code></a> part as well if the level should keep everyone's checkpoints when it unloads.</li>
+    <li>If another script sets <a href="../luaref/02-every-function.html#mobs.on_player_hurt"><code>mobs.on_player_hurt</code></a>, it owns the whole death, and <code>on_player_death</code> may never be called.</li>
   </ul>
 
   <h2 id="score">6. A score per player</h2>
@@ -379,16 +379,20 @@ end
 -- ---- playground only: press use to strike an imp. Your weapons do this in a game.
 local target = mobs.spawn("imp", vec3.new(4, 0, 0))
 function on_prop_use(e, p)
-  if target and mobs.health(target) then mobs.hurt(target, 1000, e) end
+  -- a strike with no attacker record, as a melee swing gives: remember who it was
+  if target and mobs.health(target) then
+    last_hit[target:index()] = e
+    mobs.hurt(target, 1000, nil)
+  end
 end
 </script>
   <div class="widget" data-widget="lua-playground" data-title="Score per kill" data-code="lua-score" data-events="use"></div>
   <p><b>Notes.</b></p>
   <ul>
-    <li>Who killed a monster arrives in <code>by</code>, in more than one shape: a record with <code>.e</code> for a shot or a missile, an entity when a script passes one, or <code>nil</code>. A player's melee swing passes <code>nil</code>, so the script also remembers who struck each monster last, in <code>on_attack</code>.</li>
+    <li>Who killed a monster arrives in <code>by</code>, in more than one shape: a record with <code>.e</code> for a shot or a missile, or <code>nil</code>. (A script that hurts something names the attacker with <a href="../luaref/02-every-function.html#mobs.synthetic_owner"><code>mobs.synthetic_owner</code></a>; a bare entity is not a record.) A player's melee swing passes <code>nil</code>, so the script also remembers who struck each monster last, in <a href="../luaref/02-every-function.html#hook.on_attack"><code>on_attack</code></a>.</li>
     <li>That <code>on_attack</code> only takes notes. It doesn't hurt anything, so it doesn't double your weapons' damage.</li>
-    <li>It keeps any <code>mobs.on_death</code> that was already there and calls it first.</li>
-    <li>The score is the level's. For a score over the whole game, send each kill on to a game graph: <code>dnp.call_game("graph_call", "scored", POINTS[m.kind] or 1, p)</code>, and let the graph add it up.</li>
+    <li>It keeps any <a href="../luaref/02-every-function.html#mobs.on_death"><code>mobs.on_death</code></a> that was already there and calls it first.</li>
+    <li>The score is the level's. For a score over the whole game, send each kill on to a game graph: <a href="../luaref/02-every-function.html#dnp.call_game"><code>dnp.call_game("graph_call", "scored", POINTS[m.kind] or 1, p)</code></a>, and let the graph add it up.</li>
   </ul>
 
   <h2>Try one in the studio</h2>
