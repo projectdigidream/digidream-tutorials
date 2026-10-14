@@ -69,8 +69,9 @@
   <p>Two messages can stop <span class="ui">Create</span>. <em>"Sizes go from 1 to 4096."</em> means a side is out of range. <em>"Use an even size."</em> appears for a sky whose size is odd.</p>
 
   <h3>On its own</h3>
-  <p>From a checkout of qPainter:</p>
-<pre><code>./start.sh          # dev server on port 5173, opens your browser
+  <p>qPainter lives in the workspace's <code>qpainter/</code> folder, a repository of its own. From there:</p>
+<pre><code>cd qpainter
+./start.sh          # dev server on port 5173, opens your browser
 ./start.sh prod     # production build with offline support</code></pre>
   <p>The script also prints a <b>Network</b> URL, such as <code>http://192.168.1.20:5173/</code>. Open it on a phone on the same Wi-Fi to paint with touch or a stylus. <code>./build-apk.sh</code> builds an Android app, <code>qPainter.apk</code>, which you can copy to the phone and install. qPainter also installs as a web app from any HTTPS host.</p>
   <p>On its own, qPainter starts with the texture you had open last. The <span class="ui">New…</span> menu in the top bar offers the square sizes 16 to 1024, <span class="ui">W×H…</span> for any size up to 4096, and three skyboxes. A new texture keeps your palette, ramps and settings.</p>
@@ -199,15 +200,15 @@
   <figure class="shot" data-src="../assets/shots/cinder-texture-brickred.png" data-alt="qPainter with Cinderfall's BRICKRED open, tiled: red bricks, one layer called Freedoom BRICK11, 26 colours" data-hotspots='[{"x":30.5,"y":5.8,"t":"Wrap and Tiles","d":"saved on, so it opens ready to paint across the edges"},{"x":41,"y":50,"t":"64 × 128","d":"the middle copy is the texture; the rest is the tiling"},{"x":86,"y":52,"t":"26 colours","d":"the palette is exactly the colours in the picture"},{"x":85,"y":77,"t":"Freedoom BRICK11","d":"one layer, named after the Freedoom texture it was built from"}]'>
     <figcaption>Cinderfall's BRICKRED in qPainter, tiled: one layer, <b>Freedoom BRICK11</b>, 64 × 128 and 26 colours.</figcaption>
   </figure>
-  <p>Cinderfall has 122 textures, every one a qPainter project in <code>sources/textures/</code>. Gem Hollow's were painted from Kenney tiles; Cinderfall's are almost all <b>Freedoom</b>'s, the free replacement for DOOM's art, so they have DOOM's sizes and DOOM's look:</p>
+  <p>Cinderfall has 119 textures, every one a qPainter project in <code>sources/textures/</code>. Gem Hollow's were painted from Kenney tiles; Cinderfall's are almost all <b>Freedoom</b>'s, the free replacement for DOOM's art, so they have DOOM's sizes and DOOM's look:</p>
   <table>
     <thead><tr><th>Textures</th><th>Size</th><th>What they are</th></tr></thead>
     <tbody>
       <tr><td>BRICKRED, BRICKGREY, METALDARK, RUSTGREEN, STUCCO, PIPES, WOODWALL …</td><td>64 × 128, 128 × 128, a few 256 × 128</td><td>walls. Each was <b>composited</b> from Freedoom's patches the way Freedoom's <code>textures.cfg</code> lays them out, then flattened into one picture</td></tr>
       <tr><td>FLOORMETAL, FLOORGRATE, FLOORTILE, ROCKFLOOR, CEILLIGHT, CEILGRID …</td><td>64 × 64</td><td>floors and ceilings: Freedoom's flats, as they are</td></tr>
       <tr><td>DOORMETAL, BIGDOOR, DOORTRACK, JAMBRED, JAMBBLUE, JAMBYELLOW, EXITSIGN</td><td>8 × 128 to 128 × 128</td><td>doors, door tracks and the coloured jambs of keyed doors</td></tr>
-      <tr><td>LAVA, WATER, SLUDGE, BLOOD and their falls</td><td>64 × 64 to 128 × 112, 3 or 4 frames</td><td>animated liquids (see <a href="04-frames-and-skies.html#cinderfall">Animation and skies</a>)</td></tr>
-      <tr><td>SKYDUSK, SKYASH</td><td>256 × 128</td><td>DOOM-style sky strips</td></tr>
+      <tr><td>LAVA, LAVAFALL, WATER, BLOODFALL</td><td>64 × 64 to 128 × 112, 3 or 4 frames</td><td>animated liquids (see <a href="04-frames-and-skies.html#cinderfall">Animation and skies</a>)</td></tr>
+      <tr><td>SKYDUSK, SKYASH</td><td>256 × 128</td><td>DOOM-style sky strips: the game's and the title menu's</td></tr>
       <tr><td>HUDCORE, HUDHEALTH, HUDKEYRED …; WPNREVOLVER, WPNSCATTER …</td><td>32 × 32; 64 × 32</td><td>icons for the HUD and the weapon wheel, made for the module (layer <b>Icon</b>)</td></tr>
     </tbody>
   </table>

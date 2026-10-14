@@ -167,11 +167,12 @@ on_hit   vfx (fireball) · vfx (smoke)
   <p><b>The flare launcher</b> launches <code>flare_shot</code>, declared in <b>☠ Monsters</b> → <span class="ui">☄ missiles</span> beside the monsters' own:</p>
   <pre><code>flare_shot  speed 24   radius 0.3   z_offset 1.45   life 90   gravity 0
             anim_fly 0   anim_burst 1   burst_ticks 14
-on_hit      damage_area  damage 90, radius 3.2, falloff on, knockback 8, lift 3
+on_hit      damage_area  damage 90, radius 3.2, falloff on, knockback 8, lift 3,
+                         hurts_owner off, shoves_owner on
             sound boom</code></pre>
   <ul>
     <li><b>All blast, no direct hit.</b> Its only harm is the <code>damage_area</code>: 90 at the middle, falling to nothing 3.2 units out. A brute (300 hp) takes four flares, fewer with the scattergun between.</li>
-    <li><b>It hurts you too.</b> The blast does not set <code>hurts_owner</code>, and the default is on, so a flare fired into a wall in front of you takes up to 90 of your 100 health. Keep your distance, or change the blast, as in the exercise below.</li>
+    <li><b>It spares you, but still throws you.</b> <code>hurts_owner</code> is off, so a flare fired into a wall in front of you takes none of your health. <code>shoves_owner</code> is on, so its knockback and lift still reach you: with only <code>hurts_owner</code> off, the blast would leave you out altogether; with both, it throws you without hurting you. That is a rocket jump, as in the exercise below.</li>
     <li><b>A little recoil.</b> The <code>fire</code> phase also runs <code>impulse</code> 3 <code>away</code>.</li>
     <li>It flies 24 units a second for 90 ticks: 36 units before it expires. With no <code>on_expire</code>, an expired flare simply goes.</li>
   </ul>
@@ -189,12 +190,12 @@ on_hit      damage_area  damage 90, radius 3.2, falloff on, knockback 8, lift 3
   </table>
   <p>No <span class="ui">half_pitch?</span>, so no height check, which suits a wrench. Two blows kill a husk (40 hp), and the second blow's sweep runs back across the first, so a monster that stepped aside from one meets the other.</p>
 
-  <h2>Exercise: a flare that spares you</h2>
+  <h2>Exercise: a flare jump</h2>
   <ol class="steps">
-    <li><p>Import Cinderfall (<a href="../examples/02-cinderfall.html">the tour</a> says how), choose <b>☠ Monsters</b> and open <span class="ui">☄ missiles</span>. Find the card <b>Missile: flare_shot</b>.</p></li>
-    <li><p>On its <code>damage_area</code> step in <code>on_hit</code>, switch <code>hurts_owner</code> off and <code>shoves_owner</code> on. With only the first, the blast would leave you out altogether; with both, it throws you without hurting you: a rocket jump.</p></li>
-    <li><p>Check the bar says <em>loads clean</em>, then give yourself the launcher: <b>🧍 Player</b> → <span class="ui">🎒 kit</span>, tick <code>flare</code> and set <code>flares</code> to 10.</p></li>
-    <li><p>Press <span class="ui">▶ Play</span>, face a wall a few steps away and fire. You are thrown back, and your health stays where it was.</p></li>
+    <li><p>Import Cinderfall (<a href="../examples/02-cinderfall.html">the tour</a> says how), choose <b>☠ Monsters</b> and open <span class="ui">☄ missiles</span>. Find the card <b>Missile: flare_shot</b>, and on its <code>damage_area</code> step in <code>on_hit</code> read <code>hurts_owner</code> (off) and <code>shoves_owner</code> (on).</p></li>
+    <li><p>Give yourself the launcher: <b>🧍 Player</b> → <span class="ui">🎒 kit</span>, tick <code>flare</code> and set <code>flares</code> to 10. Check the bar says <em>loads clean</em>.</p></li>
+    <li><p>Press <span class="ui">▶ Play</span>, face a wall a few steps away and fire. The blast throws you back, and your health stays where it was.</p></li>
+    <li><p>Back on the card, switch <code>shoves_owner</code> off and play again. Now the flare neither hurts nor moves you: the blast leaves you out altogether. Switch it back on.</p></li>
   </ol>
 
   <h2>Exercise: tune the stars, and make the fist glow</h2>

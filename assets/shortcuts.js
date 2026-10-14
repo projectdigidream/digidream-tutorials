@@ -1,8 +1,8 @@
 // Every keyboard shortcut, per tool, as the code binds them.
 // `keys` is what is shown; `match` is the list of KeyboardEvent.key values
 // (lower-cased) the trainer accepts, with optional "mod+" / "shift+" prefixes.
-// Sources: studio/src/main.js, ThreeSprite useKeyboardShortcuts.ts,
-// textureeditor src/main.ts, midisynth daw/app.js + pianoroll.js +
+// Sources: studio/src/main.js, threesprite/ useKeyboardShortcuts.ts,
+// qpainter/ src/main.ts, midisynth daw/app.js + pianoroll.js +
 // patch-editor.js, sound sfx/app.js.
 window.DNP_SHORTCUTS = {
   studio: {

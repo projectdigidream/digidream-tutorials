@@ -222,7 +222,7 @@
       <tr><td><code>hound</code>, <code>leap</code></td><td>20</td><td>2: <code>impulse</code> speed 13 towards target, vertical 4; 12: <code>melee</code> damage 8, range 1.5</td><td><code>ready</code> 90</td></tr>
       <tr><td><code>gunner</code>, <code>shoot</code></td><td>14</td><td>0: <a href="../reference/monster-vocab.html#hitscan"><code>hitscan</code></a> damage 3, range 36, count 3, spread 7</td><td><code>ready</code> 70, jitter 30</td></tr>
       <tr><td><code>spitter</code>, <code>spit</code></td><td>24</td><td>12: <a href="../reference/monster-vocab.html#missile"><code>missile</code></a> slag_glob</td><td><code>ready</code> 55, jitter 30</td></tr>
-      <tr><td><code>brute</code>, <code>fire</code></td><td>36</td><td>0: <code>missile</code> cinder_shell; 14: another, <code>offset</code> 8</td><td><code>ready</code> 80, jitter 40</td></tr>
+      <tr><td><code>brute</code>, <code>fire</code></td><td>36</td><td>0 and 14: <code>missile</code> cinder_shell, <code>offset</code> 1.4</td><td><code>ready</code> 80, jitter 40</td></tr>
       <tr><td><code>brute</code>, <code>slam</code></td><td>34</td><td>16: <a href="../reference/monster-vocab.html#damage_area"><code>damage_area</code></a> damage 18, radius 3.6, knockback 10, lift 4</td><td><code>slam</code> 90</td></tr>
     </tbody>
   </table>
@@ -235,18 +235,18 @@
   <pre><code>slag_glob     speed 11, radius 0.35, z_offset 1.0, gravity 9, life 140
               on_hit: damage_area 10, radius 1.8, falloff · sound glob.splat
 cinder_shell  speed 16, radius 0.35, z_offset 1.9, life 120
-              on_hit: damage_area 20, radius 2.4, falloff, knockback 6 · sound boom</code></pre>
+              on_hit: damage_area 20, radius 2.4, falloff, knockback 6, hurts_owner off · sound boom</code></pre>
   <ul>
     <li><b>A glob falls.</b> <code>gravity</code> 9 makes the spitter's glob a lob, not a line, so it can splash you behind low cover.</li>
-    <li><b>Both are blasts.</b> Neither has a <code>damage</code> step: a near miss still hurts. Neither turns off <code>hurts_owner</code>, so a shell that bursts against the brute's own wall can catch the brute.</li>
+    <li><b>Both are blasts.</b> Neither has a <code>damage</code> step: a near miss still hurts. The shell turns off <code>hurts_owner</code>, so a shell that bursts against a wall beside the brute (or the Smelter) does not hurt the one that fired it. The glob leaves it on.</li>
   </ul>
-  <div class="callout warn"><p><b><code>offset</code> is a distance, not an angle.</b> On a <code>missile</code> step it is how far in front of the body the missile appears, in world units. The brute's second shell has <code>offset</code> 8, so it starts 8 units in front of the brute, and the Smelter's volley uses −12, −4, 4 and 12: 12 units behind it, then 4 behind, then 4 and 12 in front. For a fan of shots, use <code>count</code> and <code>arc</code> (degrees) instead, and keep <code>offset</code> a little over the body's radius.</p></div>
+  <div class="callout warn"><p><b><code>offset</code> is a distance, not an angle.</b> On a <code>missile</code> step it is how far in front of the body the missile appears, in world units. Cinderfall keeps it a little over the body's radius: 1.4 for the brute (radius 0.9), 2 for the Smelter (radius 1.4), so a shell starts just clear of the one firing it. For a fan of shots, use <code>count</code> and <code>arc</code> (degrees), as the Smelter's volley does: <code>count</code> 3, then 2, 3 and 2, each with <code>arc</code> 8.</p></div>
 
   <h2>Exercise: a brute that fans its shells</h2>
   <ol class="steps">
     <li><p>Import Cinderfall (<a href="../examples/02-cinderfall.html">the tour</a> says how), choose <b>☠ Monsters</b> and pick <code>brute</code>. Tap the <code>fire</code> state.</p></li>
-    <li><p>Delete the second <code>missile</code> step (at 14, <code>offset</code> 8) with its <span class="ui">✕</span>, and the <code>sound</code> step at 14 beside it.</p></li>
-    <li><p>On the first <code>missile</code> step, set <code>count</code> 2, <code>arc</code> 10 and <code>offset</code> 1.2, a little more than the brute's radius (0.9).</p></li>
+    <li><p>Delete the second <code>missile</code> step (at 14) with its <span class="ui">✕</span>, and the <code>sound</code> step at 14 beside it.</p></li>
+    <li><p>On the first <code>missile</code> step, set <code>count</code> 2 and <code>arc</code> 10. Leave <code>offset</code> at 1.4, a little more than the brute's radius (0.9).</p></li>
     <li><p>Check the bar says <em>loads clean</em>, then press <span class="ui">▶ Play</span> and find a brute (the old town has one). It now fires two shells at once, 10° apart, both from just in front of it, and the gap between them widens with distance.</p></li>
   </ol>
 

@@ -175,10 +175,10 @@
 
   <h2 id="cinderfall">In Cinderfall: nine imported MIDI tracks</h2>
   <div class="callout soon"><p><b>New, and still being tested.</b> Cinderfall is a second example, a first-person shooter. It is not bundled with the studio yet: make its pack with <code>node tutorials/tools/pack-example.mjs cinderfall</code> and bring it in with Home → <span class="ui">⇩ import pack</span>. The <a href="../examples/02-cinderfall.html">Cinderfall tour</a> walks round it.</p></div>
-  <figure class="shot" data-src="../assets/shots/cinder-synth-boss.png" data-alt="DigidreamSynth's Arrange tab on Cinderfall's boss track: eight tracks named basu, rain, led, ovr #2, ovr, squ, orc and drm, at 145 bpm" data-hotspots='[{"x":3,"y":27,"t":"basu, rain, led …","d":"the track names the MIDI file carried"},{"x":16,"y":52,"t":"29 Overdriven Guitar","d":"the program the file chose for each channel"},{"x":63,"y":6,"t":"145 bpm","d":"the file&#39;s one tempo"},{"x":77,"y":6,"t":"loop","d":"the whole song, bar 1 to the end"},{"x":60,"y":67,"t":"squ comes in at bar 5","d":"the arrangement is the MIDI file&#39;s, untouched"},{"x":3,"y":82,"t":"ch 10 (drums)","d":"only MIDI channel 10 plays the drum kit"}]'>
+  <figure class="shot" data-src="../assets/shots/cinder-synth-boss.png" data-alt="DigidreamSynth's Arrange tab on Cinderfall's boss track: eight tracks named basu, rain, led, ovr #2, ovr, squ, orc and drm, at 145 bpm" data-hotspots='[{"x":3,"y":27,"t":"basu, rain, led …","d":"the track names the MIDI file carried"},{"x":16,"y":52,"t":"30 Distortion Guitar","d":"the program each channel plays: the file asked for 29, which the bank lacks, so it was moved to 30"},{"x":63,"y":6,"t":"145 bpm","d":"the file&#39;s one tempo"},{"x":77,"y":6,"t":"loop","d":"the whole song, bar 1 to the end"},{"x":60,"y":67,"t":"squ comes in at bar 5","d":"the arrangement is the MIDI file&#39;s, untouched"},{"x":3,"y":82,"t":"ch 10 (drums)","d":"only MIDI channel 10 plays the drum kit"}]'>
     <figcaption>Cinderfall's <code>boss</code> in the Arrange tab: eight tracks straight from the MIDI file, 145 bpm, the loop over the whole song.</figcaption>
   </figure>
-  <p>Cinderfall's nine tracks are all MIDI files from <b>Freedoom</b>, imported into DigidreamSynth and kept as projects in <code>sources/music/</code>. The module's <code>LICENSE</code> credits each composer. Nothing was re-arranged: what you see is what an import gives you.</p>
+  <p>Cinderfall's nine tracks are all MIDI files from <b>Freedoom</b>, imported into DigidreamSynth and kept as projects in <code>sources/music/</code>. The module's <code>LICENSE</code> credits each composer. Nothing was re-arranged: what you see is what an import gives you, with one change made afterwards, to the programs (see the last point below).</p>
   <table>
     <thead><tr><th>Track</th><th>Freedoom source</th><th>Tracks</th><th>Tempo · metre</th><th>Loop</th></tr></thead>
     <tbody>
@@ -199,7 +199,7 @@
     <li><b>The resolution is the file's.</b> <code>title</code> keeps 600 ticks per beat; the others have 96. It changes nothing you hear.</li>
     <li><b>The loop is the whole song</b>, since none of the files has <code>loopStart</code>/<code>loopEnd</code> markers. Every track restarts from bar 1 with no intro.</li>
     <li><b>Only channel 10 is drums.</b> <code>railhead</code> uses channel 11 as well, as an ordinary guitar track, and keeps <code>MIDI out #4</code>, a track with no notes at all.</li>
-    <li><b>Every project has the shipped bank and kit</b>, the same as Gem Hollow's, so the guitars, choirs and orchestra hits of these metal tunes are played by the stock patches. See <a href="03-patches.html#cinderfall">Patches</a> for what that means for programs the bank does not have.</li>
+    <li><b>Every project has the shipped bank and kit</b>, the same as Gem Hollow's, so the guitars, choirs and orchestra hits of these metal tunes are played by the stock patches. The files asked for a few programs the bank does not have, and those tracks were moved to the nearest program it does have, so nothing plays the fallback pad. See <a href="03-patches.html#cinderfall">Patches</a> for the list.</li>
   </ul>
   <ol class="steps">
     <li><p>Import Cinderfall, open <b>♪ Music</b> and press <span class="ui">✎ edit in DigidreamSynth</span> on <code>boss</code>.</p></li>

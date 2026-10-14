@@ -116,15 +116,15 @@
       <tr><td><b>FLOORPLATE</b>, <b>ROCKFLOOR</b>, <b>FLOORGRILL</b>, <b>CEILMETAL</b></td><td>64 × 64</td><td>DOOM's flats: square, and seamless both ways because a floor repeats in every direction.</td></tr>
     </tbody>
   </table>
-  <p>All 108 Freedoom textures are saved with <span class="ui">Wrap</span> on. The skies and the twelve icons have it off, and only the icons have <span class="ui">cut out (see-through where transparent)</span> on their cards.</p>
-  <div class="callout warn"><p><b>BARS</b> and <b>GRATE</b> are Freedoom's see-through textures: about half of their pixels are transparent. Their cards have <b>cut out</b> off, so on a wall they would draw as solid squares. No map in Cinderfall uses them yet. Turn <b>cut out</b> on before you do.</p></div>
+  <p>All 105 Freedoom textures are saved with <span class="ui">Wrap</span> on. The skies and the twelve icons have it off. <span class="ui">cut out (see-through where transparent)</span> is on for the twelve icons and for two Freedoom textures, <b>BARS</b> (64 × 72) and <b>GRATE</b> (128 × 128): about half of their pixels are transparent, and with <b>cut out</b> on, the game draws those pixels as holes. No map in Cinderfall uses them yet, so they are ready for your own rooms.</p>
 
   <h2>Exercise: bars over a window</h2>
   <ol class="steps">
     <li><p>Import Cinderfall and open <b>🧱 Textures</b>. Click <b>BARS</b> and press <span class="ui">edit in qPainter</span>. Tick <span class="ui">Tiles</span>: the bars repeat side by side, with the gaps between them transparent.</p></li>
     <li><p>Press <span class="ui">Offset ½</span>. A bar now sits on the middle line; check it lines up with its copy. Press <span class="ui">Offset ½</span> again and leave with <span class="ui">‹ studio</span>.</p></li>
-    <li><p>On BARS's card, turn on <span class="ui">cut out (see-through where transparent)</span>.</p></li>
+    <li><p>On BARS's card, <span class="ui">cut out (see-through where transparent)</span> is already on.</p></li>
     <li><p>In a map, tap the side two rooms share and set its <span class="ui">middle</span> to BARS. On a shared side, the middle texture hangs across the opening like a grate. Press <span class="ui">▶ Play</span>: you see through the bars to the room beyond.</p></li>
+    <li><p>Back in <b>🧱 Textures</b>, turn <b>cut out</b> off on BARS's card and play again: the gaps are drawn solid, and the window is a wall. Turn it back on.</p></li>
   </ol>
 
   <h2>Check yourself</h2>

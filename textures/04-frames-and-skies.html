@@ -175,35 +175,35 @@ sheet WATER vertical 4 fps 3</code></pre>
 
   <h2 id="cinderfall">In Cinderfall</h2>
   <div class="callout soon"><p><b>New, and still being tested.</b> Cinderfall, the first-person shooter example, is not bundled yet: see <a href="01-first-texture.html#cinderfall">Make your first texture</a> for how to import it, and the <a href="../examples/02-cinderfall.html">Cinderfall tour</a>.</p></div>
-  <h3>Seven animated textures, DOOM's way</h3>
+  <h3>Four animated textures, DOOM's way</h3>
   <p>DOOM animated its liquids by cycling a few flats or wall textures. Cinderfall keeps Freedoom's frames as the frames of one qPainter project each, on one layer named after all of them (<b>Freedoom LAVA1+LAVA2+LAVA3+LAVA4</b>). The studio wrote these lines to <code>assets/animations.txt</code>:</p>
-<pre><code>sheet BLOOD vertical 3 fps 4
-sheet BLOODFALL vertical 4 fps 6
+<pre><code>sheet BLOODFALL vertical 4 fps 6
 sheet LAVA vertical 4 fps 4
 sheet LAVAFALL vertical 3 fps 6
-sheet SLUDGE vertical 3 fps 4
-sheet SLUDGEFALL vertical 4 fps 6
 sheet WATER vertical 4 fps 4</code></pre>
   <p>The pattern is worth copying: the pools (64 × 64 floors) turn over slowly at 4 a second; the falls (64 × 128 walls, LAVAFALL 128 × 112) run faster at 6, because falling liquid moves faster than a pool's surface.</p>
-  <p>The maps use two of them so far: <b>LAVA</b> on the slag channels of the foundry and the boss arena of the Heart, and <b>WATER</b> in the west mine. In the foundry, turning the third coolant valve runs a graph whose <code>set_floor_texture</code> nodes swap the lava floors (tags 901 and 904) for <b>ASHFLOOR</b> and <b>FLOORPLATE</b>: an animated floor replaced by a still one is the slag cooling. BLOOD, SLUDGE and the falls are in the module, ready for your own rooms.</p>
+  <p>The maps use all four: <b>LAVA</b> on the slag channels of the foundry and the boss arena of the Heart; <b>LAVAFALL</b> on the walls round the lava, in both halves of the foundry and both halves of the Heart; <b>WATER</b> in the west mine; and <b>BLOODFALL</b> on the walls of the Heart's east half. In the foundry, turning the third coolant valve runs a graph whose <code>set_floor_texture</code> nodes swap the lava floors (tags 901 and 904) for <b>ASHFLOOR</b> and <b>FLOORPLATE</b>: an animated floor replaced by a still one is the slag cooling.</p>
   <h3>The sky: SKYDUSK</h3>
   <figure class="shot" data-src="../assets/shots/cinder-texture-skydusk.png" data-alt="qPainter painting Cinderfall's SKYDUSK, a 256 by 128 strip of brown dusk clouds, with its North and horizon guides" data-hotspots='[{"x":16.5,"y":34,"t":"North","d":"the strip&#39;s left edge faces north"},{"x":20,"y":66,"t":"The horizon","d":"100/128 of the way down: drawn 4× round"},{"x":85,"y":49,"t":"21 colours","d":"21 used, 21 in the palette: pixel art, like the walls"},{"x":82,"y":74,"t":"Sky","d":"the one layer"},{"x":91.5,"y":84,"t":"Strip","d":"DOOM sky round the horizon"},{"x":85,"y":87,"t":"Repeat 4, Height 0.625","d":"the defaults, which is what the sky line uses"}]'>
     <figcaption>Cinderfall's SKYDUSK in qPainter: a 256 × 128 strip, 21 colours, one layer <b>Sky</b>.</figcaption>
   </figure>
   <p>SKYDUSK is a DOOM-sized strip, 256 × 128, of brown smoke-lit cloud. <code>module.txt</code> has:</p>
 <pre><code>sky default strip SKYDUSK</code></pre>
-  <p>No <code>repeat</code> or <code>height</code>: the line keeps the defaults, 4 copies round the horizon and 0.625 high, exactly as DOOM drew its own skies. The project's preview settings are the same, so qPainter's 3D preview shows what the game shows. A second strip, <b>SKYASH</b>, is in the module but no level uses it yet; despite its name it is a city skyline at night.</p>
+  <p>No <code>repeat</code> or <code>height</code>: the line keeps the defaults, 4 copies round the horizon and 0.625 high, exactly as DOOM drew its own skies. The project's preview settings are the same, so qPainter's 3D preview shows what the game shows.</p>
+  <p>The second strip, <b>SKYASH</b>, is the title menu's: blood-red cloud torn open on black, 256 × 128 and 17 colours, on the same one layer <b>Sky</b>. A second line gives the <code>menu</code> map a sky of its own, which in the studio is <b>🌌 Sky</b> → <span class="ui">whose</span> <code>menu</code>:</p>
+<pre><code>sky menu strip SKYASH</code></pre>
+  <p>Behind the title screen, the red sky says where the game is going before the first level loads; every level keeps the dusk.</p>
 
-  <h3>Exercise: a night sky over the old town</h3>
+  <h3>Exercise: a burning sky over the old town</h3>
   <ol class="steps">
-    <li><p>Import Cinderfall, open <b>🧱 Textures</b>, click <b>SKYDUSK</b> and press <span class="ui">edit in qPainter</span>. In the 3D preview, drag to look round: the clouds repeat four times.</p></li>
-    <li><p>Press <span class="ui">✕</span> and open <b>🌌 Sky</b>. In <span class="ui">whose</span>, choose <code>w_oldtown</code> and turn on <span class="ui">w_oldtown has a sky of its own</span>. Keep the kind at strip and pick <code>SKYASH</code>.</p></li>
-    <li><p>Press <span class="ui">▶ Play</span> and walk into the old town, which has nine rooms open to the sky: they show the lit towers of a city at night now, and every other district keeps the dusk.</p></li>
+    <li><p>Import Cinderfall, open <b>🧱 Textures</b>, click <b>SKYASH</b> and press <span class="ui">edit in qPainter</span>. In the 3D preview, drag to look round: the red clouds repeat four times.</p></li>
+    <li><p>Press <span class="ui">✕</span> and open <b>🌌 Sky</b>. In <span class="ui">whose</span>, choose <code>menu</code>: it already has a sky of its own, a strip of <code>SKYASH</code>. Now choose <code>w_oldtown</code> and turn on <span class="ui">w_oldtown has a sky of its own</span>. Keep the kind at strip and pick <code>SKYASH</code>.</p></li>
+    <li><p>Press <span class="ui">▶ Play</span> and walk into the old town, which has nine rooms open to the sky: they burn red now, like the title menu, and every other district keeps the dusk.</p></li>
   </ol>
-  <h3>Exercise: let the blood flow</h3>
+  <h3>Exercise: let the lava flow</h3>
   <ol class="steps">
-    <li><p>In <b>🧱 Textures</b>, click <b>BLOODFALL</b>: <em>🎞 animated: 4 frames stacked, 6 a second</em>. Press <span class="ui">edit in qPainter</span>, press <kbd>F</kbd> to play and <kbd>F</kbd> to stop.</p></li>
-    <li><p>Press <span class="ui">‹ studio</span>. In a map, give a wall BLOODFALL and the floor below it BLOOD, and press <span class="ui">▶ Play</span>: the fall pours at 6 a second into a pool that turns at 4.</p></li>
+    <li><p>In <b>🧱 Textures</b>, click <b>LAVAFALL</b>: <em>🎞 animated: 3 frames stacked, 6 a second</em>. Press <span class="ui">edit in qPainter</span>, press <kbd>F</kbd> to play and <kbd>F</kbd> to stop.</p></li>
+    <li><p>Press <span class="ui">‹ studio</span>. In a map, give a wall LAVAFALL and the floor below it LAVA, and press <span class="ui">▶ Play</span>: the fall pours at 6 a second into a pool that turns at 4, as on the foundry's lava walls.</p></li>
   </ol>
 
   <h2>Exercise: an animated lava floor</h2>

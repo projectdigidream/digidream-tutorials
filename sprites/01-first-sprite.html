@@ -167,8 +167,9 @@
   <div class="callout tip"><p>A sprite can also be a weapon's picture in first person. In the Weapons workshop's <span class="ui">first person</span> tab, choose <span class="ui">a sprite (ThreeSprite project): its animations</span>, then pick one animation for the weapon at rest and one for firing. The studio cuts the front view of each frame from the baked sheet. See the <a href="../weapons/01-first-weapon.html">Weapons</a> track.</p></div>
 
   <h2>Running ThreeSprite on its own</h2>
-  <p>ThreeSprite is also a standalone app. From its own repository:</p>
-<pre><code>pnpm install
+  <p>ThreeSprite is also a standalone app. It lives in the workspace's <code>threesprite/</code> folder, a repository of its own. From there:</p>
+<pre><code>cd threesprite
+pnpm install
 pnpm dev          # browser build on http://localhost:1420
 pnpm dev:web      # the browser-only build, on port 1421
 pnpm tauri dev    # the desktop app</code></pre>

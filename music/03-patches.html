@@ -189,26 +189,31 @@
     <li><p>Leave with <span class="ui">✕</span> to throw it away. With <span class="ui">‹ studio</span>, the patch is saved in <code>airship</code>'s own bank only; the other four tracks keep theirs.</p></li>
   </ol>
 
-  <h2 id="cinderfall">In Cinderfall: guitars that fall back</h2>
+  <h2 id="cinderfall">In Cinderfall: programs moved into the bank</h2>
   <div class="callout soon"><p><b>New, and still being tested.</b> Cinderfall, the first-person shooter example, is not bundled yet: see <a href="01-daw-tour.html#cinderfall">A tour of the DAW</a> for how to import it, and the <a href="../examples/02-cinderfall.html">Cinderfall tour</a>.</p></div>
-  <figure class="shot" data-src="../assets/shots/cinder-synth-fallback.png" data-alt="The Synth tab on Cinderfall's boss with ovr selected: program 29 Overdriven Guitar is marked fallback, and the editor shows a plain new patch" data-hotspots='[{"x":21,"y":36,"t":"ovr #2 and ovr","d":"both play program 29, so both light up"},{"x":63,"y":22,"t":"29 Overdriven Guitar ·fallback","d":"the bank has no patch 29"},{"x":72,"y":28.7,"t":"name: new","d":"a blank patch: edit it and it becomes program 29"}]'>
-    <figcaption>The Synth tab on <code>boss</code>: <code>ovr</code> and <code>ovr #2</code> play program 29, which the shipped bank does not have.</figcaption>
+  <figure class="shot" data-src="../assets/shots/cinder-synth-remap.png" data-alt="The Synth tab on Cinderfall's boss with ovr selected: program 30 Distortion Guitar, the bank's distortion_guitar patch with two waveshaper layers; rain plays 89 Pad 2 (warm)" data-hotspots='[{"x":21,"y":36,"t":"ovr #2 and ovr","d":"both play program 30 now, so both light up"},{"x":58,"y":22,"t":"30 Distortion Guitar","d":"was 29 Overdriven Guitar, which the bank does not have"},{"x":50,"y":28.7,"t":"distortion_guitar","d":"a real patch from the bank, not the blank new one"},{"x":51,"y":47.3,"t":"Two waveshaper layers","d":"hard-driven, panned left and right"},{"x":20,"y":29.2,"t":"rain: 89 Pad 2 (warm)","d":"was 96 FX 1 (rain)"}]'>
+    <figcaption>The Synth tab on <code>boss</code>: <code>ovr</code> and <code>ovr #2</code> now play program 30, a patch the shipped bank has.</figcaption>
   </figure>
-  <p>Cinderfall's nine projects carry the shipped bank unchanged, like Gem Hollow's. But Freedoom's metal tunes ask for programs a chiptune never needs, and some of them are not among the bank's 71:</p>
+  <p>Cinderfall's nine projects carry the shipped bank unchanged, like Gem Hollow's. But Freedoom's metal tunes asked for programs a chiptune never needs, and some of them are not among the bank's 71. A program the bank lacks plays the bank's <code>fallback</code> patch, <code>fallback_pad</code>: two soft, detuned saw layers with a slow 40–55 ms attack, so overdriven guitars would come out as a soft pad. Instead of writing new patches, each of those tracks was moved to the nearest program the bank has:</p>
   <table>
-    <thead><tr><th>Program</th><th>Played by</th></tr></thead>
+    <thead><tr><th>The file asked for</th><th>Now plays</th><th>Tracks</th></tr></thead>
     <tbody>
-      <tr><td><code>29 Overdriven Guitar</code></td><td><code>boss</code> (two tracks), <code>foundry</code>, <code>oldtown</code>, <code>railhead</code> (two tracks)</td></tr>
-      <tr><td><code>31 Guitar Harmonics</code></td><td><code>foundry</code>, <code>hub</code></td></tr>
-      <tr><td><code>10 Music Box</code>, <code>86 Lead 7 (fifths)</code>, <code>36 Slap Bass 1</code>, <code>96 FX 1 (rain)</code>, <code>122 Seashore</code></td><td><code>oldtown</code>'s <code>bellz</code>, <code>foundry</code>'s <code>5th</code>, <code>mine</code>'s <code>basu</code>, <code>boss</code>'s <code>rain</code>, <code>victory</code></td></tr>
+      <tr><td><code>29 Overdriven Guitar</code></td><td><code>30 Distortion Guitar</code></td><td><code>boss</code>'s <code>ovr</code> and <code>ovr #2</code>, <code>foundry</code>'s <code>ovr</code>, <code>oldtown</code>'s <code>ovr</code>, <code>railhead</code>'s <code>MIDI out #5</code> and <code>#6</code></td></tr>
+      <tr><td><code>31 Guitar Harmonics</code></td><td><code>25 Acoustic Guitar (steel)</code></td><td><code>foundry</code>'s <code>harm</code>, <code>hub</code>'s <code>harmonix</code></td></tr>
+      <tr><td><code>86 Lead 7 (fifths)</code></td><td><code>81 Lead 2 (sawtooth)</code></td><td><code>foundry</code>'s <code>5th</code></td></tr>
+      <tr><td><code>36 Slap Bass 1</code></td><td><code>34 Electric Bass (pick)</code></td><td><code>mine</code>'s <code>basu</code></td></tr>
+      <tr><td><code>10 Music Box</code></td><td><code>8 Celesta</code></td><td><code>oldtown</code>'s <code>bellz</code></td></tr>
+      <tr><td><code>96 FX 1 (rain)</code></td><td><code>89 Pad 2 (warm)</code></td><td><code>boss</code>'s <code>rain</code></td></tr>
+      <tr><td><code>122 Seashore</code></td><td><code>99 FX 4 (atmosphere)</code></td><td><code>victory</code>'s <code>Seashore</code></td></tr>
     </tbody>
   </table>
-  <p>Every one of these plays the bank's <code>fallback</code> patch, <code>fallback_pad</code>: two soft, detuned saw layers with a slow 40–55 ms attack. So the overdriven guitars of <code>boss</code> come out as a soft pad. A distorted guitar <b>is</b> in the bank: <code>30 Distortion Guitar</code> (<code>distortion_guitar</code>, two hard-driven waveshaper layers panned left and right), which <code>heart</code>, <code>hub</code>, <code>oldtown</code> and <code>railhead</code> use. The program list marks the missing ones with <b>·fallback</b>, and selecting one opens a blank patch called <code>new</code>: nothing is saved for that program until you edit it.</p>
+  <p>Every track in the nine projects now plays a patch the bank has, and none plays <code>fallback_pad</code>. The guitars land on <code>30 Distortion Guitar</code> (<code>distortion_guitar</code>, two hard-driven waveshaper layers panned left and right), which <code>heart</code>, <code>hub</code>, <code>oldtown</code> and <code>railhead</code> already used for their own distorted parts. The track names were kept, so <code>rain</code> and <code>Seashore</code> still carry the names of the sounds they asked for.</p>
+  <p>The program list still marks any program the bank lacks with <b>·fallback</b>, and selecting one opens a blank patch called <code>new</code>: nothing is saved for that program until you edit it. The exercise below uses that to give <code>boss</code> a real program 29.</p>
   <ol class="steps">
-    <li><p>Import Cinderfall, open <code>boss</code> from <b>♪ Music</b>, and go to the <span class="ui">Synth</span> tab. Click <code>ovr</code>: the program list at the top reads <code>29 Overdriven Guitar ·fallback</code>.</p></li>
-    <li><p>Pick <code>30 Distortion Guitar</code> in the program list. Picking a program makes the selected track play it, so <code>ovr</code> now plays 30: press <kbd>Space</kbd> and hear the difference. Open <span class="ui">JSON ▾</span> and copy the text.</p></li>
-    <li><p>Pick <code>29 Overdriven Guitar ·fallback</code> in the list: <code>ovr</code> is back on 29, and the editor shows the blank <code>new</code> patch. Open <span class="ui">JSON ▾</span>, paste over it, change <code>"name"</code> to <code>"overdriven_guitar"</code> and press <span class="ui">Apply JSON</span>.</p></li>
-    <li><p>Play: both <code>ovr</code> tracks now crunch. Leave with <span class="ui">‹ studio</span> to keep the patch, in <code>boss</code>'s bank only, or <span class="ui">✕</span> to throw it away.</p></li>
+    <li><p>Import Cinderfall, open <code>boss</code> from <b>♪ Music</b>, and go to the <span class="ui">Synth</span> tab. Click <code>ovr</code>: the program list at the top reads <code>30 Distortion Guitar</code>, and the name is <code>distortion_guitar</code>. Open <span class="ui">JSON ▾</span> and copy the text.</p></li>
+    <li><p>Pick <code>29 Overdriven Guitar ·fallback</code> in the program list. Picking a program makes the selected track play it, so <code>ovr</code> now plays 29, and the editor shows the blank <code>new</code> patch. Press <kbd>Space</kbd>: <code>ovr</code> is a soft pad under <code>ovr #2</code>'s crunch. That is what the file's choice sounded like before the remap.</p></li>
+    <li><p>Open <span class="ui">JSON ▾</span>, paste over it, change <code>"name"</code> to <code>"overdriven_guitar"</code> and press <span class="ui">Apply JSON</span>. On <span class="ui">Layer 1</span>, lower the waveshaper's second <span class="ui">drive</span> from 14 to 6: an overdrive is a gentler distortion.</p></li>
+    <li><p>Play: <code>ovr</code> now has its own, softer crunch next to <code>ovr #2</code>'s distortion. Leave with <span class="ui">‹ studio</span> to keep the patch, in <code>boss</code>'s bank only, or <span class="ui">✕</span> to throw it away.</p></li>
   </ol>
 
   <h2 id="fit">Fit: a patch from a recording</h2>
