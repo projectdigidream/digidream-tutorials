@@ -12,6 +12,9 @@
   const path = location.href.split(/[?#]/)[0];
   const rel = path.startsWith(ROOT) ? decodeURIComponent(path.slice(ROOT.length)) : '';
   const me = PAGES.find(p => p.file === rel) || null;
+  // A track's own folder (sprites/, sprites/index.html) is its overview page.
+  const hereTrack = me ? me.track : NAV.find(t => rel === t.id + '/' || rel === t.id + '/index.html') || null;
+  window.DNP_HERE_TRACK = hereTrack;
 
   // ---------- storage (best effort: private windows may refuse) ----------
   const store = {
@@ -63,7 +66,7 @@
 
     const side = h('nav', { class: 'sidebar', 'aria-label': 'Tutorials' });
     NAV.forEach(t => {
-      const open = me ? me.track.id === t.id : false;
+      const open = hereTrack ? hereTrack.id === t.id : false;
       const det = h('details', open ? { open: '' } : {});
       det.append(h('summary', {}, h('span', {}, t.icon), t.title, h('span', { class: 'pct' }, t.id === 'reference' ? '' : trackPct(t) + '%')));
       const ol = h('ol');
@@ -79,9 +82,10 @@
       h('a', { href: '#', onclick: e => { e.preventDefault(); if (confirm('Forget all ticked steps and finished pages?')) { try { Object.keys(localStorage).filter(k => k.startsWith('dnp-tut:') && !/^dnp-tut:(theme|skin|mode)$/.test(k)).forEach(k => localStorage.removeItem(k)); } catch {} location.reload(); } } }, 'Reset progress')));
 
     const main = h('main');
-    if (me) {
+    if (hereTrack) {
       article.prepend(h('div', { class: 'crumbs' },
-        h('a', { href: ROOT + 'index.html' }, 'Tutorials'), ' › ', me.track.icon + ' ' + me.track.title));
+        h('a', { href: ROOT + 'index.html' }, 'Tutorials'), ' › ',
+        me ? h('a', { href: ROOT + hereTrack.id + '/index.html' }, hereTrack.icon + ' ' + hereTrack.title) : hereTrack.icon + ' ' + hereTrack.title));
     }
     article.parentNode.insertBefore(top, article);
     const layout = h('div', { class: 'layout' }, side, main);
@@ -98,6 +102,30 @@
       article.append(pager);
       document.title = me.title + ' · ' + me.track.title + ' · Digidream Studio tutorials';
     }
+  }
+
+  // ---------- a track's overview page ----------
+  // <div class="track-index"></div> on <track>/index.html: the track's lessons
+  // with their progress, and a button to start or carry on.
+  function trackIndex() {
+    const el = document.querySelector('.track-index');
+    if (!el || !hereTrack) return;
+    const t = hereTrack;
+    const h1 = document.querySelector('article h1');
+    if (h1 && !h1.textContent.trim()) h1.textContent = t.icon + ' ' + t.title;
+    const lede = document.querySelector('article .lede');
+    if (lede && !lede.textContent.trim()) lede.textContent = t.blurb;
+    document.title = t.title + ' · Digidream Studio tutorials';
+    const done = t.pages.filter(p => pageDone(p.file)).length;
+    const next = t.pages.find(p => !pageDone(p.file)) || t.pages[0];
+    el.append(
+      h('div', { style: 'display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:8px 0 18px' },
+        h('a', { class: 'wbtn primary', href: ROOT + next.file, style: 'text-decoration:none' }, done ? (done === t.pages.length ? 'Read again from the start' : 'Carry on: ' + next.title) : 'Start: ' + next.title),
+        h('span', { class: 'wout' }, `${done} of ${t.pages.length} done`)),
+      h('ol', { class: 'track-list' }, ...t.pages.map((p, i) => h('li', {},
+        h('a', { href: ROOT + p.file, class: pageDone(p.file) ? 'done' : '' },
+          h('span', { class: 'n' }, pageDone(p.file) ? '✓' : String(i + 1)),
+          h('span', { class: 't' }, p.title))))));
   }
 
   // ---------- headings get anchors ----------
@@ -423,6 +451,7 @@
 
   function boot() {
     buildShell();
+    trackIndex();
     anchors();
     steps();
     quizzes();
