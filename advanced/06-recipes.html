@@ -1,0 +1,432 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Recipes: six scripts · Digidream Studio tutorials</title>
+<meta name="description" content="Six complete Lua scripts to paste into the studio: a wave arena with a countdown, a pressure plate lift, a health shop, a day and night cycle, a checkpoint that survives a save, and a score per player.">
+<link rel="stylesheet" href="../assets/site.css">
+<link rel="stylesheet" href="../assets/skins/skins.css">
+<link rel="icon" type="image/png" href="../assets/logo.png">
+<script src="../assets/skins/skins.js"></script>
+<script src="../assets/skin.js"></script>
+<script defer src="../assets/nav.js"></script>
+<script defer src="../assets/shortcuts.js"></script>
+<script defer src="../assets/site.js"></script>
+</head>
+<body>
+<article>
+  <h1>Recipes: six scripts</h1>
+  <p class="lede">Six whole scripts, each one a feature. Paste one into 📜 Scripts, change the names at the top to yours, and press Play.</p>
+  <div class="goal">
+    <b>You'll learn</b><span>how the pieces of the earlier pages fit together in real features: waves of monsters with a countdown, a lift that follows a pressure plate, a shop panel, a day and night cycle, a checkpoint kept in a save game, and a score per player</span>
+    <b>Time</b><span>45 minutes</span>
+    <b>Needs</b><span>pages <a href="01-lua-in-the-studio.html">1</a> to <a href="05-state-and-bridges.html">5</a> of this track; a module of your own, or Gem Hollow</span>
+  </div>
+
+  <p>Every recipe follows the same pattern:</p>
+  <ul>
+    <li><b>Settings at the top</b>, in capitals: the prop names, tags, sounds and numbers to change for your map.</li>
+    <li><b>Things are found late</b>, the first time a hook needs them, because the map's props don't exist yet when your script loads.</li>
+    <li><b>Plain Lua 5.1</b>, and only the engine functions from this track.</li>
+  </ul>
+  <p>Paste each one as a script of its own in <b>📜 Scripts</b>. Scripts don't see each other's <code>local</code> names, so two recipes never clash, and their hooks all run.</p>
+
+  <h2 id="arena">1. A wave arena with a countdown</h2>
+  <p><b>What it does.</b> A player crosses the arena's entrance. The HUD counts down five seconds, then a wave of monsters appears in the arena. When the last one dies, the next countdown starts. After three waves, the HUD says the arena is clear.</p>
+  <p><b>Where.</b> 📜 Scripts, as <code>arena.lua</code>. In the map, give the arena room a tag (here 1) and flag its entrance wall <span class="ui">trigger</span>. Add a HUD text with <code>{hud.arena}</code> in <b>▣ Screens</b>.</p>
+  <script type="text/plain" id="lua-arena">-- arena.lua: crossing the entrance starts three waves.
+local KIND = "imp"             -- a monster from Monsters (in Gem Hollow: "slime")
+local ARENA_TAG = 1            -- the arena room's tag
+local WAVES = { 3, 4, 6 }      -- monsters per wave
+local PAUSE = 5 * 60           -- countdown before each wave, in ticks
+
+local state = "idle"           -- idle, countdown, fighting, done
+local wave = 0
+local starts_at = 0
+local alive = {}               -- this wave's monsters
+local arena = nil
+
+local function find_arena()
+  if arena == nil then
+    for _, s in ipairs(dnp.sectors()) do
+      if s:tag() == ARENA_TAG then arena = s break end
+    end
+  end
+  return arena
+end
+
+local function count_alive()
+  local n = 0
+  for _, m in ipairs(alive) do
+    local hp = mobs.health(m)
+    if hp and hp > 0 then n = n + 1 end
+  end
+  return n
+end
+
+local function next_wave()
+  wave = wave + 1
+  if WAVES[wave] == nil then
+    state = "done"
+    dnp.hud(nil, { arena = "Arena clear!" })
+    return
+  end
+  state = "countdown"
+  starts_at = dnp.tick() + PAUSE
+end
+
+local function spawn_wave()
+  local c = find_arena():center()
+  alive = {}
+  for i = 1, WAVES[wave] do
+    local at = vec3.new(c.x + dnp.random(-4, 4), c.y + dnp.random(-4, 4), c.z)
+    local m = mobs.spawn(KIND, at)
+    if m then alive[#alive + 1] = m end
+  end
+  state = "fighting"
+end
+
+function on_cross(e, side, sector)
+  if state ~= "idle" or e:kind() ~= 0 or find_arena() == nil then return end
+  if not (mobs and mobs.has(KIND)) then
+    print("arena: this module has no monster called " .. KIND)
+    return
+  end
+  next_wave()
+end
+
+function on_tick()
+  if state == "countdown" then
+    local left = starts_at - dnp.tick()
+    if left <= 0 then
+      spawn_wave()
+    elseif left % 60 == 0 then
+      dnp.hud(nil, { arena = "Wave " .. wave .. " in " .. math.floor(left / 60) })
+    end
+  elseif state == "fighting" then
+    local n = count_alive()
+    dnp.hud(nil, { arena = "Wave " .. wave .. ": " .. n .. " left" })
+    if n == 0 then next_wave() end
+  end
+end
+</script>
+  <div class="widget" data-widget="lua-playground" data-title="Wave arena" data-code="lua-arena" data-events="cross" data-ticks="480"></div>
+  <p><b>Notes.</b></p>
+  <ul>
+    <li><code>on_cross</code> fires for <em>every</em> wall flagged trigger. If the map has others, check <code>side</code> against your entrance's number, which <code>print(side)</code> tells you.</li>
+    <li>The script asks <code>mobs.health</code> rather than <code>m:valid()</code>, because a dead monster may leave its body behind.</li>
+    <li>Calling <code>dnp.hud</code> every tick is fine: only changes are sent.</li>
+    <li>Nothing here is saved. If the level is put back from a save in the middle of a wave, the arena starts again from idle. Wrap <code>state</code> and <code>wave</code> in <code>dnp.persist</code> if that matters to you.</li>
+  </ul>
+
+  <h2 id="plate">2. A pressure plate lift</h2>
+  <p><b>What it does.</b> While anyone stands on a plate, a lift goes down. When nobody does, it comes back up, from wherever it got to. Step off halfway, and it turns round smoothly.</p>
+  <p><b>Where.</b> 📜 Scripts, as <code>plate.lua</code>. You need a prop named <code>plate</code> (not solid, so players can stand in it) and a room tagged 7 for the lift.</p>
+  <script type="text/plain" id="lua-plate">-- plate.lua: the lift goes down while the plate is pressed.
+local PLATE = "plate"       -- the prop's name in Props
+local LIFT_TAG = 7
+local DROP = 3              -- units the lift goes down
+local TRIP = 90             -- ticks for the whole way
+
+local lift, looked = nil, false
+local last_touch = -100     -- the last tick anyone touched the plate
+local down = false          -- which way it is going
+local p0, t0 = 0, 0         -- progress (0 = top, TRIP = bottom) at tick t0
+
+local function find_lift()
+  if not looked then
+    looked = true
+    for _, s in ipairs(dnp.sectors()) do
+      if s:tag() == LIFT_TAG then lift = s break end
+    end
+    if lift == nil then print("plate: no room tagged " .. LIFT_TAG) end
+  end
+  return lift
+end
+
+local function progress()
+  local moved = dnp.tick() - t0
+  if down then return math.min(TRIP, p0 + moved) end
+  return math.max(0, p0 - moved)
+end
+
+local function z_at(p)      -- progress to height, exactly, in fx
+  return fx.frac(-DROP * p, TRIP)
+end
+
+local function head(go_down)
+  local s = find_lift()
+  if s == nil then return end
+  local p = progress()
+  down, p0, t0 = go_down, p, dnp.tick()
+  local goal = go_down and TRIP or 0
+  local ticks = math.abs(goal - p)
+  if ticks > 0 then
+    s:move_parametric(vec3.new(0, 0, z_at(p)), vec3.new(0, 0, z_at(goal)), ticks, "once", "floor")
+  end
+end
+
+function on_touch(e, p)
+  if p:name() == PLATE then last_touch = dnp.tick() end
+end
+
+function on_tick()
+  local pressed = dnp.tick() - last_touch <= 2
+  if pressed and not down then head(true)
+  elseif not pressed and down then head(false) end
+end
+</script>
+  <div class="widget" data-widget="lua-playground" data-title="Pressure plate lift" data-code="lua-plate" data-events="touch" data-ticks="300"></div>
+  <p><b>Notes.</b></p>
+  <ul>
+    <li>The script never asks the lift where it is. It works out its <b>progress</b> from the tick, the same way the engine moves it, so the next move starts exactly where the last one is.</li>
+    <li><code>fx.frac(-DROP * p, TRIP)</code> is an exact fraction. A Lua division such as <code>-DROP * p / TRIP</code> would be a fraction the engine refuses.</li>
+    <li><code>&lt;= 2</code> gives one tick of slack, so the plate doesn't flicker between pressed and not.</li>
+    <li><code>"floor"</code> moves only the floor, so the ceiling above stays put.</li>
+  </ul>
+
+  <h2 id="shop">3. A shop that sells health</h2>
+  <p><b>What it does.</b> Using the shopkeeper opens a panel with two potions. Each player starts with 50 gold, shown on their HUD. A potion costs gold and heals, never past full health.</p>
+  <p><b>Where.</b> 📜 Scripts, as <code>shop.lua</code>. A usable prop for the shopkeeper; in Cinderfall, try <code>vos</code>. A HUD text with <code>Gold {hud.gold}</code> in <b>▣ Screens</b>. The sounds are Gem Hollow's: use names from your own <b>🔊 Sounds</b>.</p>
+  <pre><code>-- shop.lua: a shopkeeper sells potions for gold.
+local SHOPKEEPER = "shopkeeper"
+local START_GOLD = 50
+local SMALL_PRICE, SMALL_HEAL = 10, 25
+local BIG_PRICE = 25                       -- the big one heals fully
+local MAX_HP = (mobs and mobs.player_max_hp) or 100
+local W_SMALL, W_BIG, W_LEAVE = 1, 2, 3
+
+local gold = {}   -- player index -&gt; gold
+local shop = {}   -- player index -&gt; the open panel's id
+
+local function gold_of(e)
+  local i = e:index()
+  if gold[i] == nil then gold[i] = START_GOLD end
+  return gold[i]
+end
+
+local function buy(e, price, heal)
+  local hp = e:hp() or 0
+  if hp &gt;= MAX_HP then print("already at full health") return end
+  if gold_of(e) &lt; price then
+    dnp.sound("ui.close", e)
+    print("not enough gold")
+    return
+  end
+  gold[e:index()] = gold_of(e) - price
+  e:set_hp(math.min(MAX_HP, hp + heal))
+  dnp.sound("pickup.heart", e)
+  dnp.hud(e, { gold = gold[e:index()] })
+  print("healed to " .. math.min(MAX_HP, hp + heal) .. ", gold left " .. gold[e:index()])
+end
+
+function on_prop_use(e, p)
+  if p:name() ~= SHOPKEEPER or shop[e:index()] then return end
+  dnp.hud(e, { gold = gold_of(e) })
+  local ui = dnp.ui_open(e, { title = "Potions", widgets = {
+    { kind = "label",  id = 4, label = "Prices are in gold." },
+    { kind = "button", id = W_SMALL, label = "Small potion, +" .. SMALL_HEAL .. ": " .. SMALL_PRICE },
+    { kind = "button", id = W_BIG, label = "Big potion, full health: " .. BIG_PRICE },
+    { kind = "button", id = W_LEAVE, label = "Leave" },
+  } })
+  if ui ~= 0 then shop[e:index()] = ui end
+end
+
+function on_ui_event(e, ui_id, widget, value)
+  if shop[e:index()] ~= ui_id then return end
+  if widget == W_SMALL then
+    buy(e, SMALL_PRICE, SMALL_HEAL)
+  elseif widget == W_BIG then
+    buy(e, BIG_PRICE, MAX_HP)
+  elseif widget == W_LEAVE then
+    dnp.ui_close(e, ui_id)
+    shop[e:index()] = nil
+  elseif widget == 0 then                  -- closed with its x
+    shop[e:index()] = nil
+  end
+end</code></pre>
+  <p><b>Notes.</b></p>
+  <ul>
+    <li>The gold lives in this level only. Walk into another map and you start with 50 again. For gold that follows a player, keep it in a game graph and talk to it with <code>dnp.call_game</code> (<a href="05-state-and-bridges.html#game">page 5</a>).</li>
+    <li>The panel's labels can't change while it is open, which is why the gold is on the HUD. A template's decor can show <code>{hud.gold}</code> inside the panel too.</li>
+    <li>A player's maximum health comes from <code>mobs.player_max_hp</code> when the module sets it, else 100.</li>
+  </ul>
+
+  <h2 id="daynight">4. Day and night</h2>
+  <p><b>What it does.</b> Every two minutes, the light of every outdoor room fades between day and night over 20 seconds. Rooms with a chosen tag, such as houses with their own lamps, keep their light.</p>
+  <p><b>Where.</b> 📜 Scripts, as <code>daynight.lua</code>. Tag your indoor rooms 50, or change <code>INDOOR_TAG</code>.</p>
+  <pre><code>-- daynight.lua: outdoor rooms fade between day and night.
+local DAY, NIGHT = 220, 70          -- light levels, 0..255
+local HALF_DAY = 2 * 60 * 60        -- ticks of day, then of night: 2 minutes
+local FADE = 20                     -- seconds each change takes
+local INDOOR_TAG = 50               -- rooms with this tag keep their own light
+
+local outdoor = nil                 -- room numbers, found once
+local next_at = 0
+local is_day = true
+
+local function outdoor_rooms()
+  if outdoor == nil then
+    outdoor = {}
+    for _, s in ipairs(dnp.sectors()) do
+      if s:tag() ~= INDOOR_TAG then outdoor[#outdoor + 1] = s:index() end
+    end
+  end
+  return outdoor
+end
+
+function on_tick()
+  local t = dnp.tick()
+  if t &lt; next_at then return end
+  next_at = t + HALF_DAY
+  local level = is_day and DAY or NIGHT
+  for _, i in ipairs(outdoor_rooms()) do
+    dnp.set_sector_light(i, level, FADE)
+  end
+  print((is_day and "day" or "night") .. " begins at tick " .. t)
+  is_day = not is_day
+end</code></pre>
+  <p>To watch it turn quickly while you test, set <code>HALF_DAY</code> to <code>10 * 60</code>: ten seconds.</p>
+  <p><b>Notes.</b></p>
+  <ul>
+    <li>Each <code>dnp.set_sector_light</code> is one message to every player, sent once per change, and the fade is drawn by each game. Twice in four minutes is cheap even on a big map. Don't do it every tick.</li>
+    <li>It replaces the light you drew. A cave you made dark becomes as bright as day: tag it indoor.</li>
+    <li>The engine keeps room lights with the level, so a level put back from a save is lit as it was. The cycle itself starts again from day.</li>
+    <li>For a sky that changes too, call <code>dnp.sky</code> next to the lights (<a href="04-panels-hud-camera.html#sky">page 4</a>).</li>
+  </ul>
+
+  <h2 id="checkpoint">5. A checkpoint that survives a save</h2>
+  <p><b>What it does.</b> Touching a flag makes it your checkpoint, with a sound. When you die, you come back at your last flag instead of the level's start. Save the game with <kbd>F5</kbd>, load it with <kbd>F9</kbd>, and your checkpoint is still yours.</p>
+  <p><b>Where.</b> 📜 Scripts, as <code>checkpoint.lua</code>. Flag props named <code>flag1</code> to <code>flag3</code>, and <span class="ui">save and load games</span> on in <b>⚙ Settings</b>. Gem Hollow already does this with its <code>checkpoints</code> graph, so try it in a module of your own.</p>
+  <pre><code>-- checkpoint.lua: touch a flag to make it where you come back.
+local FLAGS = { flag1 = true, flag2 = true, flag3 = true }
+local SOUND = "world.checkpoint"
+
+local spot = {}   -- player index -&gt; vec3
+
+function on_touch(e, p)
+  if e:kind() ~= 0 or not FLAGS[p:name()] then return end
+  local here = p:pos()
+  local old = spot[e:index()]
+  if old == nil or old ~= here then          -- a new flag, not the same one again
+    spot[e:index()] = here
+    dnp.sound(SOUND, p)
+    print("checkpoint for player " .. e:index())
+  end
+end
+
+-- Coming back: the runtime sends a dead player home, then calls this.
+if mobs then
+  local before = mobs.on_player_death
+  mobs.on_player_death = function(e, by)
+    if before then before(e, by) end
+    local at = spot[e:index()]
+    if at then e:teleport(at) end            -- queued after the trip home, so it wins
+  end
+end
+
+-- Kept in a save game, with the player.
+dnp.persist_player("checkpoint", function(e)
+  return { at = spot[e:index()] }            -- a vec3 is plain data
+end, function(e, t)
+  spot[e:index()] = t.at
+end)</code></pre>
+  <p><b>Notes.</b></p>
+  <ul>
+    <li><code>on_touch</code> fires every tick on the flag. Comparing positions makes the sound play once per new flag, not 60 times a second.</li>
+    <li>Two teleports in one tick: the last one wins. The runtime's trip home comes first, so yours is the one that sticks.</li>
+    <li>The checkpoint lives in this level and in save games. It does not follow the player to another map, and a level that restarts without a save forgets it. Add a <code>dnp.persist</code> part as well if the level should keep everyone's checkpoints when it unloads.</li>
+    <li>If another script sets <code>mobs.on_player_hurt</code>, it owns the whole death, and <code>on_player_death</code> may never be called.</li>
+  </ul>
+
+  <h2 id="score">6. A score per player</h2>
+  <p><b>What it does.</b> When a monster dies, the player who killed it scores points by the monster's kind. Each player's score is on their own HUD.</p>
+  <p><b>Where.</b> 📜 Scripts, as <code>score.lua</code>: everything above the <em>playground only</em> line. A HUD text with <code>Score {hud.score}</code> in <b>▣ Screens</b>. The kinds are Gem Hollow's monsters.</p>
+  <script type="text/plain" id="lua-score">-- score.lua: points per kill, per player, on the HUD.
+local POINTS = { slime = 10, bee = 25, snail = 5 }   -- any other kind: 1
+local score = {}                                     -- player index -> points
+local last_hit = {}                                  -- monster index -> who struck it last
+
+-- A player, out of whatever we were given: an entity, or a record with .e.
+local function as_player(x)
+  local e = x
+  if type(x) == "table" and x.e ~= nil then e = x.e end
+  if e and e.valid and e:valid() and e:kind() == 0 then return e end
+  return nil
+end
+
+-- A melee swing doesn't tell the runtime who struck, so remember it here.
+function on_attack(attacker, target)
+  local p = as_player(attacker)
+  if p and target and target.hp ~= nil then last_hit[target:index()] = p end
+end
+
+if mobs then
+  local before = mobs.on_death
+  mobs.on_death = function(m, by)
+    if before then before(m, by) end
+    local p = as_player(by) or (m.idx and last_hit[m.idx])
+    if m.idx then last_hit[m.idx] = nil end
+    if p == nil or not p:valid() then return end
+    local i = p:index()
+    score[i] = (score[i] or 0) + (POINTS[m.kind] or 1)
+    dnp.hud(p, { score = score[i] })
+    print("player " .. i .. " scores; total " .. score[i])
+  end
+end
+
+-- ---- playground only: press use to strike an imp. Your weapons do this in a game.
+local target = mobs.spawn("imp", vec3.new(4, 0, 0))
+function on_prop_use(e, p)
+  if target and mobs.health(target) then mobs.hurt(target, 1000, e) end
+end
+</script>
+  <div class="widget" data-widget="lua-playground" data-title="Score per kill" data-code="lua-score" data-events="use"></div>
+  <p><b>Notes.</b></p>
+  <ul>
+    <li>Who killed a monster arrives in <code>by</code>, in more than one shape: a record with <code>.e</code> for a shot or a missile, an entity when a script passes one, or <code>nil</code>. A player's melee swing passes <code>nil</code>, so the script also remembers who struck each monster last, in <code>on_attack</code>.</li>
+    <li>That <code>on_attack</code> only takes notes. It doesn't hurt anything, so it doesn't double your weapons' damage.</li>
+    <li>It keeps any <code>mobs.on_death</code> that was already there and calls it first.</li>
+    <li>The score is the level's. For a score over the whole game, send each kill on to a game graph: <code>dnp.call_game("graph_call", "scored", POINTS[m.kind] or 1, p)</code>, and let the graph add it up.</li>
+  </ul>
+
+  <h2>Try one in the studio</h2>
+  <ol class="steps">
+    <li><p>Open Gem Hollow from Home → <span class="ui">◆ examples</span>. In <b>📜 Scripts</b>, add <code>score</code> and paste recipe 6, without the playground part.</p></li>
+    <li><p>In <b>▣ Screens</b>, on the <span class="ui">HUD</span> tab, press <span class="ui">+ element…</span> and add a text that reads <code>Score {hud.score}</code>. Drag it to a free corner.</p></li>
+    <li><p>Play <code>world</code> and defeat a slime and a bee. The score shows 10, then 35.</p></li>
+    <li><p>Open <span class="ui">📋 play log</span> and find the <code>scores; total</code> lines.</p></li>
+    <li><p>Change <code>slime = 10</code> to <code>slime = 100</code> and play again. Nothing else needs to change.</p></li>
+  </ol>
+
+  <div class="quiz" data-answer="0">
+    <p class="q">In recipe 2, why does the script keep its own <code>p0</code> and <code>t0</code>?</p>
+    <ul>
+      <li>To start each move exactly where the lift is, so it never jumps</li>
+      <li>Because <code>move_parametric</code> needs them as arguments</li>
+      <li>To save them in a save game</li>
+    </ul>
+    <p class="why">A move starts at its <code>from</code>. Working out the progress from the tick gives the lift's real position, even when it turns round halfway.</p>
+  </div>
+  <div class="quiz" data-answer="2">
+    <p class="q">In recipe 1, you add a second wall flagged trigger elsewhere in the map. What goes wrong?</p>
+    <ul>
+      <li>Nothing</li>
+      <li>The arena never starts</li>
+      <li>Crossing the other wall starts the arena too</li>
+    </ul>
+    <p class="why"><code>on_cross</code> fires for every trigger wall. Check the <code>side</code> argument against your entrance's number.</p>
+  </div>
+  <div class="quiz" data-answer="1">
+    <p class="q">In recipe 3, a player buys a potion in one map, then walks into the next. How much gold do they have there?</p>
+    <ul>
+      <li>What they had left</li>
+      <li>50: each level's script has its own <code>gold</code> table</li>
+      <li>None</li>
+    </ul>
+    <p class="why">A 📜 script runs separately in every level. Gold that follows the player belongs to a game graph.</p>
+  </div>
+</article>
+</body>
+</html>

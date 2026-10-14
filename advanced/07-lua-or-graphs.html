@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lua or graphs, and debugging · Digidream Studio tutorials</title>
+<meta name="description" content="When a graph is the better tool and when Lua is, how to mix them, the graph's lua action and strict-trust servers, keeping scripts fast, a debugging checklist with the Play log, and the common mistakes.">
+<link rel="stylesheet" href="../assets/site.css">
+<link rel="stylesheet" href="../assets/skins/skins.css">
+<link rel="icon" type="image/png" href="../assets/logo.png">
+<script src="../assets/skins/skins.js"></script>
+<script src="../assets/skin.js"></script>
+<script defer src="../assets/nav.js"></script>
+<script defer src="../assets/shortcuts.js"></script>
+<script defer src="../assets/site.js"></script>
+</head>
+<body>
+<article>
+  <h1>Lua or graphs, and debugging</h1>
+  <p class="lede">Graphs and Lua run side by side in every level. This page helps you pick the right one for each job, join them, keep scripts fast, and find out why a script does nothing.</p>
+  <div class="goal">
+    <b>You'll learn</b><span>which jobs suit a graph and which suit Lua, how to let each do its half, what to know about the <span class="ui">do lua</span> line and strict-trust servers, what makes a script slow, a checklist for a script that does nothing, and the mistakes everyone makes once</span>
+    <b>Time</b><span>30 minutes</span>
+    <b>Needs</b><span>the rest of this track; <a href="../graphs/06-debugging.html">Debugging graphs</a> helps; the example Gem Hollow</span>
+  </div>
+
+  <h2 id="choose">Which one?</h2>
+  <p>Start with a graph. A graph is checked by the studio as you draw it, shows you what it does at a glance, and needs no typing. Reach for Lua when the graph would be long and awkward, or can't say it at all.</p>
+  <table>
+    <thead><tr><th>The job</th><th>Use</th><th>Why</th></tr></thead>
+    <tbody>
+      <tr><td>A lever opens a door, once</td><td>graph</td><td><a href="../reference/graph-nodes.html#when_prop_used"><code>when_prop_used</code></a>, <a href="../reference/graph-nodes.html#once"><code>once</code></a>, <a href="../reference/graph-nodes.html#open_door"><code>open_door</code></a>: three nodes</td></tr>
+      <tr><td>A cutscene: bars, a flight, subtitles</td><td>graph</td><td><a href="../reference/graph-nodes.html#start_cinematic"><code>start_cinematic</code></a>, <a href="../reference/graph-nodes.html#camera_flythrough"><code>camera_flythrough</code></a>, <a href="../reference/graph-nodes.html#subtitle"><code>subtitle</code></a> and <span class="ui">▶ scene</span> to preview</td></tr>
+      <tr><td>A panel you design by eye</td><td>graph</td><td><b>▢ Panels</b> and <a href="../reference/graph-nodes.html#open_panel"><code>open_panel</code></a></td></tr>
+      <tr><td>A score or quest flags across maps</td><td>game graph</td><td>the studio has no editor for game-wide Lua</td></tr>
+      <tr><td>A value <b>per player</b> in a level</td><td>Lua</td><td>a graph's variables are shared by the whole level</td></tr>
+      <tr><td>Going over many things: every monster within 10 units</td><td>Lua</td><td>a loop is one line</td></tr>
+      <tr><td>Maths beyond <code>+ - * /</code>, or building text</td><td>Lua</td><td>string functions, tables, exact fx fractions</td></tr>
+      <tr><td>A room that follows a plate, a lift that turns round halfway</td><td>Lua</td><td>you need state between ticks (<a href="06-recipes.html#plate">recipe 2</a>)</td></tr>
+      <tr><td>A wait, a repeat</td><td>either</td><td><a href="../reference/graph-nodes.html#delay"><code>delay</code></a> and <a href="../reference/graph-nodes.html#every"><code>every</code></a>, or <code>dnp.tick()</code></td></tr>
+      <tr><td>Keeping something in a save</td><td>either</td><td>graph variables are saved by themselves; Lua uses <code>dnp.persist</code></td></tr>
+    </tbody>
+  </table>
+
+  <h2 id="mixing">Mixing them</h2>
+  <p>The best split is often: <b>the graph decides when, Lua decides how.</b> The graph listens for the event and checks the conditions, where you can see them. A one-line <span class="ui">do lua</span> hands the hard part to a function in your 📜 script.</p>
+  <pre><code>-- In 📜 Scripts: a global function, so the graph can call it.
+function push_away_all(from, strength)
+  if from == nil or not from:valid() then return end
+  local c = from:pos()
+  for _, e in ipairs(dnp.entities()) do
+    if e:kind() ~= 0 and e:valid() then
+      local p = e:pos()
+      local dx, dy = p.x - c.x, p.y - c.y
+      if dx * dx + dy * dy &lt; fx.int(100) then          -- within 10 units
+        e:add_impulse(vec3.new(dx * strength, dy * strength, 2))
+      end
+    end
+  end
+end</code></pre>
+  <p>In the graph: <a href="../reference/graph-nodes.html#when_prop_used"><code>when_prop_used</code></a> → <a href="../reference/graph-nodes.html#once"><code>once</code></a> → an <a href="../reference/graph-nodes.html#action"><code>action</code></a> node, <span class="ui">do lua</span>, with the line <code>push_away_all(ev.entity, 3)</code>.</p>
+  <p>The other way round, a script starts a graph's <a href="../reference/graph-nodes.html#on_call"><code>on_call</code></a> nodes with <code>graphs.call("name", e, value)</code>, or a game graph's with <code>dnp.call_game("graph_call", "name", value, e)</code> (<a href="05-state-and-bridges.html#graphs">page 5</a>).</p>
+
+  <h2 id="trust">The do lua line, and strict trust</h2>
+  <ul>
+    <li>In the studio the <code>code</code> field is <b>one line</b>. Put more than a call or two in a 📜 script, and call it.</li>
+    <li>The line is compiled when the level loads, so a typo is reported at load, naming the graph, not the first time someone pulls the lever.</li>
+    <li>It returns nothing, normally. If it returns <code>false</code>, the action counts as "did nothing", which matters to a <code>once</code> after it: a <code>once</code> isn't spent by an action that did nothing.</li>
+    <li>It isn't protected. An error in it shows in the Play log as an error of the hook that started the run, and the run stops there.</li>
+    <li>A server running in its <b>strict trust</b> profile has no Lua compiler, so it refuses a graph or trigger with a <code>do lua</code> line at load. 📜 Scripts are files, not text compiled at run time, and still run there. If your game may be hosted that way, keep all Lua in 📜 Scripts.</li>
+  </ul>
+
+  <h2 id="fast">Keeping scripts fast</h2>
+  <p>A level does all its work, Lua included, in about 16 ms a tick. The engine stops a hook after 2,000,000 instructions, a level's scripts after 8,000,000 in a tick, and warns when Lua takes more than 4 ms of a tick. You will rarely hit the limits. You will sometimes hit the warning. What usually causes it:</p>
+  <table>
+    <thead><tr><th>Costly</th><th>Instead</th></tr></thead>
+    <tbody>
+      <tr><td>Work in <code>on_touch</code>, which runs every tick per touching pair</td><td>note the tick, and act when a touch starts (<a href="02-events-and-time.html#touch">page 2</a>)</td></tr>
+      <tr><td><code>dnp.sectors()</code>, <code>dnp.props()</code> or <code>dnp.entities()</code> every tick: each builds a new table</td><td>look rooms up once and keep them; <code>dnp.player_count()</code> builds nothing</td></tr>
+      <tr><td><code>dnp.find_path</code> for many things at once</td><td>a level gets 64 route searches a tick, shared with its monsters; spread them over ticks</td></tr>
+      <tr><td><code>s:set_offset</code> every tick to animate a room</td><td><code>move_parametric</code>, which costs nothing while it runs</td></tr>
+      <tr><td>Sending the same value again and again</td><td>remember what you sent, and send changes only</td></tr>
+      <tr><td><code>print</code> in <code>on_tick</code>: 60 lines a second</td><td>print when something changes</td></tr>
+    </tbody>
+  </table>
+  <p>The warning names the slowest hook: <code>[lua] tick N: … us in callbacks (worst … us in …)</code>. Look there first.</p>
+
+  <h2 id="checklist">When a script does nothing</h2>
+  <ol>
+    <li><b>Did it load?</b> Open <span class="ui">📋 play log</span>. A script that fails to load stops the level, and the log says <em>asked for … module.lua and it failed</em>, with the reason.</li>
+    <li><b>Does the hook run?</b> Put <code>print("on_prop_use", dnp.tick())</code> as its first line. No line at all? Check the name, and that it is not <code>local function</code>.</li>
+    <li><b>Is it the thing you think?</b> Print <code>p:name()</code>, <code>e:kind()</code>, <code>s:tag()</code> before the <code>if</code> that tests them. Names are case-sensitive.</li>
+    <li><b>Is something <code>nil</code>?</b> Something looked up at load, before the map placed it; or a handle gone stale. Check <code>valid()</code>.</li>
+    <li><b>Read the red lines.</b> <span class="ui">✖ what looks wrong</span> lists every line with words such as <em>error</em>, <em>failed</em>, <em>missing</em> or <em>not found</em>. Start your own warnings with such a word, as in <code>print("plate: missing room tagged 7")</code>, and they are listed there too.</li>
+    <li><b>Where am I?</b> The debug overlay (in <b>⚙ Settings</b>, <span class="ui">when I press Play</span> → <span class="ui">always show it</span>) shows the tick and your position as you play.</li>
+    <li><b>Is another script in the way?</b> A second script that replaces <code>mobs.on_death</code>, or a graph that does the same thing first. Comment out the other one and try again.</li>
+  </ol>
+
+  <h3>Practise on a broken script</h3>
+  <ol class="steps">
+    <li><p>Open Gem Hollow from Home → <span class="ui">◆ examples</span>. In <b>📜 Scripts</b>, add <code>broken</code> with this, which has three mistakes:</p>
+<pre><code>local function on_prop_use(e, p)
+  print("used " .. p:nam())
+  if e:pos().z &lt; 0 then print("below the ground") end
+end</code></pre></li>
+    <li><p>Play <code>world</code> and use a lever. Come back and open <span class="ui">📋 play log</span>. Your script printed nothing, and there is no error either. The hook never ran: it is <code>local</code>. Remove the word <code>local</code>.</p></li>
+    <li><p>Play again. Now the log has <code>[lua] on_prop_use error</code> … <code>attempt to call method 'nam' (a nil value)</code>. Fix it to <code>p:name()</code>.</p></li>
+    <li><p>Play again. The next error says the script tried to <em>compare</em> two different types. <code>e:pos().z</code> is fx and <code>0</code> is a Lua number. Write <code>fx.int(0)</code>.</p></li>
+    <li><p>Play once more. The log shows <code>used lever_red</code> (or the lever you chose), and no errors. Delete the script when you are done.</p></li>
+  </ol>
+
+  <h2 id="mistakes">Common mistakes</h2>
+  <table>
+    <thead><tr><th>Mistake</th><th>What you see</th><th>Fix</th></tr></thead>
+    <tbody>
+      <tr><td><code>local function on_tick()</code></td><td>nothing, no error</td><td>hooks are global: <code>function on_tick()</code></td></tr>
+      <tr><td>Finding props at the top of the script</td><td><code>nil</code>; "attempt to index a nil value"</td><td>find them in a hook, the first time</td></tr>
+      <tr><td><code>p.z &lt; 3</code></td><td>"attempt to compare"</td><td><code>p.z &lt; fx.int(3)</code></td></tr>
+      <tr><td><code>vec3.new(0, 0, 0.5)</code></td><td>"expected fx, got the non-integral number"</td><td><code>fx.frac(1, 2)</code> or <code>fx.parse("0.5")</code></td></tr>
+      <tr><td><code>a // b</code></td><td>the level doesn't load</td><td><code>math.floor(a / b)</code></td></tr>
+      <tr><td><code>if dnp.tick() == at</code></td><td>a timer that sometimes never fires</td><td><code>&gt;=</code>, then clear it</td></tr>
+      <tr><td>Doing things in <code>on_touch</code> directly</td><td>a sound or message 60 times a second</td><td>act when a touch starts</td></tr>
+      <tr><td>Setting <code>mobs.on_death</code> without keeping the old one</td><td>another script's counting stops</td><td>keep it and call it first</td></tr>
+      <tr><td>Reading right after <code>teleport</code></td><td>the old position</td><td>keep the value you wrote</td></tr>
+      <tr><td>Expecting one copy of a script</td><td>gold, counts and flags reset in each map</td><td>a game graph for game-wide things</td></tr>
+      <tr><td>Saving a handle with <code>dnp.persist</code></td><td>the save is refused</td><td>save a name and a position</td></tr>
+      <tr><td>Using a select's value as a list index</td><td>the wrong choice, or <code>nil</code> for the last</td><td><code>value + 1</code></td></tr>
+      <tr><td><code>math.random</code></td><td>different on every run</td><td><code>dnp.random(lo, hi)</code></td></tr>
+    </tbody>
+  </table>
+
+  <div class="quiz" data-answer="1">
+    <p class="q">Each player should have their own count of secrets found in a level. Graph or Lua?</p>
+    <ul>
+      <li>A graph variable</li>
+      <li>Lua, with a table keyed by player</li>
+      <li>A trigger counter</li>
+    </ul>
+    <p class="why">A graph's variables and a trigger's counters are one value for the whole level. A table keyed by <code>e:index()</code> holds one per player.</p>
+  </div>
+  <div class="quiz" data-answer="2">
+    <p class="q">Your module will run on a server in its strict trust profile. What still works?</p>
+    <ul>
+      <li>Graphs with a <span class="ui">do lua</span> line</li>
+      <li>A trigger's <code>lua</code> action with code typed in</li>
+      <li>Your 📜 Scripts</li>
+    </ul>
+    <p class="why">Strict trust removes the compiler that text code needs, so <span class="ui">do lua</span> lines are refused at load. Script files still run.</p>
+  </div>
+  <div class="quiz" data-answer="0">
+    <p class="q">The log keeps warning <code>[lua] tick …: … us in callbacks (worst … in on_touch)</code>. What is the likely fix?</p>
+    <ul>
+      <li>Do the work only when a touch starts, not every tick of it</li>
+      <li>Wrap <code>on_touch</code> in <code>pcall</code></li>
+      <li>Move the code to <code>on_post_tick</code></li>
+    </ul>
+    <p class="why"><code>on_touch</code> runs every tick for every pair touching. The warning names it as the slowest hook, so make it do less.</p>
+  </div>
+</article>
+</body>
+</html>

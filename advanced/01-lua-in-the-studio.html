@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lua in the studio · Digidream Studio tutorials</title>
+<meta name="description" content="The three places Lua lives in the studio, which Lua machine runs them and when, your first script, how errors look in the Play log, and Lua 5.1 with fixed-point numbers on one screen.">
+<link rel="stylesheet" href="../assets/site.css">
+<link rel="stylesheet" href="../assets/skins/skins.css">
+<link rel="icon" type="image/png" href="../assets/logo.png">
+<script src="../assets/skins/skins.js"></script>
+<script src="../assets/skin.js"></script>
+<script defer src="../assets/nav.js"></script>
+<script defer src="../assets/shortcuts.js"></script>
+<script defer src="../assets/site.js"></script>
+</head>
+<body>
+<article>
+  <h1>Lua in the studio</h1>
+  <p class="lede">Graphs and triggers say most things. When they can't, you write Lua. This page shows where Lua goes in the studio, when it runs, and how to read what it says back.</p>
+  <div class="goal">
+    <b>You'll learn</b><span>the three places Lua lives, which Lua machine runs each one and in what order, how to write and test a first script, how errors look in the Play log, and the Lua 5.1 and fixed-point rules that trip people up</span>
+    <b>Time</b><span>30 minutes</span>
+    <b>Needs</b><span>Digidream Studio (<a href="../studio/00-get-the-tools.html">Get the tools</a>), the example Gem Hollow, opened from Home; it helps to have read <a href="../studio/06-graphs.html">Graphs</a> and <a href="../graphs/01-thinking-in-graphs.html">Thinking in graphs</a></span>
+  </div>
+
+  <p>This track is for people who already know a little Lua, or are happy to learn it as they go. You don't need to know any other programming language. Every example runs on the engine the studio ships, and many of them also run right here on the page.</p>
+
+  <h2 id="where">The three places Lua lives</h2>
+  <table>
+    <thead><tr><th>Place</th><th>Where in the studio</th><th>Runs in</th><th>Use it for</th></tr></thead>
+    <tbody>
+      <tr><td><b>A script</b></td><td><b>📜 Scripts</b>, <span class="ui">+ script</span></td><td>every level of the module</td><td>behaviour the whole module shares: a shop, a score, a day and night cycle</td></tr>
+      <tr><td><b>Extra Lua</b></td><td>the map editor's <span class="ui">⋯ More</span> → <span class="ui">Map settings…</span> → <span class="ui">extra Lua</span></td><td>that one map's level</td><td>a few lines only one map needs</td></tr>
+      <tr><td><b>A <code>lua</code> action</b></td><td>a graph's <a href="../reference/graph-nodes.html#action"><code>action</code></a> node set to <span class="ui">do lua</span>, or a trigger's <code>lua</code> action</td><td>the level (or the game, in a game graph)</td><td>one line in the middle of a graph or trigger</td></tr>
+    </tbody>
+  </table>
+
+  <h3>📜 Scripts</h3>
+  <p><span class="ui">+ script</span> asks for a file name. It suggests <code>module_hooks.lua</code>. The new script starts with one line:</p>
+  <pre><code>-- Runs in every level of the module, after its monsters are loaded.</code></pre>
+  <p>Tap a script in the list to edit it in the text box. Below it are <span class="ui">rename</span> and <span class="ui">delete</span>. With the <b>Code</b> plugin on, you also get <span class="ui">✎ edit in Code</span> and <span class="ui">open with…</span>. Code is a real Lua editor: line numbers, colours, and a warning when a block is never closed. See <a href="../studio/09-plugins.html">Plugins</a>.</p>
+  <p>Each script has its own scope. The studio wraps it in <code>do … end</code>, so a <code>local</code> in one script is invisible to the others. A hook such as <code>on_tick</code> must be a <b>global</b> function: write <code>function on_tick()</code>, never <code>local function on_tick()</code>. If two scripts both define <code>on_tick</code>, both run, one after the other.</p>
+
+  <h3>Extra Lua</h3>
+  <p>In the map editor, open <span class="ui">⋯ More</span> → <span class="ui">Map settings…</span>. The <span class="ui">extra Lua</span> box is kept exactly as you type it. It goes at the very top of the file the studio writes for that map. The same sheet shows how many of the map's script slots are used.</p>
+
+  <h3>The <code>lua</code> action</h3>
+  <p>In a graph, an <a href="../reference/graph-nodes.html#action"><code>action</code></a> node set to <span class="ui">do lua</span> runs one line of Lua when the run reaches it. The line sees one value, <code>ev</code>: the event that started the run.</p>
+  <table>
+    <thead><tr><th>Field</th><th>What it holds</th></tr></thead>
+    <tbody>
+      <tr><td><code>ev.entity</code></td><td>who did it: the player who pressed, touched or crossed</td></tr>
+      <tr><td><code>ev.target</code></td><td>what it was done to: the prop used or touched, the thing hit</td></tr>
+      <tr><td><code>ev.side</code>, <code>ev.sector</code></td><td>the wall and the room, for wall and line events</td></tr>
+      <tr><td><code>ev.ui_id</code>, <code>ev.widget_id</code>, <code>ev.value</code></td><td>for panel events</td></tr>
+      <tr><td><code>ev.crush_kind</code></td><td>for a crush: <code>"vertical"</code> or <code>"pinned"</code></td></tr>
+    </tbody>
+  </table>
+  <p>A one-liner can call a global function from your 📜 script. The graph does the "when", and your script does the hard part:</p>
+  <pre><code>give_bonus(ev.entity)</code></pre>
+  <div class="callout warn"><p>The studio stores the line as text, and the server compiles it when the level loads. A server that runs in its <b>strict trust</b> profile removes the compiler, and then refuses the line. If your module will be hosted that way, keep your Lua in 📜 Scripts. More in <a href="07-lua-or-graphs.html#trust">Lua or graphs</a>.</p></div>
+
+  <h2 id="vm">Which Lua runs them, and when</h2>
+  <p>Every level has its own Lua machine. Nothing is shared between levels: not a variable, not a table. A level's machine starts when the level loads and is thrown away when it unloads.</p>
+  <p>So a 📜 script runs <b>once per level</b>, not once for the game. In a module with three maps there are three copies of your script, each with its own variables. When a level starts again, your script starts again from its first line.</p>
+  <p>When a level loads, its scripts run in this order:</p>
+  <ol>
+    <li>The engine's runtimes the map needs: monsters, triggers, graphs. Then the map's own graphs.</li>
+    <li><b>Your 📜 scripts</b>, one after another, after the module's monster definitions.</li>
+    <li>The map's own file: first its <span class="ui">extra Lua</span>, then its camera, the props and monsters you placed, and its triggers.</li>
+  </ol>
+  <div class="callout warn"><p><b>At load, the map's things don't exist yet.</b> The top of a 📜 script runs before the map places its props and monsters. So <code>dnp.props()</code> finds nothing there. Look things up later, inside a hook, the first time you need them. Every example in this track does it that way.</p></div>
+  <p>There is also one <b>game</b> machine, which runs once for the whole server. The studio writes what runs there for you: the weapons, the player's sounds and the game's graphs. The studio has no editor for hand-written game-wide Lua. For game-wide logic, use a game graph (<a href="../graphs/05-game-graph-and-calls.html">The game graph, calls and maps</a>). Your level scripts can still reach it, as <a href="05-state-and-bridges.html#game">page 5</a> shows.</p>
+  <div class="callout"><p><b>In Cinderfall</b> nine maps are walked as one world. Each map is still its own level with its own Lua machine, so your script runs nine times, side by side. A player standing in the next district shows up in <code>dnp.players()</code> with <code>e:sector()</code> equal to <code>-1</code>. <a href="02-events-and-time.html#arrivals">Events and time</a> shows how to skip them.</p></div>
+
+  <h2 id="first">Your first script</h2>
+  <p>This script says hello when its level starts. Then, when a player uses a prop, it names the prop and plays Gem Hollow's lever sound on it.</p>
+  <script type="text/plain" id="lua-first">-- hello.lua: runs in every level of the module.
+print("hello from level " .. dnp.level())
+
+function on_prop_use(e, p)
+  print("player " .. e:index() .. " used " .. p:name())
+  dnp.sound("world.lever", p)
+end
+</script>
+  <div class="widget" data-widget="lua-playground" data-title="Your first script" data-code="lua-first" data-events="use"></div>
+  <p>Press <b>use</b> in the playground to fire <code>on_prop_use</code> with the toy level's lever. Now do it for real:</p>
+  <ol class="steps">
+    <li><p>On Home, open <span class="ui">◆ examples</span> and choose Gem Hollow.</p></li>
+    <li><p>Open <b>📜 Scripts</b>. Gem Hollow has none: it does everything with graphs. Press <span class="ui">+ script</span> and type <code>hello</code>. The studio adds <code>.lua</code>.</p></li>
+    <li><p>Paste the script above into the text box, under the first comment line. Tap outside the box so the studio keeps the change.</p></li>
+    <li><p>Open <b>🗺 Maps</b>, open <code>world</code>, and press <span class="ui">▶ Play</span>.</p></li>
+    <li><p>Walk to a lever and press use (<kbd>E</kbd>). The first time, you hear the lever sound twice: once from the <code>levers</code> graph, and once from your script.</p></li>
+    <li><p>Come back with <b>◀ Studio</b>. On Home, open <span class="ui">📋 play log</span> and scroll to <code>play-server.log</code>. Find your two lines. They start with <code>[lua:</code> and the name of the file the studio wrote your scripts into, <code>module.lua</code>.</p></li>
+    <li><p>Back in 📜 Scripts, change <code>p:name()</code> to <code>p:nme()</code>, play again and use the lever. Then read the Play log again. The error is at the top, under <span class="ui">✖ what looks wrong</span>.</p></li>
+  </ol>
+  <div class="callout tip"><p>A player has no catalogue name, so the script prints <code>e:index()</code>, the player's slot number in the level. <code>e:name()</code> answers for monsters, and is <code>nil</code> for a player.</p></div>
+
+  <h2 id="errors">How errors look</h2>
+  <p>Every line Lua prints, and every error, goes into <code>play-server.log</code>. The Play log page shows lines that look like failures first, in red. The shapes to know:</p>
+  <table>
+    <thead><tr><th>You see</th><th>It means</th><th>What happens</th></tr></thead>
+    <tbody>
+      <tr><td><code>[lua:…/module.lua] hello from level 1</code></td><td>your <code>print</code></td><td>nothing; it is just a message</td></tr>
+      <tr><td><code>[srv] …/world.dnpm asked for …/module.lua and it failed: …module.lua:41: 'end' expected …</code></td><td>the script could not load: a typo, or an error at its top level</td><td>the <b>level does not load</b>, and the Play log opens by itself</td></tr>
+      <tr><td><code>[lua] on_prop_use error (tick 2210): …module.lua:47: attempt to call method 'nme' (a nil value)</code></td><td>a hook failed while it ran</td><td>that call stops; the level carries on. The line repeats at most every 300 ticks</td></tr>
+      <tr><td><code>instruction budget exceeded in '…'</code></td><td>a hook ran far too long, usually an endless loop</td><td>the call is stopped (see <a href="02-events-and-time.html#budgets">budgets</a>)</td></tr>
+    </tbody>
+  </table>
+  <div class="callout warn"><p><b>Line numbers count lines in <code>module.lua</code>, not in your script.</b> The studio puts the monster definitions and your other scripts in the same file, so line 47 there may be line 5 of yours. Look for the function name and the message, not the number.</p></div>
+
+  <h2 id="lua51">Lua 5.1 and fx on one screen</h2>
+  <p>The engine runs <b>LuaJIT</b>, which speaks <b>Lua 5.1</b>. Most tutorials on the web teach Lua 5.3 or 5.4. These are the differences that matter:</p>
+  <table>
+    <thead><tr><th>Instead of (5.3+)</th><th>Write (5.1)</th></tr></thead>
+    <tbody>
+      <tr><td><code>a // b</code></td><td><code>math.floor(a / b)</code></td></tr>
+      <tr><td><code>utf8.len(s)</code></td><td>there is no <code>utf8</code> library; <code>#s</code> counts bytes</td></tr>
+      <tr><td><code>a &amp; b</code>, <code>a | b</code></td><td>no bit operators; test one button with <code>math.floor(b / dnp.button.USE) % 2 == 1</code></td></tr>
+      <tr><td><code>table.unpack(t)</code></td><td>avoid it; index the table instead</td></tr>
+      <tr><td><code>goto</code></td><td>avoid it; use a flag or a function</td></tr>
+    </tbody>
+  </table>
+  <p>Numbers are plain Lua numbers, and whole numbers are exact. The world itself uses <b>fx</b>, a fixed-point number that is the same on every machine. Positions, heights and speeds are fx.</p>
+  <pre><code>local a = fx.int(3)          -- 3
+local b = fx.frac(1, 4)      -- 0.25, exactly
+local c = fx.parse("2.5")    -- 2.5, exactly
+local d = fx.approx(0.1)     -- about 0.1: the one rounding door
+local up = vec3.new(0, 0, c) -- x, y, z; any part may be fx or a whole number
+
+local p = e:pos()            -- a vec3 of fx
+print(p.z + 2)               -- fx plus a whole number works; prints like "4.500000"
+print(p.z.int)               -- the whole part, rounded down
+if p.z &lt; fx.int(10) then end -- compare fx with fx</code></pre>
+  <div class="callout warn"><p>In Lua 5.1, <code>p.z &lt; 10</code> is an error ("attempt to compare"), and <code>p.z == 10</code> is always <code>false</code>. Turn the number into fx first: <code>fx.int(10)</code>. And never pass a fraction such as <code>0.5</code> where the engine wants fx. It refuses it and tells you to use <code>fx.frac</code> or <code>fx.parse</code>.</p></div>
+  <p>The playgrounds on this site run Lua 5.3 in your browser, against a toy level. Code written to the 5.1 rules above runs in both.</p>
+
+  <div class="quiz" data-answer="2">
+    <p class="q">Your module has three maps, and one 📜 script with <code>local count = 0</code> at the top. How many <code>count</code> variables exist while all three levels are loaded?</p>
+    <ul>
+      <li>One, shared by the whole game</li>
+      <li>One per player</li>
+      <li>Three: one in each level</li>
+    </ul>
+    <p class="why">A 📜 script runs once in every level, and each level has its own Lua machine. Game-wide values belong in a game graph.</p>
+  </div>
+  <div class="quiz" data-answer="0">
+    <p class="q">At the top of your script, outside any function, <code>for _, p in ipairs(dnp.props()) do … end</code> finds none of the map's props. Why?</p>
+    <ul>
+      <li>Your scripts run before the map places its props</li>
+      <li><code>dnp.props()</code> only works in the game machine</li>
+      <li>Props need <code>dnp.restoring()</code> to be true</li>
+    </ul>
+    <p class="why">The map's own file runs last, and it places the props. Look them up inside a hook instead.</p>
+  </div>
+  <div class="quiz" data-answer="1">
+    <p class="q">The Play log says <code>[lua] on_tick error (tick 900): …module.lua:212: attempt to index a nil value</code>. Your script is 30 lines long. What do you do?</p>
+    <ul>
+      <li>Nothing: line 212 is in another module</li>
+      <li>Look in your <code>on_tick</code> for something that can be <code>nil</code>; 212 counts lines of the whole generated file</li>
+      <li>Delete the monsters, which are on line 212</li>
+    </ul>
+    <p class="why">All 📜 scripts and the monster definitions share one file, so the number is not yours. The hook's name and the message point you to the place.</p>
+  </div>
+</article>
+</body>
+</html>

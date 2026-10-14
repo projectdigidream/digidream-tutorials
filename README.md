@@ -17,13 +17,14 @@ Opening `index.html` straight from disk (`file://`) works too. The one differenc
 ## What's inside
 
 - `index.html`: the landing page and learning paths.
-- `studio/`, `examples/`, `sprites/`, `textures/`, `music/`, `sounds/`, `enemies/`, `weapons/`, `graphs/`: the tracks.
+- `studio/`, `examples/`, `sprites/`, `textures/`, `music/`, `sounds/`, `enemies/`, `weapons/`, `graphs/`, `advanced/` (Lua scripting): the tracks. Each track folder's `index.html` is that track's overview page.
   - `examples/` holds guided tours of the two example projects: Gem Hollow, which ships with the studio, and Cinderfall, the newer one. Both are bundled with the studio (Home → examples).
 - `reference/`: all shortcuts, files and baking, and a glossary.
 - `assets/site.css`, `assets/site.js`: the shell (sidebar, search, progress, quizzes, shortcut trainers, screenshot hotspots).
 - `assets/nav.js`: the table of contents. `assets/shortcuts.js`: every shortcut.
 - `assets/widgets/`: the interactive demos (room drawing, sprite views, seamless tile painter, ADSR synth, cue timeline, SFX toy, graph toy…).
 - `assets/shots/`: screenshots of the real tools.
+- `assets/vendor/fengari-web.js`: [fengari](https://fengari.io), a Lua VM in JavaScript (MIT, see `fengari-LICENSE.txt`). The Lua playground in `advanced/` runs on it, against a toy world that answers to the engine's function names.
 - `assets/data/vocab-*.js`: the engine's graph, monster and weapon vocabularies, behind the generated reference pages. They are generated, so don't edit them. After the engine's vocabulary changes, regenerate them:
 
   ```sh

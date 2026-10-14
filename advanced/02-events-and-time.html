@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Events and time · Digidream Studio tutorials</title>
+<meta name="description" content="Every hook a level script can define, when it fires and what it gets; arrivals by polling; timers made from dnp.tick(); deferred writes and stale handles; determinism and the instruction budgets.">
+<link rel="stylesheet" href="../assets/site.css">
+<link rel="stylesheet" href="../assets/skins/skins.css">
+<link rel="icon" type="image/png" href="../assets/logo.png">
+<script src="../assets/skins/skins.js"></script>
+<script src="../assets/skin.js"></script>
+<script defer src="../assets/nav.js"></script>
+<script defer src="../assets/shortcuts.js"></script>
+<script defer src="../assets/site.js"></script>
+</head>
+<body>
+<article>
+  <h1>Events and time</h1>
+  <p class="lede">A script does nothing until the engine calls one of its hooks. This page lists every hook, shows how to notice what has no hook, and how to count time with nothing but the tick number.</p>
+  <div class="goal">
+    <b>You'll learn</b><span>every level hook and its arguments, why <code>on_touch</code> needs care, how to notice players arriving, one-shot, repeating and countdown timers, which writes wait for the next step, stale handles, keeping the game the same on every machine, and the budgets a script lives within</span>
+    <b>Time</b><span>35 minutes</span>
+    <b>Needs</b><span><a href="01-lua-in-the-studio.html">Lua in the studio</a>; the example Gem Hollow</span>
+  </div>
+
+  <h2 id="hooks">Every hook</h2>
+  <p>A hook is a global function with a fixed name. Define it in a 📜 script and the engine calls it. If several scripts define the same hook, each one runs, in load order.</p>
+  <table>
+    <thead><tr><th>Hook</th><th>Arguments</th><th>Fires</th></tr></thead>
+    <tbody>
+      <tr><td><code>on_tick()</code></td><td>none</td><td>every tick, 60 times a second, before the world moves</td></tr>
+      <tr><td><code>on_post_tick()</code></td><td>none</td><td>every tick, after the world has moved</td></tr>
+      <tr><td><code>on_prop_use(e, prop)</code></td><td>who, which prop</td><td>a player presses use on a prop marked usable</td></tr>
+      <tr><td><code>on_touch(e, prop)</code></td><td>who, which prop</td><td><b>every tick</b> while a body overlaps a prop</td></tr>
+      <tr><td><code>on_interact(e, side, sector)</code></td><td>who, the wall's number, the room's number</td><td>a player presses use facing a wall flagged <span class="ui">usable</span></td></tr>
+      <tr><td><code>on_cross(e, side, sector)</code></td><td>who, the wall's number, the room's number</td><td>a body crosses a wall flagged <span class="ui">trigger</span></td></tr>
+      <tr><td><code>on_attack(attacker, target)</code></td><td>who swung, what it reached (an entity or a prop)</td><td>a swing connects</td></tr>
+      <tr><td><code>on_crush(e, sector, how)</code></td><td>who, the room, <code>"vertical"</code> or <code>"pinned"</code></td><td>the first tick a body is crushed</td></tr>
+      <tr><td><code>on_ui_event(e, ui_id, widget_id, value)</code></td><td>who, which panel, which widget, its value</td><td>a player presses, flips, slides or picks on a panel your script opened (<a href="04-panels-hud-camera.html">Panels</a>)</td></tr>
+    </tbody>
+  </table>
+  <p>There is no hook for a player arriving or leaving. Those go to the game machine only. A level script notices them by looking, as shown below.</p>
+  <div class="callout tip"><p>The trigger and graph runtimes listen to the same hooks. Your <code>on_prop_use</code> runs <em>as well as</em> a graph's <a href="../reference/graph-nodes.html#when_prop_used"><code>when_prop_used</code></a>, never instead of it.</p></div>
+
+  <h2 id="touch">on_touch fires every tick</h2>
+  <p>A player standing on a pad for two seconds calls <code>on_touch</code> 120 times. To act once per step onto the pad, remember the last tick each pair touched. A touch that comes right after the last one is the same touch going on.</p>
+  <script type="text/plain" id="lua-touch">local last = {}   -- "entity:prop" -> the last tick they touched
+
+function on_touch(e, p)
+  local key = e:index() .. ":" .. p:index()
+  local t = dnp.tick()
+  local before = last[key]
+  last[key] = t
+  if before == nil or t - before > 1 then
+    print("tick " .. t .. ": stepped onto " .. p:name())
+  end
+end
+</script>
+  <div class="widget" data-widget="lua-playground" data-title="One message per step, not per tick" data-code="lua-touch" data-events="touch" data-ticks="240"></div>
+  <p>Hold <b>touch</b> in the playground. The message comes once, however long you stay. Step off and on again and it comes again.</p>
+  <p>To know when someone steps <em>off</em>, check in <code>on_tick</code> for a key whose last touch is two or more ticks old. <a href="06-recipes.html#plate">Recipe 2</a> does exactly that.</p>
+
+  <h2 id="arrivals">Noticing players arrive</h2>
+  <p><code>dnp.players()</code> is the list of players' entities right now. Compare it with the list you saw last tick. Do it in <code>on_tick</code>, and keep the work small, because it runs 60 times a second.</p>
+  <script type="text/plain" id="lua-arrive">local seen = {}   -- player index -> true
+
+-- In a world of several maps, players next door have sector -1.
+local function here(e) return e:sector() ~= nil and e:sector() >= 0 end
+
+function on_tick()
+  local now = {}
+  for _, e in ipairs(dnp.players()) do
+    if here(e) then
+      local i = e:index()
+      now[i] = true
+      if not seen[i] then
+        print("player " .. i .. " arrived at tick " .. dnp.tick())
+      end
+    end
+  end
+  for i in pairs(seen) do
+    if not now[i] then print("player " .. i .. " left") end
+  end
+  seen = now
+end
+</script>
+  <div class="widget" data-widget="lua-playground" data-title="Arrivals by polling" data-code="lua-arrive" data-events="enter" data-ticks="120"></div>
+  <p>The first player arrives on the first tick. Press <b>enter</b> to bring in a second one.</p>
+  <div class="callout"><p><code>e:index()</code> is a slot in this level. It is fine for a level's own tables. A number that stays the same from level to level is <code>e:player()</code>. It is <code>nil</code> for anything that is not a player.</p></div>
+
+  <h2 id="timers">Timers from the tick</h2>
+  <p>There is no timer function. There is a clock: <code>dnp.tick()</code>, the level's tick number. A tick is 1/60 of a second. To wait, store the tick you want and compare.</p>
+  <table>
+    <thead><tr><th>Time</th><th>Ticks</th></tr></thead>
+    <tbody>
+      <tr><td>1 second</td><td>60</td></tr>
+      <tr><td>half a second</td><td>30</td></tr>
+      <tr><td>1 minute</td><td>3600</td></tr>
+    </tbody>
+  </table>
+  <script type="text/plain" id="lua-timers">local SECOND = 60
+local boom_at = nil        -- one-shot: the tick it goes off, or nil
+local next_beep = 0        -- repeating: the next tick it fires
+local ends_at = nil        -- countdown: the tick it reaches zero
+
+function on_prop_use(e, p)
+  if p:name() == "lever" then
+    boom_at = dnp.tick() + 3 * SECOND
+    ends_at = dnp.tick() + 5 * SECOND
+    print("lever pulled at tick " .. dnp.tick())
+  end
+end
+
+function on_tick()
+  local t = dnp.tick()
+
+  if boom_at and t >= boom_at then
+    boom_at = nil
+    print("boom at tick " .. t)
+  end
+
+  if t >= next_beep then
+    next_beep = t + 2 * SECOND
+    print("beep at tick " .. t)
+  end
+
+  if ends_at then
+    local left = ends_at - t
+    if left <= 0 then
+      ends_at = nil
+      dnp.hud(nil, { countdown = false })
+      print("time is up")
+    elseif left % SECOND == 0 then
+      dnp.hud(nil, { countdown = math.floor(left / SECOND) })
+    end
+  end
+end
+</script>
+  <div class="widget" data-widget="lua-playground" data-title="Three kinds of timer" data-code="lua-timers" data-events="use" data-ticks="600"></div>
+  <p>Three rules make timers safe:</p>
+  <ul>
+    <li><b>Compare with <code>&gt;=</code>, never <code>==</code>.</b> A level with nobody in it may sleep, and its <code>on_tick</code> does not run. When it wakes, the exact tick may be gone.</li>
+    <li><b>Set the variable to <code>nil</code> when a one-shot fires</b>, or it fires every tick from then on.</li>
+    <li><b>Do the work only when something changes.</b> The countdown sends the HUD a value once a second, not 60 times. (<code>dnp.hud</code> skips values that did not change anyway, but your own work adds up.)</li>
+  </ul>
+  <p><code>dnp.hud(nil, { countdown = 4 })</code> sends a value to everyone in the level. It shows only where your HUD has an element bound to <code>hud.countdown</code>. More in <a href="04-panels-hud-camera.html#hud">Panels, HUD and camera</a>.</p>
+
+  <h2 id="deferred">Reads now, some writes later</h2>
+  <p>When your script reads the world, it gets the value right now. Five changes are <b>queued</b> instead, and happen when the engine applies its queue, before the world moves:</p>
+  <table>
+    <thead><tr><th>Queued</th><th>If you call it twice in one tick</th></tr></thead>
+    <tbody>
+      <tr><td><code>e:teleport(v)</code></td><td>the last one wins</td></tr>
+      <tr><td><code>e:set_velocity(v)</code></td><td>the last one wins</td></tr>
+      <tr><td><code>e:add_impulse(v)</code></td><td>both add up</td></tr>
+      <tr><td><code>s:set_offset(v)</code> (a room)</td><td>the last one wins</td></tr>
+      <tr><td><code>e:change_map(…)</code></td><td>applied after every level has moved</td></tr>
+    </tbody>
+  </table>
+  <pre><code>e:teleport(vec3.new(10, 4, 0))
+print(e:pos())   -- still the OLD position: the move is queued</code></pre>
+  <p>So don't read back what you just wrote. Keep the value you wrote in a variable if you need it again.</p>
+
+  <h2 id="handles">Stale handles</h2>
+  <p>An entity, prop or sector you get from the engine is a <b>handle</b>: a name for a slot, not the thing itself. When the thing goes (a monster dies and vanishes, a coin is picked up, a player leaves), the handle goes stale:</p>
+  <ul>
+    <li><code>e:valid()</code> returns <code>false</code>;</li>
+    <li>every getter returns <code>nil</code>;</li>
+    <li>every setter does nothing.</li>
+  </ul>
+  <p>Nothing crashes, but <code>e:pos().x</code> on a stale handle tries to index <code>nil</code>, and that <em>is</em> an error. Check first:</p>
+  <pre><code>if boss and boss:valid() then
+  local p = boss:pos()
+  …
+end</code></pre>
+  <p>Compare two handles by their index: <code>a:index() == b:index()</code>. And never save a handle (<a href="05-state-and-bridges.html">page 5</a>): save what it stands for.</p>
+
+  <h2 id="determinism">The same game on every machine</h2>
+  <p>The server runs the world, and each player's game predicts parts of it. Moving rooms are worked out on each client from the tick. So anything that changes the world must come out the same every time:</p>
+  <ul>
+    <li><b>Random numbers:</b> use <code>dnp.random(lo, hi)</code>. It gives a whole number from <code>lo</code> to <code>hi</code>, both included. It is seeded from the map, so a level replays the same way.</li>
+    <li><b>Maths that moves things:</b> use fx and whole numbers. <code>math.sin</code> and other floating-point maths can differ in the last digit from one machine to another. They are fine for numbers that only go to a screen: a camera, a light level, a HUD.</li>
+    <li><b>Order:</b> <code>pairs</code> visits keys in no set order. When the order changes the world (who gets the item first), loop with <code>ipairs</code> over a list instead.</li>
+  </ul>
+  <pre><code>local rolls = {}
+for i = 1, 8 do rolls[i] = dnp.random(1, 6) end
+print("eight dice: " .. table.concat(rolls, " "))
+
+-- An exact fraction in fx: three quarters of 10 units.
+local d = fx.frac(3, 4) * 10
+print("three quarters of 10 is " .. tostring(d))</code></pre>
+
+  <h2 id="budgets">Budgets</h2>
+  <p>A script shares the server with everything else, so the engine watches it:</p>
+  <table>
+    <thead><tr><th>Limit</th><th>What happens past it</th></tr></thead>
+    <tbody>
+      <tr><td>2,000,000 Lua instructions in one hook call</td><td>the call is stopped with <em>instruction budget exceeded</em>. <code>pcall</code> cannot catch it</td></tr>
+      <tr><td>8,000,000 instructions in one tick, for all of a level's scripts together</td><td>the same</td></tr>
+      <tr><td>256 MB of memory for a level's Lua</td><td>allocation fails</td></tr>
+      <tr><td>4 ms of Lua in one tick</td><td>a warning in the log: <code>[lua] tick N: … us in callbacks (worst … us in …)</code></td></tr>
+    </tbody>
+  </table>
+  <p>Two million instructions is a lot for one event. Hitting it nearly always means a loop that never ends. The 4 ms warning is the one to watch: a tick is about 16 ms, and the world needs most of it.</p>
+
+  <h2>Try it in the studio</h2>
+  <ol class="steps">
+    <li><p>Open Gem Hollow from Home → <span class="ui">◆ examples</span>, then <b>📜 Scripts</b>. Add a script called <code>timers</code>.</p></li>
+    <li><p>Paste the arrivals script from above. Below it, add a repeating timer that prints <code>dnp.player_count()</code> every 5 seconds (300 ticks).</p></li>
+    <li><p>Open the <code>world</code> map and press <span class="ui">▶ Play</span>. Walk around for 20 seconds, then come back with <b>◀ Studio</b>.</p></li>
+    <li><p>Open <span class="ui">📋 play log</span>. Find your arrival line, then the count every 300 ticks.</p></li>
+    <li><p>Change your timer's <code>&gt;=</code> to <code>==</code> and set the next tick to <code>dnp.tick() + 300.5</code>. Play again. The timer never fires again, because no tick is ever equal to a fraction. Put it back.</p></li>
+  </ol>
+
+  <div class="quiz" data-answer="1">
+    <p class="q">You want a sound when a player steps on a spring prop. You write <code>dnp.sound(…)</code> straight inside <code>on_touch</code>. What happens?</p>
+    <ul>
+      <li>One sound per step</li>
+      <li>The sound starts again every tick for as long as they stand there</li>
+      <li>Nothing: <code>on_touch</code> is for monsters</li>
+    </ul>
+    <p class="why"><code>on_touch</code> fires every tick while the bodies overlap. Remember the last tick per pair, and act only when a touch starts.</p>
+  </div>
+  <div class="quiz" data-answer="2">
+    <p class="q">In one hook you call <code>e:teleport(spot)</code> and then <code>print(e:pos())</code>. What is printed?</p>
+    <ul>
+      <li><code>spot</code></li>
+      <li><code>nil</code>, because the entity is moving</li>
+      <li>the position before the teleport</li>
+    </ul>
+    <p class="why">Teleports are queued and applied before the next step. Reads always see the world as it is now.</p>
+  </div>
+  <div class="quiz" data-answer="0">
+    <p class="q">Which line picks a spawn point the same way every time the level starts?</p>
+    <ul>
+      <li><code>local i = dnp.random(1, #spots)</code></li>
+      <li><code>local i = math.random(1, #spots)</code></li>
+      <li><code>local i = 1 + math.floor(math.sin(dnp.tick()) * #spots)</code></li>
+    </ul>
+    <p class="why"><code>dnp.random</code> is seeded from the map, so it is repeatable and the same on every machine.</p>
+  </div>
+</article>
+</body>
+</html>

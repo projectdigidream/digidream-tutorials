@@ -96,6 +96,18 @@ window.DNP_NAV = [
     ],
   },
   {
+    id: 'advanced', title: 'Advanced · Lua scripting', icon: '⚙', blurb: 'Script the engine in Lua from inside the studio: events, the world, panels, saving, and when to use Lua over a graph.',
+    pages: [
+      { file: 'advanced/01-lua-in-the-studio.html', title: 'Lua in the studio', kw: 'lua script scripts page extra lua code editor play log first script luajit' },
+      { file: 'advanced/02-events-and-time.html', title: 'Events and time', kw: 'hook on_tick on_prop_use on_cross on_touch on_attack timer tick 60 deferred random determinism fx' },
+      { file: 'advanced/03-the-world.html', title: 'Touching the world', kw: 'entity prop sector move_parametric light texture effect spawn mobs hitscan sound music vfx' },
+      { file: 'advanced/04-panels-hud-camera.html', title: 'Panels, HUD and camera', kw: 'ui_open ui_set on_ui_event hud camera screen fade letterbox sky' },
+      { file: 'advanced/05-state-and-bridges.html', title: 'State, saving and bridges', kw: 'persist persist_player restoring store_save store_load graphs triggers counter property change_map export call' },
+      { file: 'advanced/06-recipes.html', title: 'Recipes: six scripts', kw: 'arena waves pressure plate shop day night checkpoint score recipe' },
+      { file: 'advanced/07-lua-or-graphs.html', title: 'Lua or graphs, and debugging', kw: 'graph lua node when to use budget instruction debug play log errors trust strict' },
+    ],
+  },
+  {
     id: 'reference', title: 'Reference', icon: '⌘', blurb: 'Every shortcut, every file, every word.',
     pages: [
       { file: 'reference/shortcuts.html', title: 'All shortcuts', kw: 'keys keyboard shortcut trainer' },

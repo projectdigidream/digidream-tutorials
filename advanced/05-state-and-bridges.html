@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>State, saving and bridges · Digidream Studio tutorials</title>
+<meta name="description" content="Keep a script's state with dnp.persist and dnp.persist_player, keep values across games with the store, talk to graphs and triggers, reach the game machine, and send players to other maps.">
+<link rel="stylesheet" href="../assets/site.css">
+<link rel="stylesheet" href="../assets/skins/skins.css">
+<link rel="icon" type="image/png" href="../assets/logo.png">
+<script src="../assets/skins/skins.js"></script>
+<script src="../assets/skin.js"></script>
+<script defer src="../assets/nav.js"></script>
+<script defer src="../assets/shortcuts.js"></script>
+<script defer src="../assets/site.js"></script>
+</head>
+<body>
+<article>
+  <h1>State, saving and bridges</h1>
+  <p class="lede">A script's variables live as long as its level. This page shows how to keep them longer, and how a script talks to graphs, triggers, the game and other maps.</p>
+  <div class="goal">
+    <b>You'll learn</b><span>what the module's saving switches keep on their own, how to save your script's state with <code>dnp.persist</code> and a player's with <code>dnp.persist_player</code>, what <code>dnp.restoring()</code> is for, the store that outlives every game, reading and starting graphs and triggers, how far a level script can reach the game machine, and changing maps</span>
+    <b>Time</b><span>40 minutes</span>
+    <b>Needs</b><span><a href="03-the-world.html">Touching the world</a>; it helps to know <a href="../graphs/02-variables-and-numbers.html">Variables, numbers and saving</a> and <a href="../graphs/05-game-graph-and-calls.html">The game graph, calls and maps</a>; the example Gem Hollow</span>
+  </div>
+
+  <h2 id="switches">What the module keeps on its own</h2>
+  <p>In <b>⚙ Settings</b>, three switches say what the module saves:</p>
+  <table>
+    <thead><tr><th>Switch</th><th>What it does</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">levels keep their state</span></td><td>a level that unloads keeps its state, and gets it back when it loads again</td></tr>
+      <tr><td><span class="ui">save and load games</span></td><td>one player can save to a slot and load it again (<kbd>F5</kbd> / <kbd>F9</kbd> in the game)</td></tr>
+      <tr><td><span class="ui">survive a server restart</span></td><td>the levels' states are written to disk and read back when the server starts</td></tr>
+    </tbody>
+  </table>
+  <p>With any of them on, the engine keeps by itself: rooms that moved, wall pictures changed, room lights, textures and weather, the level's sky, and the props placed when the level loaded (where they are now, and which were taken). The monster runtime keeps living monsters. The graph runtime keeps graph variables.</p>
+  <p><b>Your script's own variables are not kept.</b> When the level comes back, your script runs again from its first line. To keep something, hand it to the engine with <code>dnp.persist</code>.</p>
+
+  <h2 id="persist">dnp.persist: a level's state</h2>
+  <pre><code>local opened = {}   -- room tag -> true
+local kills = 0
+
+dnp.persist("my_arena", function()
+  return { opened = opened, kills = kills }     -- save: plain data only
+end, function(t)
+  opened = t.opened or {}                        -- load: put it back
+  kills = t.kills or 0
+end)</code></pre>
+  <ul>
+    <li>The first argument is a name for this part. Make it unique in the module.</li>
+    <li>The engine calls <code>save</code> when it keeps the level: when the level unloads (with <span class="ui">levels keep their state</span>), for a save game, and every minute with <span class="ui">survive a server restart</span>.</li>
+    <li>It calls <code>load</code> when the level comes back.</li>
+    <li><code>save</code> returns <b>plain data</b>: tables, numbers, strings, true and false, fx and vec3. A function or a handle is refused, by name. Save what a handle stands for instead: a prop's name and position, a room's tag.</li>
+  </ul>
+
+  <h3 id="restoring">dnp.restoring()</h3>
+  <p>While a level is being put back, its scripts run with <code>dnp.restoring()</code> true. Anything they spawn while they load is held back, because the saved state brings back what was really there. So place things only on a fresh start, and let <code>load</code> put back the rest:</p>
+  <pre><code>if not dnp.restoring() then
+  -- a fresh level: set it up from scratch
+  dnp.set_sector_light(0, 80)
+end</code></pre>
+  <p>Things you spawn <em>later</em>, in a hook, are not placements. Keep them through <code>dnp.persist</code> if they should come back.</p>
+
+  <h2 id="player">dnp.persist_player: what a player carries</h2>
+  <pre><code>local found = {}   -- player index -> number of secrets
+
+dnp.persist_player("secrets", function(e)
+  return found[e:index()] or 0
+end, function(e, n)
+  found[e:index()] = n
+end)</code></pre>
+  <p>This part is about one player. It goes into a <b>save game</b> with the player, and comes back when that save is loaded. It needs <span class="ui">save and load games</span>, and a save game is for one player. It does <b>not</b> follow a player who walks into another level: each level's script keeps its own. A value that should follow the player everywhere belongs in a game graph.</p>
+
+  <h2 id="store">The store: outlives every game</h2>
+  <p>A save game is one moment. A new game forgets it. For things that should outlive both, such as a best time or what is unlocked, write to a <b>store</b>:</p>
+  <table>
+    <thead><tr><th>Function</th><th>Gives</th></tr></thead>
+    <tbody>
+      <tr><td><code>dnp.store_save(name, value)</code></td><td><code>true</code>, or <code>false</code> and why</td></tr>
+      <tr><td><code>dnp.store_load(name)</code></td><td>the value, or <code>nil</code> if nothing was ever saved</td></tr>
+      <tr><td><code>dnp.store_delete(name)</code></td><td><code>true</code> if there was one</td></tr>
+    </tbody>
+  </table>
+  <p>A name is 1 to 48 letters, digits, <code>_</code> or <code>-</code>. A value is plain data, at most 64 KB. The stores are the server's: in the app, on the device; on a server many people share, one for everyone.</p>
+  <script type="text/plain" id="lua-store">local runs = dnp.store_load("lever_stats") or { pulls = 0, best = nil }
+print("pulls so far, in every game: " .. runs.pulls)
+
+function on_prop_use(e, p)
+  if p:name() ~= "lever" then return end
+  runs.pulls = runs.pulls + 1
+  local ok, why = dnp.store_save("lever_stats", runs)
+  if ok then
+    print("saved: " .. runs.pulls .. " pulls")
+  else
+    print("could not save: " .. tostring(why))
+  end
+end
+</script>
+  <div class="widget" data-widget="lua-playground" data-title="A count that outlives the game" data-code="lua-store" data-events="use"></div>
+  <p>The graph nodes <a href="../reference/graph-nodes.html#save_vars"><code>save_vars</code></a> and <a href="../reference/graph-nodes.html#load_vars"><code>load_vars</code></a> use the same stores. A graph's store is a table of variable names, so a script can read a graph's best time with <code>(dnp.store_load("game") or {}).best_time</code>.</p>
+
+  <h2 id="graphs">Talking to graphs</h2>
+  <p>A level's graphs and your script run in the same Lua machine, so they can reach each other:</p>
+  <table>
+    <thead><tr><th>From</th><th>To</th><th>How</th></tr></thead>
+    <tbody>
+      <tr><td>script</td><td>read a level graph's variable</td><td><code>graphs.var("pickups", "coins")</code>: the graph's name, then the variable's</td></tr>
+      <tr><td>script</td><td>start a level graph</td><td><code>graphs.call("bonus", e, 5)</code> starts its <a href="../reference/graph-nodes.html#on_call"><code>on_call</code></a> nodes named <code>bonus</code>, with that entity and value</td></tr>
+      <tr><td>graph</td><td>run your Lua</td><td>an <a href="../reference/graph-nodes.html#action"><code>action</code></a> node, <span class="ui">do lua</span>, calling a global function of yours: <code>give_bonus(ev.entity)</code></td></tr>
+      <tr><td>script</td><td>start a game graph</td><td><code>dnp.call_game("graph_call", "bonus", 5, e)</code>: the name, the value, then the entity</td></tr>
+    </tbody>
+  </table>
+  <p>The <code>graphs</code> table exists only in a level whose map has graphs. Check first: <code>if graphs then … end</code>. A script can't read a <em>game</em> graph's variables directly. Have the game graph <a href="../reference/graph-nodes.html#call"><code>call</code></a> a level graph, whose <span class="ui">do lua</span> passes the value to your function.</p>
+  <script type="text/plain" id="lua-bridge">-- A global function a graph's "do lua" can call: give_bonus(ev.entity)
+function give_bonus(e)
+  if e == nil or not e:valid() then return end
+  e:set_hp(math.min(100, (e:hp() or 0) + 25))
+  print("bonus: player " .. e:index() .. " now has " .. e:hp())
+end
+
+function on_prop_use(e, p)
+  if p:name() ~= "lever" then return end
+  -- What the level's graphs and triggers know (nil or 0 when they don't):
+  print("graph coins: " .. tostring(graphs and graphs.var("pickups", "coins")))
+  print("trigger count: " .. tostring(triggers and triggers.counter("switches")))
+  give_bonus(e)
+end
+</script>
+  <div class="widget" data-widget="lua-playground" data-title="Graphs, triggers and a function for both" data-code="lua-bridge" data-events="use"></div>
+
+  <h2 id="triggers">Talking to triggers</h2>
+  <p>The trigger runtime (<b>⚡ Triggers</b> in the map editor) keeps counters and named properties. A script can read them and set properties:</p>
+  <ul>
+    <li><code>triggers.counter(name)</code>: a counter's value, <code>0</code> if never counted;</li>
+    <li><code>triggers.property(name)</code>, <code>triggers.set_property(name, value)</code>: a named value;</li>
+    <li><code>triggers.is_enabled(name)</code>, <code>triggers.is_spent(name)</code>: a trigger's state.</li>
+  </ul>
+  <p>Like <code>graphs</code>, <code>triggers</code> exists only where the map has triggers or graphs.</p>
+
+  <h2 id="game">The game machine</h2>
+  <p>The game machine runs once for the whole server. In the studio, what runs there is written for you: the weapons, the player's sounds, and the game's graphs. You can't add your own Lua to it. A level script reaches it in two ways:</p>
+  <ul>
+    <li><code>dnp.call_game("graph_call", name, value, e)</code> starts the game graphs' <code>on_call</code> nodes of that name. This is the way to tell the game something: a secret found, a boss beaten.</li>
+    <li><code>dnp.game_has(name)</code> says whether the game answers a call of that name at all.</li>
+  </ul>
+  <p>Values cross as copies: numbers, strings, true and false, fx, vec3, tables, and entity and prop handles. A function is refused. For a score or quest flags that follow the player from map to map, let a game graph keep them, and call it from your script.</p>
+
+  <h2 id="maps">Changing maps</h2>
+  <p><code>e:change_map(level, spawn_tag)</code> sends a player to another map. <code>level</code> is a number: the map's place in <code>dnp.levels()</code>, counting from <b>0</b>. <code>spawn_tag</code> names the spawn point to arrive at. With no arguments, it is the next map.</p>
+  <pre><code>local function level_index(name)
+  for i, n in ipairs(dnp.levels()) do
+    if n == name then return i - 1 end
+  end
+  return nil
+end
+
+function on_prop_use(e, p)
+  if p:name() == "sign_exit" then
+    local to = level_index("menu")
+    if to then
+      dnp.screen(e, { fade = 1, fade_ms = 400 })
+      e:change_map(to, "start")
+    end
+  end
+end</code></pre>
+  <p>The change is queued, and happens after every level has moved this tick. The player's panels from this level close. <code>dnp.level()</code> is the current level's number, in the same counting.</p>
+
+  <h2>Try it in the studio</h2>
+  <ol class="steps">
+    <li><p>Open Gem Hollow from Home → <span class="ui">◆ examples</span>. In <b>⚙ Settings</b>, turn on <span class="ui">save and load games</span>.</p></li>
+    <li><p>In <b>📜 Scripts</b>, add a script called <code>pulls</code>:</p>
+<pre><code>local pulls = 0
+
+function on_prop_use(e, p)
+  pulls = pulls + 1
+  print("pulls: " .. pulls)
+end
+
+dnp.persist("pulls", function()
+  return pulls
+end, function(n)
+  pulls = n
+  print("restored pulls: " .. n)
+end)</code></pre></li>
+    <li><p>Press <span class="ui">▶ Play</span> on <code>world</code>. Use a lever twice, then press <kbd>F5</kbd> to save. Use a lever once more, then press <kbd>F9</kbd> to load.</p></li>
+    <li><p>Come back and open <span class="ui">📋 play log</span>. You see <code>pulls: 1</code>, <code>pulls: 2</code>, <code>pulls: 3</code>, then <code>restored pulls: 2</code>. Loading started the level's scripts again, and your <code>load</code> put the count back.</p></li>
+    <li><p>Remove the <code>dnp.persist</code> call and try again. After <kbd>F9</kbd>, the next pull prints <code>pulls: 1</code>: the count started over with the level.</p></li>
+  </ol>
+  <div class="callout tip"><p><code>load</code> runs after the top of your script, so it has the last word over a starting value. Saving is for one player: with two players connected, <kbd>F5</kbd> is refused, and says why.</p></div>
+
+  <div class="quiz" data-answer="1">
+    <p class="q">Your <code>dnp.persist</code> save function returns <code>{ boss = boss_entity }</code>. What happens?</p>
+    <ul>
+      <li>The boss comes back where it was</li>
+      <li>The save is refused: a handle is not plain data</li>
+      <li>It is saved as the boss's index</li>
+    </ul>
+    <p class="why">A handle names a slot that means nothing after a load. Save what it stands for, such as its kind and position, and spawn it again in <code>load</code>.</p>
+  </div>
+  <div class="quiz" data-answer="2">
+    <p class="q">Where should a "best time" go, so that it outlives starting a new game?</p>
+    <ul>
+      <li><code>dnp.persist</code></li>
+      <li><code>dnp.persist_player</code></li>
+      <li><code>dnp.store_save</code></li>
+    </ul>
+    <p class="why"><code>persist</code> parts belong to a game, and a new game forgets them. A store is kept on its own.</p>
+  </div>
+  <div class="quiz" data-answer="0">
+    <p class="q">Your module's maps are <code>menu</code>, then <code>world</code>. Which call sends a player to <code>world</code>?</p>
+    <ul>
+      <li><code>e:change_map(1)</code></li>
+      <li><code>e:change_map(2)</code></li>
+      <li><code>e:change_map("world")</code></li>
+    </ul>
+    <p class="why">The level is a number counted from 0, in the order of <code>dnp.levels()</code>. A helper that looks the name up is safer than a bare number.</p>
+  </div>
+</article>
+</body>
+</html>

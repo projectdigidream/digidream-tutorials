@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Touching the world · Digidream Studio tutorials</title>
+<meta name="description" content="Entities, props and rooms from Lua: reading and changing them, lights, textures and weather, moving rooms with move_parametric, spawning, hits and deaths, line of sight, and sound, music and particles.">
+<link rel="stylesheet" href="../assets/site.css">
+<link rel="stylesheet" href="../assets/skins/skins.css">
+<link rel="icon" type="image/png" href="../assets/logo.png">
+<script src="../assets/skins/skins.js"></script>
+<script src="../assets/skin.js"></script>
+<script defer src="../assets/nav.js"></script>
+<script defer src="../assets/shortcuts.js"></script>
+<script defer src="../assets/site.js"></script>
+</head>
+<body>
+<article>
+  <h1>Touching the world</h1>
+  <p class="lede">A level is three kinds of thing: entities that move and think, props that sit, and rooms. This page shows how to find each one from Lua, read it, and change it.</p>
+  <div class="goal">
+    <b>You'll learn</b><span>the methods of entities, props and rooms, how to find a room by its tag, lights, textures and weather, moving rooms with <code>move_parametric</code>, spawning monsters and props, hurting and noticing deaths, line of sight, and sound, music and particles</span>
+    <b>Time</b><span>40 minutes</span>
+    <b>Needs</b><span><a href="02-events-and-time.html">Events and time</a>; the example Gem Hollow</span>
+  </div>
+
+  <h2 id="entities">Entities</h2>
+  <p>An entity is a body that moves: a player or a monster. <code>dnp.players()</code> lists the players, <code>dnp.entities()</code> lists every entity, and <code>dnp.entity(i)</code> gets one by its index. A player's <code>e:kind()</code> is <code>0</code>.</p>
+  <table>
+    <thead><tr><th>Method</th><th>Gives or does</th></tr></thead>
+    <tbody>
+      <tr><td><code>e:valid()</code></td><td>whether the handle still names something</td></tr>
+      <tr><td><code>e:pos()</code>, <code>e:vel()</code></td><td>position and velocity, as vec3</td></tr>
+      <tr><td><code>e:grounded()</code></td><td>standing on something</td></tr>
+      <tr><td><code>e:sector()</code></td><td>the room it stands in, as a number (<code>-1</code> in a neighbouring map of the same world)</td></tr>
+      <tr><td><code>e:index()</code>, <code>e:player()</code></td><td>its slot in this level; a player's number that stays the same between levels</td></tr>
+      <tr><td><code>e:kind()</code>, <code>e:name()</code></td><td>its catalogue number and name (a monster's <code>slime</code>; <code>nil</code> for a player)</td></tr>
+      <tr><td><code>e:facing()</code></td><td>which way it faces, in brad: a full turn is 4294967296</td></tr>
+      <tr><td><code>e:hp()</code>, <code>e:set_hp(n)</code></td><td>a <b>player's</b> health. For monsters use <code>mobs.health</code> (below)</td></tr>
+      <tr><td><code>e:buttons()</code>, <code>e:actions()</code></td><td>the buttons held this tick, and the module's own keys held</td></tr>
+      <tr><td><code>e:teleport(v)</code>, <code>e:set_velocity(v)</code>, <code>e:add_impulse(v)</code></td><td>move it. Queued (<a href="02-events-and-time.html#deferred">page 2</a>)</td></tr>
+      <tr><td><code>e:set_animation(n)</code>, <code>e:set_solid(b)</code></td><td>its picture's state number; whether things bump into it</td></tr>
+      <tr><td><code>e:param(name)</code>, <code>e:add_effect(name, op, value[, ticks])</code>, <code>e:remove_effect(id)</code></td><td>read and change a movement rule (<code>move_speed</code>, <code>jump_impulse</code>, <code>gravity_scale</code> …). <code>op</code> is <code>"mul"</code>, <code>"add"</code> or <code>"set"</code>. <code>add_effect</code> returns an id</td></tr>
+      <tr><td><code>e:change_map([level[, spawn_tag]])</code></td><td>send a player to another map (<a href="05-state-and-bridges.html#maps">page 5</a>)</td></tr>
+    </tbody>
+  </table>
+  <p>An effect is how you change a rule for a while. This doubles a player's speed for five seconds, then lets it lapse by itself:</p>
+  <pre><code>e:add_effect("move_speed", "mul", 2, 300)   -- 300 ticks = 5 seconds</code></pre>
+  <p>Without <code>ticks</code>, an effect lasts until you remove it with the id it returned. Keep the id if you will want to undo it.</p>
+
+  <h2 id="props">Props</h2>
+  <p>A prop is a body without a brain: a lever, a coin, a crate. <code>dnp.props()</code> lists them and <code>dnp.prop(i)</code> gets one. A prop's <code>p:name()</code> is the name it has in <b>📦 Props</b>. Finding by name is the robust way:</p>
+  <pre><code>local function find_prop(name)
+  for _, p in ipairs(dnp.props()) do
+    if p:name() == name then return p end
+  end
+  return nil
+end</code></pre>
+  <table>
+    <thead><tr><th>Method</th><th>Gives or does</th></tr></thead>
+    <tbody>
+      <tr><td><code>p:valid()</code>, <code>p:index()</code>, <code>p:kind()</code>, <code>p:name()</code></td><td>as for entities</td></tr>
+      <tr><td><code>p:pos()</code>, <code>p:set_pos(v)</code></td><td>where it is; move it</td></tr>
+      <tr><td><code>p:solid()</code>, <code>p:set_solid(b)</code></td><td>whether it blocks</td></tr>
+      <tr><td><code>p:set_facing(brad)</code></td><td>turn it</td></tr>
+      <tr><td><code>p:set_animation(n)</code></td><td>its state number from the sprite: Gem Hollow's levers have <code>0</code> off and <code>1</code> pull</td></tr>
+      <tr><td><code>p:despawn()</code></td><td>remove it</td></tr>
+    </tbody>
+  </table>
+  <script type="text/plain" id="lua-props">local function find_prop(name)
+  for _, p in ipairs(dnp.props()) do
+    if p:name() == name then return p end
+  end
+  return nil
+end
+
+function on_prop_use(e, p)
+  if p:name() ~= "lever" then return end
+  p:set_animation(1)                    -- the lever's "pulled" picture
+  local crate = find_prop("crate")
+  if crate and crate:valid() then
+    crate:despawn()
+    print("the crate is gone")
+  else
+    print("no crate left")
+  end
+end
+</script>
+  <div class="widget" data-widget="lua-playground" data-title="A lever removes a crate" data-code="lua-props" data-events="use"></div>
+
+  <h2 id="sectors">Rooms (sectors)</h2>
+  <p>The engine calls a room a <b>sector</b>. Each has a number (its index) and the <span class="ui">tag</span> you gave it in the map editor. Many rooms can share a tag. Look rooms up by tag, once, and keep the list:</p>
+  <pre><code>local function rooms_tagged(tag)
+  local out = {}
+  for _, s in ipairs(dnp.sectors()) do
+    if s:tag() == tag then out[#out + 1] = s end
+  end
+  return out
+end</code></pre>
+  <p><code>dnp.sectors()</code> builds a table of every room, which costs something on a big map. Call it once, not every tick. <code>dnp.sector(i)</code> gets one room by number.</p>
+  <table>
+    <thead><tr><th>Method</th><th>Gives or does</th></tr></thead>
+    <tbody>
+      <tr><td><code>s:index()</code>, <code>s:tag()</code></td><td>its number and its tag</td></tr>
+      <tr><td><code>s:floor()</code>, <code>s:ceil()</code></td><td>floor and ceiling heights, in fx</td></tr>
+      <tr><td><code>s:center()</code></td><td>a point in the middle of its floor, as vec3</td></tr>
+      <tr><td><code>s:offset()</code></td><td>how far it has moved from where you drew it</td></tr>
+      <tr><td><code>s:neighbors()</code></td><td>the rooms next to it</td></tr>
+      <tr><td><code>s:move_parametric(…)</code></td><td>move it smoothly (below)</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Lights, textures and weather</h3>
+  <p>These take the room's <b>number</b>, so pass <code>s:index()</code>:</p>
+  <pre><code>dnp.set_sector_light(s:index(), 60, 2)              -- 0..255, fading over 2 seconds
+dnp.set_sector_texture(s:index(), "floor", "LAVA1")   -- or "ceiling"
+dnp.set_sector_effect(s:index(), "fog", { density = 0.5, color = "#203040" })
+dnp.set_sector_effect(s:index(), "snow")             -- rain, snow, dust, embers, fog
+dnp.set_sector_effect(s:index(), "snow", false)      -- stop it</code></pre>
+  <p>A wall's picture is <code>dnp.set_side_texture(side, "upper"|"middle"|"lower", NAME)</code>. Texture names are the ones in <b>🧱 Textures</b>. Every one of these is kept by the server, saved with the level, and sent to players who arrive later.</p>
+
+  <h3 id="move">Moving rooms: move_parametric</h3>
+  <p>Doors, lifts, rafts and spinning platforms are rooms that move. <code>move_parametric</code> gives a room a whole motion at once:</p>
+  <pre><code>s:move_parametric(from, to, ticks [, mode [, part [, spin_degrees [, pivot]]]])</code></pre>
+  <table>
+    <thead><tr><th>Argument</th><th>Meaning</th></tr></thead>
+    <tbody>
+      <tr><td><code>from</code>, <code>to</code></td><td>vec3 offsets from where you drew the room. <code>vec3.new(0, 0, -4)</code> is 4 units down</td></tr>
+      <tr><td><code>ticks</code></td><td>how long one trip takes</td></tr>
+      <tr><td><code>mode</code></td><td><code>"once"</code> (stays at <code>to</code>; the default), <code>"loop"</code> (jumps back and repeats) or <code>"pingpong"</code> (there and back, for ever)</td></tr>
+      <tr><td><code>part</code></td><td><code>"both"</code> (the default), <code>"floor"</code> or <code>"ceiling"</code></td></tr>
+      <tr><td><code>spin_degrees</code>, <code>pivot</code></td><td>turn the room by that much over the same time, about its middle or about <code>pivot</code></td></tr>
+    </tbody>
+  </table>
+  <p>The motion is worked out from the tick on every machine, so it is smooth and costs no network traffic while it runs. It returns <code>false</code> if the map already has too many moving rooms.</p>
+  <pre><code>door:move_parametric(vec3.new(0, 0, 0), vec3.new(0, 0, 4), 60, "once", "ceiling")  -- a door opens
+lift:move_parametric(vec3.new(0, 0, 0), vec3.new(0, 0, -3), 120, "once", "floor")  -- a lift goes down
+raft:move_parametric(vec3.new(0, 0, 0), vec3.new(8, 0, 0), 240, "pingpong")        -- a raft sails
+wheel:move_parametric(vec3.new(0, 0, 0), vec3.new(0, 0, 0), 480, "loop", "both", 360) -- a wheel turns</code></pre>
+  <div class="callout warn"><p><code>from</code> is where the move starts, so a second move should start where the first one ended. Otherwise the room jumps. <code>s:offset()</code> tells you where it is now. <code>s:set_offset(v)</code> places a room by hand, but it sends a message every time, so keep it for rare jumps, not for animation.</p></div>
+  <script type="text/plain" id="lua-move">local function first_tagged(tag)
+  for _, s in ipairs(dnp.sectors()) do
+    if s:tag() == tag then return s end
+  end
+  return nil
+end
+
+local open = false
+
+function on_prop_use(e, p)
+  if p:name() ~= "lever" then return end
+  local door = first_tagged(1)     -- the toy level's "north" room
+  if door == nil then return end
+  local shut, up = vec3.new(0, 0, 0), vec3.new(0, 0, 4)
+  if open then
+    door:move_parametric(up, shut, 60, "once", "ceiling")
+  else
+    door:move_parametric(shut, up, 60, "once", "ceiling")
+  end
+  open = not open
+  print(open and "door opening" or "door closing")
+end
+</script>
+  <div class="widget" data-widget="lua-playground" data-title="A lever that opens and shuts a door" data-code="lua-move" data-events="use" data-ticks="120"></div>
+
+  <h2 id="spawn">Spawning</h2>
+  <p>A monster comes from the mob runtime, so it gets its brain and its health:</p>
+  <pre><code>local m = mobs.spawn("slime", vec3.new(12, 4, 0))
+local sleeper = mobs.spawn("bee", where, { dormant = true, facing = 1073741824 })  -- a quarter turn</code></pre>
+  <p>The kind is the monster's name in <b>☠ Monsters</b>. <code>mobs.has("slime")</code> says whether the module has it. A prop comes from <code>dnp.spawn_prop(name, pos)</code>, with the name from <b>📦 Props</b>. Both return the new handle, or <code>nil</code> and a line in the log.</p>
+  <div class="callout"><p>A level that is being put back from a save holds back what its scripts spawn while they load. Spawning later, in a hook, is not held back, and is not saved either unless you save it yourself. See <a href="05-state-and-bridges.html#restoring">Restoring</a>.</p></div>
+
+  <h2 id="hits">Hits and deaths</h2>
+  <p><code>on_attack(attacker, target)</code> says that a swing reached something. What it costs is up to the scripts. If your module has weapons, the weapons runtime already answers it, so don't hurt the target a second time.</p>
+  <table>
+    <thead><tr><th>Function</th><th>Does</th></tr></thead>
+    <tbody>
+      <tr><td><code>mobs.hurt(target, amount, by)</code></td><td>hurt a monster or a player, through the monsters' own rules: pain, death, loot, graphs' <a href="../reference/graph-nodes.html#when_hurt"><code>when_hurt</code></a></td></tr>
+      <tr><td><code>mobs.health(e)</code>, <code>mobs.set_health(e, hp)</code></td><td>a monster's health; <code>nil</code> for anything that is not a living monster here</td></tr>
+      <tr><td><code>mobs.on_death = function(m, by) … end</code></td><td>yours to set: called when a monster dies. <code>m.e</code> is its entity, <code>m.kind</code> its kind</td></tr>
+      <tr><td><code>mobs.on_player_death = function(e, by) … end</code></td><td>called after a player dies and is sent home</td></tr>
+    </tbody>
+  </table>
+  <p>Another script may have set <code>mobs.on_death</code> already. Keep the old one and call it, so both run:</p>
+  <pre><code>local before = mobs.on_death
+mobs.on_death = function(m, by)
+  if before then before(m, by) end
+  print(m.kind .. " died")
+end</code></pre>
+  <p><code>by</code> is whoever did it: a record with <code>.e</code> for a monster or a weapon, the attacker's entity when a script passed one, or <code>nil</code>. <a href="06-recipes.html#score">Recipe 6</a> shows how to get a player out of it.</p>
+
+  <h3>Line of sight</h3>
+  <p><code>dnp.can_see(a, b)</code> is true when nothing stands between two entities' eyes. <code>dnp.hitscan(e, range[, spread[, slope]])</code> fires an instant ray along <code>e</code>'s facing and returns what it hit (or <code>nil</code>) and where the ray ended. <code>dnp.find_path(from_sector, to_sector)</code> finds a route between rooms, but a level gets only 64 route searches a tick, shared with its monsters. When it says <code>nil, "path budget"</code>, try again next tick.</p>
+
+  <h2 id="sound">Sound, music and particles</h2>
+  <pre><code>dnp.sound("world.lever", p)                         -- from a prop, following it
+dnp.sound("world.secret", e:pos())                  -- from a point
+dnp.music(nil, "boss", 800, "next_bar")              -- everyone here: cue, fade in ms, when
+dnp.music(e, "default")                              -- one player
+dnp.vfx(3, e:pos())                                  -- particle kind 3</code></pre>
+  <ul>
+    <li>Sound names are the ones in <b>🔊 Sounds</b>. A name the pack doesn't have is silent.</li>
+    <li>Music cues are the map's cues in <b>♪ Music</b>. The last argument is <code>"next_bar"</code>, <code>"loop_end"</code> or <code>"now"</code>.</li>
+    <li>A particle kind is the number shown in <b>✨ Particles</b>.</li>
+  </ul>
+
+  <h2>Try it in the studio</h2>
+  <ol class="steps">
+    <li><p>Open Gem Hollow from Home → <span class="ui">◆ examples</span>. In <b>🗺 Maps</b>, open <code>world</code> and tap the red gate with <span class="ui">⌖ Select</span>. Its tag is 11.</p></li>
+    <li><p>In <b>📜 Scripts</b>, add a script called <code>world</code>. Write an <code>on_prop_use</code> that, for the prop named <code>lever_blue</code>, finds the rooms tagged 900 (the water) and calls <code>dnp.set_sector_light(s:index(), 40, 3)</code> on each.</p></li>
+    <li><p>In the same hook, play <code>world.secret</code> at the lever with <code>dnp.sound</code>.</p></li>
+    <li><p>Press <span class="ui">▶ Play</span>, find the blue lever and use it. The water darkens over three seconds.</p></li>
+    <li><p>Change <code>40, 3</code> to <code>40, 0</code> and play again. The change is instant now.</p></li>
+  </ol>
+
+  <div class="quiz" data-answer="1">
+    <p class="q">A lift is at <code>vec3.new(0, 0, -3)</code> after a <code>"once"</code> move down. You call <code>lift:move_parametric(vec3.new(0, 0, 0), vec3.new(0, 0, -3), 120, "once", "floor")</code> again. What happens?</p>
+    <ul>
+      <li>Nothing: it is already there</li>
+      <li>It jumps back up to where it was drawn, and goes down again</li>
+      <li>It goes 3 more units down</li>
+    </ul>
+    <p class="why"><code>from</code> and <code>to</code> are offsets from where the room was drawn, and the move starts at <code>from</code>. Start the next move where the last one ended.</p>
+  </div>
+  <div class="quiz" data-answer="0">
+    <p class="q">Which is the right way to read a slime's health?</p>
+    <ul>
+      <li><code>mobs.health(e)</code></li>
+      <li><code>e:hp()</code></li>
+      <li><code>dnp.health(e)</code></li>
+    </ul>
+    <p class="why">A monster's health belongs to the mob runtime. <code>e:hp()</code> is a player's.</p>
+  </div>
+  <div class="quiz" data-answer="2">
+    <p class="q">Your new script sets <code>mobs.on_death = function(m, by) … end</code>, and an older script's kill counter stops counting. What should you have done?</p>
+    <ul>
+      <li>Used <code>on_attack</code> instead</li>
+      <li>Nothing: two handlers can't both run</li>
+      <li>Kept the old <code>mobs.on_death</code> and called it from yours</li>
+    </ul>
+    <p class="why">There is one <code>mobs.on_death</code> per level. Setting it replaces whatever was there, so keep the old one and call it too. (Graphs' <a href="../reference/graph-nodes.html#when_dies"><code>when_dies</code></a> are told separately, so they keep working either way.)</p>
+  </div>
+</article>
+</body>
+</html>

@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Panels, HUD and camera · Digidream Studio tutorials</title>
+<meta name="description" content="Open a panel from Lua and answer its buttons, write values on the HUD, move a player's camera, fade the screen and raise letterbox bars, and change a level's sky.">
+<link rel="stylesheet" href="../assets/site.css">
+<link rel="stylesheet" href="../assets/skins/skins.css">
+<link rel="icon" type="image/png" href="../assets/logo.png">
+<script src="../assets/skins/skins.js"></script>
+<script src="../assets/skin.js"></script>
+<script defer src="../assets/nav.js"></script>
+<script defer src="../assets/shortcuts.js"></script>
+<script defer src="../assets/site.js"></script>
+</head>
+<body>
+<article>
+  <h1>Panels, HUD and camera</h1>
+  <p class="lede">Everything a player sees on top of the world can come from Lua: a panel with buttons, a number on the HUD, the camera, a fade to black and the sky.</p>
+  <div class="goal">
+    <b>You'll learn</b><span>how to open, update and close a panel and answer it in <code>on_ui_event</code>, how to give it a designed look, how HUD values reach the screen, how to set one player's camera or every newcomer's, fades and letterbox bars, and the level's sky</span>
+    <b>Time</b><span>35 minutes</span>
+    <b>Needs</b><span><a href="02-events-and-time.html">Events and time</a>; it helps to know <a href="../studio/08-look-and-feel.html">Sky, screens and weather</a></span>
+  </div>
+
+  <h2 id="panels">Panels</h2>
+  <p>A panel is a small window over the game, shown to one player. You describe it as a table, and the engine draws it with the module's look.</p>
+  <pre><code>local ui = dnp.ui_open(e, {
+  title = "Travel",
+  widgets = {
+    { kind = "label",  id = 1, label = "Where to?" },
+    { kind = "select", id = 2, label = "Place", options = { "North", "East" }, value = 0 },
+    { kind = "slider", id = 3, label = "Delay", lo = 0, hi = 5, value = 0 },
+    { kind = "toggle", id = 4, label = "Bring a friend", value = 0 },
+    { kind = "button", id = 5, label = "Go" },
+  },
+})</code></pre>
+  <ul>
+    <li>Five kinds of widget: <code>label</code>, <code>button</code>, <code>slider</code> (whole numbers from <code>lo</code> to <code>hi</code>), <code>select</code> (a list of <code>options</code>) and <code>toggle</code> (0 or 1). A panel holds up to 32.</li>
+    <li><code>id</code> is your own number, from 1. It comes back to you when the player uses the widget. Give each widget a different one.</li>
+    <li><code>ui_open</code> returns the panel's id. Keep it: you need it to change or close the panel. It is <code>0</code> when nobody is there to see it.</li>
+    <li><code>pinned = true</code> in the table leaves out the ×, so the panel stays until your script closes it.</li>
+  </ul>
+  <table>
+    <thead><tr><th>Function</th><th>Does</th></tr></thead>
+    <tbody>
+      <tr><td><code>dnp.ui_set(e, ui, id, value)</code></td><td>changes one widget's value: a toggle's 0 or 1, a slider's position, a select's choice. A label has no value</td></tr>
+      <tr><td><code>dnp.ui_show(e, ui, id, shown)</code></td><td>hides or shows one widget, which keeps its value</td></tr>
+      <tr><td><code>dnp.ui_close(e, ui)</code></td><td>closes it</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Answering: on_ui_event</h3>
+  <p>When the player uses a widget, the engine calls <code>on_ui_event(e, ui_id, widget_id, value)</code> in the level that opened the panel.</p>
+  <ul>
+    <li><code>value</code> is the toggle's 0 or 1, the slider's number, or the select's choice <b>counting from 0</b>.</li>
+    <li>When the player closes the panel with its ×, you get <code>widget_id</code> <code>0</code>.</li>
+    <li>Check <code>ui_id</code>. Another script's panel calls the same hook.</li>
+  </ul>
+
+  <h3 id="example">A whole panel: a lever that travels</h3>
+  <p>Using the lever opens a travel panel. The player picks a room and presses <b>Go</b>. The script teleports them to the middle of that room and closes the panel.</p>
+  <script type="text/plain" id="lua-panel">local W_PLACE, W_GO = 2, 5
+local PLACES = { { name = "North", tag = 1 }, { name = "East", tag = 2 } }
+
+local open = {}     -- player index -> { ui = id, choice = 0-based }
+
+local function room_tagged(tag)
+  for _, s in ipairs(dnp.sectors()) do
+    if s:tag() == tag then return s end
+  end
+  return nil
+end
+
+function on_prop_use(e, p)
+  if p:name() ~= "lever" or open[e:index()] then return end
+  local names = {}
+  for i, place in ipairs(PLACES) do names[i] = place.name end
+  local ui = dnp.ui_open(e, {
+    title = "Travel",
+    widgets = {
+      { kind = "label",  id = 1, label = "Where to?" },
+      { kind = "select", id = W_PLACE, label = "Place", options = names, value = 0 },
+      { kind = "button", id = W_GO, label = "Go" },
+    },
+  })
+  if ui ~= 0 then open[e:index()] = { ui = ui, choice = 0 } end
+end
+
+function on_ui_event(e, ui_id, widget, value)
+  local mine = open[e:index()]
+  if mine == nil or mine.ui ~= ui_id then return end   -- not our panel
+  if widget == 0 then                                  -- closed with its x
+    open[e:index()] = nil
+  elseif widget == W_PLACE then
+    mine.choice = value
+  elseif widget == W_GO then
+    local place = PLACES[mine.choice + 1]
+    local room = place and room_tagged(place.tag)
+    if room then
+      e:teleport(room:center())
+      print("off to " .. place.name)
+    end
+    dnp.ui_close(e, ui_id)
+    open[e:index()] = nil
+  end
+end
+</script>
+  <div class="widget" data-widget="lua-playground" data-title="A travel panel" data-code="lua-panel" data-events="use"></div>
+  <p>Press <b>use</b> to open it.</p>
+  <div class="callout tip"><p>Note the <code>+ 1</code>. A select answers 0 for its first option, and Lua lists start at 1.</p></div>
+  <div class="callout warn"><p>A panel opened by a level script closes when the player leaves the level. A label's text can't change once the panel is open. For text that changes, such as gold or a timer, use a HUD value, as below.</p></div>
+
+  <h3>A designed look: template</h3>
+  <p>Without more, a panel is drawn plainly, its widgets stacked. To place them and dress the panel, design a <b>template</b>: in <b>▣ Screens</b>, the <span class="ui">templates</span> tab, <span class="ui">+ template</span> and <span class="ui">+ slot</span>. Each slot names one of your widget ids. Then open the panel with its name:</p>
+  <pre><code>dnp.ui_open(e, { template = "travel", title = "Travel", widgets = { … } })</code></pre>
+  <p>A template name is up to 24 of <code>a-z</code>, <code>0-9</code> and <code>_</code>. A widget no slot names is still drawn, stacked below. A template's decor can show HUD values, such as <code>{hud.gold}</code>, which is how a panel's text changes.</p>
+  <div class="callout"><p>The panels you design in <b>▢ Panels</b> are for graphs, which open them by name with <a href="../reference/graph-nodes.html#open_panel"><code>open_panel</code></a>. A script answers only the panels it opened itself.</p></div>
+
+  <h2 id="hud">HUD values</h2>
+  <p><code>dnp.hud</code> sends named values to the HUD of one player, or of everyone in the level with <code>nil</code>:</p>
+  <pre><code>dnp.hud(e,   { gold = 35, quest = "Find the fuse" })
+dnp.hud(nil, { countdown = 10 })
+dnp.hud(nil, { countdown = false })   -- false clears it</code></pre>
+  <ul>
+    <li>A value is a whole number, a short string, or <code>false</code>. An fx is refused: send <code>v.int</code>.</li>
+    <li>A name is <code>a-z</code>, <code>0-9</code> and <code>_</code>.</li>
+    <li>Values are sent only when they change, so calling it every tick costs little.</li>
+  </ul>
+  <p>A value shows <b>only where an element is bound to it</b>. In <b>▣ Screens</b>, on the <span class="ui">HUD</span> tab, press <span class="ui">+ element…</span> and add a text whose words include <code>{hud.gold}</code>, or a number or bar bound to <code>hud.gold</code>. The game graph's <a href="../reference/graph-nodes.html#set_hud"><code>set_hud</code></a> node writes the same values, so a graph and a script can share one HUD.</p>
+
+  <h2 id="camera">The camera</h2>
+  <p><code>dnp.camera(e, { … })</code> changes how one player's camera follows them. Give only the fields you want to change.</p>
+  <table>
+    <thead><tr><th>Field</th><th>Unit</th><th>Meaning</th></tr></thead>
+    <tbody>
+      <tr><td><code>distance</code></td><td>units</td><td>how far behind</td></tr>
+      <tr><td><code>pitch</code></td><td>turns</td><td>how far above, as a part of a full turn: 0.125 is 45°</td></tr>
+      <tr><td><code>yaw</code></td><td>turns</td><td>where the camera stands around the player</td></tr>
+      <tr><td><code>lock_yaw</code>, <code>lock_zoom</code></td><td>1 or 0</td><td>stop the player turning or zooming</td></tr>
+      <tr><td><code>smoothing</code>, <code>lead</code></td><td></td><td>how fast it catches up; how far ahead it looks</td></tr>
+      <tr><td><code>cam_shake</code>, <code>cam_shake_time</code></td><td>units, seconds</td><td>a shake: it happens each time you send <code>cam_shake</code></td></tr>
+      <tr><td><code>cam_mode</code>, <code>cam_path</code>, <code>cam_path_speed</code></td><td></td><td>0 follow, 1 track, 2 flythrough, 3 auto, along the camera path with that tag</td></tr>
+    </tbody>
+  </table>
+  <pre><code>dnp.camera(e, { distance = 30, pitch = 0.2, lock_yaw = 1 })   -- a high, fixed view
+dnp.camera(e, { cam_shake = 0.6, cam_shake_time = 0.5 })      -- a jolt</code></pre>
+  <p><code>dnp.level_camera{ … }</code> takes the same fields and sets the camera for <b>everyone who joins</b> the level. The map's own <b>🎥 Camera</b> settings are written the same way, after your scripts, so they win. To change the view for a player who is already here, use <code>dnp.camera</code>.</p>
+
+  <h2 id="screen">Fades and letterbox</h2>
+  <pre><code>dnp.screen(e,   { fade = 1, fade_ms = 600 })            -- to black over 0.6 s
+dnp.screen(e,   { fade = 0, fade_ms = 600 })            -- and back
+dnp.screen(nil, { letterbox = 0.12, letterbox_ms = 400 }) -- bars for everyone here
+dnp.screen(nil, { letterbox = 0 })</code></pre>
+  <p><code>fade</code> goes from 0 (clear) to 1 (black). <code>letterbox</code> is the height of each bar, as a part of the screen. Like the camera, give only the fields you change.</p>
+  <script type="text/plain" id="lua-fade">local SECOND = 60
+local steps = nil   -- a little cutscene: { at = tick, run = function } in order
+
+function on_prop_use(e, p)
+  if p:name() ~= "lever" or steps then return end
+  local t = dnp.tick()
+  steps = {
+    { at = t,              run = function() dnp.screen(e, { letterbox = 0.12, letterbox_ms = 400 }) end },
+    { at = t + SECOND,     run = function() dnp.screen(e, { fade = 1, fade_ms = 500 }) end },
+    { at = t + 2 * SECOND, run = function() print("(the world changes while it is dark)") end },
+    { at = t + 3 * SECOND, run = function() dnp.screen(e, { fade = 0, fade_ms = 500, letterbox = 0 }) end },
+  }
+end
+
+function on_tick()
+  if steps == nil then return end
+  while steps[1] and dnp.tick() >= steps[1].at do
+    table.remove(steps, 1).run()
+  end
+  if steps[1] == nil then steps = nil end
+end
+</script>
+  <div class="widget" data-widget="lua-playground" data-title="Bars, fade, change, fade back" data-code="lua-fade" data-events="use" data-ticks="300"></div>
+  <p>The list of steps is a small, general tool: each step has a tick and a function, and <code>on_tick</code> runs the ones whose time has come.</p>
+
+  <h2 id="sky">The sky</h2>
+  <p><code>dnp.sky</code> changes this level's sky for everyone, now and later. It takes the same words as a sky in <b>🌌 Sky</b>:</p>
+  <pre><code>dnp.sky("strip SKYHILLS repeat 2")   -- Gem Hollow's own picture, twice round
+dnp.sky(nil)                         -- back to the module's sky</code></pre>
+  <p>The level keeps it, and saves it with its state.</p>
+
+  <h2>Try it in the studio</h2>
+  <ol class="steps">
+    <li><p>Open Gem Hollow from Home → <span class="ui">◆ examples</span>. In <b>📜 Scripts</b>, add a script called <code>travel</code> and paste the travel panel above.</p></li>
+    <li><p>Change <code>"lever"</code> to <code>"lever_gold"</code>. Gem Hollow's tagged rooms are gates, rafts and water, which are poor places to land, so travel to its spawn points instead. Make <code>PLACES</code> <code>{ { name = "Start", spawn = "start" }, { name = "Checkpoint 2", spawn = "cp2" } }</code>, and replace the lines from <code>local room</code> down to the <code>end</code> after the <code>print</code> with <code>local to = place and dnp.spawn_point(place.spawn)</code> and <code>if to then e:teleport(to) end</code>.</p></li>
+    <li><p>Play <code>world</code>, find the gold lever and use it. The panel opens. Choose a place and press <b>Go</b>.</p></li>
+    <li><p>Add <code>dnp.camera(e, { cam_shake = 0.5, cam_shake_time = 0.4 })</code> just before the teleport. Play again and feel the jolt.</p></li>
+    <li><p>Open the panel and close it with its ×. Use the lever again: it opens, because <code>widget == 0</code> cleared your table.</p></li>
+  </ol>
+
+  <div class="quiz" data-answer="2">
+    <p class="q">A select has the options <code>{ "North", "East" }</code>. The player picks East. What <code>value</code> does <code>on_ui_event</code> get?</p>
+    <ul>
+      <li><code>"East"</code></li>
+      <li><code>2</code></li>
+      <li><code>1</code></li>
+    </ul>
+    <p class="why">A select sends the position of the choice, counting from 0.</p>
+  </div>
+  <div class="quiz" data-answer="0">
+    <p class="q">Your script calls <code>dnp.hud(e, { gold = 35 })</code> and nothing shows. Why?</p>
+    <ul>
+      <li>No HUD element is bound to <code>hud.gold</code></li>
+      <li>HUD values must be strings</li>
+      <li><code>dnp.hud</code> only works in the game machine</li>
+    </ul>
+    <p class="why">The HUD shows only the values its elements name. Add one in ▣ Screens.</p>
+  </div>
+  <div class="quiz" data-answer="1">
+    <p class="q">Your <span class="ui">extra Lua</span> calls <code>dnp.level_camera{ distance = 50 }</code>, but the map's <b>🎥 Camera</b> is set to 30. Which distance do players get on arrival?</p>
+    <ul>
+      <li>50</li>
+      <li>30</li>
+      <li>the two added: 80</li>
+    </ul>
+    <p class="why">The map's camera is written after the extra Lua, so it is the last word. Set the distance in 🎥 Camera, or call <code>dnp.camera</code> for a player who is already here.</p>
+  </div>
+</article>
+</body>
+</html>
