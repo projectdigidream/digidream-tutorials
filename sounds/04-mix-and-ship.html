@@ -89,9 +89,7 @@
   </ol>
   <p>The result is a recipe, so its knobs are in Shape straight away, and Vary works on it. The sound remembers which file it was matched to; the card says <em>matched to shotgun.wav</em>.</p>
   <div class="callout warn"><p><b>The recording itself is never saved.</b> Only numbers reach the bank. Use your own recordings, or ones you are allowed to use.</p></div>
-  <p>A match in the browser takes about a minute. For many references, the command-line fitter is several times faster:</p>
-<pre><code>./build/dsound_fit --list
-./build/dsound_fit reference.wav --arch gunshot --out patch.json --wav compare.wav</code></pre>
+  <p>A match takes about a minute.</p>
   <p><em>Advanced</em> in step 2 sets how much the match cares about the spectrum, the loudness over time and the balance between octaves. Leave it unless you know why; a zero switches one off.</p>
 
   <h2>Saving and exporting</h2>
@@ -105,10 +103,6 @@
     </tbody>
   </table>
   <p>Anything that loads a <code>.sfxb</code> also loads a <code>.sfxproj</code>. The project is slower to load, because every wavetable is rebuilt from its recipe, but it means nothing has to be baked to be heard. This game uses that: <b>a module's sounds are the <code>.sfxproj</code> itself</b>, and the studio hides the <code>.sfxb</code> export. You need the <code>.sfxb</code> only for another game that embeds the engine.</p>
-  <p>The same jobs are available from the command line, built in <code>sound/build/</code>:</p>
-<pre><code>./build/dsound_bake bank.sfxproj bank.sfxb            # bake
-./build/dsound_render bank.sfxproj script.sfxscript out.wav
-./build/dsound_score reference.wav before.sfxproj after.sfxproj weapon.shotgun.fire</code></pre>
 
   <h2 id="packs">Sound packs in the studio</h2>
   <p>In the studio, a module's sounds come in <b>packs</b>. A pack is a DigidreamSound project (<code>.sfxproj</code>). A module can hold several — DOOM's monsters, a UI set, your own — and the studio merges them into the one bank the game plays.</p>
@@ -198,7 +192,7 @@ dnp.sound("weapon.pistol.fire", e, { predicted = true })  -- e's client already 
   </ol>
 
   <h2 id="cinderfall">In Cinderfall</h2>
-  <div class="callout soon"><p><b>New, and still being tested.</b> Cinderfall, the first-person shooter example, is not bundled yet: see <a href="02-shape-and-layers.html#cinderfall">Shape and layers</a> for how to import it, and the <a href="../examples/02-cinderfall.html">Cinderfall tour</a>.</p></div>
+  <div class="callout tip"><p>Cinderfall, the first-person shooter example, comes with the studio: on Home, under <span class="ui">◆ examples</span>, press <span class="ui">📂 Cinderfall</span>. The <a href="../examples/02-cinderfall.html">Cinderfall tour</a> walks round it.</p></div>
   <figure class="shot" data-src="../assets/shots/cinder-sounds-page.png" data-alt="The studio's Sounds page in Cinderfall: one pack, Cinderfall (generated), 68 sounds, and beside each sound who calls it" data-hotspots='[{"x":24,"y":22.5,"t":"One pack","d":"Cinderfall (generated) (cinderfall), in the game"},{"x":19,"y":32.5,"t":"68 sounds","d":"the merged bank is exactly this pack"},{"x":61,"y":55.5,"t":"Called by graphs","d":"player.pain: four graphs, for the lava floors"},{"x":73,"y":67.4,"t":"Called by every weapon","d":"wpn.draw: each weapon&#39;s draw phase plays it"},{"x":74,"y":73.4,"t":"Called by weapons","d":"wpn.dry: the revolver, scatter, riveter and flare"}]'>
     <figcaption>🔊 Sounds in Cinderfall: one pack of 68, and beside each sound the graphs or weapons that call it.</figcaption>
   </figure>
@@ -221,7 +215,7 @@ dnp.sound("weapon.pistol.fire", e, { predicted = true })  -- e's client already 
   <p>The voices are timed to the typing. At 38 letters a second, two at a time, a step comes every 53 ms, and each voice blip lasts 52 ms: one blip per step, never overlapping into a buzz.</p>
   <p>Every sound in the pack has a caller. Sounds nothing would play were taken out (there is no clang for a wrench hit, no door closing, no lift), so the bank the game loads carries nothing it never uses.</p>
   <ol class="steps">
-    <li><p>Import Cinderfall and open <b>🔊 Sounds</b>. Scroll the list: each sound with a caller says who, such as <em>revolver, scatter, riveter, flare</em> beside <code>wpn.dry</code>.</p></li>
+    <li><p>Open Cinderfall from Home → <span class="ui">◆ examples</span> and open <b>🔊 Sounds</b>. Scroll the list: each sound with a caller says who, such as <em>revolver, scatter, riveter, flare</em> beside <code>wpn.dry</code>.</p></li>
     <li><p>Give the revolver a draw of its own. In <b>🔫 Weapons</b>, open <code>revolver</code> and pick the <code>draw</code> phase, 8 ticks long: its one step is a <code>sound</code> step for <code>wpn.draw</code> at tick 0, the same as every other weapon's. Add a second <code>sound</code> step for <code>wpn.revolver.cock</code> at tick 6. Play and switch to the revolver: it comes up and cocks, ready to fire. Back on <b>🔊 Sounds</b>, <code>wpn.revolver.cock</code> still says <em>revolver</em>, now for two phases.</p></li>
     <li><p>Give a speaker a new voice. In <code>w_hub</code>'s <code>story</code> graph, pick one of Pip's <code>subtitle</code> nodes and set its <code>sound</code> to <code>voice.carrow</code>. Play and talk to Pip: the child now speaks in Brother Carrow's low blip. Change it back.</p></li>
   </ol>
@@ -230,8 +224,8 @@ dnp.sound("weapon.pistol.fire", e, { predicted = true })  -- e's client already 
   <table>
     <thead><tr><th>File</th><th>What it is</th></tr></thead>
     <tbody>
-      <tr><td><code>.sfxproj</code></td><td>the authoring document: JSON, readable and diff-friendly. A bank's <code>buses</code> (groups), <code>fx</code>, <code>master</code> and <code>sounds</code>; each sound's in-game settings and its <code>variants</code> (takes). Defaults are not written. Full reference: <code>sound/docs/SFX_FORMAT.md</code></td></tr>
-      <tr><td><code>.sfxb</code></td><td>the baked bank: sealed binary with a SHA-256, made by <code>dsound_bake</code>. Tags are stripped</td></tr>
+      <tr><td><code>.sfxproj</code></td><td>the authoring document: JSON, readable and diff-friendly. A bank's <code>buses</code> (groups), <code>fx</code>, <code>master</code> and <code>sounds</code>; each sound's in-game settings and its <code>variants</code> (takes). Defaults are not written.</td></tr>
+      <tr><td><code>.sfxb</code></td><td>the baked bank: sealed binary with a SHA-256, made by <span class="ui">Export for the game (.sfxb)</span>. Tags are stripped</td></tr>
       <tr><td><code>sources/sounds/&lt;id&gt;.sfxproj</code></td><td>a pack in a module, as imported</td></tr>
       <tr><td><code>assets/sounds/bank.sfxproj</code></td><td>the module's merged bank, which the game loads</td></tr>
     </tbody>

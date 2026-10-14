@@ -159,7 +159,7 @@
   </ol>
 
   <h2 id="cinderfall">In Cinderfall</h2>
-  <div class="callout soon"><p><b>New, and still being tested.</b> Cinderfall is a second example, a first-person shooter. It is not bundled with the studio yet: make its pack with <code>node tutorials/tools/pack-example.mjs cinderfall</code> and bring it in with Home → <span class="ui">⇩ import pack</span>. The <a href="../examples/02-cinderfall.html">Cinderfall tour</a> walks round it.</p></div>
+  <div class="callout tip"><p>Cinderfall is a second example, a first-person shooter, and it comes with the studio: on Home, under <span class="ui">◆ examples</span>, press <span class="ui">📂 Cinderfall</span>. The <a href="../examples/02-cinderfall.html">Cinderfall tour</a> walks round it.</p></div>
   <figure class="shot" data-src="../assets/shots/cinder-sound-scatter.png" data-alt="DigidreamSound with Cinderfall's wpn.scatter.fire: four lanes, a white-noise crack, a pink-noise body, a falling tone and a brown-noise boom, 601 ms" data-hotspots='[{"x":31,"y":36.7,"t":"1 · the crack","d":"white noise, band 2.0 kHz, 35 ms"},{"x":31,"y":40,"t":"2 · the blast","d":"pink noise, low-pass 1.4 kHz, 600 ms, crackled by a 30 Hz LFO"},{"x":31,"y":43.2,"t":"3 · the kick","d":"a sine at A1 that drops 14 semitones in 60 ms"},{"x":31,"y":46.4,"t":"4 · the boom","d":"brown noise below 300 Hz, 500 ms"},{"x":26,"y":52.3,"t":"601 ms, peak −14.7 dB","d":"well under the limit, like every sound in the pack"},{"x":90,"y":38,"t":"At most 4","d":"see Takes and in-game rules"}]'>
     <figcaption>Cinderfall's <code>wpn.scatter.fire</code>: four layers and two rings make one shotgun blast.</figcaption>
   </figure>
@@ -189,7 +189,7 @@
   <h3>People: one blip each</h3>
   <p>The six people and the radio do not speak. Each has a <b>voice</b>: one 52 ms blip of a pulse wave through a vowel filter, played with every step of their typed subtitles. What tells them apart is pitch, pulse width and vowel: Pip is high (A4, <i>i → e</i>), Old Mags in the middle (A3, <i>o → a</i>), Brother Carrow lowest (G2, <i>u → o</i>, the narrowest pulse). <code>voice.radio</code> adds a white-noise layer: the voice comes over a radio. See <a href="04-mix-and-ship.html#cinderfall">Mix and ship</a> for how the subtitles play them.</p>
   <ol class="steps">
-    <li><p>Import Cinderfall, open <b>🔊 Sounds</b> and press <span class="ui">✎ edit in DigidreamSound</span> on <code>Cinderfall (generated) (cinderfall)</code>. Click <code>scatter.fire</code> under WPN.</p></li>
+    <li><p>Open Cinderfall from Home → <span class="ui">◆ examples</span>, open <b>🔊 Sounds</b> and press <span class="ui">✎ edit in DigidreamSound</span> on <code>Cinderfall (generated) (cinderfall)</code>. Click <code>scatter.fire</code> under WPN.</p></li>
     <li><p>Press <span class="ui">S</span> on each lane in turn: crack, blast, kick, boom. Then <span class="ui">M</span> on lane 3: without the kick, the shot loses its weight.</p></li>
     <li><p>Click <code>roar</code> under SMELTER and play it. Then click <code>sight</code> under HUSK: the same recipe, more than an octave higher and under half the length.</p></li>
     <li><p>Click <code>pip</code> under VOICE and press <kbd>Space</kbd> a few times: a little high blip, a different pitch each time. Leave with <span class="ui">✕</span>.</p></li>

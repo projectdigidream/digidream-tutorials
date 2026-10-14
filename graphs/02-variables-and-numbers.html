@@ -139,7 +139,7 @@
   </table>
 
   <h3 id="cinderfall">In Cinderfall: flags that cross districts</h3>
-  <p>Cinderfall, an example first-person shooter that is <b>new and still being tested</b> (not bundled with the studio yet; <a href="../examples/02-cinderfall.html">the tour</a> says how to import it), is nine maps joined into one world. You walk from the mine into the foundry without a load, and a level you walked away from may unload behind you. It splits its state three ways:</p>
+  <p>Cinderfall, an example first-person shooter that comes with the studio (Home → <span class="ui">◆ examples</span>; see <a href="../examples/02-cinderfall.html">the tour</a>), is nine maps joined into one world. You walk from the mine into the foundry without a load, and a level you walked away from may unload behind you. It splits its state three ways:</p>
   <table>
     <thead><tr><th>What</th><th>Where it lives</th><th>Why there</th></tr></thead>
     <tbody>
@@ -159,7 +159,7 @@
     <li><a href="../reference/graph-nodes.html#forget_saved"><code>forget_saved</code></a> deletes a store: a progress reset.</li>
   </ul>
   <p>Only numbers, text and true/false are kept. A store name is 1 to 48 letters, digits, <code>_</code> or <code>-</code>. The stores belong to the server: on a server several players share, they are the server's, not each player's. In the desktop app they live in your user data folder; on Android, in the app's own files.</p>
-  <div class="callout soon"><p>A player's own identity and inventory carried between servers (docs/PERSISTENCE.md) is designed but <b>not built</b>. Nothing today follows a player from one server to another.</p></div>
+  <div class="callout soon"><p>A player's own identity and inventory carried between servers is designed but <b>not built</b>. Nothing today follows a player from one server to another.</p></div>
 
   <h3>A recipe: a best time that survives</h3>
   <p>Gem Hollow keeps nothing on disk, so here is an invented one. A game graph <code>records</code> has variables <code>best</code> (starts at <code>9999</code>) and <code>last</code> (0). A level calls it with the run's time when the player finishes (<a href="05-game-graph-and-calls.html">page 5</a> shows the calling side).</p>

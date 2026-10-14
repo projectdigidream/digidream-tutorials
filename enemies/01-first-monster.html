@@ -150,7 +150,7 @@ atlas 2001 state 4 sheet SLIME anim death</code></pre>
     <li><span class="ui">height</span>: where its feet start.</li>
     <li><span class="ui">facing (°)</span>: which way it should face, drawn as an arrow at its feet.</li>
   </ul>
-  <div class="callout soon"><p><b>Monsters do not take their facing yet.</b> The studio writes the facing into the map, but the engine's <code>mobs.spawn</code> ignores it, so every placed monster starts facing 0 (east). The change is proposed in <code>docs/MOB_FACING.md</code>. When it lands, maps you already made take their monsters' facings without a new export. Until then, a monster turns to you as soon as it has a target, so this mostly matters for ambushes.</p></div>
+  <div class="callout soon"><p><b>Monsters do not take their facing yet.</b> The studio writes the facing into the map, but the engine's <code>mobs.spawn</code> ignores it, so every placed monster starts facing 0 (east). A change is proposed. When it lands, maps you already made take their monsters' facings without a new export. Until then, a monster turns to you as soon as it has a target, so this mostly matters for ambushes.</p></div>
 
   <h3>What dormant means</h3>
   <p>A dormant monster makes no decisions and does not move. It costs almost nothing. It wakes only when <b>another monster</b> wakes it:</p>

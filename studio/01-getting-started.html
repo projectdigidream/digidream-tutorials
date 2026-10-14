@@ -21,38 +21,15 @@
   <div class="goal">
     <b>You'll learn</b><span>how to launch the studio, how Home and the rail are laid out, how to open the Gem Hollow example, how to change the studio's style, and what undo applies to</span>
     <b>Time</b><span>15 minutes</span>
-    <b>Needs</b><span>a checkout of the repository with Node.js, or a built Digidream Studio app</span>
+    <b>Needs</b><span>Digidream Studio installed on a desktop or an Android device (<a href="00-get-the-tools.html">Get the tools</a>)</span>
   </div>
 
-  <h2>Two ways to run it</h2>
-  <p>The studio is a web app served at <code>/studio/</code>. The same app runs in two places, and they differ in one thing: whether you can press Play.</p>
-  <table>
-    <thead><tr><th></th><th>In a browser (dev server)</th><th>In the app (desktop or Android)</th></tr></thead>
-    <tbody>
-      <tr><td>Edit everything</td><td>✓</td><td>✓</td></tr>
-      <tr><td>Export a pack</td><td>✓ (downloads a .zip)</td><td>✓</td></tr>
-      <tr><td><span class="ui">▶ Play</span></td><td>✗ — needs a game server</td><td>✓</td></tr>
-      <tr><td>Install plugins</td><td>✓</td><td>desktop ✓, Android ✗</td></tr>
-    </tbody>
-  </table>
-
-  <h3>In a browser</h3>
+  <h2>Launch it</h2>
   <ol class="steps">
-    <li><p>From the repository root, start the dev server:</p>
-<pre><code>node engine/tools/devserver.js --module starter</code></pre>
-      <p>It listens on port 8080. Set <code>DNP_HTTP_PORT</code> to use another port.</p></li>
-    <li><p>Open <a href="http://localhost:8080/studio/">http://localhost:8080/studio/</a>. While it loads, a log under the progress bar says what it is doing. If it gets stuck, the log shows the stage and the error in red, and <span class="ui">copy this</span> copies the log for a bug report.</p></li>
-    <li><p>Press <span class="ui">▶ Play</span>. In a browser it answers <em>"Play needs the app. In a browser, export a pack and run it with the engine."</em> This is expected. To play-test in a browser, export the pack and run it with the engine:</p>
-<pre><code>unzip starter.zip -d modules/
-./engine/scripts/run_stack.sh --module starter</code></pre></li>
+    <li><p>Open <b>Digidream Studio</b> the way you open any app. If you haven't installed it yet, see <a href="00-get-the-tools.html">Get the tools</a>; it also covers the warnings some systems show on the first launch.</p></li>
+    <li><p>While it loads, a log under the progress bar says what it is doing. If it gets stuck, the log shows the stage and the error in red, and <span class="ui">copy this</span> copies the log for a bug report.</p></li>
   </ol>
-
-  <h3>As an app (Play works)</h3>
-  <p>A build that opens straight into the studio:</p>
-<pre><code>./engine/scripts/make_app.sh --module starter --studio    # desktop
-./engine/scripts/build_apk.sh --module starter --studio   # Android</code></pre>
-  <p>Ready-made builds for every platform, plugins included, are written to <code>builds/</code> by <code>packager/scripts/release_studio.sh</code>.</p>
-  <div class="callout warn"><p>The macOS app is signed ad hoc and not notarized, so on another Mac the first launch needs <b>right-click → Open</b>.</p></div>
+  <p>The desktop and Android apps are the same studio. Both edit, play-test with <span class="ui">▶ Play</span>, and export. One difference: installing extra plugins works on the desktop only (see <a href="09-plugins.html">Plugins</a>).</p>
   <div class="callout soon"><p>There is no iOS build yet.</p></div>
 
   <h2>Home</h2>
@@ -91,15 +68,14 @@
   </ol>
   <p>For a tour of all of it, see <a href="../examples/01-gem-hollow.html">Gem Hollow, a tour</a>.</p>
 
-  <h2 id="cinderfall">In Cinderfall: an example you import</h2>
-  <div class="callout soon"><p><b>Cinderfall is new and still being tested.</b> It is not under <span class="ui">◆ examples</span> yet, so you bring it in as a pack.</p></div>
-  <p><b>Cinderfall</b> is a second example: a first-person shooter, with five districts joined without a load, people to talk to and a boss. Until the studio offers it under <span class="ui">◆ examples</span>, you get it the way you get any pack someone sends you:</p>
+  <h2 id="cinderfall">Cinderfall, the second example</h2>
+  <p><b>Cinderfall</b> is the newer example: a first-person shooter, with five districts joined without a load, people to talk to and a boss. It sits beside Gem Hollow under <span class="ui">◆ examples</span>.</p>
   <ol class="steps">
-    <li><p>From the repository root, run <code>node tutorials/tools/pack-example.mjs cinderfall</code>. It writes <code>cinderfall.zip</code>.</p></li>
-    <li><p>On Home, press <span class="ui">⇩ import pack</span> and choose the zip. Cinderfall opens as a module of its own, with 12 maps.</p></li>
+    <li><p>On Home, under <span class="ui">◆ examples</span>, press <span class="ui">📂 Cinderfall</span>. As with Gem Hollow, the studio makes a module of your own from it, with 12 maps, and opens it. <span class="ui">a fresh copy</span> makes another, untouched one.</p></li>
     <li><p>Scroll to the foot of Home. Under <b>other modules</b>, the chips switch between Cinderfall and your other modules.</p></li>
   </ol>
-  <p>Unlike <span class="ui">📂 Gem Hollow</span>, an imported pack is not a copy: it <em>is</em> the module. Import it again and it replaces the module, after a snapshot. See <a href="../examples/02-cinderfall.html">Cinderfall, a tour</a>.</p>
+  <div class="callout"><p>If Home doesn't show Cinderfall, your studio is older than these tutorials. <a href="00-get-the-tools.html#updating">Update it</a>.</p></div>
+  <p>See <a href="../examples/02-cinderfall.html">Cinderfall, a tour</a>.</p>
 
   <h2 id="style">The studio's style</h2>
   <figure class="shot" data-src="../assets/shots/studio-skins.png" data-alt="Home in three styles: Claude, Aero and 90s">
@@ -157,13 +133,13 @@
   </ol>
 
   <div class="quiz" data-answer="2">
-    <p class="q">You're in a plain browser at localhost:8080/studio/ and want to play-test. What do you do?</p>
+    <p class="q">You want a copy of Gem Hollow you can safely wreck, while keeping the one you already changed. What do you press?</p>
     <ul>
-      <li>Press ▶ Play — it starts a local server</li>
-      <li>Open /index.html?studio=1 in another tab</li>
-      <li>⇪ Export the pack, unzip it into modules/, and run it with run_stack.sh — or use the app</li>
+      <li>📂 Gem Hollow again</li>
+      <li>⇩ import pack</li>
+      <li>a fresh copy</li>
     </ul>
-    <p class="why">Play needs a shell with a game server in it, and the desktop and Android apps have one. In a browser, the studio can only edit and export.</p>
+    <p class="why">📂 Gem Hollow opens the copy you already have, with your changes. a fresh copy makes another, untouched one beside it.</p>
   </div>
   <div class="quiz" data-answer="1">
     <p class="q">You rename a monster on the Monsters page, then open a map and press ⌘Z. What is undone?</p>

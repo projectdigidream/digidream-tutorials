@@ -145,7 +145,7 @@
     <li><p>Press <span class="ui">⇪ export .tsprite</span> on HERO's card. In a browser, <code>HERO.tsprite</code> downloads: open it in ThreeSprite on its own, or import it into another module.</p></li>
   </ol>
   <h2 id="cinderfall">In Cinderfall</h2>
-  <div class="callout soon"><p><b>New, and still being tested.</b> Cinderfall is a second example, a first-person shooter. It is not bundled with the studio yet: make its pack with <code>node tutorials/tools/pack-example.mjs cinderfall</code> and bring it in with Home → <span class="ui">⇩ import pack</span>. The <a href="../examples/02-cinderfall.html">Cinderfall tour</a> walks round it.</p></div>
+  <div class="callout tip"><p>Cinderfall is a second example, a first-person shooter, and it comes with the studio: on Home, under <span class="ui">◆ examples</span>, press <span class="ui">📂 Cinderfall</span>. The <a href="../examples/02-cinderfall.html">Cinderfall tour</a> walks round it.</p></div>
   <p>Cinderfall has 57 sprites, and makes one choice Gem Hollow does not: <b>everything has 8 views</b>, pickups and props included. In a first-person game you walk right round a crate or a medkit, so a one-view picture would turn with you like a cardboard cut-out. None of the 57 is mirrored, and not one pixel in them is drawn by hand: every part is a solids part, so each view is rendered from the same shapes.</p>
   <table>
     <thead><tr><th>Kind</th><th>Sprites</th><th>Canvas · views</th></tr></thead>
@@ -159,7 +159,7 @@
     </tbody>
   </table>
   <ol class="steps">
-    <li><p>Import Cinderfall, open <b>🎞 Sprites</b>, type <code>gun</code> in the find box and click <code>GUNNER</code>. Its card lists 6 animations: idle, walk, aim, fire, pain, death.</p></li>
+    <li><p>Open Cinderfall from Home → <span class="ui">◆ examples</span>, open <b>🎞 Sprites</b>, type <code>gun</code> in the find box and click <code>GUNNER</code>. Its card lists 6 animations: idle, walk, aim, fire, pain, death.</p></li>
     <li><p>Press <span class="ui">✎ edit in ThreeSprite</span>. The top bar reads <code>96px · 8 views</code>. Press <kbd>.</kbd> seven times to walk round him: the rifle stays in his right hand in every view, which mirroring could not give you.</p></li>
     <li><p>Press <span class="ui">✕</span>, then open <code>VM_REVOLVER</code> the same way. It has one view: the gun and hand as you hold them.</p></li>
   </ol>
@@ -167,13 +167,11 @@
   <div class="callout tip"><p>A sprite can also be a weapon's picture in first person. In the Weapons workshop's <span class="ui">first person</span> tab, choose <span class="ui">a sprite (ThreeSprite project): its animations</span>, then pick one animation for the weapon at rest and one for firing. The studio cuts the front view of each frame from the baked sheet. See the <a href="../weapons/01-first-weapon.html">Weapons</a> track.</p></div>
 
   <h2>Running ThreeSprite on its own</h2>
-  <p>ThreeSprite is also a standalone app. It lives in the workspace's <code>threesprite/</code> folder, a repository of its own. From there:</p>
-<pre><code>cd threesprite
-pnpm install
-pnpm dev          # browser build on http://localhost:1420
-pnpm dev:web      # the browser-only build, on port 1421
-pnpm tauri dev    # the desktop app</code></pre>
-  <p>There is also a VS Code extension that opens <code>.tsprite</code> files in an editor tab. On its own, ThreeSprite keeps projects in its library and saves <code>.tsprite</code> files; its Export tab writes the sheets. Inside the studio you never need Export, because the studio bakes.</p>
+  <p>ThreeSprite is also a standalone app, for drawing sprites outside the studio. Download it from the <a href="https://github.com/projectdigidream/digidream-threesprite/releases">ThreeSprite releases</a> and install it the same way as the studio: see <a href="../studio/00-get-the-tools.html">Get the tools</a>. It is the same editor, with two differences:</p>
+  <ul>
+    <li>On its own, ThreeSprite has its own <b>New</b>, <b>Open</b> and <b>Save</b> in the <b>☰</b> menu, and keeps projects in a library of its own. It saves <code>.tsprite</code> files, which a studio module can import.</li>
+    <li>On its own, the <b>Export</b> tab writes the sprite sheets. Inside the studio you never need Export: <span class="ui">‹ studio</span> saves into the module, and the studio bakes.</li>
+  </ul>
 
   <h2>Finding your way around</h2>
   <figure class="shot" data-src="../assets/shots/sprite-draw.png" data-hotspots='[{"x": 3.3, "y": 1.7, "t": "‹ studio", "d": "save into the module and go back; ✕ at the top right throws the changes away"}, {"x": 6, "y": 6, "t": "The project", "d": "name, canvas size, views (and mirrored, when it is) — click for settings"}, {"x": 54, "y": 6, "t": "Mode tabs", "d": "Draw · Rig · Animate · 3D · Export"}, {"x": 17, "y": 11, "t": "View strip", "d": "one button per view; ⇄ marks mirrored views ( , and . step)"}, {"x": 2, "y": 24, "t": "Tools", "d": "pencil, eraser, dither, fill, pick, select, move, pan"}, {"x": 2, "y": 47, "t": "Brush size", "d": "1 to 4 pixels"}, {"x": 2, "y": 60, "t": "Toggles", "d": "mirror drawing, dim other parts, pixel grid"}, {"x": 41, "y": 50, "t": "The canvas", "d": "one square frame; the feet stand on the orange line"}, {"x": 88, "y": 17, "t": "Palette", "d": "primary and secondary colour, swap with X"}, {"x": 88, "y": 40, "t": "Parts", "d": "what is drawn, hung on bones; ⬡ marks a part made of solids"}, {"x": 88, "y": 72, "t": "Solids", "d": "3D shapes drawn in every view; Bake turns them into pixels"}]' data-alt="ThreeSprite in the Draw tab, with Gem Hollow's HERO open and its head part selected">

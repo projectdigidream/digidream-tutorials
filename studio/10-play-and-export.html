@@ -32,7 +32,6 @@
     <li><b>launches</b> the game on that map. The server starts every other map of the module too, so a graph's <code>change_map</code> finds the map it names.</li>
   </ol>
   <p>If the module does not bake, nothing is launched, and the status line says why. Play also refuses to start while a graph has problems.</p>
-  <div class="callout warn"><p>Play needs the app. In a browser it answers <em>"Play needs the app. In a browser, export a pack and run it with the engine."</em></p></div>
   <h3>Coming back</h3>
   <p>The game's <b>◀ Studio</b> link returns you to the map you were testing, with the view as you left it. The studio remembers where you were for an hour; after that it opens on Home as usual.</p>
 
@@ -62,10 +61,8 @@
   </ol>
 
   <h2>Export and import</h2>
-  <p><span class="ui">⇪ export</span> bakes the module and writes it as a <b>pack</b>: a zip of the module's folder, named <code><i>id</i>.zip</code>. In a browser it downloads; in the app it is shared or saved. The status line says how to run it: unzip it into <code>modules/</code> and start the engine with <code>--module <i>id</i></code>.</p>
-<pre><code>unzip gemhollow.zip -d modules/
-./engine/scripts/run_stack.sh --module gemhollow</code></pre>
-  <p>A pack holds every map of the module and everything it uses. The engine loads it unchanged.</p>
+  <p><span class="ui">⇪ export</span> bakes the module and writes it as a <b>pack</b>: a zip of the module's folder, named <code><i>id</i>.zip</code>. It is saved, or on a phone shared from the share sheet. Use it to back up a module, to move it to another device, or to send it to someone.</p>
+  <p>A pack holds every map of the module and everything it uses. To turn the module into a game people install and play, use <a href="#package">the Packager</a> instead.</p>
   <p><span class="ui">⇩ import pack</span> opens a pack someone exported. Only packs the studio wrote can be opened (they carry the module's studio documents). If a module with the same id is already here, the pack <b>replaces</b> it, and the studio takes a snapshot of the old one first.</p>
 
   <div class="callout"><p><b>In Gem Hollow</b> Play starts the map you have open. To play it as a player would, open <code>menu</code> first and press <span class="ui">▶ Play</span>: the title panel's <b>Play</b> takes you to <code>world</code> (the server has every map running), and its <b>Quit</b>, the <code>quit_game</code> node, brings a studio play-test back to the studio. In a packaged app the same button quits the app.</p></div>
@@ -111,7 +108,7 @@
       <tr><td><span class="ui">levels keep their state</span>, <span class="ui">save and load games</span>, <span class="ui">survive a server restart</span></td><td>which kinds of saving the module wants</td></tr>
     </tbody>
   </table>
-  <div class="callout"><p><b>In Cinderfall</b> (new and still being tested; see <a href="01-getting-started.html#cinderfall">Getting started</a> to import it), <span class="ui">levels keep their state</span> is on, written as <code>persist levels</code> in <code>module.txt</code>. Its world is nine maps walked as one. If a district unloads, it comes back as the player left it when it loads again, with its doors open and its pickups taken, instead of reset. <span class="ui">save and load games</span> and <span class="ui">survive a server restart</span> are off. What the player has found in the whole game (keycards, Cores, valves, secrets, kills) is kept by the game graph <code>progress</code>, whose variables follow the player from map to map. Gem Hollow turns none of the three on: its game is one map.</p></div>
+  <div class="callout"><p><b>In Cinderfall</b> (Home → <span class="ui">◆ examples</span>; see <a href="01-getting-started.html#cinderfall">Getting started</a>), <span class="ui">levels keep their state</span> is on, written as <code>persist levels</code> in <code>module.txt</code>. Its world is nine maps walked as one. If a district unloads, it comes back as the player left it when it loads again, with its doors open and its pickups taken, instead of reset. <span class="ui">save and load games</span> and <span class="ui">survive a server restart</span> are off. What the player has found in the whole game (keycards, Cores, valves, secrets, kills) is kept by the game graph <code>progress</code>, whose variables follow the player from map to map. Gem Hollow turns none of the three on: its game is one map.</p></div>
   <p>Below them, <span class="ui">🕘 snapshots: the module as it was…</span> opens the snapshots. Last comes <b>Look — this device, not the module</b>: the studio's own style, mode and pointer, the same card as Home's Style (see <a href="01-getting-started.html#style">Getting started</a>). It is not part of the module.</p>
 
   <h2 id="package">The Packager: an app from the module</h2>
@@ -134,14 +131,8 @@
     </tbody>
   </table>
   <div class="callout soon"><p>iOS is not a target yet.</p></div>
-  <p>The Packager also runs on its own, outside the studio. Its guide is <code>packager/README.md</code> in the repository.</p>
-
-  <h2>Building the studio itself</h2>
-  <p>To get Play, you need the studio as an app. From a checkout:</p>
-<pre><code>./engine/scripts/make_app.sh --module starter --studio    # desktop
-./engine/scripts/build_apk.sh --module starter --studio   # Android</code></pre>
-  <p>For every platform at once, with the plugins and the Package page's kits, <code>packager/scripts/release_studio.sh</code> writes ready-made builds to <code>builds/</code> at the repository's root.</p>
-  <div class="callout warn"><p>The macOS app is signed ad hoc and not notarized, so on another Mac the first launch needs <b>right-click → Open</b>.</p></div>
+  <p>The Packager also comes as a standalone tool of its own, for packaging a pack outside the studio. See <a href="00-get-the-tools.html">Get the tools</a>.</p>
+  <div class="callout warn"><p>A macOS game you package is signed ad hoc and not notarized, so on another Mac its first launch shows the same warning as the studio's. <a href="00-get-the-tools.html">Get the tools</a> says how to get past it.</p></div>
 
   <div class="quiz" data-answer="2">
     <p class="q">A play-test on your phone shows a black screen and nothing happens. Where do you look first?</p>

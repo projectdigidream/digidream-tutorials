@@ -17,7 +17,7 @@
 <body>
 <article>
   <h1>Recipes: five weapons</h1>
-  <p class="lede">Complete weapons, phase by phase, with numbers that load. The first four are DOOM II's own weapons (from <code>modules/doom2/maps/weapons_doom2.lua</code>), converted to this engine's 60 ticks a second, with one change each where it teaches something. Then melee two ways, and a charge shot.</p>
+  <p class="lede">Complete weapons, phase by phase, with numbers that load. The first four are DOOM II's own weapons (from the DOOM II module), converted to this engine's 60 ticks a second, with one change each where it teaches something. Then melee two ways, and a charge shot.</p>
   <div class="goal">
     <b>You'll learn</b><span>how real weapons are put together, how to read a phase table and type it into the studio, DOOM's numbers in this engine's units, and the engine's limits</span>
     <b>Time</b><span>45 minutes (or one recipe at a time)</span>
@@ -140,7 +140,7 @@ dry    anim 0 · ticks 1 · next ready      0: switch_if_empty</code></pre>
   <p><b>Seen in first person and as a streak.</b> All three blows set animation state 2, so in first person they share one animation, which restarts on each blow (<a href="02-phases.html#first-person">Phases in first person</a>). To give the hook a picture of its own, set its <span class="ui">anim?</span> to a number of its own and give that state an animation under <b>per phase</b>. The slash streak's look is per weapon, not per phase: every blow uses the fists' <span class="ui">💨 slash</span> look, while the streak's shape follows each blow's own swing.</p></div>
 
   <h2>Bonus: a charge shot</h2>
-  <p>The vocabulary supports it, with no special field: a phase with no ticks waits while you hold, and two transitions decide what letting go does. The engine's own tests load exactly this shape.</p>
+  <p>The vocabulary supports it, with no special field: a phase with no ticks waits while you hold, and two transitions decide what letting go does.</p>
   <p><b>Weapon:</b> <span class="ui">label</span> Charger · <span class="ui">order</span> 9 · <span class="ui">ammo?</span> cells · <span class="ui">per?</span> 1 · <span class="ui">initial?</span> ready.</p>
   <table>
     <thead><tr><th>Phase</th><th>anim · ticks · next</th><th>Transitions</th><th>Sequence</th></tr></thead>
@@ -162,7 +162,7 @@ dry    anim 0 · ticks 1 · next ready      0: switch_if_empty</code></pre>
   </ul>
 
   <h2 id="cinderfall">From Cinderfall: a revolver with a cylinder</h2>
-  <p>Not a DOOM weapon but one to open: the revolver of Cinderfall, a new example first-person shooter that is <b>still being tested</b> (<a href="../examples/02-cinderfall.html">the tour</a> says how to import it). It draws from a pool of bullets like any gun, and also counts its own shots in a weapon var, so every sixth shot is followed by a reload. Its <code>ready</code> checks the press first and the empty pool second; the two cards can't both match, so their order doesn't matter here.</p>
+  <p>Not a DOOM weapon but one to open: the revolver of Cinderfall, the first-person shooter example that comes with the studio (Home → <span class="ui">◆ examples</span>; see <a href="../examples/02-cinderfall.html">the tour</a>). It draws from a pool of bullets like any gun, and also counts its own shots in a weapon var, so every sixth shot is followed by a reload. Its <code>ready</code> checks the press first and the empty pool second; the two cards can't both match, so their order doesn't matter here.</p>
   <p><b>Weapon:</b> <span class="ui">label</span> Revolver · <span class="ui">order</span> 2 · <span class="ui">ammo?</span> bullets · <span class="ui">per?</span> 1 · <span class="ui">initial?</span> draw · <span class="ui">icon?</span> WPNREVOLVER · <b>what its own pickup grants</b> bullets 18 · <b>vars</b> <code>shots</code> = 0. <b>Pool</b> <code>bullets</code>: max 150, initial 0. <b>Pickups</b> <code>revolver_pickup</code> (weapon revolver), <code>ammo_bullets</code> (bullets 12).</p>
   <figure class="shot" data-src="../assets/shots/cinder-revolver.png" data-alt="Cinderfall's revolver in the Weapons workshop: draw, ready, fire, cock, reload and dry, with cock picked and its transition to reload, var_at_least shots 6 and phase_elapsed 7" data-hotspots='[{"x": 33.7, "y": 21.5, "t": "draw ★", "d": "The initial phase: wpn.draw, then ready after 8 ticks."}, {"x": 43.7, "y": 21.5, "t": "ready", "d": "Two cards: fire with a bullet, dry without."}, {"x": 53.9, "y": 21.5, "t": "fire", "d": "6 ticks: a sound, consume, a hitscan of 22, and add_var shots +1."}, {"x": 64.1, "y": 21.5, "t": "cock", "d": "8 ticks back to ready, unless the cylinder is empty."}, {"x": 74.2, "y": 21.5, "t": "reload", "d": "40 ticks; set_var shots back to 0."}, {"x": 53.9, "y": 31, "t": "dry", "d": "A click, then switch_if_empty at 9."}, {"x": 82.3, "y": 55.7, "t": "var_at_least", "d": "shots at least 6: the sixth shot was fired."}, {"x": 82.8, "y": 71.3, "t": "phase_elapsed", "d": "7 ticks: one before cock ends, so it never reaches ready."}, {"x": 88.7, "y": 17.9, "t": "# vars", "d": "Where shots is declared, starting at 0."}]'>
     <figcaption>Cinderfall's <code>revolver</code>, fitted with <span class="ui">⤢</span> (80%), with <code>cock</code> picked.</figcaption>

@@ -29,8 +29,7 @@
       <tr><td>🔊 DigidreamSound</td><td><code>sources/sounds/ID.sfxproj</code> (one per pack)</td><td>merged into <code>assets/sounds/bank.sfxproj</code>; when two packs share a name, the higher pack wins</td><td>when the module is written (no baker)</td></tr>
     </tbody>
   </table>
-  <p>A plain PNG texture becomes a qPainter project the first time you edit it. Baked results are cached in the browser (IndexedDB <code>bakecache</code>), so unchanged sources are not baked again. To bake from a terminal:</p>
-<pre><code>node studio/tools/bake.mjs sources/textures/STONE1.texproj.json</code></pre>
+  <p>A plain PNG texture becomes a qPainter project the first time you edit it. Baked results are kept on the device, so unchanged sources are not baked again.</p>
 
   <h2>Other files the studio writes</h2>
   <table>

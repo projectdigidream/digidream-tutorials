@@ -174,7 +174,7 @@ sheet WATER vertical 4 fps 3</code></pre>
   </ol>
 
   <h2 id="cinderfall">In Cinderfall</h2>
-  <div class="callout soon"><p><b>New, and still being tested.</b> Cinderfall, the first-person shooter example, is not bundled yet: see <a href="01-first-texture.html#cinderfall">Make your first texture</a> for how to import it, and the <a href="../examples/02-cinderfall.html">Cinderfall tour</a>.</p></div>
+  <div class="callout tip"><p>Cinderfall, the first-person shooter example, comes with the studio: on Home, under <span class="ui">◆ examples</span>, press <span class="ui">📂 Cinderfall</span>. The <a href="../examples/02-cinderfall.html">Cinderfall tour</a> walks round it.</p></div>
   <h3>Four animated textures, DOOM's way</h3>
   <p>DOOM animated its liquids by cycling a few flats or wall textures. Cinderfall keeps Freedoom's frames as the frames of one qPainter project each, on one layer named after all of them (<b>Freedoom LAVA1+LAVA2+LAVA3+LAVA4</b>). The studio wrote these lines to <code>assets/animations.txt</code>:</p>
 <pre><code>sheet BLOODFALL vertical 4 fps 6
@@ -196,7 +196,7 @@ sheet WATER vertical 4 fps 4</code></pre>
 
   <h3>Exercise: a burning sky over the old town</h3>
   <ol class="steps">
-    <li><p>Import Cinderfall, open <b>🧱 Textures</b>, click <b>SKYASH</b> and press <span class="ui">edit in qPainter</span>. In the 3D preview, drag to look round: the red clouds repeat four times.</p></li>
+    <li><p>Open Cinderfall from Home → <span class="ui">◆ examples</span>, open <b>🧱 Textures</b>, click <b>SKYASH</b> and press <span class="ui">edit in qPainter</span>. In the 3D preview, drag to look round: the red clouds repeat four times.</p></li>
     <li><p>Press <span class="ui">✕</span> and open <b>🌌 Sky</b>. In <span class="ui">whose</span>, choose <code>menu</code>: it already has a sky of its own, a strip of <code>SKYASH</code>. Now choose <code>w_oldtown</code> and turn on <span class="ui">w_oldtown has a sky of its own</span>. Keep the kind at strip and pick <code>SKYASH</code>.</p></li>
     <li><p>Press <span class="ui">▶ Play</span> and walk into the old town, which has nine rooms open to the sky: they burn red now, like the title menu, and every other district keeps the dusk.</p></li>
   </ol>

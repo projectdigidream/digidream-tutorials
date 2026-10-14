@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Get the tools · Digidream Studio tutorials</title>
+<meta name="description" content="Download Digidream Studio and the standalone tools, install them on Windows, macOS, Linux or Android, and get past the first-launch warnings.">
+<link rel="stylesheet" href="../assets/site.css">
+<link rel="stylesheet" href="../assets/skins/skins.css">
+<link rel="icon" type="image/png" href="../assets/logo.png">
+<script src="../assets/skins/skins.js"></script>
+<script src="../assets/skin.js"></script>
+<script defer src="../assets/nav.js"></script>
+<script defer src="../assets/shortcuts.js"></script>
+<script defer src="../assets/site.js"></script>
+</head>
+<body>
+<article>
+  <h1>Get the tools</h1>
+  <p class="lede">Everything in these tutorials runs in apps you download, and there's nothing to compile. Get <b>Digidream Studio</b> first: it includes the sprite, texture, sound and music editors, so for most people it is the only download.</p>
+  <div class="goal">
+    <b>You'll learn</b><span>which download you need, how to install it on your system, how to get past the warning the first launch shows, and where your work is kept</span>
+    <b>Time</b><span>10 minutes</span>
+    <b>Needs</b><span>a Windows, macOS or Linux computer, or an Android phone or tablet</span>
+  </div>
+
+  <h2>Which download</h2>
+  <table>
+    <thead><tr><th>Download</th><th>What it is</th><th>Do you need it?</th></tr></thead>
+    <tbody>
+      <tr><td><b>Digidream Studio</b></td><td>The studio: maps, monsters, weapons, triggers, graphs, Play and Package. It includes ThreeSprite, qPainter, DigidreamSound and DigidreamSynth as plugins, opened from its own pages.</td><td><b>Yes.</b> Every tutorial starts here.</td></tr>
+      <tr><td>ThreeSprite</td><td>The sprite editor, on its own.</td><td>Only to draw sprites outside the studio.</td></tr>
+      <tr><td>qPainter</td><td>The texture painter, on its own.</td><td>Only to paint outside the studio.</td></tr>
+      <tr><td>DigidreamSound</td><td>The sound-effect editor, on its own.</td><td>Only to make sounds outside the studio.</td></tr>
+      <tr><td>DigidreamSynth</td><td>The music editor (a small DAW), on its own.</td><td>Only to make music outside the studio.</td></tr>
+      <tr><td>Digidream Packager</td><td>Turns a module into a game app for Android, Windows, macOS and Linux. It is also inside the studio, as the <span class="ui">📦 Package</span> page.</td><td>No; use the studio's page.</td></tr>
+    </tbody>
+  </table>
+  <p>Each tool is released on its own GitHub page. Choose the newest release that isn't marked "Pre-release", and take the file for your system:</p>
+  <ul>
+    <li><a href="https://github.com/projectdigidream/digidream-studio/releases">Digidream Studio releases</a></li>
+    <li><a href="https://github.com/projectdigidream/digidream-threesprite/releases">ThreeSprite</a> · <a href="https://github.com/projectdigidream/digidream-qpainter/releases">qPainter</a> · <a href="https://github.com/projectdigidream/digidream-sound/releases">DigidreamSound</a> · <a href="https://github.com/projectdigidream/digidream-midisynth/releases">DigidreamSynth</a> · <a href="https://github.com/projectdigidream/digidream-packager/releases">Packager</a></li>
+  </ul>
+  <p>A file's name says which system it is for:</p>
+  <table>
+    <thead><tr><th>Your system</th><th>Take the file ending in</th></tr></thead>
+    <tbody>
+      <tr><td>Windows (64-bit)</td><td><code>-windows-x64.zip</code></td></tr>
+      <tr><td>macOS on Apple silicon (M1 and later)</td><td><code>-macos-arm64.zip</code></td></tr>
+      <tr><td>macOS on an Intel Mac</td><td><code>-macos-x64.zip</code></td></tr>
+      <tr><td>Linux (64-bit)</td><td><code>-linux-x64.tar.gz</code></td></tr>
+      <tr><td>Android</td><td><code>-android.apk</code></td></tr>
+    </tbody>
+  </table>
+  <div class="callout"><p>Not every standalone tool has a release for every system yet. If yours isn't listed, use the editor inside the studio: it is the same editor.</p></div>
+
+  <h2>Install it</h2>
+  <p>The apps are not signed by Microsoft or notarized by Apple yet, so the first launch shows a warning. The steps below get you past it once; after that, the app opens normally.</p>
+
+  <h3>Windows</h3>
+  <ol class="steps">
+    <li><p>Unzip <code>Digidream Studio-windows-x64.zip</code>: right-click it, <b>Extract All…</b>. Put the folder somewhere you keep apps.</p></li>
+    <li><p>Open the folder and double-click <b>Digidream Studio.exe</b>.</p></li>
+    <li><p>If Windows says <em>"Windows protected your PC"</em>, click <b>More info</b>, then <b>Run anyway</b>.</p></li>
+  </ol>
+
+  <h3>macOS</h3>
+  <ol class="steps">
+    <li><p>Double-click the <code>.zip</code> to unpack it, and drag <b>Digidream Studio</b> into <b>Applications</b>.</p></li>
+    <li><p>Open it. The first time, macOS says <em>"Apple could not verify…"</em>. Click <b>Done</b>.</p></li>
+    <li><p>Open <b>System Settings → Privacy &amp; Security</b>, scroll down to the message about Digidream Studio, and click <b>Open Anyway</b>. Confirm with your password. From then on it opens like any app.</p></li>
+  </ol>
+
+  <h3>Linux</h3>
+  <ol class="steps">
+    <li><p>Unpack the archive: <code>tar xzf "Digidream Studio-linux-x64.tar.gz"</code>, or open it with your file manager.</p></li>
+    <li><p>In the <b>Digidream Studio</b> folder, run the launcher, the file without an extension next to the <code>.png</code> icon (it is currently named <code>starter</code>). From a terminal: <code>./starter</code>.</p></li>
+  </ol>
+
+  <h3>Android</h3>
+  <ol class="steps">
+    <li><p>Download the <code>.apk</code> on the phone or tablet, and tap it in your downloads.</p></li>
+    <li><p>If Android asks, allow your browser or file manager to <b>install unknown apps</b>, then go back and tap <b>Install</b>.</p></li>
+    <li><p>If Play Protect warns about an unknown developer, tap <b>More details → Install anyway</b>.</p></li>
+  </ol>
+  <div class="callout tip"><p>The studio is built for touch as well as a mouse. On a phone held upright there is no rail: Home is the list of sections. See <a href="01-getting-started.html">Getting started</a>.</p></div>
+
+  <h2>Where your work is kept</h2>
+  <ul>
+    <li><b>Your modules live inside the app, on this device.</b> There is no account and nothing is uploaded.</li>
+    <li>The studio takes <b>snapshots</b> of a module as you work, and you can restore one from Home → <span class="ui">🕘 snapshots</span>.</li>
+    <li>To back up a module, or move it to another device, press <span class="ui">⇪ export</span> on Home. It saves the whole module as one pack file. On the other device, <span class="ui">⇩ import pack</span> opens it.</li>
+    <li>The example projects, <b>Gem Hollow</b> and <b>Cinderfall</b>, come with the studio: Home → <span class="ui">examples</span>. Opening one makes a copy of your own, so you can't break the original.</li>
+  </ul>
+
+  <h2>Updating</h2>
+  <p>Download the newer release and install it the same way, over the old one. Your modules stay: they belong to the app's storage on the device, not to the folder you unpacked. Export a pack first if you want to be safe.</p>
+  <div class="callout"><p>If Home doesn't offer an example these tutorials mention, such as Cinderfall, your studio is older than the tutorials. Download the latest release.</p></div>
+
+  <div class="quiz" data-answer="1">
+    <p class="q">You want to draw sprites and paint textures for your game. What do you download?</p>
+    <ul>
+      <li>ThreeSprite and qPainter, then the studio</li>
+      <li>Just Digidream Studio: it includes both editors</li>
+      <li>The Packager</li>
+    </ul>
+    <p class="why">The studio opens ThreeSprite and qPainter itself, from its Sprites and Textures pages. The standalone apps are for working outside the studio.</p>
+  </div>
+  <div class="quiz" data-answer="2">
+    <p class="q">macOS says "Apple could not verify…" and won't open the studio. What now?</p>
+    <ul>
+      <li>Download it again: the file is damaged</li>
+      <li>Install the Intel version instead</li>
+      <li>System Settings → Privacy &amp; Security → Open Anyway</li>
+    </ul>
+    <p class="why">The app is signed but not notarized by Apple, so macOS asks once. Open Anyway lets it run from then on.</p>
+  </div>
+</article>
+</body>
+</html>

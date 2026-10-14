@@ -213,7 +213,7 @@
   <div class="callout"><p><b>A missile hurts only through <code>on_hit</code>.</b> A missile has no damage field of its own; its harm is a <code>damage</code> step in <code>on_hit</code>, as on <code>star_shot</code>. See <a href="../weapons/03-hitscan-missiles-swings.html#gem-hollow">Hitscan, missiles and swings</a>.</p></div>
 
   <h2 id="cinderfall">In Cinderfall: bullets, globs and shells</h2>
-  <p>Cinderfall, a new example first-person shooter that is <b>still being tested</b> (<a href="../examples/02-cinderfall.html">the tour</a> says how to import it), has every kind of attack but the swing. Open each monster's attack states:</p>
+  <p>Cinderfall, the first-person shooter example that comes with the studio (Home → <span class="ui">◆ examples</span>; see <a href="../examples/02-cinderfall.html">the tour</a>), has every kind of attack but the swing. Open each monster's attack states:</p>
   <table>
     <thead><tr><th>Monster, state</th><th>Ticks</th><th>Sequence</th><th>Cooldown</th></tr></thead>
     <tbody>
@@ -244,7 +244,7 @@ cinder_shell  speed 16, radius 0.35, z_offset 1.9, life 120
 
   <h2>Exercise: a brute that fans its shells</h2>
   <ol class="steps">
-    <li><p>Import Cinderfall (<a href="../examples/02-cinderfall.html">the tour</a> says how), choose <b>☠ Monsters</b> and pick <code>brute</code>. Tap the <code>fire</code> state.</p></li>
+    <li><p>Open Cinderfall from Home → <span class="ui">◆ examples</span>, choose <b>☠ Monsters</b> and pick <code>brute</code>. Tap the <code>fire</code> state.</p></li>
     <li><p>Delete the second <code>missile</code> step (at 14) with its <span class="ui">✕</span>, and the <code>sound</code> step at 14 beside it.</p></li>
     <li><p>On the first <code>missile</code> step, set <code>count</code> 2 and <code>arc</code> 10. Leave <code>offset</code> at 1.4, a little more than the brute's radius (0.9).</p></li>
     <li><p>Check the bar says <em>loads clean</em>, then press <span class="ui">▶ Play</span> and find a brute (the old town has one). It now fires two shells at once, 10° apart, both from just in front of it, and the gap between them widens with distance.</p></li>

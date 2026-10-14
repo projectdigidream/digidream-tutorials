@@ -79,6 +79,7 @@ Pages are one folder deep (`studio/`, `sprites/` …), so assets are at `../asse
 
 ## Content rules
 
+- **Write for people who use the downloaded apps:** Digidream Studio, or a standalone tool's release. Readers never build anything and have no repository checkout. So no terminal commands, build scripts, dev servers, ports or `node`/`pnpm`. To get a tool, link to [Get the tools](studio/00-get-the-tools.html). To open an example, use the studio's Home → examples.
 - Quote UI labels exactly as the code writes them, including their emoji.
 - Mark anything unfinished with a `soon` callout. Do not teach it as working.
 - Use relative links only, so the folder can be hosted under any path.

@@ -149,7 +149,7 @@ on_hit   vfx (fireball) · vfx (smoke)
   <div class="callout"><p><b>A missile hurts only through <code>on_hit</code>.</b> There is no damage field on a missile: everything it does on arrival, damage included, is a step in its <code>on_hit</code> list. The engine refuses a missile table that still carries a <code>damage</code> field of its own.</p></div>
 
   <h2 id="cinderfall">In Cinderfall: three kinds of ray, a flare and a two-way wrench</h2>
-  <p>Cinderfall, a new example first-person shooter that is <b>still being tested</b> (<a href="../examples/02-cinderfall.html">the tour</a> says how to import it), uses all three ways to hurt. Its rays:</p>
+  <p>Cinderfall, the first-person shooter example that comes with the studio (Home → <span class="ui">◆ examples</span>; see <a href="../examples/02-cinderfall.html">the tour</a>), uses all three ways to hurt. Its rays:</p>
   <table>
     <thead><tr><th>Weapon, phase</th><th><span class="ui">damage</span></th><th><span class="ui">range</span></th><th><span class="ui">count?</span></th><th><span class="ui">spread?</span></th><th><span class="ui">knockback?</span></th><th>Most per trigger pull</th></tr></thead>
     <tbody>
@@ -192,7 +192,7 @@ on_hit      damage_area  damage 90, radius 3.2, falloff on, knockback 8, lift 3,
 
   <h2>Exercise: a flare jump</h2>
   <ol class="steps">
-    <li><p>Import Cinderfall (<a href="../examples/02-cinderfall.html">the tour</a> says how), choose <b>☠ Monsters</b> and open <span class="ui">☄ missiles</span>. Find the card <b>Missile: flare_shot</b>, and on its <code>damage_area</code> step in <code>on_hit</code> read <code>hurts_owner</code> (off) and <code>shoves_owner</code> (on).</p></li>
+    <li><p>Open Cinderfall from Home → <span class="ui">◆ examples</span>, choose <b>☠ Monsters</b> and open <span class="ui">☄ missiles</span>. Find the card <b>Missile: flare_shot</b>, and on its <code>damage_area</code> step in <code>on_hit</code> read <code>hurts_owner</code> (off) and <code>shoves_owner</code> (on).</p></li>
     <li><p>Give yourself the launcher: <b>🧍 Player</b> → <span class="ui">🎒 kit</span>, tick <code>flare</code> and set <code>flares</code> to 10. Check the bar says <em>loads clean</em>.</p></li>
     <li><p>Press <span class="ui">▶ Play</span>, face a wall a few steps away and fire. The blast throws you back, and your health stays where it was.</p></li>
     <li><p>Back on the card, switch <code>shoves_owner</code> off and play again. Now the flare neither hurts nor moves you: the blast leaves you out altogether. Switch it back on.</p></li>
@@ -242,7 +242,7 @@ on_hit      damage_area  damage 90, radius 3.2, falloff on, knockback 8, lift 3,
     <li>Leave it off, and you hear your own shot a round trip late, while everyone else hears it normally.</li>
   </ul>
   <p>The weapon tab's <b>🔊 heard at once by the one firing</b> list (<span class="ui">+ predicted sound</span>, with <span class="ui">on</span> <code>primary</code>, <code>primary_held</code>, <code>secondary</code>, <code>secondary_held</code> or <code>swing</code>, a sound, and <span class="ui">every (ticks)</span> for a held trigger) is the older way: a guess from the buttons alone. The client mutes it while it runs the weapon itself, which is whenever the weapon set doesn't use <code>lua</code>. It is still worth filling in for a weapon that does.</p>
-  <div class="callout warn"><p><b>A stale line in the vocabulary.</b> The <code>impulse</code> entry's own description (the <b>ⓘ</b>) still says it is <em>NOT PREDICTED</em>. That was true before the weapon machine moved into the shared core; recoil and rocket jumps are now predicted (docs/WEAPON_PREDICTION.md, phases A and G).</p></div>
+  <div class="callout warn"><p><b>A stale line in the vocabulary.</b> The <code>impulse</code> entry's own description (the <b>ⓘ</b>) still says it is <em>NOT PREDICTED</em>. That was true before the weapon machine moved into the shared core; recoil and rocket jumps are now predicted.</p></div>
 
   <h2>Exercise: three ways to hurt</h2>
   <ol class="steps">

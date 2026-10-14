@@ -137,7 +137,7 @@ when_panel_used (title › quit) → close_panel title → quit_game</code></pre
   <p>So a score, quest flags and unlocked doors belong in a game graph. A map's own puzzle state belongs in the map's graph, kept by <span class="ui">levels keep their state</span>.</p>
 
   <h2 id="cinderfall">In Cinderfall: two game graphs and nine maps that ask them</h2>
-  <div class="callout soon"><p><b>Cinderfall is new and still being tested</b>, and it is not bundled with the studio yet. To open it, run <code>node tutorials/tools/pack-example.mjs cinderfall</code> in the repository, then on <b>Home</b> press <span class="ui">⇩ import pack</span> and choose the zip. <a href="../examples/02-cinderfall.html">Cinderfall, the tour</a> walks through the whole game.</p></div>
+  <div class="callout tip"><p>Cinderfall comes with the studio: on <b>Home</b>, under <span class="ui">◆ examples</span>, press <span class="ui">📂 Cinderfall</span>. <a href="../examples/02-cinderfall.html">Cinderfall, the tour</a> walks through the whole game.</p></div>
   <p>Gem Hollow is one level, so it never needs the game's side. Cinderfall, an example first-person shooter, is built around it. Its <code>maps/metamap.txt</code> lays nine maps on one grid, so its five districts (the mine, the foundry, the old town with the hub, the railhead and the Heart) are walked into without a load. Each map's graphs run in its own level, and two game graphs hold everything that has to cross from one map to the next:</p>
   <ul>
     <li><code>arms</code>: the weapon wheel on <kbd>Tab</kbd> and the quick swap on <kbd>X</kbd>. It is taken apart in <a href="../weapons/01-first-weapon.html#cinderfall">Your first weapon</a>.</li>

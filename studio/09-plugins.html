@@ -21,7 +21,7 @@
   <div class="goal">
     <b>You'll learn</b><span>how to open a file in a plugin and come back, what drafts are, how to install, switch off or uninstall a plugin, and how sources are baked into what the game loads</span>
     <b>Time</b><span>15 minutes</span>
-    <b>Needs</b><span>the studio, in a browser or the app (<a href="01-getting-started.html">Getting started</a>)</span>
+    <b>Needs</b><span>the studio (<a href="01-getting-started.html">Getting started</a>)</span>
   </div>
 
   <h2>The bundled plugins</h2>
@@ -56,7 +56,7 @@
   <p>Between them, the bar names the plugin and the file, and says <em>changed</em>, <em>saving…</em> or a problem.</p>
   <p>Leaving any other way, by the rail or the phone's back button, asks: <span class="ui">save and go</span>, <span class="ui">discard</span> or <span class="ui">stay</span>.</p>
   <p>Opening a file in a plugin is an address of its own, so reloading the page comes back to the plugin.</p>
-  <p><b>Plugins wear the studio's style.</b> When you change the studio's style, mode or pointer (Settings → Look, or the Style card on Home), every bundled editor follows: its own colours, fonts and colour scheme are mapped onto the style's. A few canvases an editor paints in fixed colours, such as the DAW's lanes and waveforms, keep them. A plugin you write receives the style through the <code>skin</code> message if it asks for it (<code>onSkin</code> in the SDK; see <code>docs/PLUGINS.md</code>).</p>
+  <p><b>Plugins wear the studio's style.</b> When you change the studio's style, mode or pointer (Settings → Look, or the Style card on Home), every bundled editor follows: its own colours, fonts and colour scheme are mapped onto the style's. A few canvases an editor paints in fixed colours, such as the DAW's lanes and waveforms, keep them. A plugin you write receives the style through the <code>skin</code> message if it asks for it (<code>onSkin</code> in the SDK).</p>
 
   <h3>Drafts</h3>
   <p>A phone often closes an app that is in the background. So while a plugin works, it sends the studio a <b>draft</b> every couple of seconds, and the studio also asks for one when the app goes to the background. Drafts are kept on the device, by file, not by plugin.</p>
@@ -95,7 +95,6 @@
   <table>
     <thead><tr><th>Where</th><th>Install plugins?</th></tr></thead>
     <tbody>
-      <tr><td>A browser, through the dev server</td><td>✓</td></tr>
       <tr><td>The desktop app</td><td>✓</td></tr>
       <tr><td>Android</td><td>✗ — bundled plugins work</td></tr>
       <tr><td>iOS</td><td>✗ — there is no iOS build yet</td></tr>
@@ -143,15 +142,12 @@
     <li><b>Before Play and Export</b>, the studio bakes every <b>stale</b> source: one whose bytes changed (an imported pack, say), whose baker changed version, or that was never baked. A source with no baker available stops Play and says which.</li>
   </ul>
   <p>Bakes are cached on the device, so undoing an edit, or baking the same source again, costs nothing.</p>
-  <p>On a workstation, you can run the studio's own bakers by hand. The tool prints each file it makes with its SHA-256, and makes the same bytes the studio does:</p>
-<pre><code>node studio/tools/bake.mjs modules/mymod/sources/textures/brick.texproj.json -o /tmp/baked</code></pre>
-  <p>It works for textures (<code>.texproj.json</code>) and sprites (<code>.tsprite</code>), guessing the kind from the extension. <code>-o</code> writes the files to a folder; without it, it only prints them.</p>
 
   <h3>Duplicate and export</h3>
   <p>A texture's card (in 🧱 Textures) and a sprite's card (in 🎞 Sprites) have two more buttons:</p>
   <ul>
     <li><span class="ui">⧉ duplicate</span> copies every file it is made of under a new name (the first free <code>NAME_2</code> is offered): a texture's picture, settings and qPainter project; a sprite's sheet, ThreeSprite project and bake record. The copy is a variant of its own, and its project bakes to the copy.</li>
-    <li><span class="ui">⇪ export PNG</span>, <span class="ui">⇪ export project</span>, <span class="ui">⇪ export .tsprite</span> and <span class="ui">⇪ export sheet</span> send each file it has out of the studio (a download in a browser, the share sheet in the app). An exported sheet is a <code>.zip</code> of its json and png, which can be imported again.</li>
+    <li><span class="ui">⇪ export PNG</span>, <span class="ui">⇪ export project</span>, <span class="ui">⇪ export .tsprite</span> and <span class="ui">⇪ export sheet</span> send each file it has out of the studio (saved, or shared from the share sheet on a phone). An exported sheet is a <code>.zip</code> of its json and png, which can be imported again.</li>
   </ul>
   <p>The <a href="../textures/01-first-texture.html">Textures</a> and <a href="../sprites/01-first-sprite.html">Sprites</a> tracks show them on Gem Hollow's own art.</p>
 
@@ -174,7 +170,6 @@
     <li><code>editors</code>: each with an <code>entry</code> page, the <code>kinds</code> of document it edits (<code>file:texture</code>, <code>file:tsprite</code>, <code>file:msproj</code>, <code>file:sfxproj</code>, <code>record:script</code>, <code>record:mob</code>), a <code>label</code>, and a <code>priority</code>.</li>
     <li><code>bakers</code> and <code>sections</code>, when it has them. The Packager's manifest, for example, has one section: <code>{ "id": "package", "label": "Package", "icon": "📦" }</code>.</li>
   </ul>
-  <p>The full guide, with the message protocol and the smallest working editor (<code>studio/plugins/_echo/</code>, a text box in about 30 lines), is <code>docs/PLUGINS.md</code> in the repository.</p>
 
   <div class="quiz" data-answer="1">
     <p class="q">You've painted in qPainter for ten minutes and press <span class="ui">✕</span>. What happens?</p>
@@ -197,7 +192,7 @@
   <div class="quiz" data-answer="0">
     <p class="q">Where can you install a .dnpplugin?</p>
     <ul>
-      <li>In a browser through the dev server, and in the desktop app</li>
+      <li>In the desktop app (Windows, macOS, Linux)</li>
       <li>Everywhere, including Android</li>
       <li>Only on Android</li>
     </ul>

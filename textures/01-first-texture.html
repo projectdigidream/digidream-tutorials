@@ -21,7 +21,7 @@
   <div class="goal">
     <b>You'll learn</b><span>how to start a texture from the studio or from qPainter on its own, how the screen is laid out, and the sixteen tools with their keys</span>
     <b>Time</b><span>15 minutes</span>
-    <b>Needs</b><span>the studio (see <a href="../studio/01-getting-started.html">Getting started</a>), or a checkout of qPainter with Node.js 20.19 or newer</span>
+    <b>Needs</b><span>the studio (see <a href="../studio/01-getting-started.html">Getting started</a>), or the standalone qPainter app (see <a href="../studio/00-get-the-tools.html">Get the tools</a>)</span>
   </div>
 
   <h2>Two ways to run qPainter</h2>
@@ -69,13 +69,9 @@
   <p>Two messages can stop <span class="ui">Create</span>. <em>"Sizes go from 1 to 4096."</em> means a side is out of range. <em>"Use an even size."</em> appears for a sky whose size is odd.</p>
 
   <h3>On its own</h3>
-  <p>qPainter lives in the workspace's <code>qpainter/</code> folder, a repository of its own. From there:</p>
-<pre><code>cd qpainter
-./start.sh          # dev server on port 5173, opens your browser
-./start.sh prod     # production build with offline support</code></pre>
-  <p>The script also prints a <b>Network</b> URL, such as <code>http://192.168.1.20:5173/</code>. Open it on a phone on the same Wi-Fi to paint with touch or a stylus. <code>./build-apk.sh</code> builds an Android app, <code>qPainter.apk</code>, which you can copy to the phone and install. qPainter also installs as a web app from any HTTPS host.</p>
+  <p>Standalone qPainter is a download of its own, from the <a href="https://github.com/projectdigidream/digidream-qpainter/releases">qPainter releases</a>. Install it the same way as the studio: see <a href="../studio/00-get-the-tools.html">Get the tools</a>. If there is no release for your system yet, use qPainter inside the studio: it is the same painter. On its own it has its own <span class="ui">New…</span>, <span class="ui">Open</span> and <span class="ui">Save</span>, and keeps its own <span class="ui">Recent</span> list; inside the studio those are hidden, and <span class="ui">‹ studio</span> saves into the module.</p>
   <p>On its own, qPainter starts with the texture you had open last. The <span class="ui">New…</span> menu in the top bar offers the square sizes 16 to 1024, <span class="ui">W×H…</span> for any size up to 4096, and three skyboxes. A new texture keeps your palette, ramps and settings.</p>
-  <div class="callout tip"><p>Standalone qPainter saves every change to its <span class="ui">Recent</span> list about a second after you make it. <span class="ui">Recent</span> lives in the browser's storage, though, so clearing site data loses it. <span class="ui">Save</span> anything you want to keep to a file.</p></div>
+  <div class="callout tip"><p>Standalone qPainter saves every change to its <span class="ui">Recent</span> list about a second after you make it. <span class="ui">Recent</span> lives in the app's own storage on this device, though, so removing the app loses it. <span class="ui">Save</span> anything you want to keep to a file.</p></div>
 
   <h2>The screen</h2>
   <figure class="shot" data-src="../assets/shots/texture-editor.png" data-hotspots='[{"x": 14.2, "y": 5.8, "t": "Export…", "d": "PNG at 1×–16×, sprite sheets, animated PNG"}, {"x": 31, "y": 5.8, "t": "Wrap and Tiles", "d": "paint across edges; show the texture tiled"}, {"x": 37.6, "y": 5.8, "t": "Offset ½", "d": "bring the seams to the middle"}, {"x": 43.4, "y": 5.8, "t": "Symmetry", "d": "No sym, Mirror X/Y/XY, Diagonal, Radial (S)"}, {"x": 52, "y": 5.8, "t": "Lock", "d": "snap colours to the palette — nearest or dithered"}, {"x": 1.7, "y": 40, "t": "Tools", "d": "16 tools, each with a key"}, {"x": 41, "y": 50, "t": "The canvas", "d": "BRICKGREY, tiled: the middle copy is the texture"}, {"x": 89, "y": 36.5, "t": "Palette", "d": "swatches, ramps, import and export"}, {"x": 82, "y": 67.5, "t": "Frames", "d": "animation frames and FPS"}, {"x": 82, "y": 86, "t": "Layers", "d": "composited bottom-up when baked"}, {"x": 90, "y": 95, "t": "3D preview", "d": "the texture on a cube, wall, sphere or your own model"}]' data-alt="qPainter with Gem Hollow's BRICKGREY open, Tiles on">
@@ -196,7 +192,7 @@
   </ol>
 
   <h2 id="cinderfall">In Cinderfall</h2>
-  <div class="callout soon"><p><b>New, and still being tested.</b> Cinderfall is a second example, a first-person shooter. It is not bundled with the studio yet: make its pack with <code>node tutorials/tools/pack-example.mjs cinderfall</code> and bring it in with Home → <span class="ui">⇩ import pack</span>. The <a href="../examples/02-cinderfall.html">Cinderfall tour</a> walks round it.</p></div>
+  <div class="callout tip"><p>Cinderfall is a second example, a first-person shooter, and it comes with the studio: on Home, under <span class="ui">◆ examples</span>, press <span class="ui">📂 Cinderfall</span>. The <a href="../examples/02-cinderfall.html">Cinderfall tour</a> walks round it.</p></div>
   <figure class="shot" data-src="../assets/shots/cinder-texture-brickred.png" data-alt="qPainter with Cinderfall's BRICKRED open, tiled: red bricks, one layer called Freedoom BRICK11, 26 colours" data-hotspots='[{"x":30.5,"y":5.8,"t":"Wrap and Tiles","d":"saved on, so it opens ready to paint across the edges"},{"x":41,"y":50,"t":"64 × 128","d":"the middle copy is the texture; the rest is the tiling"},{"x":86,"y":52,"t":"26 colours","d":"the palette is exactly the colours in the picture"},{"x":85,"y":77,"t":"Freedoom BRICK11","d":"one layer, named after the Freedoom texture it was built from"}]'>
     <figcaption>Cinderfall's BRICKRED in qPainter, tiled: one layer, <b>Freedoom BRICK11</b>, 64 × 128 and 26 colours.</figcaption>
   </figure>
@@ -218,7 +214,7 @@
 
   <h2>Exercise: a sooty variant of a Cinderfall wall</h2>
   <ol class="steps">
-    <li><p>Import Cinderfall and open <b>🧱 Textures</b>. Click <b>BRICKRED</b>, press <span class="ui">duplicate</span> and keep <code>BRICKRED_2</code>.</p></li>
+    <li><p>Open Cinderfall from Home → <span class="ui">◆ examples</span> and open <b>🧱 Textures</b>. Click <b>BRICKRED</b>, press <span class="ui">duplicate</span> and keep <code>BRICKRED_2</code>.</p></li>
     <li><p>Press <span class="ui">edit in qPainter</span>. The layer reads <b>Freedoom BRICK11</b>; <span class="ui">Wrap</span> is already on. Tick <span class="ui">Tiles</span>.</p></li>
     <li><p>Pick the darkest grey of the mortar as the primary colour. With <kbd>R</kbd> (Replace color brush), paint over the lower rows of bricks: they turn to soot, and the strokes run on across the edges into the tiled copies.</p></li>
     <li><p>Press <span class="ui">‹ studio</span>. Put BRICKRED_2 on the lower wall of a room, BRICKRED above it.</p></li>

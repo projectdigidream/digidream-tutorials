@@ -21,23 +21,19 @@
   <div class="goal">
     <b>You'll learn</b><span>how to get Cinderfall into the studio, how its one world is laid out, how its graphs are split, how people talk and the boss fights, its keys, saving, fonts and panel skins, and what it shows that Gem Hollow does not</span>
     <b>Time</b><span>30 minutes</span>
-    <b>Needs</b><span>a checkout of the repository with Node.js, and the studio open (see <a href="../studio/01-getting-started.html">Getting started</a>)</span>
+    <b>Needs</b><span>the studio open (see <a href="../studio/01-getting-started.html">Getting started</a>)</span>
   </div>
 
-  <div class="callout soon"><p><b>New, and still being tested.</b> Cinderfall is not bundled with the studio yet, so it is not under <span class="ui">◆ examples</span> on Home. You bring it in as a pack (below). This page describes the files as they are now; details may still change.</p></div>
+  <div class="callout"><p>Cinderfall is the newer of the two examples, and comes with the studio beside Gem Hollow. If Home doesn't show it, your studio is older than these tutorials: <a href="../studio/00-get-the-tools.html#updating">update it</a>.</p></div>
 
   <h2>Get it</h2>
   <ol class="steps">
-    <li><p>From the repository root, pack it:</p>
-<pre><code>node tutorials/tools/pack-example.mjs cinderfall</code></pre>
-      <p>It writes <code>cinderfall.zip</code> (about 5 MB) and says how many files went in.</p></li>
-    <li><p>In the studio, on Home, press <span class="ui">⇩ import pack</span> and choose <code>cinderfall.zip</code>. The studio opens it as a module of its own, <code>cinderfall</code>, beside your others.</p></li>
-    <li><p>Check Home: 12 maps, and <em>"✔ nothing wrong that the studio can see"</em>. Under <b>other modules</b> there is now a <code>cinderfall</code> chip, to come back to it later.</p></li>
+    <li><p>On Home, under <span class="ui">◆ examples</span>, press <span class="ui">📂 Cinderfall</span>. The first time, the studio makes a module of your own from the example and opens it. Pressing it again opens the same copy, with your changes; <span class="ui">a fresh copy</span> makes another, untouched one.</p></li>
+    <li><p>Check Home: 12 maps, and <em>"✔ nothing wrong that the studio can see"</em>. Under <b>other modules</b> there is now a Cinderfall chip, to come back to it later.</p></li>
   </ol>
-  <figure class="shot" data-src="../assets/shots/cinder-home.png" data-alt="Home with Cinderfall imported: its about text and the first twelve map thumbnails">
-    <figcaption>Home with Cinderfall imported: 12 maps, from <code>menu</code> to <code>w_railhead</code>.</figcaption>
+  <figure class="shot" data-src="../assets/shots/cinder-home.png" data-alt="Home with Cinderfall open: its about text and the first twelve map thumbnails">
+    <figcaption>Home with Cinderfall open: 12 maps, from <code>menu</code> to <code>w_railhead</code>.</figcaption>
   </figure>
-  <p>Importing a pack again over it <b>replaces</b> the module, after a snapshot of the old one (see <a href="../studio/10-play-and-export.html">Play and export</a>).</p>
 
   <h2>One world: five districts and a hub</h2>
   <figure class="shot" data-src="../assets/shots/cinder-metamap.png" data-alt="Cinderfall's metamap: nine w_ maps on a grid, drawn as one world"

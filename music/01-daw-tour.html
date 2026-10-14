@@ -21,30 +21,24 @@
   <div class="goal">
     <b>You'll learn</b><span>how to start the DAW, what the header, the File menu and the transport do, how the tabs are laid out, how Arrange works, and which file is which</span>
     <b>Time</b><span>15 minutes</span>
-    <b>Needs</b><span>a checkout of the repository with Node.js (and Emscripten once, to build the engine), or the studio with the DigidreamSynth plugin</span>
+    <b>Needs</b><span>the studio (DigidreamSynth is one of its plugins), or the standalone DigidreamSynth app</span>
   </div>
 
-  <h2>Four ways to run it</h2>
-  <p>The DAW is one web page, <code>midisynth/tool/daw.html</code>. The same page ships in four shells:</p>
+  <h2>Where to run it</h2>
+  <p>The DAW is the same in every place it runs:</p>
   <table>
     <thead><tr><th>Where</th><th>How</th><th>Notes</th></tr></thead>
     <tbody>
-      <tr><td>Browser</td><td><code>node tool/serve.js</code>, then <a href="http://localhost:8930/tool/daw.html">localhost:8930/tool/daw.html</a></td><td>Needs a click on <span class="ui">Start audio</span> before anything sounds.</td></tr>
-      <tr><td>Desktop app</td><td><code>cd midisynth/electron &amp;&amp; npm install</code> once, then <code>npm start</code></td><td>Native menus and dialogs, file associations, no Start-audio click.</td></tr>
-      <tr><td>Android</td><td><code>./scripts/package_android.sh</code> builds an APK</td><td>Saved files land in <code>Documents/</code>. A WebView has no Web MIDI, so no MIDI keyboard.</td></tr>
+      <tr><td>Desktop app</td><td>download it from the <a href="https://github.com/projectdigidream/digidream-midisynth/releases">DigidreamSynth releases</a> (see <a href="../studio/00-get-the-tools.html">Get the tools</a>)</td><td>Native menus and dialogs, file associations. It has its own File menu, to make, open and save projects.</td></tr>
+      <tr><td>Android</td><td>the <code>-android.apk</code> from the same releases page, when there is one for the release</td><td>Saved files land in <code>Documents/</code>. A WebView has no Web MIDI, so no MIDI keyboard.</td></tr>
       <tr><td>Inside the studio</td><td>the <b>♪ Music</b> page, <span class="ui">✎ edit in DigidreamSynth</span></td><td>The same DAW as a plugin, in the studio's skin. It starts by itself (no <span class="ui">Start audio</span>) and has no File menu: <span class="ui">‹ studio</span> saves the project and goes back, <span class="ui">✕</span> goes back without saving. See <a href="05-loops-and-cues.html#studio">Loops, cuts and cues</a>.</td></tr>
     </tbody>
   </table>
-  <p>The same server also hosts two smaller tools: the stand-alone patch editor at <code>/tool/</code> and the track cutter at <code>/tool/cutter.html</code>. The DAW has both inside it, as the <b>Synth</b> and <b>Cut &amp; Loop</b> tabs.</p>
+  <p>The patch editor and the track cutter are inside the DAW, as the <b>Synth</b> and <b>Cut &amp; Loop</b> tabs.</p>
 
   <ol class="steps">
-    <li><p>Build the engine once. The DAW plays through a WebAssembly build of the synth, and this script makes it (it needs Emscripten):</p>
-<pre><code>cd midisynth
-./scripts/build_wasm.sh</code></pre></li>
-    <li><p>Start the static server and open the DAW:</p>
-<pre><code>node tool/serve.js
-# http://localhost:8930/tool/daw.html</code></pre></li>
-    <li><p>Press <span class="ui">Start audio</span>. Browsers only allow sound after a click, so the page waits for one. A progress bar shows the boot stages, and the log at the bottom ends with <em>"DAW ready — draw notes in Track, record with ● Rec, bake in File › Bake .mstk"</em>.</p></li>
+    <li><p>Open the DAW: in the studio, open <b>♪ Music</b> and press <span class="ui">✎ edit in DigidreamSynth</span> on a track; or start the standalone DigidreamSynth app.</p></li>
+    <li><p>If the page shows <span class="ui">Start audio</span>, press it: some systems only allow sound after a click. A progress bar shows the boot stages, and the log at the bottom ends with <em>"DAW ready — draw notes in Track, record with ● Rec, bake in File › Bake .mstk"</em>.</p></li>
   </ol>
 
   <h2>The header</h2>
@@ -59,7 +53,7 @@
   <div class="callout tip"><p>On a phone, or in any window under 700 px wide or 520 px tall, the header collapses to one line with play, stop and the position. Tap <span class="ui">▾</span> to open it.</p></div>
 
   <h3>The File menu</h3>
-  <p>The File menu is in the browser, desktop and Android versions. Inside the studio it is hidden: the studio keeps the project and bakes the track itself (see <a href="05-loops-and-cues.html#studio">the Music page</a>). The log line <em>"bake in File › Bake .mstk"</em> still shows there; ignore it.</p>
+  <p>The File menu is in the standalone app, on the desktop and on Android. Inside the studio it is hidden: the studio keeps the project and bakes the track itself (see <a href="05-loops-and-cues.html#studio">the Music page</a>). The log line <em>"bake in File › Bake .mstk"</em> still shows there; ignore it.</p>
   <table>
     <thead><tr><th>Item</th><th>What it does</th></tr></thead>
     <tbody>
@@ -174,7 +168,7 @@
   </ol>
 
   <h2 id="cinderfall">In Cinderfall: nine imported MIDI tracks</h2>
-  <div class="callout soon"><p><b>New, and still being tested.</b> Cinderfall is a second example, a first-person shooter. It is not bundled with the studio yet: make its pack with <code>node tutorials/tools/pack-example.mjs cinderfall</code> and bring it in with Home → <span class="ui">⇩ import pack</span>. The <a href="../examples/02-cinderfall.html">Cinderfall tour</a> walks round it.</p></div>
+  <div class="callout tip"><p>Cinderfall is a second example, a first-person shooter, and it comes with the studio: on Home, under <span class="ui">◆ examples</span>, press <span class="ui">📂 Cinderfall</span>. The <a href="../examples/02-cinderfall.html">Cinderfall tour</a> walks round it.</p></div>
   <figure class="shot" data-src="../assets/shots/cinder-synth-boss.png" data-alt="DigidreamSynth's Arrange tab on Cinderfall's boss track: eight tracks named basu, rain, led, ovr #2, ovr, squ, orc and drm, at 145 bpm" data-hotspots='[{"x":3,"y":27,"t":"basu, rain, led …","d":"the track names the MIDI file carried"},{"x":16,"y":52,"t":"30 Distortion Guitar","d":"the program each channel plays: the file asked for 29, which the bank lacks, so it was moved to 30"},{"x":63,"y":6,"t":"145 bpm","d":"the file&#39;s one tempo"},{"x":77,"y":6,"t":"loop","d":"the whole song, bar 1 to the end"},{"x":60,"y":67,"t":"squ comes in at bar 5","d":"the arrangement is the MIDI file&#39;s, untouched"},{"x":3,"y":82,"t":"ch 10 (drums)","d":"only MIDI channel 10 plays the drum kit"}]'>
     <figcaption>Cinderfall's <code>boss</code> in the Arrange tab: eight tracks straight from the MIDI file, 145 bpm, the loop over the whole song.</figcaption>
   </figure>
@@ -202,7 +196,7 @@
     <li><b>Every project has the shipped bank and kit</b>, the same as Gem Hollow's, so the guitars, choirs and orchestra hits of these metal tunes are played by the stock patches. The files asked for a few programs the bank does not have, and those tracks were moved to the nearest program it does have, so nothing plays the fallback pad. See <a href="03-patches.html#cinderfall">Patches</a> for the list.</li>
   </ul>
   <ol class="steps">
-    <li><p>Import Cinderfall, open <b>♪ Music</b> and press <span class="ui">✎ edit in DigidreamSynth</span> on <code>boss</code>.</p></li>
+    <li><p>Open Cinderfall from Home → <span class="ui">◆ examples</span>, open <b>♪ Music</b> and press <span class="ui">✎ edit in DigidreamSynth</span> on <code>boss</code>.</p></li>
     <li><p>Play it with <kbd>Space</kbd>. Watch <code>squ</code> come in at bar 5 and <code>rain</code> at bar 9: the build-up is in the file.</p></li>
     <li><p>Rename <code>ovr</code> to <code>guitar L</code> and <code>ovr #2</code> to <code>guitar R</code>. Leave with <span class="ui">✕</span> to throw it away, or <span class="ui">‹ studio</span> to keep it.</p></li>
   </ol>

@@ -25,11 +25,7 @@
   </div>
 
   <h2>Where the patch editor is</h2>
-  <p>The same editor appears in two places:</p>
-  <ul>
-    <li>the DAW's <span class="ui">Synth</span> tab, editing the project's own bank and kit;</li>
-    <li>the stand-alone tool at <a href="http://localhost:8930/tool/">localhost:8930/tool/</a>, which plays test songs and edits a bank or kit file directly.</li>
-  </ul>
+  <p>The patch editor is the DAW's <span class="ui">Synth</span> tab. It edits the project's own bank and kit.</p>
   <figure class="shot" data-src="../assets/shots/synth-synth.png" data-alt="The Synth tab on Gem Hollow's airship: the tracks and their programs on the left, program 38 Synth Bass 1 open in the patch editor on the right">
     <figcaption>Synth, on <code>airship</code>: program 38 is played by <code>Instrument_01</code> and <code>Instrument_02</code>, so both light up; the editor shows its two layers.</figcaption>
   </figure>
@@ -190,7 +186,7 @@
   </ol>
 
   <h2 id="cinderfall">In Cinderfall: programs moved into the bank</h2>
-  <div class="callout soon"><p><b>New, and still being tested.</b> Cinderfall, the first-person shooter example, is not bundled yet: see <a href="01-daw-tour.html#cinderfall">A tour of the DAW</a> for how to import it, and the <a href="../examples/02-cinderfall.html">Cinderfall tour</a>.</p></div>
+  <div class="callout tip"><p>Cinderfall, the first-person shooter example, comes with the studio: on Home, under <span class="ui">◆ examples</span>, press <span class="ui">📂 Cinderfall</span>. The <a href="../examples/02-cinderfall.html">Cinderfall tour</a> walks round it.</p></div>
   <figure class="shot" data-src="../assets/shots/cinder-synth-remap.png" data-alt="The Synth tab on Cinderfall's boss with ovr selected: program 30 Distortion Guitar, the bank's distortion_guitar patch with two waveshaper layers; rain plays 89 Pad 2 (warm)" data-hotspots='[{"x":21,"y":36,"t":"ovr #2 and ovr","d":"both play program 30 now, so both light up"},{"x":58,"y":22,"t":"30 Distortion Guitar","d":"was 29 Overdriven Guitar, which the bank does not have"},{"x":50,"y":28.7,"t":"distortion_guitar","d":"a real patch from the bank, not the blank new one"},{"x":51,"y":47.3,"t":"Two waveshaper layers","d":"hard-driven, panned left and right"},{"x":20,"y":29.2,"t":"rain: 89 Pad 2 (warm)","d":"was 96 FX 1 (rain)"}]'>
     <figcaption>The Synth tab on <code>boss</code>: <code>ovr</code> and <code>ovr #2</code> now play program 30, a patch the shipped bank has.</figcaption>
   </figure>
@@ -210,7 +206,7 @@
   <p>Every track in the nine projects now plays a patch the bank has, and none plays <code>fallback_pad</code>. The guitars land on <code>30 Distortion Guitar</code> (<code>distortion_guitar</code>, two hard-driven waveshaper layers panned left and right), which <code>heart</code>, <code>hub</code>, <code>oldtown</code> and <code>railhead</code> already used for their own distorted parts. The track names were kept, so <code>rain</code> and <code>Seashore</code> still carry the names of the sounds they asked for.</p>
   <p>The program list still marks any program the bank lacks with <b>·fallback</b>, and selecting one opens a blank patch called <code>new</code>: nothing is saved for that program until you edit it. The exercise below uses that to give <code>boss</code> a real program 29.</p>
   <ol class="steps">
-    <li><p>Import Cinderfall, open <code>boss</code> from <b>♪ Music</b>, and go to the <span class="ui">Synth</span> tab. Click <code>ovr</code>: the program list at the top reads <code>30 Distortion Guitar</code>, and the name is <code>distortion_guitar</code>. Open <span class="ui">JSON ▾</span> and copy the text.</p></li>
+    <li><p>Open Cinderfall from Home → <span class="ui">◆ examples</span>, open <code>boss</code> from <b>♪ Music</b>, and go to the <span class="ui">Synth</span> tab. Click <code>ovr</code>: the program list at the top reads <code>30 Distortion Guitar</code>, and the name is <code>distortion_guitar</code>. Open <span class="ui">JSON ▾</span> and copy the text.</p></li>
     <li><p>Pick <code>29 Overdriven Guitar ·fallback</code> in the program list. Picking a program makes the selected track play it, so <code>ovr</code> now plays 29, and the editor shows the blank <code>new</code> patch. Press <kbd>Space</kbd>: <code>ovr</code> is a soft pad under <code>ovr #2</code>'s crunch. That is what the file's choice sounded like before the remap.</p></li>
     <li><p>Open <span class="ui">JSON ▾</span>, paste over it, change <code>"name"</code> to <code>"overdriven_guitar"</code> and press <span class="ui">Apply JSON</span>. On <span class="ui">Layer 1</span>, lower the waveshaper's second <span class="ui">drive</span> from 14 to 6: an overdrive is a gentler distortion.</p></li>
     <li><p>Play: <code>ovr</code> now has its own, softer crunch next to <code>ovr #2</code>'s distortion. Leave with <span class="ui">‹ studio</span> to keep the patch, in <code>boss</code>'s bank only, or <span class="ui">✕</span> to throw it away.</p></li>

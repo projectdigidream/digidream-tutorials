@@ -21,7 +21,7 @@
   <div class="goal">
     <b>You'll learn</b><span>how to open the editor on its own or from the studio, how its screen is laid out, the difference between Randomize and Vary, and how to name a sound</span>
     <b>Time</b><span>15 minutes</span>
-    <b>Needs</b><span>a checkout of the repository with Node.js (and emsdk, once), or the studio with a module open</span>
+    <b>Needs</b><span>the studio with a module open, or the standalone DigidreamSound app</span>
   </div>
 
   <h2>Five ideas</h2>
@@ -51,15 +51,10 @@
 
   <h3>On its own</h3>
   <ol class="steps">
-    <li><p>From the <code>sound/</code> directory, build the WebAssembly engine once. Do it again only after changing the engine. It needs emsdk.</p>
-<pre><code>./scripts/build_wasm.sh</code></pre></li>
-    <li><p>Start the editor's server:</p>
-<pre><code>node tool/serve.js</code></pre>
-      <p>Then open <a href="http://localhost:8940/tool/sfx.html">http://localhost:8940/tool/sfx.html</a>.</p></li>
-    <li><p>Press <span class="ui">Start</span>. A browser only lets a page make sound after a click, so the editor waits for one. It then opens the small example bank, so there is always something to play.</p></li>
+    <li><p>Download DigidreamSound from the <a href="https://github.com/projectdigidream/digidream-sound/releases">DigidreamSound releases</a> and install it the same way as the studio: see <a href="../studio/00-get-the-tools.html">Get the tools</a>. If there is no release for your system yet, use DigidreamSound inside the studio: it is the same editor.</p></li>
+    <li><p>Start it. It opens the small example bank, so there is always something to play. If it shows <span class="ui">Start</span>, press it first.</p></li>
   </ol>
-  <div class="callout warn"><p>The editor needs a <b>secure context</b>. <code>localhost</code> is one. A plain <code>http://</code> address on your network is not: the page loads but makes no sound. To use another device, serve over HTTPS or use the Android app.</p></div>
-  <p><code>serve.js</code> also takes a port, <code>--host 0.0.0.0</code> to reach it from another device, and <code>--root DIR</code> to serve a packaged build instead of the source tree. The desktop and Android apps skip <span class="ui">Start</span>.</p>
+  <p>On its own, DigidreamSound has its own <span class="ui">Open</span>, <span class="ui">Save</span> and <span class="ui">New bank</span>, and you keep your banks as <code>.sfxproj</code> files. In the studio those are hidden, and <span class="ui">‹ studio</span> saves into the module.</p>
 
   <h3>From the studio</h3>
   <p>DigidreamSound ships with the studio as a plugin. Open the <span class="ui">🔊 Sounds</span> section, then either press <span class="ui">+ new sound pack</span> or press <span class="ui">✎ edit in DigidreamSound</span> on a pack. The editor fills the screen under a slim bar: <span class="ui">‹ studio</span> goes back and saves, <span class="ui">✕</span> goes back without saving. Packs are covered in <a href="04-mix-and-ship.html#packs">Mix, test and ship</a>.</p>
@@ -196,14 +191,14 @@
     </ul>
     <p class="why">The name is the whole identity of a sound. A missing name is silence, said once in the client's console, and the studio lists it on Home.</p>
   </div>
-  <div class="quiz" data-answer="0">
-    <p class="q">You opened the editor at http://192.168.1.20:8940/tool/sfx.html from a tablet. It loads, but nothing plays. Why?</p>
+  <div class="quiz" data-answer="1">
+    <p class="q">You edited a sound pack in DigidreamSound from the studio. How do you keep the changes?</p>
     <ul>
-      <li>A plain http:// network address is not a secure context, so the page cannot make sound</li>
-      <li>The example bank only plays on desktops</li>
-      <li>You need to export a .sfxb first</li>
+      <li>Press <span class="ui">Save</span> and choose a file</li>
+      <li>Press <span class="ui">‹ studio</span></li>
+      <li>Press <span class="ui">✕</span></li>
     </ul>
-    <p class="why">localhost and HTTPS are secure contexts; a LAN address over plain HTTP is not. Serve over HTTPS or use the Android app.</p>
+    <p class="why">Inside the studio there is no <span class="ui">Save</span>: <span class="ui">‹ studio</span> saves into the module and goes back, and <span class="ui">✕</span> goes back without saving.</p>
   </div>
 </article>
 </body>

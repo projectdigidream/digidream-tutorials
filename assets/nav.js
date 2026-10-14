@@ -5,7 +5,8 @@ window.DNP_NAV = [
   {
     id: 'studio', title: 'Studio', icon: '◆', blurb: 'Maps, monsters, triggers, cameras, graphs, and shipping a module.',
     pages: [
-      { file: 'studio/01-getting-started.html', title: 'Getting started', kw: 'launch devserver 8080 home rail undo app play export' },
+      { file: 'studio/00-get-the-tools.html', title: 'Get the tools', kw: 'download install windows macos linux android apk release open anyway smartscreen play protect update backup' },
+      { file: 'studio/01-getting-started.html', title: 'Getting started', kw: 'launch app home rail undo play export examples' },
       { file: 'studio/02-first-map.html', title: 'Your first map', kw: 'room tool corners rectangle floor ceiling light wall flags select' },
       { file: 'studio/03-placing-things.html', title: 'Placing things', kw: 'place palette spawn light monster prop facing dormant' },
       { file: 'studio/04-triggers.html', title: 'Triggers', kw: 'door lift switch teleport ambush exit crusher when if then' },
