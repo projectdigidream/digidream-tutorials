@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sync with GitHub · Digidream Studio tutorials</title>
+<meta name="description" content="Keep your modules in a GitHub repository of your own: open them on your other devices, keep every version, and settle a file changed on two devices.">
+<link rel="stylesheet" href="../assets/site.css">
+<link rel="stylesheet" href="../assets/skins/skins.css">
+<link rel="icon" type="image/png" href="../assets/logo.png">
+<script src="../assets/skins/skins.js"></script>
+<script src="../assets/skin.js"></script>
+<script defer src="../assets/nav.js"></script>
+<script defer src="../assets/shortcuts.js"></script>
+<script defer src="../assets/site.js"></script>
+</head>
+<body>
+<article>
+  <h1>Sync with GitHub</h1>
+  <p class="lede">The studio keeps your modules on the device you made them on. Sync puts them in a GitHub repository of your own as well, so you can carry on on another device, go back to any earlier version, and never lose a module with a lost phone.</p>
+  <div class="goal">
+    <b>You'll learn</b><span>how to make a token, choose or create a repository, what syncs and when, what happens when two devices change the same thing, how to bring a module to a new device, and how to stop</span>
+    <b>Time</b><span>20 minutes</span>
+    <b>Needs</b><span>the studio 0.3.2 or later (<a href="00-get-the-tools.html">Get the tools</a>), a free GitHub account, and an internet connection</span>
+  </div>
+
+  <h2>What it is for</h2>
+  <ul>
+    <li><b>Several devices.</b> Draw a map on your computer, test it on your phone on the bus, and come back to the computer with the phone's changes already there.</li>
+    <li><b>A history.</b> Each sync is a <b>commit</b> on GitHub: a saved version with a date and a note. GitHub keeps every one of them.</li>
+    <li><b>A backup.</b> If the device breaks or the app is removed, your modules are still in the repository.</li>
+  </ul>
+  <p>There is no Digidream server in between. The Sync page talks to GitHub directly, from your device, with a key you give it (a <b>token</b>). Nothing goes anywhere else.</p>
+  <p>Sync is a bundled plugin: <b>GitHub sync</b>. It adds <span class="ui">🔄 Sync</span> to the rail, and a service that runs in the background while the studio is open. See <a href="09-plugins.html">Plugins</a> for what that means.</p>
+
+  <h2>What you need from GitHub</h2>
+  <h3>An account</h3>
+  <p>If you don't have one, go to <code>github.com</code> and sign up. A free account is enough. GitHub will ask you to confirm your email address.</p>
+  <h3>A repository</h3>
+  <p>A <b>repository</b> is a folder on GitHub with a history. All your modules go into one repository, one folder per module. Make it <b>private</b>, so only you can see it. You can create it from the Sync page (if your token allows it) or on GitHub first.</p>
+  <h3>A token</h3>
+  <p>A <b>token</b> is a long password that lets the studio act for you on GitHub, and only in the ways you allow. GitHub calls it a <em>fine-grained personal access token</em>; it starts with <code>github_pat_</code>. You can make one in two ways, and the Sync page tells you both:</p>
+  <table>
+    <thead><tr><th>The token can see</th><th>Repository access</th><th>Permissions</th><th>What the Sync page can do</th></tr></thead>
+    <tbody>
+      <tr><td><b>All your repositories</b></td><td><em>All repositories</em></td><td><em>Contents</em>: Read and write, and <em>Administration</em>: Read and write</td><td>list your repositories, and create a new one for you</td></tr>
+      <tr><td><b>One repository only</b></td><td><em>Only select repositories</em>, and pick it</td><td><em>Contents</em>: Read and write</td><td>use that repository; it cannot create one. Make the repository on GitHub first.</td></tr>
+    </tbody>
+  </table>
+  <div class="callout tip"><p><b>One repository only</b> is the safer choice. If the token ever leaks, it opens just that one repository, not everything you have on GitHub. The page's link <span class="ui">make the repository on GitHub</span> opens GitHub's new-repository form already filled in: named <code>digidream-modules</code>, private.</p></div>
+  <p>GitHub also asks for an <b>expiration</b>. When the token expires, sync stops until you give it a new one (see <a href="#trouble">When something goes wrong</a>). Pick a date that suits you; a longer one means fewer renewals, a shorter one means less harm if it leaks.</p>
+
+  <h2>The Sync page</h2>
+  <figure class="shot" data-src="../assets/shots/studio-sync-connect.png" data-alt="The Sync page before connecting: how to make a token, a Token field, the device name and Continue" data-hotspots='[{"x":4.6,"y":91.7,"t":"🔄 Sync","d":"the plugin’s page in the rail"},{"x":38.4,"y":26.2,"t":"Make a new token on GitHub","d":"opens GitHub’s token form in your browser"},{"x":42.9,"y":29.7,"t":"All repositories","d":"the studio can list your repositories and make a new one"},{"x":38.2,"y":34.8,"t":"One repository only","d":"make the repository on GitHub first, then give the token just that one"},{"x":44.4,"y":43.6,"t":"Token","d":"paste it here; it starts with github_pat_"},{"x":70.1,"y":43.6,"t":"This device","d":"the name this device signs its commits with"},{"x":35,"y":52.1,"t":"Continue","d":"checks the token with GitHub, then asks for the repository"}]'>
+    <figcaption>The Sync page before you connect. The token stays on this device.</figcaption>
+  </figure>
+  <p>Open <span class="ui">🔄 Sync</span> from the rail. The page is titled <b>Sync with GitHub</b>, and its card <b>A token from GitHub</b> has:</p>
+  <ul>
+    <li><span class="ui">Make a new token on GitHub</span>: opens GitHub's form for a new fine-grained token in your system's browser.</li>
+    <li>The two ways to set it up, from the table above, and <span class="ui">make the repository on GitHub</span> for the second.</li>
+    <li><span class="ui">Token</span>: paste the token here.</li>
+    <li><span class="ui">This device, in commit messages</span>: a name for this device, filled in for you (<code>Mac</code>, <code>Windows</code>, <code>Linux</code>, <code>Android</code>…). Change it to something you will recognise, such as <code>laptop</code> or <code>phone</code>.</li>
+    <li><span class="ui">Continue</span>: checks the token with GitHub. While it does, the button says <em>Checking…</em>.</li>
+  </ul>
+  <h3>Choose the repository</h3>
+  <p>Once GitHub accepts the token, the page says <em>"Signed in as <i>you</i>. Its modules go in one folder each."</em> and shows <b>Choose the repository</b>:</p>
+  <ul>
+    <li>The repositories the token can write to, each marked <em>private</em> or <em>public</em>, with <span class="ui">Use</span>. With more than eight, a <span class="ui">Find</span> box narrows the list.</li>
+    <li><span class="ui">Or one this list does not show</span>: type <code>owner/name</code> (or paste its address from GitHub) and press <span class="ui">Use</span>.</li>
+    <li><b>A new repository</b>: a <span class="ui">Name</span> (it suggests <code>digidream-modules</code>), a <span class="ui">private</span> tick, on by default, and <span class="ui">Create</span>. This needs a token for <em>All repositories</em> with <em>Administration</em>.</li>
+    <li><span class="ui">Branch (empty: the repository's own)</span>: leave it empty unless you know you want another branch.</li>
+    <li><span class="ui">Back</span> returns to the token.</li>
+  </ul>
+  <p>Once you pick or create one, you are connected, and every module on this device starts syncing.</p>
+
+  <h3>Connected</h3>
+  <p>The page now shows three cards:</p>
+  <ul>
+    <li><b>The repository</b>: its name (a link that opens it on GitHub) and branch, <em>"Signed in as … This device: …"</em>, and <span class="ui">Sync now</span>, <span class="ui">Change repository</span>, <span class="ui">Disconnect</span>. If the repository is public, it says so: <em>"The repository is public: anyone can read these modules."</em></li>
+    <li><b>On this device</b>: each module with its state, a <span class="ui">Sync</span> button, and a <span class="ui">sync</span> tick. Untick a module to keep it off GitHub; it then says <em>not synced</em>.</li>
+    <li><b>On GitHub, not on this device</b>: modules in the repository that this device does not have, each with <span class="ui">Get</span> (below). When there are none it says <em>"Nothing: every module on GitHub is here too."</em></li>
+  </ul>
+
+  <h2>What syncs, and when</h2>
+  <p>You don't press anything. The studio syncs a module:</p>
+  <ul>
+    <li>when you open it;</li>
+    <li>a few seconds after a save (the studio saves as you edit);</li>
+    <li>when the app comes back to the front, for instance when you switch back to it on a phone;</li>
+    <li>every couple of minutes for the module you have open, to pick up another device's changes;</li>
+    <li>when you press <span class="ui">Sync now</span> or a module's <span class="ui">Sync</span>.</li>
+  </ul>
+  <p>Each sync that has something to send is <b>one commit</b>. Its message names the module and the files, and the device: for example <em>"my-level: maps/first.studio.json"</em> and <em>"From the studio on laptop."</em></p>
+  <p>In the repository each module is a folder named after its id, holding the module as the studio keeps it: <code>module.studio.json</code> (the module's settings), <code>maps/</code> (one file per map), <code>assets/</code> (imported pictures, sounds, fonts) and <code>sources/</code> (texture, sprite, music and sound projects). Nothing baked is sent: the studio bakes again on each device. A file is only sent when its content changed.</p>
+  <h3>Where you see how it stands</h3>
+  <ul>
+    <li><b>On Home</b>, beside the version: a coloured dot and a word, such as <em>synced</em>. Home's <b>other modules</b> list shows each module's word too.</li>
+    <li><b>On the rail</b>: a dot on the module's item at the top.</li>
+    <li><b>On the Sync page</b>, under each module, with how long ago: <em>synced · 2 min ago</em>.</li>
+  </ul>
+  <table>
+    <thead><tr><th>It says</th><th>Meaning</th></tr></thead>
+    <tbody>
+      <tr><td><em>waiting for its first sync</em></td><td>just ticked; it will sync in a moment</td></tr>
+      <tr><td><em>syncing…</em></td><td>talking to GitHub now</td></tr>
+      <tr><td><em>synced</em>, or <em>synced, 2 files from GitHub</em></td><td>this device and GitHub agree; the second also brought another device's changes in</td></tr>
+      <tr><td><em>1 file changed here and on GitHub</em></td><td>a conflict: you choose which to keep (below)</td></tr>
+      <tr><td><em>offline; it will sync when GitHub can be reached</em></td><td>no connection; nothing is lost, it tries again later</td></tr>
+      <tr><td><em>gone from GitHub; this device keeps its copy</em></td><td>someone removed the module's folder from the repository</td></tr>
+      <tr><td><em>sync failed: …</em></td><td>GitHub said no; the reason follows (see <a href="#trouble">below</a>)</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Two devices</h2>
+  <p>Each file is compared three ways: what this device has, what GitHub has, and what both had at the last sync. So the studio knows which side changed.</p>
+  <ul>
+    <li><b>Changed on one side only</b>: that side wins, quietly. Edit map <code>first</code> on your laptop and map <code>cave</code> on your phone, and after a sync both devices have both edits.</li>
+    <li><b>Changed on both sides in the same way</b>: nothing to do.</li>
+    <li><b>Changed on both sides differently</b>: a <b>conflict</b>. The studio never guesses; it asks.</li>
+  </ul>
+  <p>When changes come in from GitHub to the module you have open, the studio first takes a snapshot of the module as it was (<em>before sync from …</em>), then reloads it in place: the same map and the same view. Undo starts afresh; the snapshot is your way back.</p>
+  <h3>A conflict</h3>
+  <p>The module's row on the Sync page opens a box: <em>"Changed here and on GitHub since the last sync. Choose which to keep; the other stays in history (GitHub's commits, or the studio's Snapshots for this device's)."</em> Each file is named as you know it (<em>map first</em>, <em>module settings</em>, <em>textures/BRICK.png</em>), with two choices: <span class="ui">this device</span> or <span class="ui">GitHub</span>. <span class="ui">All this device's</span> and <span class="ui">All GitHub's</span> choose for every file at once. <span class="ui">Keep these</span> finishes it.</p>
+  <p>The version you don't keep is not lost. If it was GitHub's, it is in the repository's history. If it was this device's, it is in <a href="10-play-and-export.html#snapshots">🕘 snapshots</a>.</p>
+  <div class="callout tip"><p>The choice is per file, and a map is one file. Two people (or two devices) working on <b>different maps</b> never conflict. Working on the same map in two places at once always will.</p></div>
+
+  <h2>Getting a module onto this device</h2>
+  <p>A module that is on GitHub but not here is listed under <b>On GitHub, not on this device</b>. Press <span class="ui">Get</span>: the studio brings it in, and from then on it syncs like the others. Open it from Home's <b>other modules</b>.</p>
+  <div class="callout warn"><p>Every device starts with a module called <b>My Level</b> (its id is <code>my-level</code>), and you may have opened the same examples on both. These have the same id on each device, so they meet in the same folder on GitHub. The first sync on a new device compares them file by file: files that differ ask which to keep. If the other device has the work you want, choose <span class="ui">All GitHub's</span>.</p></div>
+  <h3>Deleting</h3>
+  <p>A delete is never copied across. If you delete a module on this device, its copy on GitHub stays, and it shows under <b>On GitHub, not on this device</b> again. If its folder is removed from GitHub, this device keeps its copy and offers <span class="ui">Upload again</span>, or you can untick <span class="ui">sync</span>.</p>
+
+  <h2>Try it: a computer, then a phone</h2>
+  <ol class="steps">
+    <li><p>On your computer, in the studio, open <span class="ui">🔄 Sync</span>. Press <span class="ui">make the repository on GitHub</span>, sign in to GitHub if asked, and press <b>Create repository</b> on GitHub's form (it is already named <code>digidream-modules</code> and private).</p></li>
+    <li><p>Back on the Sync page, press <span class="ui">Make a new token on GitHub</span>. Name it <code>studio laptop</code>, choose an expiration, choose <em>Only select repositories</em> and pick <code>digidream-modules</code>. Under <em>Repository permissions</em>, set <em>Contents</em> to <em>Read and write</em>. Generate it and copy it.</p></li>
+    <li><p>Paste it into <span class="ui">Token</span>, set <span class="ui">This device, in commit messages</span> to <code>laptop</code>, and press <span class="ui">Continue</span>.</p></li>
+    <li><p>Under <b>Choose the repository</b>, press <span class="ui">Use</span> beside <code>digidream-modules</code>. Wait until your modules say <em>synced</em>.</p></li>
+    <li><p>Press the repository's name on the Sync page. GitHub opens: there is one folder per module, and the history shows a commit <em>From the studio on laptop.</em></p></li>
+    <li><p>Edit map <code>first</code> of <b>My Level</b>: move a corner. Within a few seconds Home's badge says <em>syncing…</em>, then <em>synced</em>.</p></li>
+    <li><p>On your phone, in the studio, open <span class="ui">🔄 Sync</span>. Make a second token the same way (call it <code>studio phone</code>), so each device has its own. Paste it, name the device <code>phone</code>, press <span class="ui">Continue</span>, then <span class="ui">Use</span> on the same repository.</p></li>
+    <li><p>If <b>My Level</b> asks which to keep, choose <span class="ui">All GitHub's</span> and press <span class="ui">Keep these</span>. Open map <code>first</code>: the corner you moved on the laptop has moved here too.</p></li>
+    <li><p>Under <b>On GitHub, not on this device</b>, press <span class="ui">Get</span> on any module the laptop has and the phone doesn't.</p></li>
+  </ol>
+
+  <h2>Changing repository, stopping, and the token</h2>
+  <ul>
+    <li><span class="ui">Change repository</span> goes back to <b>Choose the repository</b> with the same token; <span class="ui">Cancel</span> leaves things as they were.</li>
+    <li><span class="ui">Disconnect</span> asks <em>"Disconnect from GitHub? The modules stay on this device and on GitHub; this device forgets the token."</em> Nothing is deleted anywhere. To connect again, make or paste a token as the first time.</li>
+    <li>To keep one module off GitHub, untick its <span class="ui">sync</span>.</li>
+    <li>To turn the whole plugin off on this device, use its <span class="ui">on</span> switch on the Plugins page (<a href="09-plugins.html">Plugins</a>).</li>
+    <li>To cut a device off for good, for instance a lost phone, <b>revoke its token</b> on GitHub: <em>Settings → Developer settings → Personal access tokens → Fine-grained tokens</em>, then delete that token. That device can no longer reach your repository. This is why one token per device helps.</li>
+  </ul>
+
+  <h2>Privacy</h2>
+  <ul>
+    <li>The token stays on the device where you pasted it, in the studio's own storage. It is sent only to GitHub.</li>
+    <li>A <b>private</b> repository is visible only to you (and anyone you invite on GitHub). A <b>public</b> one can be read by anyone, and the Sync page warns you when it is.</li>
+    <li><b>Never share a token.</b> Anyone who has it can do on GitHub whatever you allowed it to. If you think one leaked, revoke it.</li>
+  </ul>
+  <div class="callout warn"><p>Plugins share the studio's storage, so a plugin you installed from someone else could read the token. Install only plugins you trust, and prefer a token for one repository only.</p></div>
+
+  <h2 id="trouble">When something goes wrong</h2>
+  <table>
+    <thead><tr><th>You see</th><th>What to do</th></tr></thead>
+    <tbody>
+      <tr><td><em>Paste the token from GitHub.</em></td><td>The <span class="ui">Token</span> box is empty.</td></tr>
+      <tr><td><em>GitHub refused the token: check it was copied whole and has not expired.</em></td><td>Copy it again, all of it. GitHub shows a token only once; if you lost it, make a new one.</td></tr>
+      <tr><td><em>This token cannot write to any repository yet. Make one below, or give the token one on GitHub.</em></td><td>The token has no repository. Edit it on GitHub and pick one, or make the repository first.</td></tr>
+      <tr><td><em>… cannot see owner/name: check the name, and that the token is given that repository.</em></td><td>A typo, or a one-repository token for a different repository.</td></tr>
+      <tr><td><em>this token may not create repositories …</em></td><td><span class="ui">Create</span> needs <em>All repositories</em> with <em>Administration</em>. Make the repository on GitHub instead, then pick it.</td></tr>
+      <tr><td><em>offline; it will sync when GitHub can be reached</em></td><td>Nothing. Keep working; it syncs when you are back online.</td></tr>
+      <tr><td><em>sync failed: …</em> after weeks of working</td><td>Most often the token expired. Press <span class="ui">Disconnect</span>, make a new token, and connect again to the same repository. The first sync compares everything; files that differ ask which to keep.</td></tr>
+    </tbody>
+  </table>
+  <div class="callout soon"><p>Signing in to GitHub from the apps with a button, instead of pasting a token, is not there yet. Neither is keeping the token in the system's keychain.</p></div>
+
+  <div class="quiz" data-answer="1">
+    <p class="q">You edit map <code>cave</code> on your phone and map <code>first</code> on your laptop, then both sync. What happens?</p>
+    <ul>
+      <li>The studio asks which device to keep</li>
+      <li>Both devices end up with both edits</li>
+      <li>The last device to sync wins, and the other edit is lost</li>
+    </ul>
+    <p class="why">Each map is its own file, and each was changed on one side only. Only a file changed on both sides asks.</p>
+  </div>
+  <div class="quiz" data-answer="2">
+    <p class="q">In a conflict over map <code>first</code> you choose <span class="ui">GitHub</span>. Where is this device's version now?</p>
+    <ul>
+      <li>Gone for good</li>
+      <li>In the repository, as a second copy of the map</li>
+      <li>In this device's 🕘 snapshots</li>
+    </ul>
+    <p class="why">Before the studio writes GitHub's version in, it takes a snapshot of the module, named <em>before sync from …</em>. GitHub's side, when you keep this device's, stays in the repository's history.</p>
+  </div>
+  <div class="quiz" data-answer="0">
+    <p class="q">Your phone is stolen. How do you stop it reaching your modules on GitHub?</p>
+    <ul>
+      <li>Revoke the phone's token on GitHub</li>
+      <li>Press Disconnect on your laptop</li>
+      <li>Make the repository public</li>
+    </ul>
+    <p class="why">Disconnect only makes the device you press it on forget its own token. Revoking on GitHub stops that token everywhere, which is why each device should have its own.</p>
+  </div>
+</article>
+</body>
+</html>

@@ -31,7 +31,7 @@
     <li><span class="ui">+ new map</span> asks for a name (letters, digits, dashes) and makes a map with a single room.</li>
     <li><span class="ui">✕</span> deletes a map after asking. A module always keeps at least one map. Undo on the Maps page brings it back, and the studio takes a snapshot before it deletes.</li>
   </ul>
-  <p>Every map goes into the pack when you export. <span class="ui">▶ Play</span> starts the map you are editing.</p>
+  <p>Every map goes into the pack when you export. <span class="ui">▶ Play</span> in the map editor starts the map you are editing; Play on Home starts the module's starting map, which you set in <b>⚙ Settings</b> (see <a href="10-play-and-export.html">Play and export</a>).</p>
 
   <h3>The metamap</h3>
   <p>Under the list is <span class="ui">▦ metamap</span>. Turn on <span class="ui">put the maps on a grid</span> to say where each map sits. Tap a map, then a cell, to place it. Tapping an empty cell with nothing picked makes a new map there.</p>
@@ -94,6 +94,15 @@
     <li><b>A rectangle.</b> Press and drag. When you let go, the rectangle is a room.</li>
   </ul>
   <p>Press <kbd>Esc</kbd> to throw away the corners you have tapped so far. Corners snap to the grid, and to the corners and walls of rooms already there, so rooms meet cleanly. When a room closes, it is selected and its form opens.</p>
+  <h3>The textures a new room takes</h3>
+  <p>A new room is drawn with the textures you used last. When there are none yet, so that your first room is never an empty outline, the studio picks some:</p>
+  <ol>
+    <li>the module's own textures: one whose name has <code>FLOOR</code> (or <code>FLAT</code>, <code>GROUND</code>) for the floor and ceiling, and one whose name has <code>WALL</code> for the walls;</li>
+    <li>if the module has none, the textures that come with the app;</li>
+    <li>if there are none of those either, it adds two plain grey tiles with a faint grid to the module, <code>PLAIN_FLOOR</code> and <code>PLAIN_WALL</code>. The status line says so, and you can change them on <b>🧱 Textures</b>.</li>
+  </ol>
+  <p>A texture you picked yourself is never replaced.</p>
+  <div class="callout tip"><p>Name your textures with <code>FLOOR</code> and <code>WALL</code> in them, such as <code>STONE_FLOOR</code> and <code>BRICK_WALL</code>, and new rooms start in them.</p></div>
   <p>How rooms fit together:</p>
   <ul>
     <li><b>Rooms that touch share a wall.</b> You can walk across it, unless you force it to a wall.</li>

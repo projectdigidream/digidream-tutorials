@@ -17,7 +17,7 @@
 <body>
 <article>
   <h1>Plugins</h1>
-  <p class="lede">Plugins are other editors that run inside the studio: ThreeSprite for sprites, qPainter for textures, DigidreamSound for sound packs, DigidreamSynth for music, Code for scripts, and the Packager as a page of its own. Each edits one of the module's files and hands it back when you return to the studio.</p>
+  <p class="lede">Plugins are other editors that run inside the studio: ThreeSprite for sprites, qPainter for textures, DigidreamSound for sound packs, DigidreamSynth for music, Code for scripts, and two pages of their own: the Packager and GitHub sync. Each editor edits one of the module's files and hands it back when you return to the studio.</p>
   <div class="goal">
     <b>You'll learn</b><span>how to open a file in a plugin and come back, what drafts are, how to install, switch off or uninstall a plugin, and how sources are baked into what the game loads</span>
     <b>Time</b><span>15 minutes</span>
@@ -35,6 +35,7 @@
       <tr><td>DigidreamSynth</td><td>music projects (<code>.msproj</code>); it also brings a <b>baker</b> that turns them into tracks</td><td>♪ Music: <span class="ui">+ new track</span>, <span class="ui">✎ edit in DigidreamSynth</span>, <span class="ui">bake now</span></td></tr>
       <tr><td>Code</td><td>the module's Lua scripts</td><td>📜 Scripts: <span class="ui">open with…</span></td></tr>
       <tr><td>Packager</td><td>nothing: it is a page of the rail, <span class="ui">📦 Package</span></td><td>the rail (see <a href="10-play-and-export.html#package">Play, export, snapshots</a>)</td></tr>
+      <tr><td>GitHub sync</td><td>nothing by hand: it is a page of the rail, <span class="ui">🔄 Sync</span>, and a background service that keeps your modules in a GitHub repository</td><td>the rail (see <a href="11-sync-with-github.html">Sync with GitHub</a>)</td></tr>
     </tbody>
   </table>
   <p>The studio's own pages that edit a kind of file count as editors too: the Scripts page, the Textures page, the Sounds page and the Monsters workshop. A plugin is offered beside them and never replaces them. Code, for example, has the lowest priority, so the Scripts page stays the default for a script until you choose Code.</p>
@@ -82,13 +83,13 @@
   <p>Home's <span class="ui">🧩 plugins</span> opens it. It shows:</p>
   <ul>
     <li><span class="ui">+ install a plugin (.dnpplugin)</span> at the top.</li>
-    <li>A card per plugin: its name and version, <code>bundled</code> or <code>installed</code>, what it brings (<em>edits …</em>, <em>bakes …</em>, <em>the … page</em>), and an <span class="ui">on</span> switch. An installed plugin also has <span class="ui">uninstall</span>.</li>
+    <li>A card per plugin: its name and version, <code>bundled</code> or <code>installed</code>, what it brings (<em>edits …</em>, <em>bakes …</em>, <em>the … page</em>, <em>runs in the background</em>), what it is allowed to do beyond that (a line starting <em>may:</em>, see below), and an <span class="ui">on</span> switch. An installed plugin also has <span class="ui">uninstall</span>.</li>
     <li>Any plugin the studio refused, in red, with the reason: for example a plugin made for a newer studio.</li>
     <li><b>opens in</b>: for each kind of file with more than one editor, which one it opens in.</li>
     <li><b>unsaved work</b>: drafts left behind, each with <span class="ui">open</span> and <span class="ui">throw away</span>.</li>
   </ul>
   <h3>Installing a plugin</h3>
-  <p>A plugin comes as a <code>.dnpplugin</code> file: a zip with a <code>plugin.json</code> at its root. Press <span class="ui">+ install a plugin (.dnpplugin)</span> and pick the file. The studio checks the package first, then asks once, naming the plugin, its version, its author and what it brings.</p>
+  <p>A plugin comes as a <code>.dnpplugin</code> file: a zip with a <code>plugin.json</code> at its root. Press <span class="ui">+ install a plugin (.dnpplugin)</span> and pick the file. The studio checks the package first, then asks once, naming the plugin, its version, its author, what it brings and the permissions it asks for (<em>"It asks to …"</em>).</p>
   <div class="callout warn"><p>A plugin runs inside the studio with the same access as the studio. It can read and change every module on the device. Install only plugins you trust.</p></div>
   <p>Once installed, its editors are offered at once, and a rail page appears if it brings one. It is still there after a reload. The studio refuses a plugin that is older than, or the same version as, one it comes with.</p>
   <p><span class="ui">uninstall</span> deletes its files and reloads the studio. Unsaved work it left stays, for another editor to pick up. The <span class="ui">on</span> switch turns any plugin, bundled or installed, off on this device only.</p>
@@ -151,6 +152,23 @@
   </ul>
   <p>The <a href="../textures/01-first-texture.html">Textures</a> and <a href="../sprites/01-first-sprite.html">Sprites</a> tracks show them on Gem Hollow's own art.</p>
 
+  <h3>Permissions, background services and badges</h3>
+  <p>Most plugins only edit the file you hand them. A plugin that needs more says so in its <code>plugin.json</code>, and the studio shows it twice: in the install question, and on the plugin's card on the Plugins page, after <em>may:</em>. There are three kinds:</p>
+  <table>
+    <thead><tr><th>Permission</th><th>What the studio says</th></tr></thead>
+    <tbody>
+      <tr><td><code>module-write</code></td><td><em>replace whole modules (any module here), as a sync does</em></td></tr>
+      <tr><td><code>background</code></td><td><em>keep running in the background, whatever page is open</em></td></tr>
+      <tr><td><code>net:<i>host</i></code></td><td><em>talk to <i>host</i></em>, for example <em>talk to api.github.com</em></td></tr>
+    </tbody>
+  </table>
+  <figure class="shot" data-src="../assets/shots/studio-sync-plugins.png" data-alt="The Plugins page, with the GitHub sync card listing its permissions" data-hotspots='[{"x":20.8,"y":63.5,"t":"GitHub sync","d":"a bundled plugin: version 0.1.0"},{"x":24,"y":72.3,"t":"What it brings","d":"the Sync page, and a service that runs in the background"},{"x":45,"y":75,"t":"may:","d":"its permissions: replace whole modules, keep running in the background, talk to api.github.com"},{"x":29.4,"y":79.4,"t":"on","d":"turn it off on this device"}]'>
+    <figcaption>The Plugins page: GitHub sync's card says what it brings and, after <em>may:</em>, what it is allowed to do.</figcaption>
+  </figure>
+  <p>A plugin with the <code>background</code> permission can bring a <b>service</b>: a hidden page that starts with the studio and runs all session, whatever page you are on. GitHub sync's service is what syncs your modules while you edit.</p>
+  <p>A plugin can also put a <b>badge</b> on a module: a coloured dot and a few words beside the version on Home, in Home's <b>other modules</b> list, and a dot on the module's item at the top of the rail. GitHub sync uses it to say whether the module is synced.</p>
+  <div class="callout warn"><p>A permission says what a plugin means to do; it is not a wall. Any plugin runs with the studio's access. Install only plugins you trust.</p></div>
+
   <h2>Writing your own plugin</h2>
   <p>A plugin is a folder with a <code>plugin.json</code> and its pages. It can bring three things: <b>editors</b> (a page that edits one document and hands it back), <b>bakers</b> (a function from a source to what the game loads), and <b>sections</b> (a page in the rail). Here is the bundled Code plugin's manifest:</p>
 <pre><code>{
@@ -169,6 +187,7 @@
     <li><code>protocol</code> and <code>suite</code>: the editor protocol it speaks, and the studio versions it works with (<code>&gt;=x.y.z</code>, <code>^x.y.z</code>, an exact version, or <code>*</code>).</li>
     <li><code>editors</code>: each with an <code>entry</code> page, the <code>kinds</code> of document it edits (<code>file:texture</code>, <code>file:tsprite</code>, <code>file:msproj</code>, <code>file:sfxproj</code>, <code>record:script</code>, <code>record:mob</code>), a <code>label</code>, and a <code>priority</code>.</li>
     <li><code>bakers</code> and <code>sections</code>, when it has them. The Packager's manifest, for example, has one section: <code>{ "id": "package", "label": "Package", "icon": "📦" }</code>.</li>
+    <li><code>services</code> and <code>permissions</code>, when it needs them. GitHub sync's manifest has one section, one service, and <code>"permissions": ["module-write", "background", "net:api.github.com"]</code>. A plugin with services must ask for <code>background</code>.</li>
   </ul>
 
   <div class="quiz" data-answer="1">

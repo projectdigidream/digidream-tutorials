@@ -16,6 +16,7 @@ window.DNP_NAV = [
       { file: 'studio/08-look-and-feel.html', title: 'Sky, screens and weather', kw: 'sky strip panorama cube screens hud panels style fog rain snow dust embers' },
       { file: 'studio/09-plugins.html', title: 'Plugins', kw: 'plugin dnpplugin back to studio discard draft baker sources assets open with' },
       { file: 'studio/10-play-and-export.html', title: 'Play, export, snapshots', kw: 'play export import pack snapshots play log app android' },
+      { file: 'studio/11-sync-with-github.html', title: 'Sync with GitHub', kw: 'sync github repository token devices backup commit conflict merge get private' },
     ],
   },
   {

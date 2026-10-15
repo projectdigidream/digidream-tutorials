@@ -25,13 +25,28 @@
   </div>
 
   <h2>Play</h2>
-  <p><span class="ui">▶ Play</span> is at the foot of the rail, on Home as <span class="ui">▶ play</span>, and in the map editor's toolbar. It play-tests the map you have open. In order, it:</p>
+  <p><span class="ui">▶ Play</span> is at the foot of the rail, on Home as <span class="ui">▶ play from <i>map</i></span>, and in the map editor's toolbar. Where the game starts depends on which you press:</p>
+  <ul>
+    <li><b>Play in the map editor</b> starts on the map you are editing.</li>
+    <li><b>Play on Home</b> starts on the module's <b>starting map</b>, and its label names it. Set it in <b>⚙ Settings</b> → <span class="ui">starting map</span>. Left at <code>the first by name</code>, it is the first map in alphabetical order, which is also where the game starts for a player.</li>
+  </ul>
+  <p>In order, Play:</p>
   <ol>
     <li><b>bakes</b> every stale source (a texture, sprite or track changed since its last bake; see <a href="09-plugins.html">Plugins</a>);</li>
     <li><b>writes</b> the module into the game's files on the device;</li>
     <li><b>launches</b> the game on that map. The server starts every other map of the module too, so a graph's <code>change_map</code> finds the map it names.</li>
   </ol>
-  <p>If the module does not bake, nothing is launched, and the status line says why. Play also refuses to start while a graph has problems.</p>
+  <p>If the module does not bake, nothing is launched. Play also refuses to start while a graph has problems.</p>
+  <h3>The progress panel</h3>
+  <p>From the moment you press Play until the game appears, a full-screen panel shows what is happening, titled <em>Play: <i>module</i> · <i>map</i></em>. It has a bar and these steps, each ticked with the time it took:</p>
+  <ol>
+    <li><span class="ui">baking sources</span></li>
+    <li><span class="ui">checking maps and graphs</span></li>
+    <li><span class="ui">baking maps</span></li>
+    <li><span class="ui">writing the module</span></li>
+    <li><span class="ui">starting the game</span></li>
+  </ol>
+  <p>If a step fails, the panel stays on screen: the step is marked ✗, the line under the bar says <em>"<i>step</i> failed"</em>, and the error is shown. Two buttons take you on: <span class="ui">play log</span> opens the Play log (below), and <span class="ui">back to the studio</span> closes the panel.</p>
   <h3>Coming back</h3>
   <p>The game's <b>◀ Studio</b> link returns you to the map you were testing, with the view as you left it. The studio remembers where you were for an hour; after that it opens on Home as usual.</p>
 
@@ -55,7 +70,7 @@
   <div class="callout soon"><p>The iOS shell does not write the logs yet, and there is no iOS build of the studio.</p></div>
 
   <ol class="steps">
-    <li><p>In the app, open a map and press <span class="ui">▶ Play</span>. Walk around, then use <b>◀ Studio</b> to come back. You land on the same map, with the same view.</p></li>
+    <li><p>In the app, open a map and press <span class="ui">▶ Play</span>. Watch the progress panel tick through its steps. Walk around, then use <b>◀ Studio</b> to come back. You land on the same map, with the same view.</p></li>
     <li><p>Open <span class="ui">📋 play log</span> from Home. Read the head of <code>play-studio.log</code>: it names the map you tested.</p></li>
     <li><p>Press <span class="ui">share the log</span> to see how you would send it with a bug report.</p></li>
   </ol>
@@ -65,7 +80,7 @@
   <p>A pack holds every map of the module and everything it uses. To turn the module into a game people install and play, use <a href="#package">the Packager</a> instead.</p>
   <p><span class="ui">⇩ import pack</span> opens a pack someone exported. Only packs the studio wrote can be opened (they carry the module's studio documents). If a module with the same id is already here, the pack <b>replaces</b> it, and the studio takes a snapshot of the old one first.</p>
 
-  <div class="callout"><p><b>In Gem Hollow</b> Play starts the map you have open. To play it as a player would, open <code>menu</code> first and press <span class="ui">▶ Play</span>: the title panel's <b>Play</b> takes you to <code>world</code> (the server has every map running), and its <b>Quit</b>, the <code>quit_game</code> node, brings a studio play-test back to the studio. In a packaged app the same button quits the app.</p></div>
+  <div class="callout"><p><b>In Gem Hollow</b> Play in the map editor starts the map you have open. To play it as a player would, press <span class="ui">▶ play from menu</span> on Home: <code>menu</code> is first by name, so it is the starting map. The title panel's <b>Play</b> takes you to <code>world</code> (the server has every map running), and its <b>Quit</b>, the <code>quit_game</code> node, brings a studio play-test back to the studio. In a packaged app the same button quits the app.</p></div>
 
   <h2 id="snapshots">Snapshots</h2>
   <p>Undo is for the last few minutes. For anything older, the studio keeps <b>snapshots</b>: copies of the module kept on the device. Open them from Home's <span class="ui">🕘 snapshots</span>, or from Settings.</p>
@@ -73,7 +88,7 @@
   <ul>
     <li>When the module is opened, if the last snapshot is half an hour old or more.</li>
     <li>Every ten minutes while you edit.</li>
-    <li>Before anything that replaces work: a pack imported over the module, a map deleted, a studio update changing it, a restore.</li>
+    <li>Before anything that replaces work: a pack imported over the module, a map deleted, a studio update changing it, a restore, or a sync bringing in changes from GitHub (named <em>before sync from …</em>; see <a href="11-sync-with-github.html">Sync with GitHub</a>).</li>
     <li>By hand: <span class="ui">＋ snapshot now</span> asks for an optional name.</li>
   </ul>
   <p>A snapshot that would be the same as the latest is not taken.</p>
@@ -102,6 +117,7 @@
     <tbody>
       <tr><td><span class="ui">id</span></td><td>the module's folder name and identity: lowercase letters, digits, <code>_</code> and <code>-</code></td></tr>
       <tr><td><span class="ui">name</span>, <span class="ui">about</span></td><td>its name and a description</td></tr>
+      <tr><td><span class="ui">starting map</span></td><td>the map the game starts on: Play on Home starts there, and so does a packaged game unless the Package page is told otherwise. <code>the first by name</code> means the first map in alphabetical order. Play in the map editor still starts on the map being edited.</td></tr>
       <tr><td><span class="ui">controls</span></td><td><code>platformer — third person</code> or <code>first person (fps)</code>. First person puts the camera at the eyes and aims where the player looks. The module decides, not the player.</td></tr>
       <tr><td><span class="ui">show the debug overlay in the game</span></td><td>the engine's numbers in the corner (tick, fps, position, prediction), the controls legend, and the swing and facing drawings. On unless you turn it off, which a shipped game wants.</td></tr>
       <tr><td><span class="ui">when I press Play</span></td><td>this device's choice for play-tests: <code>as the module says</code>, <code>always show it</code> or <code>never show it</code>. An exported pack always says what the module says.</td></tr>
@@ -116,7 +132,7 @@
   <p>The page opens with your module already in it: the studio bakes and packs it first. Then you work down its steps:</p>
   <ol>
     <li><b>Platform.</b> Choose the target. For the desktops, the <span class="ui">Desktop shell</span> is Electron (self-contained) or Tauri (small, using the system's own web view). <span class="ui">Load a kit file</span> adds a kit the page does not have.</li>
-    <li><b>The game.</b> Its <span class="ui">Name</span>, <span class="ui">Package id (Android) / bundle id (macOS)</span> and <span class="ui">Version</span>; for Android, a <span class="ui">Version code (must grow with every update)</span> and the map it <span class="ui">Starts on</span>. <span class="ui">Studio</span> chooses <code>Game only</code> or <code>Game + studio</code>, and <span class="ui">Log file</span> whether it writes one. An icon: <span class="ui">Choose picture</span> or <span class="ui">Use the engine's</span>.</li>
+    <li><b>The game.</b> Its <span class="ui">Name</span>, <span class="ui">Package id (Android) / bundle id (macOS)</span> and <span class="ui">Version</span>; for Android, a <span class="ui">Version code (must grow with every update)</span> and the map it <span class="ui">Starts on</span>, which begins at the module's starting map from Settings. <span class="ui">Studio</span> chooses <code>Game only</code> or <code>Game + studio</code>, and <span class="ui">Log file</span> whether it writes one. An icon: <span class="ui">Choose picture</span> or <span class="ui">Use the engine's</span>.</li>
     <li><b>Signing key</b> for Android: <span class="ui">New key</span>, <span class="ui">Back up key</span>, <span class="ui">Restore key</span>. Keep the key: an update must be signed with the same one.</li>
     <li><b>Build.</b> The finished game is saved as a download.</li>
   </ol>
