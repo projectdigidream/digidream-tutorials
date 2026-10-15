@@ -10,7 +10,7 @@ trainers and a Lua playground. A Lua reference and a glossary are included.
 
 ## Read them
 
-- **Online:** [projectdigidream.github.io/digidream-website/tutorials/](https://projectdigidream.github.io/digidream-website/tutorials/),
+- **Online:** [projectdigidream.github.io/tutorials/](https://projectdigidream.github.io/tutorials/),
   part of the Digidream website.
 - **Offline:** download `digidream-tutorials-<version>-site.zip` from
   [github.com/projectdigidream/digidream-tutorials/releases/latest](https://github.com/projectdigidream/digidream-tutorials/releases/latest),
