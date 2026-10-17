@@ -17,7 +17,7 @@
 <body>
 <article>
   <h1>Recipes: five weapons</h1>
-  <p class="lede">Complete weapons, state by state, built in the weapon editor. The first four are DOOM II's own weapons, converted to this engine's 60 ticks a second, with one change each where it teaches something. Then melee two ways, a charge shot, a BFG on a cooldown, and Cinderfall's revolver.</p>
+  <p class="lede">Complete weapons, state by state, built in the weapon editor. The first four are DOOM II's own weapons, converted to this engine's 60 ticks a second, with one change each where it teaches something. Then melee three ways (the editor's own Blade among them), a charge shot, a BFG on a cooldown, and Cinderfall's revolver.</p>
   <div class="goal">
     <b>You'll learn</b><span>how real weapons are put together, which of the editor's recipes to start from, how to read a state table and type it into the editor, DOOM's numbers in this engine's units, and the engine's limits</span>
     <b>Time</b><span>45 minutes (or one recipe at a time)</span>
@@ -30,11 +30,11 @@
     <li><b>The weapon</b> lists its fields: <span class="ui">Name</span>, <span class="ui">Slot</span> and <span class="ui">Ammo</span> on the <span class="ui">Overview</span>, the rest on <span class="ui">Advanced</span>.</li>
     <li>Then a table with a row per state, in the editor's words: what it <b>shows</b>, how long it <b>lasts</b> and where it <b>then goes to</b>; its <b>rules</b>, numbered in the order they must appear (order matters: the first match wins); and its <b>steps</b>, written <code>at · step</code>. "waits" means an empty <span class="ui">Lasts</span>.</li>
     <li><b>Times</b> are seconds, with the ticks (60 a second) in brackets. DOOM counts 35 a second, so a DOOM time is multiplied by 60/35 and rounded: DOOM's pistol 14 → 24 ticks, 0.4 s.</li>
-    <li><b>Distances</b> are metres. DOOM's map units are 48 to one of ours, so its 2048 is <code>42.67</code>. Type them as decimals; the swing's own fields also take fractions such as <code>64/48</code>.</li>
+    <li><b>Distances</b> are metres. DOOM's map units are 48 to one of ours, so its 2048 is <code>42.67</code>. Type them as decimals; the boxes under a swing step's <span class="ui">more of it</span> also take fractions such as <code>64/48</code>.</li>
     <li><b>Effects</b> are your module's own particle kinds, picked by their look (<em>12 · sparks</em>). DOOM II uses sparks 12 at the muzzle. An instant shot's <em>its ray</em> and <em>where it lands</em> are picked the same way: DOOM II's guns draw tracer 1 along the ray and burst effect 10 where it lands (<a href="03-hitscan-missiles-swings.html#hitscan">Hitscan</a>).</li>
     <li><b>Sounds</b> name sounds in your module's sound packs. The names shown are DOOM II's.</li>
   </ul>
-  <div class="callout soon"><p><b>A few of DOOM's numbers can't be typed in yet.</b> The editor's sentences don't have the engine's <code>count</code> of rays on an instant shot, a launch's <code>offset</code>, an effect's <code>attach</code>, or a sound's <code>predicted</code> (<a href="03-hitscan-missiles-swings.html#hitscan">Hitscan</a>). The recipes give them in brackets as <i>engine</i> notes, so you know what DOOM II does; until the editor has them, the weapon works without them.</p></div>
+  <div class="callout tip"><p><b>A few of DOOM's numbers are not in the sentences.</b> The engine's <code>count</code> of rays on an instant shot, a launch's <code>offset</code>, an effect's <code>attach</code> and a sound's <code>predicted</code> are under each step's <span class="ui">more of it</span> (<a href="03-hitscan-missiles-swings.html#hitscan">Hitscan</a>). The recipes give them in brackets as <i>more of it</i> notes: tap the step, fold it out, and set them there.</p></div>
   <p>Every gun below has the same dry state, and the same rule first in <code>ready</code>:</p>
   <pre><code>ready   1. → dry   when fire is held and it is out of ammo
 dry     shows picture 0, lasts 0.02 s (1), then ready      0 s · switch weapon if it is empty</code></pre>
@@ -47,7 +47,7 @@ dry     shows picture 0, lasts 0.02 s (1), then ready      0 s · switch weapon 
     <thead><tr><th>State</th><th>shows · lasts · then</th><th>Rules</th><th>Steps</th></tr></thead>
     <tbody>
       <tr><td><code>ready</code></td><td>0 · waits</td><td>1. → dry when fire is held and it is out of ammo<br>2. → fire when fire is pressed and it has at least 1 ammo</td><td>—</td></tr>
-      <tr><td><code>fire</code></td><td>2 · 0.4 s (24) · ready</td><td>—</td><td>0 s · play the sound weapon.pistol.fire <i>(engine: predicted)</i><br>0 s · use 1 ammo<br>0 s · fire an instant shot for 10 damage, range 42.67 m, spread 3°, its ray effect 1, where it lands effect 10<br>0 s · show the effect 12</td></tr>
+      <tr><td><code>fire</code></td><td>2 · 0.4 s (24) · ready</td><td>—</td><td>0 s · play the sound weapon.pistol.fire <i>(more of it: predicted)</i><br>0 s · use 1 ammo<br>0 s · fire an instant shot for 10 damage, range 42.67 m, spread 3°, its ray effect 1, where it lands effect 10<br>0 s · show the effect 12</td></tr>
       <tr><td><code>dry</code></td><td>0 · 0.02 s (1) · ready</td><td>—</td><td>0 s · switch weapon if it is empty</td></tr>
     </tbody>
   </table>
@@ -61,12 +61,12 @@ dry     shows picture 0, lasts 0.02 s (1), then ready      0 s · switch weapon 
     <thead><tr><th>State</th><th>shows · lasts · then</th><th>Rules</th><th>Steps</th></tr></thead>
     <tbody>
       <tr><td><code>ready</code></td><td>0 · waits</td><td>1. → dry when fire is held and it is out of ammo<br>2. → fire when fire is pressed and it has at least 1 ammo</td><td>—</td></tr>
-      <tr><td><code>fire</code></td><td>2 · 0.33 s (20) · pump</td><td>—</td><td>0 s · play the sound weapon.shotgun.fire <i>(engine: predicted)</i><br>0 s · use 1 ammo<br>0 s · fire an instant shot for 10 damage, range 42.67 m, spread 14°, its ray effect 1, where it lands effect 10 <i>(engine: count 7)</i><br>0 s · show the effect 12</td></tr>
+      <tr><td><code>fire</code></td><td>2 · 0.33 s (20) · pump</td><td>—</td><td>0 s · play the sound weapon.shotgun.fire <i>(more of it: predicted)</i><br>0 s · use 1 ammo<br>0 s · fire an instant shot for 10 damage, range 42.67 m, spread 14°, its ray effect 1, where it lands effect 10 <i>(more of it: count 7)</i><br>0 s · show the effect 12</td></tr>
       <tr><td><code>pump</code></td><td>3 · 0.52 s (31) · ready</td><td>—</td><td>0.07 s · play the sound (your pump sound)</td></tr>
       <tr><td><code>dry</code></td><td>0 · 0.02 s (1) · ready</td><td>—</td><td>0 s · switch weapon if it is empty</td></tr>
     </tbody>
   </table>
-  <p>With its seven rays, point blank lands all seven pellets: 70 damage. Across a big room, two or three. Until the editor can set the <code>count</code>, this shotgun fires one ray with a wide cone; the demo in <a href="02-phases.html">The phase machine</a> shows the seven. For DOOM's <b>super shotgun</b>: "use 2 ammo" and <em>it has at least 2 ammo</em>, <code>fire</code> 0.4 s (24) → <code>reload</code> (picture 3, 1.03 s, 62 ticks), the shot with spread 26° <i>(engine: count 20)</i>, plus <em>push the player away at 2.92 m/s</em> for the kick.</p>
+  <p>With its seven rays, point blank lands all seven pellets: 70 damage. Across a big room, two or three. Leave the <code>count</code> out and this shotgun fires one ray with a wide cone; the demo in <a href="02-phases.html">The phase machine</a> shows the seven. For DOOM's <b>super shotgun</b>: "use 2 ammo" and <em>it has at least 2 ammo</em>, <code>fire</code> 0.4 s (24) → <code>reload</code> (picture 3, 1.03 s, 62 ticks), the shot with spread 26° <i>(more of it: count 20)</i>, plus <em>push the player away at 2.92 m/s</em> for the kick.</p>
 
   <h2 id="chaingun">3. Chaingun that spins up</h2>
   <p>DOOM's chaingun is the pistol with <em>fire is held</em> and 9-tick shots. This one adds a <b>spin-up</b>: hold for 0.4 s before the first shot. The spin state has no length, so it <b>waits</b>, and <em>fire has been held for</em> counts from when the button went down.</p>
@@ -76,7 +76,7 @@ dry     shows picture 0, lasts 0.02 s (1), then ready      0 s · switch weapon 
     <tbody>
       <tr><td><code>ready</code></td><td>0 · waits</td><td>1. → dry when fire is held and it is out of ammo<br>2. → spin when fire is held</td><td>—</td></tr>
       <tr><td><code>spin</code></td><td>0 · waits</td><td>1. → fire when fire has been held for 0.4 s (24)<br>2. → ready when fire is let go</td><td>0 s · play the sound (a spin-up sound)</td></tr>
-      <tr><td><code>fire</code></td><td>2 · 0.15 s (9) · ready</td><td>—</td><td>0 s · play the sound weapon.chaingun.fire <i>(engine: predicted)</i><br>0 s · use 1 ammo<br>0 s · fire an instant shot for 10 damage, range 42.67 m, spread 8°, its ray effect 1, where it lands effect 10<br>0 s · show the effect 12</td></tr>
+      <tr><td><code>fire</code></td><td>2 · 0.15 s (9) · ready</td><td>—</td><td>0 s · play the sound weapon.chaingun.fire <i>(more of it: predicted)</i><br>0 s · use 1 ammo<br>0 s · fire an instant shot for 10 damage, range 42.67 m, spread 8°, its ray effect 1, where it lands effect 10<br>0 s · show the effect 12</td></tr>
       <tr><td><code>dry</code></td><td>0 · 0.02 s (1) · ready</td><td>—</td><td>0 s · switch weapon if it is empty</td></tr>
     </tbody>
   </table>
@@ -91,11 +91,11 @@ dry     shows picture 0, lasts 0.02 s (1), then ready      0 s · switch weapon 
     <thead><tr><th>State</th><th>shows · lasts · then</th><th>Rules</th><th>Steps</th></tr></thead>
     <tbody>
       <tr><td><code>ready</code></td><td>0 · waits</td><td>1. → dry when fire is held and it is out of ammo<br>2. → fire when fire is pressed and it has at least 1 ammo</td><td>—</td></tr>
-      <tr><td><code>fire</code></td><td>2 · 0.57 s (34) · ready</td><td>—</td><td>0 s · play the sound weapon.rocketlauncher.fire <i>(engine: predicted)</i><br>0 s · use 1 ammo<br>0 s · launch the missile rocket <i>(engine: offset 0.83)</i><br>0 s · push the player away at 2.08 m/s</td></tr>
+      <tr><td><code>fire</code></td><td>2 · 0.57 s (34) · ready</td><td>—</td><td>0 s · play the sound weapon.rocketlauncher.fire <i>(more of it: predicted)</i><br>0 s · use 1 ammo<br>0 s · launch the missile rocket <i>(more of it: offset 0.83)</i><br>0 s · push the player away at 2.08 m/s</td></tr>
       <tr><td><code>dry</code></td><td>0 · 0.02 s (1) · ready</td><td>—</td><td>0 s · switch weapon if it is empty</td></tr>
     </tbody>
   </table>
-  <p><b>The missile</b>, on <b>☄ Missiles</b>: type <code>rocket</code> and press <span class="ui">New</span>. It is drawn as a glowing dot the studio paints for it until you pick a prop of your own under <span class="ui">Drawn as</span>:</p>
+  <p><b>The missile</b>, on <b>Missiles</b>: type <code>rocket</code> and press <span class="ui">New</span>. It is drawn as a glowing dot the studio paints for it until you pick a prop of your own under <span class="ui">Drawn as</span>:</p>
   <table>
     <thead><tr><th>Field</th><th>Value</th><th>Why</th></tr></thead>
     <tbody>
@@ -109,7 +109,7 @@ dry     shows picture 0, lasts 0.02 s (1), then ready      0 s · switch weapon 
   <p>Add "show the effect" sentences under <b>When it hits</b> for the explosion's fire and smoke, so it shows even when nothing is in range. Your own rocket's flight, burst and jump are predicted; its damage is the server's. For a rocket jump that costs no health, untick <span class="ui">hurts the one who fired it</span>: the blast then needs the engine's <code>shoves_owner</code> to still throw you, which Cinderfall's flare has (<a href="03-hitscan-missiles-swings.html#cinderfall">the flare</a>).</p>
   <div class="callout tip"><p><b>Plasma</b> is the same shape: <em>fire is held</em> on <code>ready</code>, <code>fire</code> lasting 0.08 s (5 ticks), launching a fast missile with no blast. DOOM II's plasma rifle grants 40 cells with its pickup.</p></div>
 
-  <h2 id="melee">5. Melee, two ways</h2>
+  <h2 id="melee">5. Melee, three ways</h2>
   <h3>The chainsaw: a hitscan that hums</h3>
   <p>DOOM's chainsaw is an instant shot with a short range and no tracer, repeated while held. No ammunition.</p>
   <p><b>Start from</b> <span class="ui">Blank</span>. <b>The weapon:</b> Name Chainsaw · Slot 2 · Ammo never runs out.</p>
@@ -117,29 +117,49 @@ dry     shows picture 0, lasts 0.02 s (1), then ready      0 s · switch weapon 
     <thead><tr><th>State</th><th>shows · lasts · then</th><th>Rules</th><th>Steps</th></tr></thead>
     <tbody>
       <tr><td><code>ready</code></td><td>0 · waits</td><td>1. → cut when fire is held</td><td>—</td></tr>
-      <tr><td><code>cut</code></td><td>2 · 0.12 s (7) · ready</td><td>—</td><td>0 s · play the sound weapon.chainsaw.cut <i>(engine: predicted)</i><br>0 s · fire an instant shot for 12 damage, range 1.67 m, spread 0°, its ray not drawn, where it lands effect 10<br>0 s · show the effect 15 <i>(engine: attach on)</i></td></tr>
+      <tr><td><code>cut</code></td><td>2 · 0.12 s (7) · ready</td><td>—</td><td>0 s · play the sound weapon.chainsaw.cut <i>(more of it: predicted)</i><br>0 s · fire an instant shot for 12 damage, range 1.67 m, spread 0°, its ray not drawn, where it lands effect 10<br>0 s · show the effect 15 <i>(more of it: attach on)</i></td></tr>
     </tbody>
   </table>
   <p>The engine's <code>attach</code> keeps the sparks on the saw as you move. There is no "stop" event: <code>cut</code> repeats every 7 ticks while you hold, and each repeat keeps the effect alive; let go and it fades.</p>
 
-  <h3>The fists: a three-blow combo with swings</h3>
-  <p>DOOM II's fists in this engine are a combo: a jab, a cross and a hook, each with its own swing. The <code>recover</code> states are the <b>windows</b>: press again while one runs and you reach the next blow; press a tick late and you are back at <code>ready</code>, starting over.</p>
-  <p><b>Start from</b> <span class="ui">Blank</span>. <b>The weapon:</b> Name Fists · Slot 1 · Ammo never runs out. <b>Its swing, in every state</b> (on <span class="ui">Advanced</span>, for <code>ready</code>): damage 10, reach 64/48, half_arc 1/8, sweep_from −1/8, sweep_to 1/8, ticks 16, cooldown 21.</p>
+  <h3 id="blade">The blade: the editor's own recipe</h3>
+  <p>The quickest melee weapon is the one the editor makes for you: a slash on each press, and a heavier one if you press again during it. Its blows are swing steps, each with its own numbers (<a href="03-hitscan-missiles-swings.html#swings">Swings</a>).</p>
+  <p><b>Start from</b> <span class="ui">Blade</span> (<em>a slash each press, a heavier one if pressed again</em>), named <code>blade</code>. <b>The weapon:</b> Name Blade · Ammo never runs out. It comes with a placeholder blade to hold in first person.</p>
   <table>
-    <thead><tr><th>State</th><th>shows · lasts · then</th><th>Rules</th><th>Its own swing</th></tr></thead>
+    <thead><tr><th>State</th><th>shows · lasts · then</th><th>Rules</th><th>Steps</th></tr></thead>
     <tbody>
-      <tr><td><code>ready</code></td><td>0 · waits</td><td>1. → jab1 when fire is pressed</td><td>— (the weapon's)</td></tr>
-      <tr><td><code>jab1</code></td><td>2 · 0.17 s (10) · recover1</td><td>—</td><td>damage 10, reach 64/48, half_arc 1/10, sweep_from −1/12, sweep_to 1/12, ticks 8, knockback 60/48</td></tr>
-      <tr><td><code>recover1</code></td><td>0 · 0.23 s (14) · ready</td><td>1. → jab2 when fire is pressed</td><td>—</td></tr>
-      <tr><td><code>jab2</code></td><td>2 · 0.2 s (12) · recover2</td><td>—</td><td>damage 14, reach 72/48, half_arc 1/8, sweep_from 1/8, sweep_to −1/8, ticks 10, knockback 90/48</td></tr>
-      <tr><td><code>recover2</code></td><td>0 · 0.27 s (16) · ready</td><td>1. → hook when fire is pressed</td><td>—</td></tr>
-      <tr><td><code>hook</code></td><td>2 · 0.33 s (20) · ready</td><td>—</td><td>damage 30, reach 80/48, half_arc 1/6, sweep_from −1/5, sweep_to 1/5, ticks 14, knockback 220/48, lift 120/48, slow 1/2, slow_ticks 45, hit_vfx 10</td></tr>
+      <tr><td><code>ready</code></td><td>0 · waits</td><td>1. → slash when fire is pressed</td><td>—</td></tr>
+      <tr><td><code>slash</code></td><td>2 · 0.4 s (24) · ready</td><td>1. → heavy when fire is pressed and this state has run for 0.15 s (9)</td><td>0 s · swing for 15 damage, 1.6 m long, from -60° to 60° over 0.2 s<br><i>more of it:</i> half_arc 0.0833, cooldown 0, knockback 2</td></tr>
+      <tr><td><code>heavy</code></td><td>2 · 0.6 s (36) · ready</td><td>—</td><td>0 s · swing for 30 damage, 1.9 m long, from 75° to -75° over 0.3 s<br><i>more of it:</i> half_arc 0.0833, cooldown 12, knockback 5</td></tr>
     </tbody>
   </table>
-  <p>Notice <code>jab2</code> sweeps the other way (from 1/8 to −1/8): a cross. The hook is wider, slower, and lifts and slows what it hits. To add DOOM II's air attack, put a rule <em>above</em> <code>ready</code>'s first: → <code>slam</code> when fire is pressed and in the air. <code>slam</code> is a state whose swing has <span class="ui">pitch_from?</span> 3/16, <span class="ui">pitch_to?</span> −1/8 and <span class="ui">half_pitch?</span> 1/10, so it only hits what is below you.</p>
-  <p>Build it with <span class="ui">+ state</span> five times; each new state lasts 0.3 s and goes back to <code>ready</code>, so set each length and <span class="ui">Then goes to</span> from the table, and give each blow its swing with <span class="ui">+ swing</span> under <b>Its own swing</b>.</p>
-  <div class="callout tip"><p><b>Gem Hollow's <code>fists</code> are this recipe cut to one blow:</b> <code>ready</code> → <code>swing</code> (picture 2, 0.3 s) with one wide swing of its own (damage 10, half_arc 1/3, ticks 8). To turn them into the combo, rename <code>swing</code> to <code>jab1</code> in its name box, then add the recover states and blows above.</p>
-  <p><b>Seen in first person and as a streak.</b> All three blows show picture 2, so in first person they share one animation, which restarts on each blow (<a href="02-phases.html#first-person">States in first person</a>). To give the hook a picture of its own, set its <span class="ui">Shows picture</span> to a number of its own and give that number an animation under <b>per phase</b>. The slash streak's look is per weapon, not per state: every blow uses the fists' look on <span class="ui">Advanced</span>, while the streak's shape follows each blow's own swing.</p></div>
+  <ul>
+    <li><b>Press again during the slash</b>, from 0.15 s on, and <code>heavy</code> begins. The slash sweeps for 0.2 s, so until then it is still sweeping: the heavy swing <b>replaces</b> it. The slash stops where it is, and the heavy one starts fresh, back the other way, and can hit a monster the slash already hit.</li>
+    <li><b>Press a little later</b>, between 0.2 and 0.4 s: the slash has ended, and with a <code>cooldown</code> of 0 it leaves none, so the heavy one simply follows.</li>
+    <li><b>Mashing does not skip the slash.</b> Before 0.15 s the rule does not hold, so a second press then does nothing.</li>
+    <li><b>The heavy one has a cooldown</b> of 12 ticks (0.2 s), which starts when it ends, at 0.3 s. The state lasts 0.6 s, so it is long over when you are back at <code>ready</code>.</li>
+  </ul>
+  <p>Try it in the preview: press <span class="ui">▶</span>, tap <span class="ui">Hold to fire</span> once, then again; the line under the buttons says <em>"swings for 15"</em>, then <em>"swings for 30"</em>.</p>
+
+  <h3>The fists: a three-blow combo with swings</h3>
+  <p>DOOM II's fists in this engine are a combo: a jab, a cross and a hook, each a swing step with its own numbers. The <code>recover</code> states are the <b>windows</b>: press again while one runs and you reach the next blow; press a tick late and you are back at <code>ready</code>, starting over.</p>
+  <p><b>Start from</b> <span class="ui">Blank</span>. <b>The weapon:</b> Name Fists · Slot 1 · Ammo never runs out. No default swing is needed: each step gives every number.</p>
+  <table>
+    <thead><tr><th>State</th><th>shows · lasts · then</th><th>Rules</th><th>Its swing step, at 0 s</th></tr></thead>
+    <tbody>
+      <tr><td><code>ready</code></td><td>0 · waits</td><td>1. → jab1 when fire is pressed</td><td>—</td></tr>
+      <tr><td><code>jab1</code></td><td>2 · 0.17 s (10) · recover1</td><td>—</td><td>swing for 10 damage, 1.33 m long, from -30° to 30° over 0.13 s<br><i>more of it:</i> half_arc 1/10, knockback 60/48, cooldown 0</td></tr>
+      <tr><td><code>recover1</code></td><td>0 · 0.23 s (14) · ready</td><td>1. → jab2 when fire is pressed</td><td>—</td></tr>
+      <tr><td><code>jab2</code></td><td>2 · 0.2 s (12) · recover2</td><td>—</td><td>swing for 14 damage, 1.5 m long, from 45° to -45° over 0.17 s<br><i>more of it:</i> half_arc 1/8, knockback 90/48, cooldown 0</td></tr>
+      <tr><td><code>recover2</code></td><td>0 · 0.27 s (16) · ready</td><td>1. → hook when fire is pressed</td><td>—</td></tr>
+      <tr><td><code>hook</code></td><td>2 · 0.33 s (20) · ready</td><td>—</td><td>swing for 30 damage, 1.67 m long, from -72° to 72° over 0.23 s<br><i>more of it:</i> half_arc 1/6, knockback 220/48, lift 120/48, slow 1/2, slow_ticks 45, hit_vfx 10 · red specks, cooldown 0</td></tr>
+    </tbody>
+  </table>
+  <p>Notice <code>jab2</code> sweeps the other way (from 45° to −45°): a cross. The hook is wider, slower, and lifts and slows what it hits. To add DOOM II's air attack, put a rule <em>above</em> <code>ready</code>'s first: → <code>slam</code> when fire is pressed and in the air. <code>slam</code> is a state whose swing step has, under <span class="ui">more of it</span>, <code>pitch_from</code> 3/16, <code>pitch_to</code> −1/8 and <code>half_pitch</code> 1/10, so it only hits what is below you.</p>
+  <p>Build it with <span class="ui">+ state</span> five times; each new state lasts 0.3 s and goes back to <code>ready</code>, so set each length and <span class="ui">Then goes to</span> from the table. Then give each blow its step: <span class="ui">+ add a step at 0 s</span>, the swing in the <b>Attack</b> group, its sentence from the table, and the rest under <span class="ui">more of it</span>.</p>
+  <div class="callout warn"><p><b>Set each blow's <code>cooldown</code> to 0.</b> A new swing step starts with 10 ticks, and the cooldown starts when a swing ends. A quick second press would come inside the first blow's cooldown, and a swing then does not happen: the combo would move on to <code>jab2</code> with no blow. The windows already set the pace.</p></div>
+  <div class="callout tip"><p><b>Gem Hollow's <code>fists</code> are this recipe cut to one blow:</b> <code>ready</code> → <code>swing</code> (picture 2, 0.3 s) with one wide swing kept on the state, the older way (damage 10, half_arc 1/3, ticks 8). To turn them into the combo, press <span class="ui">turn it into a swing step</span> at the end of <code>swing</code>'s editor, rename <code>swing</code> to <code>jab1</code> in its name box, then add the recover states and blows above.</p>
+  <p><b>Seen in first person and as a streak.</b> All three blows show picture 2, so in first person they share one animation, which restarts on each blow (<a href="02-phases.html#first-person">States in first person</a>). To give the hook a picture of its own, set its <span class="ui">Shows picture</span> to a number of its own and give that number an animation under <b>per phase</b>. The slash streak's look is per weapon, not per step: every blow uses the fists' look on <span class="ui">Advanced</span>, while the streak's shape follows each blow's own numbers.</p></div>
 
   <h2 id="charge">Bonus: a charge shot</h2>
   <p>The editor's <span class="ui">Charge shot</span> recipe is the simplest charge: hold fire for a second and it fires; let go early and nothing happens. This one fires a small shot instead, and stops a player from charging for free.</p>
@@ -165,7 +185,7 @@ dry     shows picture 0, lasts 0.02 s (1), then ready      0 s · switch weapon 
 
   <h2 id="bfg">Bonus: a BFG on a cooldown</h2>
   <p>DOOM's BFG fires once every 96 ticks or so. As one long <code>fire</code> state, the player would be stuck holding it for 1.6 seconds, unable to switch. With a cooldown (<a href="02-phases.html#cooldown">Cooldowns</a>), <code>fire</code> stays short, and the wait belongs to the weapon: switch away and back, and the BFG is still cooling down.</p>
-  <p><b>Start from</b> <span class="ui">Launcher</span>, named <code>bfg</code>. <b>The weapon:</b> Name BFG 9000 · Slot 9 · Ammo cells · <b>what its own pickup grants</b> cells 40. <b>The missile</b>: on <b>☄ Missiles</b>, a <code>bfg_ball</code> with Speed 12 m/s, Lasts 3 s, and under <b>When it hits</b> a blast of 100 damage within 4 m, weaker at the edge; then pick it in <code>fire</code>'s launch step.</p>
+  <p><b>Start from</b> <span class="ui">Launcher</span>, named <code>bfg</code>. <b>The weapon:</b> Name BFG 9000 · Slot 9 · Ammo cells · <b>what its own pickup grants</b> cells 40. <b>The missile</b>: on <b>Missiles</b>, a <code>bfg_ball</code> with Speed 12 m/s, Lasts 3 s, and under <b>When it hits</b> a blast of 100 damage within 4 m, weaker at the edge; then pick it in <code>fire</code>'s launch step.</p>
   <table>
     <thead><tr><th>State</th><th>shows · lasts · then</th><th>Rules</th><th>Steps</th></tr></thead>
     <tbody>
@@ -174,7 +194,7 @@ dry     shows picture 0, lasts 0.02 s (1), then ready      0 s · switch weapon 
       <tr><td><code>wait</code></td><td>0 · 0.1 s (6) · ready</td><td>—</td><td>0 s · play the sound (a dull click of your own)</td></tr>
     </tbody>
   </table>
-  <figure class="shot" data-src="../assets/shots/weapon-editor-cooldown-step.png" data-alt="The bfg's fire state with its Timeline: launch the missile, use 1 ammo, show the effect 12, push the player away at 3 m/s and start cooldown shot_cd for 1.6 s, the last one open with its name and its time" data-hotspots='[{"x":38.3,"y":85,"t":"fire","d":"from the Launcher recipe: picture 2, 0.6 s, then ready"},{"x":41,"y":94.8,"t":"The new step","d":"0 s · start cooldown shot_cd for 1.6 s"},{"x":82.7,"y":78.7,"t":"In the Timeline","d":"added last, at 0 s: it runs with the others"},{"x":74,"y":92.1,"t":"The name","d":"shot_cd: the same name as the rule&#39;s cooldown … is over"},{"x":82.5,"y":92.1,"t":"How long","d":"1.6 s, kept as 96 ticks"},{"x":75.6,"y":44.3,"t":"The preview","d":"cooldown shot_cd: over, until the first shot"}]'>
+  <figure class="shot" data-src="../assets/shots/weapon-editor-cooldown-step.png" data-alt="The bfg's fire state with its Timeline: launch the missile, use 1 ammo, show the effect 12, push the player away at 3 m/s and start cooldown shot_cd for 1.6 s, the last one open with its name and its time" data-hotspots='[{"x":38.6,"y":74.7,"t":"fire","d":"from the Launcher recipe: picture 2, 0.6 s, then ready"},{"x":39.9,"y":83.3,"t":"The new step","d":"0 s · start cooldown shot_cd for 1.6 s"},{"x":81.3,"y":78.4,"t":"In the Timeline","d":"added last, at 0 s: it runs with the others"},{"x":73.8,"y":87.9,"t":"The name","d":"shot_cd: the same name as the rule&#39;s cooldown … is over"},{"x":83,"y":87.9,"t":"How long","d":"1.6 s, kept as 96 ticks"},{"x":67.7,"y":91.1,"t":"more of it","d":"jitter: up to that many extra ticks, so two weapons fall out of step"},{"x":81.3,"y":64.5,"t":"The preview","d":"cooldown shot_cd: over, until the first shot"}]'>
     <figcaption>The <code>bfg</code>'s <code>fire</code>, with the step that starts its cooldown.</figcaption>
   </figure>
   <ol class="steps">
@@ -189,9 +209,9 @@ dry     shows picture 0, lasts 0.02 s (1), then ready      0 s · switch weapon 
   <p>The demo's <b>bfg (cooldown)</b> fires an instant shot rather than a ball, but the cooldown is the same: <code>fire</code> lasts 30 ticks, and the next shot waits for the 96.</p>
 
   <h2 id="cinderfall">From Cinderfall: a revolver with a cylinder</h2>
-  <p>Not a DOOM weapon but one to open: the revolver of Cinderfall, the first-person shooter example that comes with the studio (Home → <span class="ui">◆ examples</span>; see <a href="../examples/02-cinderfall.html">the tour</a>). It draws from a pool of bullets like any gun, and also counts its own shots in a number of its own, so every sixth shot is followed by a reload. Its <code>ready</code> checks the press with ammunition first and the press without second; the two rules can't both hold, so their order doesn't matter here.</p>
+  <p>Not a DOOM weapon but one to open: the revolver of Cinderfall, the first-person shooter example that comes with the studio (Home → <span class="ui">examples</span>; see <a href="../examples/02-cinderfall.html">the tour</a>). It draws from a pool of bullets like any gun, and also counts its own shots in a number of its own, so every sixth shot is followed by a reload. Its <code>ready</code> checks the press with ammunition first and the press without second; the two rules can't both hold, so their order doesn't matter here.</p>
   <p><b>The weapon:</b> Name Revolver · Slot 2 · Ammo bullets · Icon on the panel WPNREVOLVER · <b>what its own pickup grants</b> bullets 18 · <b>Its numbers</b>: <code>shots</code>, starting at 0. <b>Pool</b> <code>bullets</code>: holds at most 150, starts with 0. <b>Pickups</b> <code>revolver_pickup</code> (gives the weapon revolver), <code>ammo_bullets</code> (bullets 12).</p>
-  <figure class="shot" data-src="../assets/shots/cinder-revolver.png" data-alt="Cinderfall's revolver in the weapon editor: the cards fire, cock and reload, with cock picked; the preview shows the revolver held and shots = 1; cock's rule goes to reload when the number shots is at least 6 and this state has run for 0.12 s" data-hotspots='[{"x":38.3,"y":30.1,"t":"fire","d":"0.1 s: a sound, use 1 ammo, an instant shot for 22, and add 1 to the number shots."},{"x":38.3,"y":53,"t":"cock","d":"0.13 s back to ready, unless the cylinder is empty."},{"x":38.3,"y":59.3,"t":"The cylinder rule","d":"→ reload when the number shots is at least 6 and this state has run for 0.12 s."},{"x":38.3,"y":80,"t":"reload","d":"0.67 s; set the number shots to 0."},{"x":80.7,"y":38,"t":"The revolver, held","d":"its first-person picture in the preview"},{"x":72.5,"y":69.3,"t":"Numbers","d":"ammo: 49 · shots = 1, after one shot in the preview"},{"x":72.5,"y":77.6,"t":"go to reload","d":"cock&#39;s one rule, open on the right"},{"x":66,"y":86.2,"t":"the number shots is at least 6","d":"the sixth shot was fired"},{"x":68,"y":92.5,"t":"this state has run for 0.12 s","d":"7 ticks: one before cock ends, so it never reaches ready"}]'>
+  <figure class="shot" data-src="../assets/shots/cinder-revolver.png" data-alt="Cinderfall's revolver in the weapon editor: the cards fire, cock and reload, with cock picked; the preview shows the revolver held and shots = 1; cock's rule goes to reload when the number shots is at least 6 and this state has run for 0.12 s" data-hotspots='[{"x":38.6,"y":32.4,"t":"fire","d":"0.1 s: a sound, use 1 ammo, an instant shot for 22, and add 1 to the number shots."},{"x":38.6,"y":52,"t":"cock","d":"0.13 s back to ready, unless the cylinder is empty."},{"x":38.6,"y":61.2,"t":"The cylinder rule","d":"→ reload when the number shots is at least 6 and this state has run for 0.12 s."},{"x":38.6,"y":75,"t":"reload","d":"0.67 s; set the number shots to 0."},{"x":81.3,"y":36,"t":"The revolver, held","d":"its first-person picture in the preview"},{"x":73,"y":64.4,"t":"Numbers","d":"ammo: 49 · shots = 1, after one shot in the preview"},{"x":73,"y":72.1,"t":"go to reload","d":"cock&#39;s one rule, open on the right"},{"x":66.8,"y":79,"t":"the number shots is at least 6","d":"the sixth shot was fired"},{"x":68.9,"y":83.7,"t":"this state has run for 0.12 s","d":"7 ticks: one before cock ends, so it never reaches ready"}]'>
     <figcaption>Cinderfall's <code>revolver</code>, with <code>cock</code> picked.</figcaption>
   </figure>
   <table>
@@ -233,14 +253,14 @@ dry     shows picture 0, lasts 0.02 s (1), then ready      0 s · switch weapon 
 
   <h2>Exercise: build the spin-up chaingun</h2>
   <ol class="steps">
-    <li><p>In <b>🔫 Weapons</b>, tap the name at the top left, type <code>chaingun</code> under <b>New weapon</b> and press <span class="ui">Pistol</span>. On <span class="ui">Overview</span>: <span class="ui">Slot</span> 6, <span class="ui">Ammo</span> bullets. On <span class="ui">Advanced</span>, under <b>what its own pickup grants</b>, bullets 20.</p></li>
+    <li><p>In <b>Weapons</b>, tap the name at the top left, type <code>chaingun</code> under <b>New weapon</b> and press <span class="ui">Pistol</span>. On <span class="ui">Overview</span>: <span class="ui">Slot</span> 6, <span class="ui">Ammo</span> bullets. On <span class="ui">Advanced</span>, under <b>what its own pickup grants</b>, bullets 20.</p></li>
     <li><p>On <span class="ui">Behaviour</span>, tap <code>fire</code>. Set <span class="ui">Lasts</span> to <code>0.15</code> (9 ticks). In the instant shot, set range <code>42.67</code> and spread <code>8</code>. With <span class="ui">+ add a step at 0 s</span>, add a "play the sound" step.</p></li>
     <li><p>Press <span class="ui">+ state</span>, call it <code>dry</code>, set <span class="ui">Lasts</span> to <code>0.02</code> and add the step <em>switch weapon if it is empty</em> (in <span class="ui">Ammo</span>).</p></li>
     <li><p>Press <span class="ui">+ state</span>, call it <code>spin</code>. Clear its <span class="ui">Lasts</span>, so it waits (<em>until a rule fires</em>).</p></li>
     <li><p>On <code>spin</code>, press <span class="ui">+ another rule</span>: go to <code>fire</code>, with the condition <em>fire has been held for</em> set to <code>0.4</code>. Press <span class="ui">+ another rule</span> again: go to <code>ready</code>, with <em>fire is let go</em>.</p></li>
     <li><p>Tap <code>ready</code>. Remove its rule from the recipe with <span class="ui">remove</span>. Add two rules in this order: → <code>dry</code> when fire is held and it is out of ammo; then → <code>spin</code> when fire is held.</p></li>
     <li><p>Try it in the preview: <span class="ui">▶</span>, then hold <span class="ui">Hold to fire</span>. It says <em>"Now in spin: no rule holds, so it stays."</em> for 0.4 s, then fires every 0.15 s. Tap instead: nothing fires, because every tap is shorter than the spin.</p></li>
-    <li><p>Check that <b>🔫 Weapons</b> in the rail shows no count, and play. Then tune it: try 0.2 s for a snappy spin, and 0.75 for a heavy one. Compare with DOOM's own (no <code>spin</code> at all) and keep what suits your game.</p></li>
+    <li><p>Check that <b>Weapons</b> in the rail shows no count, and play. Then tune it: try 0.2 s for a snappy spin, and 0.75 for a heavy one. Compare with DOOM's own (no <code>spin</code> at all) and keep what suits your game.</p></li>
   </ol>
 
   <div class="quiz" data-answer="1">
@@ -266,7 +286,7 @@ dry     shows picture 0, lasts 0.02 s (1), then ready      0 s · switch weapon 
     <ul>
       <li>The rocket launcher's "launch the missile" step</li>
       <li>The rocket launcher's <span class="ui">A shot counts as</span></li>
-      <li>The blast under <b>When it hits</b>, on the rocket's card on <b>☄ Missiles</b></li>
+      <li>The blast under <b>When it hits</b>, on the rocket's card on <b>Missiles</b></li>
     </ul>
     <p class="why">The weapon only launches; the missile decides what the hit and the blast do.</p>
   </div>

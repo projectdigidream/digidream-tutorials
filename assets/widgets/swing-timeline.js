@@ -5,8 +5,9 @@
 //   - a mob decides every 8th tick, and a sequence entry's `at` is a deadline
 //     checked on those decisions, from the first one AFTER entering: so
 //     `at = 0` runs at 8 and `at = 10` at 16;
-//   - `swing` starts the mob's swept collider, which is then live for its
-//     `ticks` on its own and hits each target at most once;
+//   - a `swing` step starts a swept collider in the shape its own numbers
+//     give (what it leaves out comes from the mob's default `swing`), which
+//     is then live for its `ticks` on its own and hits each target at most once;
 //   - the collider moves from sweep_from to sweep_to evenly over its ticks
 //     (engine/client/src/render/swing.js swingPhase: step 1/(ticks-1)), and
 //     covers half_arc either side of where it is (angles in turns).
@@ -57,7 +58,7 @@
     const stepBtn = h('button', { class: 'wbtn' }, '+1 tick');
     stepBtn.addEventListener('click', () => { playing = false; playBtn.textContent = '▶ play'; advance(); });
     let slow = true;
-    const slowBtn = h('button', { class: 'wbtn on' }, '🐢 quarter speed');
+    const slowBtn = h('button', { class: 'wbtn on' }, 'quarter speed');
     slowBtn.addEventListener('click', () => { slow = !slow; slowBtn.classList.toggle('on', slow); });
 
     el.append(
@@ -175,10 +176,10 @@
       out.textContent = hitAt !== null ? 'HIT on tick ' + hitAt + ' — the collider swept through you.' : (t >= realAt() + P.live ? 'Missed: the collider never touched you.' : t < realAt() ? 'Wind-up: ' + (realAt() - t) + ' ticks to move.' : 'Live…');
       const f = n => String(Number(n.toFixed(3)));
       code.textContent =
-        'swing = { damage = 12, reach = "' + f(P.reach) + '", half_arc = "' + f(P.half) + '",\n' +
-        '          sweep_from = "' + f(-P.sweep) + '", sweep_to = "' + f(P.sweep) + '", ticks = ' + P.live + ' }\n' +
         'attack = { anim = 2, move = "stop", face = "target", ticks = ' + P.state + ', next = "chase",\n' +
-        '  sequence = { { at = 0, action = "face" }, { at = ' + P.at + ', action = "swing" } } }';
+        '  sequence = { { at = 0, action = "face" },\n' +
+        '    { at = ' + P.at + ', action = "swing", damage = 12, reach = "' + f(P.reach) + '", half_arc = "' + f(P.half) + '",\n' +
+        '      sweep_from = "' + f(-P.sweep) + '", sweep_to = "' + f(P.sweep) + '", ticks = ' + P.live + ' } } }';
     }
 
     function frame(now) {

@@ -31,6 +31,20 @@ anything not released yet is under **Unreleased**.
   - a 2:1 sky strip imported as a still picture.
 
   Screenshots are retaken.
+- **Enemies and Weapons, for studio 0.4.1 and engine 0.2.2:**
+  - a swing is a step with its own numbers, plus "more of it" on every step, and the default swing on Advanced;
+  - a newer swing replaces one still sweeping;
+  - a weapon state's older swing form, and turning it into a step;
+  - the Blade recipe;
+  - missile trails, and a missile with no launch height leaving from the middle;
+  - melee needs a clear reach;
+  - the three pickup buttons, each starting as what it says;
+  - Looks offers only the sides a sprite has;
+  - a first-person gun shows its shot.
+
+  Screenshots are retaken without colour emoji.
+- **Flat glyphs**: no colour emoji as icons in the sidebar, the landing page or
+  the studio's labels quoted in the pages, as the studio dropped them (0.4.1).
 - **Written for people who use the apps**, not build them: no terminal, build
   or repository steps. A first lesson, Get the tools, covers downloading,
   installing past each system's first-launch warning, and updating.

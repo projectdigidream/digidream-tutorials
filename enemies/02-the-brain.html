@@ -27,12 +27,13 @@
   <h2>Try it first</h2>
   <p>The demo runs a brain like the <span class="ui">Melee grunt</span> recipe's: <code>look</code>, <code>chase</code>, <code>attack</code>, <code>pain</code> and <code>death</code>. Drag the green dot (you) into the dotted circle, then behind the wall. Press <b>hit it</b> a few times. Watch the diagram light the state it is in and the arrow it just took, and read why in the log.</p>
   <div class="widget" data-widget="brain-sim" data-title="A monster's brain, running"></div>
-  <p>Four things to notice:</p>
+  <p>Five things to notice:</p>
   <ul>
     <li>It notices you as soon as you cross the dotted circle (how far it <span class="ui">Sees</span>), even behind the wall. But it only leaves <code>look</code> when it can also <em>see</em> you.</li>
     <li>Once it has you as a target, it never lets go, however far you run. Only a step that makes it <em>forget its target</em> does.</li>
     <li>A flinch goes <b>back to what it was doing</b>. Hit it during its attack and, after the flinch, the attack carries on from where it was: a hit does not start it again.</li>
     <li>Changes happen in steps, not smoothly. A monster decides 7.5 times a second.</li>
+    <li>Its hit needs a clear reach. Slip behind the wall while it winds up, and the hit misses even within 1.5 m: a wall or a shut door stops a melee hit.</li>
   </ul>
 
   <h2>Two levels: states and steps</h2>
@@ -44,10 +45,10 @@
   <p>The difference matters. A wind-up, a strike and a recovery are not three states. They are one <code>attack</code> state with a length and a few steps.</p>
 
   <h2>Reading a state</h2>
-  <figure class="shot" data-src="../assets/shots/enemy-state.png" data-alt="Gem Hollow's slime on Behaviour with its chase state picked: the chase card with its three rules, and beside it the preview and the editor of chase: its name, make it where it begins, the jump buttons, Plays walk, Moves runs at the target, Faces the target, Lasts until a rule fires" data-hotspots='[{"x":39,"y":70,"t":"What it does","d":"plays walk, runs at the target and faces the target, until a rule below sends it on"},{"x":39,"y":90,"t":"A rule","d":"→ attack when the target is within 1.4 m and cooldown ready is over"},{"x":70,"y":50,"t":"Its name","d":"Type to rename it; every rule that goes to it follows"},{"x":69,"y":56,"t":"make it where it begins","d":"Moves the ★ here. Beside it: duplicate and delete"},{"x":70,"y":62,"t":"does · goes to · at the end · steps","d":"Jump to the four parts of the state"},{"x":85,"y":70,"t":"Plays","d":"An animation of its sprite, by name"},{"x":85,"y":78,"t":"Moves","d":"How the body is driven"},{"x":85,"y":84,"t":"Faces","d":"Where it looks"},{"x":77,"y":90,"t":"Lasts","d":"Empty: until a rule fires"},{"x":81,"y":25,"t":"The preview","d":"Runs the rules; the card it is in is marked, and the rule that would fire is outlined"}]'>
+  <figure class="shot" data-src="../assets/shots/enemy-state.png" data-alt="Gem Hollow's slime on Behaviour with its chase state picked: the chase card with its three rules, and beside it the preview and the editor of chase: its name, make it where it begins, the jump buttons, Plays walk, Moves runs at the target, Faces the target, Lasts until a rule fires" data-hotspots='[{"x":39,"y":63.6,"t":"What it does","d":"plays walk, runs at the target and faces the target, until a rule below sends it on"},{"x":39,"y":79.2,"t":"A rule","d":"→ attack when the target is within 1.4 m and cooldown ready is over"},{"x":70,"y":49,"t":"Its name","d":"Type to rename it; every rule that goes to it follows"},{"x":69.1,"y":53.5,"t":"make it where it begins","d":"Moves the ★ here. Beside it: duplicate and delete"},{"x":70,"y":57.9,"t":"does · goes to · at the end · steps","d":"Jump to the four parts of the state"},{"x":85.3,"y":65,"t":"Plays","d":"An animation of its sprite, by name"},{"x":85.3,"y":71.5,"t":"Moves","d":"How the body is driven"},{"x":85.3,"y":76,"t":"Faces","d":"Where it looks"},{"x":77,"y":80.4,"t":"Lasts","d":"Empty: until a rule fires"},{"x":81,"y":25,"t":"The preview","d":"Runs the rules; the card it is in is marked, and the rule that would fire is outlined"}]'>
     <figcaption>Gem Hollow's <code>slime</code> with <code>chase</code> picked. Tap the numbered dots for what each part does.</figcaption>
   </figure>
-  <p>Open <b>☠ Monsters</b>, pick <code>slime</code> and open <span class="ui">Behaviour</span> with <span class="ui">List</span>. Each card reads as a sentence:</p>
+  <p>Open <b>Monsters</b>, pick <code>slime</code> and open <span class="ui">Behaviour</span> with <span class="ui">List</span>. Each card reads as a sentence:</p>
   <ul>
     <li><b>The first line</b> is what the state does: what it <em>plays</em>, how it <em>moves</em> and where it <em>faces</em>, and how long it lasts: <em>"…until a rule below sends it on"</em>, <em>"…for 0.4 s then goes on to chase"</em>, <em>"…then goes back to what it was doing"</em>, or <em>"…and stays here"</em>. The ★ marks where it begins.</li>
     <li><b>Its rules</b> follow, one a line, in the order they are checked: <em>"→ attack when the target is within 1.4 m and cooldown ready is over"</em>.</li>
@@ -88,7 +89,7 @@
   <div class="callout warn"><p><b>An unfinished rule never fires.</b> A rule with no state to go to, or with no condition yet, says so in red (<em>"incomplete: add a condition (it never fires until then)"</em>) and is left out of the files. Add its condition before you play.</p></div>
   <p>Conditions stop at the first false one, so <b>put the cheap ones first</b>. <em>The target is within</em> is a little arithmetic. <em>It can see the target</em> casts a ray. <em>It can walk to the target</em> searches for a route.</p>
 
-  <figure class="shot" data-src="../assets/shots/enemy-chooser.png" data-alt="Adding a condition to the slime's first rule in chase: the chooser with group chips The target, Itself, Others nearby, Time and chance, Numbers and timers and Lua, a find box, and the target's conditions" data-hotspots='[{"x":73,"y":53,"t":"go to","d":"The state this rule goes to"},{"x":80,"y":53,"t":"Check it later","d":"The arrows move a rule up or down: first match wins"},{"x":81,"y":83,"t":"The groups","d":"One group at a time; the chooser opens on the one you used last"},{"x":72,"y":91,"t":"find among 28…","d":"Searches every group at once (on a wide screen)"},{"x":81,"y":97,"t":"The conditions","d":"Tap one to add it, with its default numbers"},{"x":96,"y":74,"t":"cancel","d":"Close the chooser"}]'>
+  <figure class="shot" data-src="../assets/shots/enemy-chooser.png" data-alt="Adding a condition to the slime's first rule in chase: the chooser with group chips The target, Itself, Others nearby, Time and chance, Numbers and timers and Lua, a find box, and the target's conditions" data-hotspots='[{"x":66.7,"y":53.3,"t":"go to","d":"The state this rule goes to"},{"x":79.7,"y":53.4,"t":"Check it later","d":"The arrows move a rule up or down: first match wins"},{"x":78,"y":77,"t":"The groups","d":"One group at a time; the chooser opens on the one you used last"},{"x":72.4,"y":83.3,"t":"find among 28…","d":"Searches every group at once (on a wide screen)"},{"x":78,"y":91.5,"t":"The conditions","d":"Tap one to add it, with its default numbers"},{"x":96.1,"y":70.4,"t":"cancel","d":"Close the chooser"}]'>
     <figcaption><span class="ui">+ add a condition</span> on the slime's first rule in <code>chase</code>: the chooser.</figcaption>
   </figure>
   <p><span class="ui">+ add a condition</span> opens a chooser, <b>Add a condition</b> (<em>every condition must hold</em>). Its conditions are in groups, one group at a time, picked from a row of chips; it opens on the group you used last. On a wide screen a <em>find among …</em> box searches all of them. Tap one, and it is added with its default numbers, ready to change.</p>
@@ -172,10 +173,10 @@
   <p>Because a target is kept, giving up is something you build: a <code>lost</code> state the monster enters when you get away, which goes back to <code>chase</code> if you come back, and otherwise runs out into a state that forgets its target. The exercise builds exactly this.</p>
 
   <h2 id="gem-hollow">In Gem Hollow: the slime's brain</h2>
-  <figure class="shot" data-src="../assets/shots/enemy-slime-brain.png" data-alt="The slime's states on Graph: look, squash, chase, gone and attack in a row, pain and death below, with arrows labelled by what they wait for" data-hotspots='[{"x":93,"y":15,"t":"Graph","d":"Its states as boxes in lanes, every rule an arrow labelled with what it waits for"},{"x":21,"y":48,"t":"look ★","d":"Where it begins: idle, wanders, until a rule"},{"x":32,"y":40,"t":"An arrow&#39;s label","d":"sees target · ≤9 m: tap a label to open its rule"},{"x":32,"y":48,"t":"squash","d":"You landed on it: it bounces you and goes"},{"x":44,"y":48,"t":"chase","d":"Runs at you; three rules"},{"x":55,"y":48,"t":"gone","d":"Vanishes, once"},{"x":66,"y":48,"t":"attack","d":"A bump at 0.17 s, then a 1 s cooldown"},{"x":32,"y":71,"t":"pain","d":"0.2 s, then back to chase"},{"x":55,"y":71,"t":"death","d":"A sound, and the body goes"},{"x":30,"y":28,"t":"Whatever it is doing","d":"Folded here: tap to open it"}]'>
+  <figure class="shot" data-src="../assets/shots/enemy-slime-brain.png" data-alt="The slime's states on Graph: look, squash, chase, gone and attack in a row, pain and death below, with arrows labelled by what they wait for" data-hotspots='[{"x":93.5,"y":15,"t":"Graph","d":"Its states as boxes in lanes, every rule an arrow labelled with what it waits for"},{"x":21,"y":49,"t":"look ★","d":"Where it begins: idle, wanders, until a rule"},{"x":32,"y":40,"t":"An arrow&#39;s label","d":"sees target · ≤9 m: tap a label to open its rule"},{"x":32,"y":49,"t":"squash","d":"You landed on it: it bounces you and goes"},{"x":44,"y":49,"t":"chase","d":"Runs at you; three rules"},{"x":55,"y":49,"t":"gone","d":"Vanishes, once"},{"x":66,"y":49,"t":"attack","d":"A bump at 0.17 s, then a 1 s cooldown"},{"x":32,"y":71,"t":"pain","d":"0.2 s, then back to chase"},{"x":55,"y":71,"t":"death","d":"A sound, and the body goes"},{"x":24,"y":28,"t":"Whatever it is doing","d":"Folded here: tap to open it"}]'>
     <figcaption>Gem Hollow's <code>slime</code> on <span class="ui">Graph</span>. Drag to pan, pinch or use the wheel to zoom; <span class="ui">fit</span> at the bottom right puts every state in view. Dashed arrows are a state running out of time.</figcaption>
   </figure>
-  <p>Open <b>☠ Monsters</b> and pick <code>slime</code>. It has the five states a melee monster has, plus two of its own: <code>squash</code> and <code>gone</code>. Read it card by card on <span class="ui">List</span>:</p>
+  <p>Open <b>Monsters</b> and pick <code>slime</code>. It has the five states a melee monster has, plus two of its own: <code>squash</code> and <code>gone</code>. Read it card by card on <span class="ui">List</span>:</p>
   <table>
     <thead><tr><th>State</th><th>What it does</th><th>Rules, in order, and steps</th></tr></thead>
     <tbody>
@@ -198,7 +199,7 @@
   </ul>
 
   <h2 id="cinderfall">In Cinderfall: brains for a shooter</h2>
-  <p>Cinderfall, the first-person shooter example that comes with the studio (Home → examples → <span class="ui">📂 Cinderfall</span>; see <a href="../examples/02-cinderfall.html">the tour</a>), has five monsters and a boss. Their brains fight at range, which Gem Hollow's never do. Open <b>☠ Monsters</b> and pick each one from the list.</p>
+  <p>Cinderfall, the first-person shooter example that comes with the studio (Home → examples → <span class="ui">Cinderfall</span>; see <a href="../examples/02-cinderfall.html">the tour</a>), has five monsters and a boss. Their brains fight at range, which Gem Hollow's never do. Open <b>Monsters</b> and pick each one from the list.</p>
   <table>
     <thead><tr><th>Monster</th><th>Overview</th><th>States, and what is new in them</th></tr></thead>
     <tbody>
@@ -221,11 +222,11 @@
 
   <h2>Exercise: a snail that really wanders</h2>
   <ol class="steps">
-    <li><p>Open Gem Hollow, choose <b>☠ Monsters</b> and pick <code>snail</code>. On <span class="ui">Behaviour</span>, tap its <code>look</code> card.</p></li>
+    <li><p>Open Gem Hollow, choose <b>Monsters</b> and pick <code>snail</code>. On <span class="ui">Behaviour</span>, tap its <code>look</code> card.</p></li>
     <li><p>Set <span class="ui">Lasts</span> to 2. <span class="ui">Then goes to</span> becomes <code>look</code>, the state itself, and the card says <em>"for 2 s then starts it again"</em>: it picks a new heading every two seconds. Set <span class="ui">Faces</span> to <em>where it was</em>.</p></li>
     <li><p>Press <span class="ui">steps</span> to jump to its <b>Timeline</b>, then <span class="ui">+ add a step at 0 s</span>. In the chooser's <b>Moving</b> group, pick <em>pick a heading random into the number wander</em>. Leave its heading on <em>random</em> and its number on <code>wander</code>.</p></li>
     <li><p>Open <span class="ui">Advanced</span>: under <b>Its numbers</b>, <code>wander</code> is there, <em>set in look</em>.</p></li>
-    <li><p>Check the rail's <b>☠ Monsters</b> shows no problem count, then press <span class="ui">▶ Play</span>. Go to the third zone and watch the snails from a distance: they now set off a new way every two seconds instead of crawling into a wall and staying there.</p></li>
+    <li><p>Check the rail's <b>Monsters</b> shows no problem count, then press <span class="ui">Play</span>. Go to the third zone and watch the snails from a distance: they now set off a new way every two seconds instead of crawling into a wall and staying there.</p></li>
   </ol>
 
   <h2>Exercise: a watcher that gives up</h2>
@@ -246,7 +247,7 @@
     <path class="arrow" d="M80 160 V76" marker-end="url(#ah2)"/><text class="dim" x="88" y="120" font-size="11">forgets, after 0.02 s</text>
   </svg></div>
   <ol class="steps">
-    <li><p>Open <b>☠ Monsters</b> and pick <code>grunt</code>. On <span class="ui">Overview</span>, set <span class="ui">Sees</span> to 12: once it has forgotten you, it should only notice you again close up.</p></li>
+    <li><p>Open <b>Monsters</b> and pick <code>grunt</code>. On <span class="ui">Overview</span>, set <span class="ui">Sees</span> to 12: once it has forgotten you, it should only notice you again close up.</p></li>
     <li><p>On <span class="ui">Behaviour</span>, press <span class="ui">+ state</span>, type <code>wander</code> and press <span class="ui">Create</span>. Set <span class="ui">Plays</span> to walk, <span class="ui">Moves</span> to <em>wanders</em>, <span class="ui">Faces</span> to <em>where it was</em>, <span class="ui">Lasts</span> to 1.5, and <span class="ui">Then goes to</span> to <code>wander</code>.</p></li>
     <li><p>Under <b>Timeline</b>, press <span class="ui">+ add a step at 0 s</span> and pick <em>pick a heading random into the number wander</em> (<b>Moving</b>).</p></li>
     <li><p>Under <b>Goes to</b>, press <span class="ui">+ another rule</span>. Set <em>go to</em> to <code>chase</code>, then <span class="ui">+ add a condition</span> <em>it has a target</em> and <span class="ui">+ add a condition</span> <em>it can see the target</em>.</p></li>
@@ -255,7 +256,7 @@
     <li><p>Add a state <code>lost</code>: plays idle, stands still, faces the target, <span class="ui">Lasts</span> 2, <span class="ui">Then goes to</span> <code>forget</code>. Give it one rule: → <code>chase</code> when <em>it can see the target</em> and <em>the target is within</em> 9 m.</p></li>
     <li><p>Open <code>chase</code>. In the rule that goes to <code>look</code> when it has no target, set <em>go to</em> to <code>wander</code>. Press <span class="ui">+ another rule</span>: → <code>lost</code> when <em>the target is further than</em> 12 m. Leave it <b>below</b> the rule to <code>attack</code>. Nothing goes to <code>look</code> any more (its card says <em>nothing goes here yet</em>), so open it and press <span class="ui">delete</span>.</p></li>
     <li><p>Check that <code>pain</code> goes <em>back to what it was doing</em>, and that the rail shows no problem count. Try it in the preview: <span class="ui">Run</span>, then press <span class="ui">further</span> until the target is past 12 m, and read the line under the buttons as it goes to <code>lost</code>, then <code>forget</code>.</p></li>
-    <li><p>Place the grunt in the far room, press <span class="ui">▶ Play</span>, and let it see you. Then run back through the door and on. Past 12 m it stops and stares at you for two seconds, then turns away and wanders. Come back within 9 m while it is in <code>lost</code>, and it comes straight for you.</p></li>
+    <li><p>Place the grunt in the far room, press <span class="ui">Play</span>, and let it see you. Then run back through the door and on. Past 12 m it stops and stares at you for two seconds, then turns away and wanders. Come back within 9 m while it is in <code>lost</code>, and it comes straight for you.</p></li>
   </ol>
   <div class="callout tip"><p>Why must <code>lost</code> go <em>below</em> <code>attack</code> in chase's list? It would not matter here, since <code>attack</code> needs the target within 1.5 m and <code>lost</code> needs it further than 12. But when two rules can both hold, the upper one always wins, so put the more urgent one first. And why 12 out and 9 back? With one number, a target standing at the edge would flick it between the two states every decision.</p></div>
 

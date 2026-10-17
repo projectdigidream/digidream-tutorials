@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Hitscan, missiles and swings · Digidream Studio tutorials</title>
-<meta name="description" content="The three ways a weapon hurts: instant shots and their spread, missiles from the Missiles page (arcs, bounces, splits, homing), blasts and recoil, and swings with their look; then what your client predicts and what the server decides.">
+<meta name="description" content="The three ways a weapon hurts: instant shots and their spread, missiles from the Missiles page (arcs, bounces, splits, homing, trails), blasts and recoil, and swing steps with their look; then what your client predicts and what the server decides.">
 <link rel="stylesheet" href="../assets/site.css">
 <link rel="stylesheet" href="../assets/skins/skins.css">
 <link rel="icon" type="image/png" href="../assets/logo.png">
@@ -19,9 +19,9 @@
   <h1>Hitscan, missiles and swings</h1>
   <p class="lede">A weapon hurts things in one of three ways. A <b>hitscan</b> is an instant ray. A <b>missile</b> is a thing that flies. A <b>swing</b> is a volume that sweeps through an arc over a few ticks. This lesson covers each one's numbers, then what your own game client shows at once and what only the server decides.</p>
   <div class="goal">
-    <b>You'll learn</b><span>the instant shot's numbers and how spread works per ray; how a weapon launches a missile, and what the Missiles page decides about it; arcs, bounces, splits and homing; blasts, recoil and warnings; the swing's fields and why it is a field and not a step; and the line between predicted and server-decided</span>
+    <b>You'll learn</b><span>the instant shot's numbers and how spread works per ray; how a weapon launches a missile, and what the Missiles page decides about it; arcs, bounces, splits and homing; blasts, recoil and warnings; missile trails; the swing step and its numbers, the default swing, two swings at once, and a swing kept on a state the older way; and the line between predicted and server-decided</span>
     <b>Time</b><span>35 minutes</span>
-    <b>Needs</b><span>a weapon with states (<a href="02-phases.html">The phase machine</a>); for missiles, the <b>☄ Missiles</b> page, which the Enemies track covers in depth (<a href="../enemies/03-attacks.html#missiles">Attacks</a>)</span>
+    <b>Needs</b><span>a weapon with states (<a href="02-phases.html">The phase machine</a>); for missiles, the <b>Missiles</b> page, which the Enemies track covers in depth (<a href="../enemies/03-attacks.html#missiles">Attacks</a>)</span>
   </div>
 
   <h2 id="hitscan">Hitscan: an instant ray</h2>
@@ -32,14 +32,14 @@
       <tr><td><code>damage</code></td><td>… damage</td><td>What each ray that hits costs the target. A fixed number: there's no random roll.</td></tr>
       <tr><td><code>range</code></td><td>range … m</td><td>How far the ray reaches, in metres (the world's units). DOOM's guns reach 2048 of its map units; at 48 to a metre, that's about 42.67.</td></tr>
       <tr><td><code>spread</code></td><td>spread …°</td><td>Degrees of random turn, <b>rolled for each ray</b>: each one is turned somewhere between −spread and +spread, sideways.</td></tr>
-      <tr><td><code>count</code></td><td>—</td><td>Rays in one shot. Default 1. DOOM's shotgun is 7, its super shotgun 20. Up to 32 are predicted; more, and the weapons run on the server only.</td></tr>
+      <tr><td><code>count</code></td><td>more of it</td><td>Rays in one shot. Default 1. DOOM's shotgun is 7, its super shotgun 20. Up to 32 are predicted; more, and the weapons run on the server only.</td></tr>
       <tr><td><code>tracer</code></td><td>its ray …</td><td>A tracer kind to draw along the ray, picked by its look (<em>1 · tracer</em>), or <em>not drawn</em>. No tracer is what makes a hitscan read as a punch.</td></tr>
-      <tr><td><code>knockback</code>, <code>lift</code></td><td>—</td><td>A shove for each ray that hits, away from the muzzle and upward. Seven pellets at point blank shove seven times.</td></tr>
-      <tr><td><code>slow</code> with <code>slow_ticks</code></td><td>—</td><td>Multiplies the target's speed (0.5 is half pace) for that many ticks. Needs both.</td></tr>
-      <tr><td><code>hit_vfx</code>, <code>hit_vfx_radius</code></td><td>where it lands …</td><td>A particle kind to burst where a ray lands (<em>12 · sparks</em>), or <em>nothing</em>; and how wide, which has no words in the editor. Drawn by the client only. A monster the ray hits sprays its own blood instead.</td></tr>
+      <tr><td><code>knockback</code>, <code>lift</code></td><td>more of it</td><td>A shove for each ray that hits, away from the muzzle and upward. Seven pellets at point blank shove seven times.</td></tr>
+      <tr><td><code>slow</code> with <code>slow_ticks</code></td><td>more of it</td><td>Multiplies the target's speed (0.5 is half pace) for that many ticks. Needs both.</td></tr>
+      <tr><td><code>hit_vfx</code>, <code>hit_vfx_radius</code></td><td>where it lands …</td><td>A particle kind to burst where a ray lands (<em>12 · sparks</em>), or <em>nothing</em>; and how wide, under <span class="ui">more of it</span>. Drawn by the client only. A monster the ray hits sprays its own blood instead.</td></tr>
     </tbody>
   </table>
-  <div class="callout soon"><p><b>Not every argument is in the editor's words yet.</b> A step's sentence sets the arguments it names: for an instant shot, its damage, range, spread, its ray and where it lands. The engine's other arguments (a shotgun's <code>count</code> of rays, <code>knockback</code>, a slow, how wide the burst where it lands is; for a missile launch, its <code>count</code>, <code>offset</code> and <code>angle</code>; a push's <code>vertical</code>; a sound's <code>predicted</code>) are kept when a module already has them, as Cinderfall's scattergun fires 8 rays, but the weapon editor can't set them yet. <a href="../reference/weapon-vocab.html">Every weapon word</a> lists them all.</p></div>
+  <div class="callout tip"><p><b>"more of it": the rest of a step.</b> A step's sentence sets the arguments it names: for an instant shot, its damage, range, spread, its ray and where it lands. Tap the step, and under the sentence <span class="ui">more of it</span> folds out every other argument the engine takes, by its own name and each with an <b>ⓘ</b>: a shotgun's <code>count</code> of rays, <code>knockback</code>, a slow, how wide the burst where it lands is; for a missile launch, its <code>count</code>, <code>offset</code> and <code>angle</code>; a push's <code>vertical</code>; a sound's <code>predicted</code>. Cinderfall's scattergun has its 8 rays there. <a href="../reference/weapon-vocab.html">Every weapon word</a> lists them all.</p></div>
   <p><b>Show where it went.</b> A shot that leaves no trace is one the player can't tell landed. <em>its ray</em> and <em>where it lands</em> are two menus in the step: the first lists the tracer and particle kinds and <em>not drawn</em>, the second the same kinds and <em>nothing</em>. A new instant shot starts with <em>its ray effect 1</em> (a tracer) and <em>where it lands effect 12</em> (sparks), and so does the <span class="ui">Pistol</span> recipe's. Pick <em>not drawn</em> and <em>nothing</em> for a shot that reads as a punch.</p>
   <p>The numbers in a sentence take a decimal: <code>42.67</code>, not a fraction. (The swing's own fields, below, also take fractions such as <code>-1/3</code>.)</p>
 
@@ -57,16 +57,16 @@
   <p>In third person, a player's input has a heading but no pitch, so the engine aims for you vertically. It finds the nearest visible solid body inside a narrow cone around your facing (5.625° each way, DOOM's number) and aims at its middle. In first person, your shot follows the view's own pitch instead. Corpses and bodies a script made non-solid are not aimed at.</p>
 
   <h2 id="missiles">Missiles: things that fly</h2>
-  <p>The step <b>launch the missile …</b> (<a href="../reference/weapon-vocab.html#launch"><code>launch</code></a>) fires one of the module's missiles. The missiles themselves are on their own page, <b>☄ Missiles</b> in the rail, <em>"shared by every monster and weapon of the module"</em>: a rocket launcher and a cyberdemon can fire the same rocket.</p>
-  <figure class="shot" data-src="../assets/shots/weapon-phase-fire.png" data-alt="The throw state of Gem Hollow's startoss: its Timeline from 0 s to 0.23 s with use 1 ammo, launch the missile star_shot, play the sound player.swing at 0 s and switch weapon if it is empty at 0.17 s, and the launch step open with edit star_shot" data-hotspots='[{"x":38.3,"y":79.5,"t":"The card","d":"throw: picture 2, for 0.23 s, then ready, and its steps as chips"},{"x":80.7,"y":47.1,"t":"Timeline","d":"from 0 s to the state&#39;s length, 0.23 s"},{"x":82.9,"y":54.5,"t":"use 1 ammo","d":"takes one star"},{"x":82.9,"y":60.5,"t":"launch the missile","d":"star_shot, picked: it opens below"},{"x":82.9,"y":72.6,"t":"0.17 s","d":"switch weapon if it is empty: to the fists after the last star"},{"x":66,"y":80.2,"t":"at","d":"the step&#39;s moment, in seconds"},{"x":82.2,"y":80.2,"t":"edit star_shot","d":"opens the missile on the Missiles page"},{"x":95.5,"y":80.2,"t":"remove step","d":"takes it away"},{"x":75.3,"y":86,"t":"The missile","d":"chosen from the module&#39;s missiles"},{"x":80.7,"y":92.9,"t":"+ add a step at 0 s","d":"opens the chooser of steps"}]'>
+  <p>The step <b>launch the missile …</b> (<a href="../reference/weapon-vocab.html#launch"><code>launch</code></a>) fires one of the module's missiles. The missiles themselves are on their own page, <b>Missiles</b> in the rail, <em>"shared by every monster and weapon of the module"</em>: a rocket launcher and a cyberdemon can fire the same rocket.</p>
+  <figure class="shot" data-src="../assets/shots/weapon-phase-fire.png" data-alt="The throw state of Gem Hollow's startoss: its Timeline from 0 s to 0.23 s with use 1 ammo, launch the missile star_shot, play the sound player.swing at 0 s and switch weapon if it is empty at 0.17 s, and the launch step open with edit star_shot and more of it (count, arc, offset, angle)" data-hotspots='[{"x":38.6,"y":63.8,"t":"The card","d":"throw: picture 2, for 0.23 s, then ready, and its steps as chips"},{"x":64,"y":53.2,"t":"Timeline","d":"from 0 s to the state&#39;s length, 0.23 s"},{"x":83.3,"y":65.1,"t":"use 1 ammo","d":"takes one star"},{"x":83.3,"y":69.5,"t":"launch the missile","d":"star_shot, picked: it opens below"},{"x":83.3,"y":78.4,"t":"0.17 s","d":"switch weapon if it is empty: to the fists after the last star"},{"x":71.2,"y":83.6,"t":"at","d":"the step&#39;s moment, in seconds"},{"x":81.8,"y":83.6,"t":"edit star_shot","d":"opens the missile on the Missiles page"},{"x":95.7,"y":83.6,"t":"remove step","d":"takes it away"},{"x":75.8,"y":87.8,"t":"The missile","d":"chosen from the module&#39;s missiles"},{"x":71.3,"y":91.1,"t":"more of it","d":"count, arc, offset, angle: the launch&#39;s other numbers"},{"x":81.3,"y":95.6,"t":"+ add a step at 0 s","d":"opens the chooser of steps"}]'>
     <figcaption>The <code>throw</code> state of Gem Hollow's <code>startoss</code>: a launch between "use 1 ammo" and a sound.</figcaption>
   </figure>
-  <p>Tap a launch step, and <span class="ui">edit <i>missile</i></span> opens that missile on <b>☄ Missiles</b>. The weapon's <span class="ui">Attacks</span> tab lists the module's missiles too, with <span class="ui">Open Missiles</span>.</p>
-  <p><b>The missile, not the weapon, decides what a hit does.</b> On <b>☄ Missiles</b>, each missile has a side view of its flight as the engine flies it (<span class="ui">Fire</span> plays it), and says who fires it (<em>"used by flare · fire"</em>). Its parts:</p>
+  <p>Tap a launch step, and <span class="ui">edit <i>missile</i></span> opens that missile on <b>Missiles</b>. The weapon's <span class="ui">Attacks</span> tab lists the module's missiles too, with <span class="ui">Open Missiles</span>.</p>
+  <p><b>The missile, not the weapon, decides what a hit does.</b> On <b>Missiles</b>, each missile has a side view of its flight as the engine flies it (<span class="ui">Fire</span> plays it), and says who fires it (<em>"used by flare · fire"</em>). Its parts:</p>
   <ul>
-    <li><b>Flight</b>: <span class="ui">Speed</span> (m/s), <span class="ui">Falls</span> (m/s², empty flies straight), <span class="ui">Homing</span>, <span class="ui">Lasts</span> (then <em>"when it runs out"</em> happens), <span class="ui">Launch height</span>, <span class="ui">Hit size</span>, <span class="ui">Bounces</span> and <span class="ui">At most</span> (missiles from one shot).</li>
+    <li><b>Flight</b>: <span class="ui">Speed</span> (m/s), <span class="ui">Falls</span> (m/s², empty flies straight), <span class="ui">Homing</span>, <span class="ui">Lasts</span> (then <em>"when it runs out"</em> happens), <span class="ui">Launch height</span> (empty: from the middle of the shooter, as the engine launches it), <span class="ui">Hit size</span>, <span class="ui">Bounces</span> and <span class="ui">At most</span> (missiles from one shot).</li>
     <li><b>When it hits</b>, <b>When it runs out</b>, <b>When it bounces</b> and <b>On its way</b>: what it does, as sentences: <em>"hurt what it hit for 20"</em>, <em>"a blast of 90 damage within 3.2 m, weaker at the edge"</em>, an effect, a sound, a split.</li>
-    <li><b>Looks</b>: <span class="ui">Drawn as</span> (a prop, with its own sprite and scale) and the states it plays flying and bursting. A new missile, and one a recipe makes (<code>bolt</code>), gets a prop of its own name, a glowing dot the studio paints, and is drawn as that while <span class="ui">Drawn as</span> says <em>"(nothing: an unseen shot)"</em>. A missile left with nothing to be drawn as is named as a problem before you press Play (<a href="../enemies/03-attacks.html#looks">Attacks, looks</a>).</li>
+    <li><b>Looks</b>: <span class="ui">Drawn as</span> (a prop, with its own sprite and scale), <span class="ui">Trail</span> (a particle kind that follows it from launch until it bursts, at that kind's rate, drawn along the flight when you press <span class="ui">Fire</span>; see <a href="../enemies/03-attacks.html#trail">Attacks, trails</a>) and the states it plays flying and bursting. A new missile, and one a recipe makes (<code>bolt</code>), gets a prop of its own name, a glowing dot the studio paints, and is drawn as that while <span class="ui">Drawn as</span> says <em>"(nothing: an unseen shot)"</em>. A missile left with nothing to be drawn as is named as a problem before you press Play (<a href="../enemies/03-attacks.html#looks">Attacks, looks</a>).</li>
   </ul>
   <p>The Enemies track walks through the page field by field: <a href="../enemies/03-attacks.html#missiles">Attacks, missiles</a>. What matters most for a weapon:</p>
   <ul>
@@ -96,56 +96,75 @@ When it hits   effects (fireball, smoke)
   <p><b>warn with effect … for … s</b> (<a href="../reference/weapon-vocab.html#telegraph"><code>telegraph</code></a>) draws a warning, saying the blow lands in that time. Put it at 0 s of a wind-up state and the blast later in the same state. The gap between them is the time others have to move.</p>
 
   <h2 id="swings">Swings: melee you can dodge</h2>
-  <p>A <b>swing</b> is a collider that sweeps through an arc over several ticks. A target that steps out of the way mid-swing is missed. It's the same thing a monster's claw uses, and it's edited the same way. A weapon has two places for one:</p>
-  <ul>
-    <li><b>Its own swing</b>, at the end of a state's editor: a swing for that state only.</li>
-    <li><b>Its swing, in every state</b>, on <span class="ui">Advanced</span>: the weapon's swing, for every state that has none of its own.</li>
-  </ul>
-  <figure class="shot" data-src="../assets/shots/weapon-swing.png" data-alt="The swing state of Gem Hollow's fists picked, its editor scrolled to Its own swing: the animated preview from above and from the side, then damage 10, reach 1.6, half_arc 1/3, sweep_from -1/3, sweep_to 1/3" data-hotspots='[{"x":38.3,"y":76,"t":"The swing state","d":"shows picture 2 for 0.3 s; its swing is its own"},{"x":80.7,"y":47.1,"t":"Its own swing","d":"the last part of a state&#39;s editor"},{"x":74.4,"y":59.1,"t":"From above","d":"reach and arc; the swing plays on a loop at the tick rate"},{"x":86.7,"y":59.1,"t":"From the side","d":"pitch; says no height check when half_pitch is empty"},{"x":82,"y":72.7,"t":"damage","d":"what a connected swing costs: 10"},{"x":82,"y":87.8,"t":"half_arc, sweep","d":"turns: 1/3 is 120°, so the fist sweeps a wide arc"}]'>
-    <figcaption>The <code>fists</code>' swing, on its <code>swing</code> state. The preview plays it, so you see a volume moving through time.</figcaption>
+  <p>A <b>swing</b> is a collider that sweeps through an arc over several ticks. A target that steps out of the way mid-swing is missed. It's the same thing a monster's claw uses, and it's edited the same way: a swing is an attack like the others, a <b>step</b> with its own numbers in it.</p>
+  <p>Press <span class="ui">+ add a step at 0 s</span> on a state and pick <b>swing for … damage, … m long, from … to … over … s</b> (<a href="../reference/weapon-vocab.html#swing"><code>swing</code></a>) in the <b>Attack</b> group. A new one reads <em>swing for 15 damage, 1.5 m long, from -60° to 60° over 0.2 s</em>. It happens at its moment of the state, like an instant shot, and your own client predicts it, so it appears on the tick it happens, not a round trip later.</p>
+  <figure class="shot" data-src="../assets/shots/weapon-swing.png" data-alt="A blade made from the Blade recipe in Gem Hollow, its slash state picked and the preview saying swings for 15: the card with its rule to heavy and its swing step, and the step open: swing for 15 damage, 1.6 m long, from -60° to 60° over 0.2 s, with more of it folded out" data-hotspots='[{"x":38.6,"y":74,"t":"slash","d":"picture 2 for 0.4 s; pressed again after 0.15 s, on to heavy"},{"x":30,"y":84.3,"t":"The step on its card","d":"0 s · swing for 15 damage, 1.6 m long, from -60° to 60° over 0.2 s"},{"x":65.8,"y":55.9,"t":"What the preview did","d":"swings for 15, on the press of Hold to fire"},{"x":71.2,"y":69.2,"t":"at","d":"0 s: the moment the state is entered"},{"x":86,"y":73.4,"t":"Its sentence","d":"damage, how far, from which angle to which, over how long"},{"x":95.7,"y":69.2,"t":"remove step","d":"takes it away"},{"x":81.3,"y":81.7,"t":"more of it","d":"the rest of a swing&#39;s numbers, by the engine&#39;s names"},{"x":81.3,"y":86.5,"t":"half_arc","d":"0.0833 of a turn: 30° each side"},{"x":81.3,"y":36,"t":"The blade, held","d":"the placeholder the Blade recipe paints"}]'>
+    <figcaption>The <code>slash</code> state of a weapon made from the <span class="ui">Blade</span> recipe (<a href="05-recipes.html#blade">Recipes</a>), with its swing step open.</figcaption>
   </figure>
-  <p><span class="ui">+ swing</span> starts one shaped like a short jab: <span class="ui">damage</span> 10, <span class="ui">reach?</span> 1.5, <span class="ui">half_arc?</span> 1/8, <span class="ui">sweep_from?</span> −1/8 to <span class="ui">sweep_to?</span> 1/8, <span class="ui">ticks?</span> 12, <span class="ui">cooldown?</span> 20. <span class="ui">remove the swing</span> takes it away. Its fields keep the engine's names; one with <b>?</b> may be left empty for the engine's default, and each has an <b>ⓘ</b>.</p>
   <table>
-    <thead><tr><th>Field</th><th>What it does</th></tr></thead>
+    <thead><tr><th>In the sentence</th><th>The engine's word</th><th>What it does</th></tr></thead>
     <tbody>
-      <tr><td><a href="../reference/weapon-vocab.html#swing_fields.damage"><span class="ui">damage</span></a></td><td>What a connected swing costs. Required.</td></tr>
-      <tr><td><a href="../reference/weapon-vocab.html#swing_fields.reach"><span class="ui">reach?</span></a>, <a href="../reference/weapon-vocab.html#swing_fields.min_reach"><span class="ui">min_reach?</span></a></td><td>How far it reaches, to the target's surface, not its centre. A <code>min_reach</code> above 0 makes a ring that misses anything pressed against you: a spear.</td></tr>
-      <tr><td><a href="../reference/weapon-vocab.html#swing_fields.half_arc"><span class="ui">half_arc?</span></a></td><td>How wide, each side of the aim. All angles are <b>turns</b>: <code>1/8</code> (0.125) is 45°.</td></tr>
-      <tr><td><a href="../reference/weapon-vocab.html#swing_fields.sweep_from"><span class="ui">sweep_from?</span></a>, <a href="../reference/weapon-vocab.html#swing_fields.sweep_to"><span class="ui">sweep_to?</span></a></td><td>Where the collider starts and ends, relative to the aim. The default sweeps right to left. Equal values make a thrust that doesn't turn.</td></tr>
-      <tr><td><a href="../reference/weapon-vocab.html#swing_fields.ticks"><span class="ui">ticks?</span></a></td><td>How long it is live. Longer is easier to see coming, and to dodge.</td></tr>
-      <tr><td><a href="../reference/weapon-vocab.html#swing_fields.pitch_from"><span class="ui">pitch_from?</span></a>, <a href="../reference/weapon-vocab.html#swing_fields.pitch_to"><span class="ui">pitch_to?</span></a>, <a href="../reference/weapon-vocab.html#swing_fields.half_pitch"><span class="ui">half_pitch?</span></a></td><td>The vertical sweep (0 level, 0.25 straight up). <b>Empty <code>half_pitch</code> means no height check at all</b>, which is right for a fist. Set it, and an overhead chop really misses what is at your feet.</td></tr>
-      <tr><td><a href="../reference/weapon-vocab.html#swing_fields.knockback"><span class="ui">knockback?</span></a>, <a href="../reference/weapon-vocab.html#swing_fields.lift"><span class="ui">lift?</span></a></td><td>How hard a hit throws the target, away and up. An uppercut is lift.</td></tr>
-      <tr><td><a href="../reference/weapon-vocab.html#swing_fields.slow"><span class="ui">slow?</span></a>, <a href="../reference/weapon-vocab.html#swing_fields.slow_ticks"><span class="ui">slow_ticks?</span></a></td><td>Slows what it hits. Hitting the same target again replaces the slow, it doesn't stack.</td></tr>
-      <tr><td><a href="../reference/weapon-vocab.html#swing_fields.hit_vfx"><span class="ui">hit_vfx?</span></a>, <a href="../reference/weapon-vocab.html#swing_fields.hit_vfx_radius"><span class="ui">hit_vfx_radius?</span></a></td><td>Particles where it lands, picked by their look (<em>12 · sparks</em>).</td></tr>
-      <tr><td><a href="../reference/weapon-vocab.html#swing_fields.cooldown"><span class="ui">cooldown?</span></a></td><td>Ticks before another swing may start. At most 255.</td></tr>
+      <tr><td>swing for … damage</td><td><a href="../reference/weapon-vocab.html#swing_fields.damage"><code>damage</code></a></td><td>What a connected swing costs.</td></tr>
+      <tr><td>… m long</td><td><a href="../reference/weapon-vocab.html#swing_fields.reach"><code>reach</code></a></td><td>How far it reaches, to the target's surface, not its centre.</td></tr>
+      <tr><td>from …° to …°</td><td><a href="../reference/weapon-vocab.html#swing_fields.sweep_from"><code>sweep_from</code></a>, <a href="../reference/weapon-vocab.html#swing_fields.sweep_to"><code>sweep_to</code></a></td><td>Where the collider starts and ends, in degrees from your aim; positive is to your left, so −60° to 60° sweeps right to left. Equal values make a thrust that doesn't turn.</td></tr>
+      <tr><td>over … s</td><td><a href="../reference/weapon-vocab.html#swing_fields.ticks"><code>ticks</code></a></td><td>How long it is live. Longer is easier to see coming, and to dodge.</td></tr>
+    </tbody>
+  </table>
+  <p>Under the sentence, <span class="ui">more of it</span> folds out the rest by the engine's own names, in its units (turns and ticks), each with an <b>ⓘ</b>: <em>more of it (half_arc, min_reach, pitch_from, pitch_to, half_pitch, knockback, hit_vfx, hit_vfx_radius, lift, slow, slow_ticks, cooldown)</em>. A new step starts with a <code>half_arc</code> of 0.0833 (30° each side) and a <code>cooldown</code> of 10 ticks. Each box marked <b>?</b> may be left empty.</p>
+  <table>
+    <thead><tr><th>Under "more of it"</th><th>What it does</th></tr></thead>
+    <tbody>
+      <tr><td><a href="../reference/weapon-vocab.html#swing_fields.half_arc"><code>half_arc</code></a></td><td>How wide, each side of the aim. All these angles are <b>turns</b>: <code>1/8</code> (0.125) is 45°.</td></tr>
+      <tr><td><a href="../reference/weapon-vocab.html#swing_fields.min_reach"><code>min_reach</code></a></td><td>An inner edge. Above 0 it makes a ring that misses anything pressed against you: a spear.</td></tr>
+      <tr><td><a href="../reference/weapon-vocab.html#swing_fields.pitch_from"><code>pitch_from</code></a>, <a href="../reference/weapon-vocab.html#swing_fields.pitch_to"><code>pitch_to</code></a>, <a href="../reference/weapon-vocab.html#swing_fields.half_pitch"><code>half_pitch</code></a></td><td>The vertical sweep (0 level, 0.25 straight up). <b>Empty <code>half_pitch</code> means no height check at all</b>, which is right for a fist. Set it, and an overhead chop really misses what is at your feet.</td></tr>
+      <tr><td><a href="../reference/weapon-vocab.html#swing_fields.knockback"><code>knockback</code></a>, <a href="../reference/weapon-vocab.html#swing_fields.lift"><code>lift</code></a></td><td>How hard a hit throws the target, away and up. An uppercut is lift.</td></tr>
+      <tr><td><a href="../reference/weapon-vocab.html#swing_fields.hit_vfx"><code>hit_vfx</code></a>, <a href="../reference/weapon-vocab.html#swing_fields.hit_vfx_radius"><code>hit_vfx_radius</code></a></td><td>Particles where it lands, picked by their look (<em>12 · sparks</em>).</td></tr>
+      <tr><td><a href="../reference/weapon-vocab.html#swing_fields.slow"><code>slow</code></a>, <a href="../reference/weapon-vocab.html#swing_fields.slow_ticks"><code>slow_ticks</code></a></td><td>Slows what it hits. Hitting the same target again replaces the slow, it doesn't stack.</td></tr>
+      <tr><td><a href="../reference/weapon-vocab.html#swing_fields.cooldown"><code>cooldown</code></a></td><td>Ticks after this swing ends before another may start. At most 255.</td></tr>
     </tbody>
   </table>
 
-  <h3>A field, not a step</h3>
-  <p>There's no "swing" among a weapon's steps. The swing is a <b>field</b> of the weapon, or of one state. Here's why, and what it means for you:</p>
+  <h3 id="swing-rules">The rules a swing step keeps</h3>
   <ul>
-    <li><b>The swing starts when the attack button goes down</b>, on your own client and on the server alike, as long as its cooldown allows. It appears on the very tick you press, not a round trip later. The state you are in decides the swing's <em>shape</em>: entering a state with its own swing puts that shape in place.</li>
-    <li><b>A weapon without a swing does not swing.</b> Pressing fire with a shotgun produces no collider, on either side.</li>
-    <li><b>What a hit costs is decided by the server.</b> The shape is shared with your client; the <code>damage</code> is not.</li>
-    <li><b>One swing per state.</b> DOOM II's fists are a three-blow combo (<code>jab1</code>, <code>jab2</code>, <code>hook</code>) where each state has its own swing, so the third blow hits for 30 instead of 10 and knocks the target down. See <a href="05-recipes.html">Recipes</a>.</li>
+    <li><b>A newer swing replaces one still sweeping.</b> The first stops where it is and hits nothing more; the second starts from its own <code>sweep_from</code> with a fresh list of who it has hit. So two blows can hit the same monster twice. That is how the Blade's heavy slash follows its first.</li>
+    <li><b>A swing during the cooldown does not happen.</b> The cooldown starts when a swing ends, from that swing's <code>cooldown</code>; a replaced swing never ends, so it starts none. A swing refused this way is not kept for later.</li>
+    <li><b>A weapon with a swing step doesn't swing on the button.</b> If any of its states has one, the attack button only moves it from state to state, and the steps say when it swings.</li>
+    <li><b>What a hit costs is decided by the server.</b> Your client predicts the collider; the damage arrives with the server's answer.</li>
+    <li><b>Other players see the step's own shape</b>, not the weapon's default: the server names the step, and their client already holds your weapon's table.</li>
   </ul>
+
+  <h3 id="default-swing">The default swing</h3>
+  <p>Whatever a step leaves out comes from the weapon's <b>default swing</b>, on <span class="ui">Advanced</span> under <b>Its default swing</b>: <em>"Swung by the attack button while no state has a swing step, and what a swing step leaves out. A swing is a step like any other attack: its numbers in it."</em> With none, it says <em>"This weapon has no swing: …"</em> and offers <span class="ui">+ swing</span>, which starts a short jab: <span class="ui">damage</span> 10, <span class="ui">reach?</span> 1.5, <span class="ui">half_arc?</span> 1/8, <span class="ui">sweep_from?</span> −1/8 to <span class="ui">sweep_to?</span> 1/8, <span class="ui">ticks?</span> 12, <span class="ui">cooldown?</span> 20, with a preview that plays it on a loop from above and from the side. <span class="ui">remove the swing</span> takes it away. What neither gives, the engine's own default fills; a swing that ends up with no damage at all is refused when the weapon loads.</p>
+  <p>A weapon with no swing step at all swings its default swing <b>on the attack button</b>: the swing starts when the button goes down, as long as its cooldown allows, and a press while one is still sweeping is ignored. A weapon with neither a step nor a default swing doesn't swing: a shotgun's fire button makes no collider.</p>
+
+  <h3 id="older-way">A swing on a state: the older way</h3>
+  <p>Before swings were steps, a state could carry a swing of its own, swung by the attack button while the weapon was in that state. A state has no swing form any more, but one that carries a swing from before still shows it, at the end of its editor, under <b>Its own swing (the older way)</b>: <em>"A swing shape kept on the state, which the attack button swings. A swing step does the same with its numbers in it, at the moment it says."</em> Its fields and preview are there to read and change, and <span class="ui">turn it into a swing step</span> makes it a step:</p>
+  <ul>
+    <li>It asks first: <em>"Make swing's swing a step at 0 s? A weapon with a swing step in any state swings only through its steps: the attack button then just moves it from state to state."</em></li>
+    <li>The step goes in at 0 s with the shape the state had, and the studio says so: <em>"swing now swings through a step at 0 s, with the shape it had."</em> Move its <span class="ui">at</span> for a wind-up.</li>
+    <li><b>Turn every one.</b> Once one state has a swing step, the button swings no more, so a state still carrying the older swing stops swinging.</li>
+  </ul>
+  <figure class="shot" data-src="../assets/shots/weapon-older-swing.png" data-alt="Gem Hollow's fists with the swing state picked: at the end of its editor, Its own swing (the older way) with its explanation, turn it into a swing step, the swing played from above and from the side, and its fields damage 10, reach 1.6, half_arc 1/3, sweep_from -1/3" data-hotspots='[{"x":38.6,"y":63.9,"t":"The swing state","d":"picture 2 for 0.3 s; its Timeline has only a sound"},{"x":81.3,"y":48,"t":"Its own swing (the older way)","d":"a swing kept on the state, swung by the attack button"},{"x":81.3,"y":56.2,"t":"turn it into a swing step","d":"asks first, then makes it a step at 0 s with the same numbers"},{"x":75.4,"y":68.5,"t":"From above","d":"reach and arc; the swing plays on a loop at the tick rate"},{"x":87,"y":68.5,"t":"From the side","d":"pitch; says no height check when half_pitch is empty"},{"x":80,"y":81.5,"t":"Its fields","d":"damage 10, reach 1.6, half_arc 1/3 …: kept as they were"}]'>
+    <figcaption>The <code>swing</code> state of Gem Hollow's <code>fists</code>: a swing kept on the state, the older way.</figcaption>
+  </figure>
+  <p>Gem Hollow's fists and Cinderfall's wrench still swing the older way (below), and work as they always have.</p>
   <div class="callout"><p>Behind the scenes, a player's swing is written through the world's effect stack, which has 256 slots shared by the whole world; a monster's swing goes into its own body instead, so a level of a hundred monsters doesn't use them up. You don't set anything for this. It is why switching weapons replaces the swing cleanly.</p></div>
 
   <h3 id="slash">How a swing looks in the game</h3>
-  <p>The game draws every swing as a <b>slash streak</b>: a band near the tip of the swept wedge, laid tick by tick between where the blade was and where it is, fading behind it. It is built from the swing's own numbers, so it shows exactly where the collider went, and it is drawn whether the debug overlay is on or not. Your own swing is drawn from what your client predicts, except in first person, where the weapon on screen is the swing. Other players' and monsters' swings are drawn from what the server sends.</p>
-  <figure class="shot" data-src="../assets/shots/weapon-slash.png" data-alt="The Advanced tab of Gem Hollow's fists: Its swing, in every state with + swing, then how it looks in the game: show, color, opacity, fade, width, blend and texture" data-hotspots='[{"x":57.6,"y":39.9,"t":"Its swing, in every state","d":"the fists have none: their swing is on the swing state"},{"x":57.6,"y":46.7,"t":"+ swing","d":"gives the weapon a swing for every state"},{"x":25,"y":52.4,"t":"how it looks in the game","d":"this weapon&#39;s look, over the default (Player → slash)"},{"x":24,"y":63,"t":"show, color","d":"off draws nothing; the swing still hits"},{"x":50,"y":77.6,"t":"opacity, fade, width","d":"how solid, how long it lasts, how much of the wedge"},{"x":50,"y":92.1,"t":"blend and texture","d":"add glows; a texture is a picture under sprites/"}]'>
-    <figcaption><span class="ui">Advanced</span> on Gem Hollow's <code>fists</code>: the weapon's swing and how it looks.</figcaption>
+  <p>The game draws every swing as a <b>slash streak</b>: a band near the tip of the swept wedge, laid tick by tick between where the blade was and where it is, fading behind it. It is built from the swing's own numbers, so it shows exactly where the collider went, and it is drawn whether the debug overlay is on or not. Your own swing is drawn from what your client predicts, except in first person, where the weapon on screen is the swing. Other players' swings are drawn from what the server sends, in the shape of the step they swung; monsters' too.</p>
+  <figure class="shot" data-src="../assets/shots/weapon-slash.png" data-alt="The Advanced tab of Gem Hollow's fists: Its default swing, with no swing and + swing, then how it looks in the game: show, color, opacity, fade, width, blend and texture" data-hotspots='[{"x":20.6,"y":41.4,"t":"Its default swing","d":"what a swing step leaves out; the fists have none"},{"x":57.4,"y":49.7,"t":"+ swing","d":"gives the weapon a default swing"},{"x":24,"y":54.6,"t":"how it looks in the game","d":"this weapon&#39;s look, over the default (Player → slash)"},{"x":24.5,"y":61.9,"t":"show","d":"off draws nothing; the swing still hits"},{"x":57,"y":67.5,"t":"color","d":"the streak&#39;s colour, or the tint of its texture"},{"x":44,"y":73,"t":"opacity, fade, width","d":"how solid, how long it lasts, how much of the wedge"},{"x":57,"y":89.7,"t":"blend and texture","d":"add glows; a texture is a picture under sprites/"}]'>
+    <figcaption><span class="ui">Advanced</span> on Gem Hollow's <code>fists</code>: its default swing, and how its swings look.</figcaption>
   </figure>
-  <p>On <span class="ui">Advanced</span>, under the weapon's swing, <b>how it looks in the game</b> sets the look: <span class="ui">show</span> (off draws nothing; the swing still hits), <span class="ui">color</span>, <span class="ui">opacity</span> (0 to 1), <span class="ui">fade</span> (seconds), <span class="ui">width</span> (how much of the wedge, from the tip inward: 1 is all of it), <span class="ui">blend</span> (<code>add</code> glows, <code>normal</code> paints over) and <span class="ui">texture</span> (a picture under <code>sprites/</code>, or <code>(none: a plain band)</code>). Each field shows the look the swing really has; one you set reads <b>(own)</b>, and <span class="ui">back to the default look</span> clears them.</p>
+  <p>On <span class="ui">Advanced</span>, under <b>Its default swing</b>, <b>how it looks in the game</b> sets the look of every swing the weapon makes: <span class="ui">show</span> (off draws nothing; the swing still hits), <span class="ui">color</span>, <span class="ui">opacity</span> (0 to 1), <span class="ui">fade</span> (seconds), <span class="ui">width</span> (how much of the wedge, from the tip inward: 1 is all of it), <span class="ui">blend</span> (<code>add</code> glows, <code>normal</code> paints over) and <span class="ui">texture</span> (a picture under <code>sprites/</code>, or <code>(none: a plain band)</code>). Each field shows the look the swing really has; one you set reads <b>(own)</b>, and <span class="ui">back to the default look</span> clears them.</p>
   <ul>
-    <li><b>The look is the weapon's, not a state's</b>: every blow of a combo uses it, while the streak's shape follows each blow's own swing.</li>
-    <li><b>The default</b> every swing starts from is on <b>🧍 Player</b> → <span class="ui">💨 slash</span>, with <span class="ui">back to the engine's look</span>. Other players' swings always use it, because your client does not know what they are holding.</li>
+    <li><b>The look is the weapon's, not a step's</b>: every blow of a combo uses it, while the streak's shape follows each blow's own numbers.</li>
+    <li><b>The default</b> every swing starts from is on <b>Player</b> → <span class="ui">slash</span>, with <span class="ui">back to the engine's look</span>. Other players' swings always use it, because your client does not know what they are holding.</li>
     <li><b>Monsters</b> have the same form (<a href="../enemies/03-attacks.html#slash">Attacks</a>).</li>
     <li>The studio writes <code>assets/sprites/swings.json</code> only when something is set, and a deleted weapon takes its look with it.</li>
   </ul>
 
   <h2 id="gem-hollow">In Gem Hollow: a wide fist and a stinging star</h2>
-  <p><b>The fists' swing is on the state.</b> Pick <code>fists</code> and open <span class="ui">Advanced</span>: <b>Its swing, in every state</b> says <em>"This weapon has no swing: …"</em>. Tap the <code>swing</code> state on <span class="ui">Behaviour</span> instead, and its editor ends with the swing it brings with it:</p>
+  <p><b>The fists swing the older way: their swing is on a state.</b> Pick <code>fists</code> and open <span class="ui">Advanced</span>: <b>Its default swing</b> says <em>"This weapon has no swing: …"</em>. Tap the <code>swing</code> state on <span class="ui">Behaviour</span> instead: its Timeline has no swing step, and its editor ends with <b>Its own swing (the older way)</b>, the swing it brings with it:</p>
   <table>
     <thead><tr><th>Field</th><th>Value</th><th>What it makes</th></tr></thead>
     <tbody>
@@ -156,12 +175,12 @@ When it hits   effects (fireball, smoke)
       <tr><td><span class="ui">knockback?</span>, <span class="ui">lift?</span></td><td>6, 3</td><td>pops the monster back and up</td></tr>
     </tbody>
   </table>
-  <p>The swing starts on the press, on your client and the server alike, and entering <code>swing</code> is what puts this shape in place. Its sound, <code>player.swing</code>, is marked predicted in the module, so you hear it on the press. Gem Hollow sets no slash look, so the punch draws the engine's warm white streak.</p>
-  <p><b>The Star Toss launches <code>star_shot</code></b>, on <b>☄ Missiles</b>: <span class="ui">Speed</span> 22 m/s, <span class="ui">Hit size</span> 0.3 m, <span class="ui">Launch height</span> 1.1 m (about the hero's chest), <span class="ui">Lasts</span> 0.83 s (50 ticks), so it flies about 18 m and vanishes. It is drawn as the prop <code>star_shot</code> (a small star, the <code>STAR</code> sheet at scale 0.3). It hurts through <b>When it hits</b>: <em>"hurt what it hit for 20"</em>.</p>
+  <p>The swing starts on the press, on your client and the server alike, and entering <code>swing</code> is what puts this shape in place. <span class="ui">turn it into a swing step</span> would make it a step at 0 s with the same numbers, <em>swing for 10 damage, 1.6 m long, from -120° to 120° over 0.13 s</em>: the exercise below does. Its sound, <code>player.swing</code>, is marked predicted in the module, so you hear it on the press. Gem Hollow sets no slash look, so the punch draws the engine's warm white streak.</p>
+  <p><b>The Star Toss launches <code>star_shot</code></b>, on <b>Missiles</b>: <span class="ui">Speed</span> 22 m/s, <span class="ui">Hit size</span> 0.3 m, <span class="ui">Launch height</span> 1.1 m (about the hero's chest), <span class="ui">Lasts</span> 0.83 s (50 ticks), so it flies about 18 m and vanishes. It is drawn as the prop <code>star_shot</code> (a small star, the <code>STAR</code> sheet at scale 0.3). It hurts through <b>When it hits</b>: <em>"hurt what it hit for 20"</em>.</p>
   <div class="callout"><p><b>A missile hurts only through what it does.</b> There is no damage number on a missile: everything it does on arrival, damage included, is a sentence under <b>When it hits</b> (or <b>When it runs out</b>, for a fuse).</p></div>
 
   <h2 id="cinderfall">In Cinderfall: three kinds of ray, a flare and a two-way wrench</h2>
-  <p>Cinderfall, the first-person shooter example that comes with the studio (Home → <span class="ui">◆ examples</span>; see <a href="../examples/02-cinderfall.html">the tour</a>), uses all three ways to hurt. Its rays, as the instant-shot steps say them, with the two arguments the module keeps beside them:</p>
+  <p>Cinderfall, the first-person shooter example that comes with the studio (Home → examples; see <a href="../examples/02-cinderfall.html">the tour</a>), uses all three ways to hurt. Its rays, as the instant-shot steps say them, with the two arguments the module keeps beside them:</p>
   <table>
     <thead><tr><th>Weapon, state</th><th>damage</th><th>range</th><th>spread</th><th><code>count</code></th><th><code>knockback</code></th><th>Most per trigger pull</th></tr></thead>
     <tbody>
@@ -176,7 +195,7 @@ When it hits   effects (fireball, smoke)
     <li><b>Up and down is the view's.</b> Cinderfall is played first person, so every ray follows your pitch: aim at the spitters overhead.</li>
     <li><b>The double blast is wider and shorter.</b> More rays, more spread and less range than the single shot, plus <em>"push the player away at 6 m/s"</em>, which shoves you back.</li>
   </ul>
-  <p><b>The flare launcher</b> launches <code>flare_shot</code>, on <b>☄ Missiles</b> beside the monsters' own (<em>"used by flare · fire"</em>):</p>
+  <p><b>The flare launcher</b> launches <code>flare_shot</code>, on <b>Missiles</b> beside the monsters' own (<em>"used by flare · fire"</em>):</p>
   <pre><code>flare_shot   Speed 24 m/s   Falls: flies straight   Lasts 1.5 s   Launch height 1.45 m   Hit size 0.3 m
              While flying, plays state 0   When it bursts, plays state 1   Burst lasts 0.23 s
 When it hits a blast of 90 damage within 3.2 m, weaker at the edge, knocking back 8 m, lifting 3 m
@@ -188,7 +207,7 @@ When it hits a blast of 90 damage within 3.2 m, weaker at the edge, knocking bac
     <li>It flies 24 m a second for 1.5 s: 36 m before it runs out. With nothing under <b>When it runs out</b>, an expired flare simply goes.</li>
   </ul>
   <div class="callout soon"><p><b><code>shoves_owner</code> isn't in the Missiles page's words yet.</b> The blast's sentence has <span class="ui">hurts the one who fired it</span>, but not the engine's switch that throws the shooter without hurting them. A missile that already has it, like the flare, keeps it.</p></div>
-  <p><b>The wrench has a swing on each of its two blows</b> and none on the weapon:</p>
+  <p><b>The wrench has a swing on each of its two blows</b>, the older way, kept on the states <code>swing</code> and <code>swing2</code>, and none on the weapon:</p>
   <table>
     <thead><tr><th>Field</th><th><code>swing</code></th><th><code>swing2</code></th></tr></thead>
     <tbody>
@@ -200,22 +219,24 @@ When it hits a blast of 90 damage within 3.2 m, weaker at the edge, knocking bac
       <tr><td><span class="ui">knockback?</span></td><td>5</td><td>8</td></tr>
     </tbody>
   </table>
-  <p>No <span class="ui">half_pitch?</span>, so no height check, which suits a wrench. Two blows kill a husk (40 hp), and the second blow's sweep runs back across the first, so a monster that stepped aside from one meets the other.</p>
+  <p>No <span class="ui">half_pitch?</span>, so no height check, which suits a wrench. Two blows kill a husk (40 hp), and the second blow's sweep runs back across the first, so a monster that stepped aside from one meets the other. To make them steps, turn <em>both</em> into swing steps: one left the older way would stop swinging once the other is a step.</p>
 
   <h2>Exercise: a flare jump</h2>
   <ol class="steps">
-    <li><p>Open Cinderfall from Home → <span class="ui">◆ examples</span> and choose <b>☄ Missiles</b>. Pick <code>flare_shot</code>, and under <b>When it hits</b> read the blast: <span class="ui">hurts the one who fired it</span> is off.</p></li>
-    <li><p>Give yourself the launcher: <b>🧍 Player</b> → <span class="ui">🎒 kit</span>, tick <code>flare</code> and set <code>flares</code> to 10.</p></li>
-    <li><p>Press <span class="ui">▶ Play</span>, face a wall a few steps away and fire. The blast throws you back, and your health stays where it was.</p></li>
-    <li><p>Back on <b>☄ Missiles</b>, tick <span class="ui">hurts the one who fired it</span> and play again. The jump now costs you health, as a DOOM rocket jump does. Untick it.</p></li>
+    <li><p>Open Cinderfall from Home → examples and choose <b>Missiles</b>. Pick <code>flare_shot</code>, and under <b>When it hits</b> read the blast: <span class="ui">hurts the one who fired it</span> is off.</p></li>
+    <li><p>Give yourself the launcher: <b>Player</b> → <span class="ui">kit</span>, tick <code>flare</code> and set <code>flares</code> to 10.</p></li>
+    <li><p>Press <span class="ui">Play</span>, face a wall a few steps away and fire. The blast throws you back, and your health stays where it was.</p></li>
+    <li><p>Back on <b>Missiles</b>, tick <span class="ui">hurts the one who fired it</span> and play again. The jump now costs you health, as a DOOM rocket jump does. Untick it.</p></li>
+    <li><p>For a flare you can follow with your eye, set its <span class="ui">Trail</span> under <b>Looks</b> to <em>13 · smoke</em>, and press <span class="ui">Fire</span> on the page: smoke follows it from the muzzle to the burst. In the game your own client draws it on the flare it predicts, from the moment you fire.</p></li>
   </ol>
 
-  <h2>Exercise: tune the stars, and make the fist glow</h2>
+  <h2>Exercise: tune the stars, and make the fist a step</h2>
   <ol class="steps">
-    <li><p>Open Gem Hollow and choose <b>☄ Missiles</b>. On <code>star_shot</code>, under <b>When it hits</b>, set <em>"hurt what it hit for"</em> to <code>10</code>.</p></li>
-    <li><p>Choose <b>🔫 Weapons</b>, pick <code>fists</code> and open <span class="ui">Advanced</span>. Under <b>how it looks in the game</b>, set <span class="ui">color</span> to a gold, drag <span class="ui">width</span> to 0.7 and <span class="ui">fade</span> to 0.4. Each now reads <b>(own)</b>.</p></li>
-    <li><p>Give yourself stars: <b>🧍 Player</b> → <span class="ui">🎒 kit</span>, tick <code>startoss</code> and set <code>stars</code> to 10.</p></li>
-    <li><p>Press <span class="ui">▶ Play</span>. Throw stars at a slime (20 hp): it now takes two, and a snail (40 hp) takes four. Set the hurt back to 20 when you're done. Switch to the fists with <kbd>1</kbd> and punch a bee: a wide golden streak sweeps across in front of you and lingers.</p></li>
+    <li><p>Open Gem Hollow and choose <b>Missiles</b>. On <code>star_shot</code>, under <b>When it hits</b>, set <em>"hurt what it hit for"</em> to <code>10</code>.</p></li>
+    <li><p>Choose <b>Weapons</b>, pick <code>fists</code>, and on <span class="ui">Behaviour</span> tap the <code>swing</code> state. At the end of its editor, under <b>Its own swing (the older way)</b>, press <span class="ui">turn it into a swing step</span> and confirm. Its Timeline now starts with <em>swing for 10 damage, 1.6 m long, from -120° to 120° over 0.13 s</em>, and <span class="ui">more of it</span> holds the rest: <code>half_arc</code> 1/3, <code>knockback</code> 6, <code>lift</code> 3.</p></li>
+    <li><p>Open <span class="ui">Advanced</span>. Under <b>how it looks in the game</b>, set <span class="ui">color</span> to a gold, drag <span class="ui">width</span> to 0.7 and <span class="ui">fade</span> to 0.4. Each now reads <b>(own)</b>.</p></li>
+    <li><p>Give yourself stars: <b>Player</b> → <span class="ui">kit</span>, tick <code>startoss</code> and set <code>stars</code> to 10.</p></li>
+    <li><p>Press <span class="ui">Play</span>. Throw stars at a slime (20 hp): it now takes two, and a snail (40 hp) takes four. Set the hurt back to 20 when you're done. Switch to the fists with <kbd>1</kbd> and punch a bee: the punch lands as it did, now from its step, and a wide golden streak sweeps across in front of you and lingers.</p></li>
   </ol>
 
   <h2 id="prediction">What is instant, and what the server decides</h2>
@@ -232,8 +253,8 @@ When it hits a blast of 90 damage within 3.2 m, weaker at the edge, knocking bac
           <li>the tracers, the muzzle effects, and the gun's kick</li>
           <li>sounds marked predicted (below)</li>
           <li>recoil, and your rocket jump, even on a link where the server must sometimes repeat your last input</li>
-          <li>the swing's collider</li>
-          <li>your own rocket's flight and burst, and the shove it gives the monsters near it (drawn only); a falling missile's arc</li>
+          <li>a swing step's collider, on its tick</li>
+          <li>your own rocket's flight, its trail and its burst, and the shove it gives the monsters near it (drawn only); a falling missile's arc</li>
         </ul>
       </td><td>
         <ul>
@@ -256,16 +277,16 @@ When it hits a blast of 90 damage within 3.2 m, weaker at the edge, knocking bac
     <li>Unmarked, you hear your own shot a round trip late, while everyone else hears it normally.</li>
   </ul>
   <p><span class="ui">Advanced</span>'s <b>heard at once by the one firing</b> list (<span class="ui">+ predicted sound</span>, with <span class="ui">on</span> <code>primary</code>, <code>primary_held</code>, <code>secondary</code>, <code>secondary_held</code> or <code>swing</code>, a sound, and <span class="ui">every (ticks)</span> for a held trigger) is the older way: a guess from the buttons alone. The client mutes it while it runs the weapon itself, which is whenever the weapon set doesn't use Lua. It is still worth filling in for a weapon that does.</p>
-  <div class="callout soon"><p><b>A new sound step can't be marked predicted yet.</b> The "play the sound" sentence names only the sound. A step a module already marks keeps its mark; one you add plays a round trip late for the shooter, until the editor has the switch.</p></div>
+  <p><b>Marking a sound step.</b> The "play the sound" sentence names only the sound; tap the step and tick <code>predicted</code> under its <span class="ui">more of it</span>. A step you add without it plays a round trip late for the shooter.</p>
   <div class="callout warn"><p><b>A stale line in the vocabulary.</b> The push's own description (<a href="../reference/weapon-vocab.html#impulse"><code>impulse</code></a>) still says it is <em>NOT PREDICTED</em>. That was true before the weapon machine moved into the shared core; recoil and rocket jumps are now predicted.</p></div>
 
   <h2>Exercise: three ways to hurt</h2>
   <ol class="steps">
     <li><p>Make a weapon called <code>rifle</code> from the <span class="ui">Pistol</span> recipe. Tap <code>fire</code>, set <span class="ui">Lasts</span> to <code>0.6</code>, and in its instant shot set 25 damage, range <code>42.67</code> and spread <code>0</code>. Play: a slow, exact rifle.</p></li>
     <li><p>On <code>fire</code>, press <span class="ui">+ add a step at 0 s</span>, then <span class="ui">Moving</span> and <em>push the player away at 3 m/s</em>. Set the speed to <code>2</code>. Fire while standing still: you slide back.</p></li>
-    <li><p>On <b>☄ Missiles</b>, type <code>fireball</code> and press <span class="ui">New</span>: 15 m/s, gone after 3 s, <em>"hurt what it hit for 10"</em>, drawn as a glowing dot (its own prop, <code>fireball</code>). Back in <b>🔫 Weapons</b>, make a weapon <code>caster</code> from the <span class="ui">Launcher</span> recipe; on its <code>fire</code>, tap the launch step and pick <code>fireball</code>. Play: the shot flies, and only does its 10 damage when it arrives.</p></li>
-    <li><p>Make a weapon <code>blade</code> from the <span class="ui">Blank</span> recipe. On <span class="ui">Advanced</span>, under <b>Its swing, in every state</b>, press <span class="ui">+ swing</span>. Watch its preview: the arc sweeps right to left over 12 ticks. Change <span class="ui">sweep_from?</span> and <span class="ui">sweep_to?</span> both to <code>0</code> and <span class="ui">min_reach?</span> to <code>1</code>: now it's a spear thrust that misses anything right against you.</p></li>
-    <li><p>Play with the blade and step back from a monster as it closes. Then swing just as it reaches you. The swing hits on the tick you press; the monster's health drops when the server's answer arrives.</p></li>
+    <li><p>On <b>Missiles</b>, type <code>fireball</code> and press <span class="ui">New</span>: 15 m/s, gone after 3 s, <em>"hurt what it hit for 10"</em>, drawn as a glowing dot (its own prop, <code>fireball</code>). Under <b>Looks</b>, give it a <span class="ui">Trail</span>: <em>11 · fireball</em>. Back in <b>Weapons</b>, make a weapon <code>caster</code> from the <span class="ui">Launcher</span> recipe; on its <code>fire</code>, tap the launch step and pick <code>fireball</code>. Play: the shot flies trailing fire, and only does its 10 damage when it arrives.</p></li>
+    <li><p>Make a weapon <code>spear</code> from the <span class="ui">Blade</span> recipe. Tap <code>slash</code> and its step, <em>swing for 15 damage, 1.6 m long, from -60° to 60° over 0.2 s</em>. Set both angles to <code>0</code>, and under <span class="ui">more of it</span>, <code>min_reach</code> to <code>1</code>: now it's a thrust that misses anything right against you. Do the same to <code>heavy</code>'s step.</p></li>
+    <li><p>Play with the spear and step back from a monster as it closes. Then thrust just as it reaches you. The thrust appears on the tick you press; the monster's health drops when the server's answer arrives.</p></li>
   </ol>
 
   <div class="quiz" data-answer="1">
@@ -280,20 +301,29 @@ When it hits a blast of 90 damage within 3.2 m, weaker at the edge, knocking bac
   <div class="quiz" data-answer="0">
     <p class="q">You want a rocket's explosion to do more damage. Where do you change it?</p>
     <ul>
-      <li>On <b>☄ Missiles</b>, in the rocket's blast under <b>When it hits</b></li>
+      <li>On <b>Missiles</b>, in the rocket's blast under <b>When it hits</b></li>
       <li>On the weapon's "launch the missile" step</li>
       <li>On the weapon's <span class="ui">Overview</span></li>
     </ul>
     <p class="why">The weapon only launches the missile. What a hit does belongs to the missile, which monsters and weapons share.</p>
   </div>
   <div class="quiz" data-answer="2">
-    <p class="q">Your weapon has a swing on <span class="ui">Advanced</span>, and its <code>slam</code> state has its own swing too. You press fire while the weapon is in <code>slam</code>. Which shape does the swing take?</p>
+    <p class="q">A Blade's <code>slash</code> swings at 0 s, over 0.2 s. You press again at 0.15 s, and <code>heavy</code>'s swing starts. What happens to the slash?</p>
     <ul>
-      <li>The weapon's, because it is the weapon's swing</li>
-      <li>Both at once</li>
-      <li><code>slam</code>'s own: a state's swing replaces the weapon's while the weapon is in it</li>
+      <li>It finishes its sweep, then the heavy one starts</li>
+      <li>Nothing: the heavy one is refused while a swing is still sweeping</li>
+      <li>It stops where it is, and the heavy one starts fresh: it can hit the same monster again</li>
     </ul>
-    <p class="why">The swing starts on the press; the state you are in decides its shape. That is how a combo's last blow is bigger.</p>
+    <p class="why">A newer swing replaces one still sweeping, with its own angles and a fresh list of who it has hit. Only a swing that comes during the last one's cooldown does not happen.</p>
+  </div>
+  <div class="quiz" data-answer="0">
+    <p class="q">A weapon has a default swing on <span class="ui">Advanced</span>, and its <code>fire</code> state has a swing step that gives only its damage. You press fire. What swings?</p>
+    <ul>
+      <li>The step, when <code>fire</code> reaches it, with its own damage and the default swing's reach, angles and length</li>
+      <li>The default swing on the press, then the step</li>
+      <li>The default swing only: the step has no shape of its own</li>
+    </ul>
+    <p class="why">With a swing step anywhere, the button swings nothing itself: it moves the weapon to <code>fire</code>, and the step swings. What the step leaves out comes from the default swing.</p>
   </div>
 </article>
 </body>

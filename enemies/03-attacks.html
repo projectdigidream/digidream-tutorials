@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Attacks: swings and missiles · Digidream Studio tutorials</title>
-<meta name="description" content="Build a monster's attacks in the Monsters editor: melee hits, swings you can dodge and how they look, instant shots, missiles on the Missiles page (arcs, throws, bounces, homing, splits), cooldowns, warnings, aim and teleports.">
+<meta name="description" content="Build a monster's attacks in the Monsters editor: melee hits, swing steps you can dodge and how they look, instant shots, missiles on the Missiles page (arcs, throws, bounces, homing, splits, trails), cooldowns, warnings, aim and teleports.">
 <link rel="stylesheet" href="../assets/site.css">
 <link rel="stylesheet" href="../assets/skins/skins.css">
 <link rel="icon" type="image/png" href="../assets/logo.png">
@@ -19,7 +19,7 @@
   <h1>Attacks: swings and missiles</h1>
   <p class="lede">An attack is a state with a few steps: turn to the target, wait, strike, start a cooldown. What the strike <em>is</em> decides how the player fights back: step out of reach, step aside, take cover, or dodge something flying. This lesson covers every kind of attack, the Missiles page, and the timing around them.</p>
   <div class="goal">
-    <b>You'll learn</b><span>how an attack state is built from steps; the difference between a melee hit and a swing; how to shape a swing on <span class="ui">Advanced</span> and how it looks in the game; instant shots; missiles on the <b>Missiles</b> page: falling, thrown, bouncing, homing and splitting; cooldowns, wind-ups and warnings; aim, turning and teleports</span>
+    <b>You'll learn</b><span>how an attack state is built from steps; the difference between a melee hit and a swing; a swing step and its numbers, the default swing, and what happens when two swings meet; how a swing looks in the game; instant shots; missiles on the <b>Missiles</b> page: falling, thrown, bouncing, homing, splitting and trailing particles; cooldowns, wind-ups and warnings; aim, turning and teleports</span>
     <b>Time</b><span>50 minutes</span>
     <b>Needs</b><span>Gem Hollow and Cinderfall open in the studio (Home → examples); for the last exercise, the <code>grunt</code> from the earlier lessons; a prop of your own to draw a fireball with (a small sheet with a flying animation and a burst) is optional</span>
   </div>
@@ -51,39 +51,57 @@
       <tr><td>damage</td><td>Health taken.</td></tr>
       <tr><td>within (<code>range</code>)</td><td>How far it reaches, centre to centre across the floor.</td></tr>
       <tr><td>knocking back (<code>knockback</code>)</td><td>A shove away from the attacker, in m/s.</td></tr>
-      <tr><td><code>lift</code>, <code>slow</code>, <code>slow_ticks</code>, <code>hit_vfx</code>, <code>hit_vfx_radius</code></td><td>A shove up; multiply the target's speed by <code>slow</code> for <code>slow_ticks</code>; a particle burst where it lands (a monster's own blood overrides it). The editor has no words for these yet: a monster that has them keeps them as written.</td></tr>
+      <tr><td><code>lift</code>, <code>slow</code>, <code>slow_ticks</code>, <code>hit_vfx</code>, <code>hit_vfx_radius</code></td><td>A shove up; multiply the target's speed by <code>slow</code> for <code>slow_ticks</code>; a particle burst where it lands (a monster's own blood overrides it). These are not in the sentence: tap the step and open its <span class="ui">more of it</span>, which holds every number a step takes that its sentence does not say, by the engine's own names.</td></tr>
     </tbody>
   </table>
   <p><b>Melee measures height too.</b> The gap between the two bodies, above or below, must also be within its reach. A claw does not reach a player on a ledge overhead, and a monster on a balcony does not bite someone walking underneath. The test uses each body's <span class="ui">height</span>: the target's feet must be no higher than the attacker's top plus the reach, and the attacker's feet no higher than the target's top plus the reach.</p>
+  <p><b>Melee needs a clear reach.</b> A wall or a shut door between the two stops it, as it stops a swing: shut a door in a monster's face and its claw no longer finds you through it. A ledge is not a wall here; the height test above judges that.</p>
   <p>The editor checks the rule into an attack against the hit: when the rule fires from further away than the hit reaches, the rule says so, as in <em>"attack hits only 1.6 m away: from 2 m it can swing and miss"</em> (a leap before the hit is allowed for).</p>
   <div class="callout tip"><p><b>Melee can still be dodged, a little.</b> It checks range when it runs, not when the attack began. A player who steps back during the wind-up is out of range when the hit comes. What they cannot do is step <em>aside</em>: a melee hit does not care which way the monster faces. For that, use a swing.</p></div>
 
-  <h2>Swings: an attack you can dodge</h2>
+  <h2 id="swings">Swings: an attack you can dodge</h2>
   <p>A <b>swing</b> is a swept collider: a wedge in front of the monster that moves through an arc over several ticks. A target the wedge passes through is hit, once. A target that steps out of its path is missed. A monster's claw and a player's fist are the same engine feature, edited the same way.</p>
-  <p>A swing has two parts:</p>
-  <ul>
-    <li>the <b>shape</b>, on the monster: <span class="ui">Advanced</span> → <b>Its own swing</b> writes its <a href="../reference/monster-vocab.html#mob_fields.swing"><code>swing</code></a> field;</li>
-    <li>the <b>moment</b>, in the attack state: the step <em>swing its own swing</em> (<a href="../reference/monster-vocab.html#swing"><code>swing</code></a>, in the <b>Attack</b> group). It has no numbers. It starts the swing, which then runs for its own ticks.</li>
-  </ul>
-  <figure class="shot" data-src="../assets/shots/enemy-swing.png" data-alt="Advanced for Gem Hollow's snail, Its own swing after + swing: the swing drawn from above and from the side, then damage 10, reach 1.5, half_arc 1/8, sweep_from -1/8, sweep_to 1/8, ticks 12, cooldown 20 and the empty fields" data-hotspots='[{"x":20,"y":14,"t":"Its own swing","d":"On Advanced. With no swing it offers + swing"},{"x":51,"y":25,"t":"From above","d":"Its reach and arc, played on a loop"},{"x":63,"y":25,"t":"From the side","d":"Its height, and whether it checks one"},{"x":57,"y":38,"t":"damage","d":"What a hit costs"},{"x":57,"y":43,"t":"reach","d":"How far, to the target&#39;s surface"},{"x":57,"y":49,"t":"half_arc","d":"How wide the wedge is, either side, in turns"},{"x":57,"y":57,"t":"sweep_from, sweep_to","d":"Where the wedge starts and ends"},{"x":57,"y":71,"t":"ticks","d":"How long it is live"}]'>
-    <figcaption><span class="ui">Advanced</span> → <b>Its own swing</b> for Gem Hollow's <code>snail</code>, just after <span class="ui">+ swing</span>.</figcaption>
+  <p>A swing is an attack like the others: a <b>step</b> of the attack state, with its own numbers in it. Press <span class="ui">+ add a step at 0 s</span> and pick <em>swing for … damage, … m long, from … to … over … s</em> (<a href="../reference/monster-vocab.html#swing"><code>swing</code></a>) in the <b>Attack</b> group. It happens at the moment of the state its <span class="ui">at</span> says, on the monster's next decision, like a melee hit; then the wedge sweeps on for its own time, whatever the state does next.</p>
+  <figure class="shot" data-src="../assets/shots/enemy-swing.png" data-alt="Gem Hollow's snail on Behaviour, its attack state picked and the preview running: the card with a swing step at 0.13 s, the preview saying swings for 12, and the step open: swing for 12 damage, 1.2 m long, from 60° to -60° over 0.2 s, with more of it folded out: half_arc 0.0833, cooldown 10, knockback 7" data-hotspots='[{"x":30.5,"y":81,"t":"The step on its card","d":"0.13 s · swing for 12 damage, 1.2 m long, from 60° to -60° over 0.2 s"},{"x":66,"y":31.9,"t":"What the preview did","d":"swings for 12: the swing reached the stand-in"},{"x":71,"y":49.8,"t":"at","d":"0.13 s: it runs on the decision at 0.27 s"},{"x":86,"y":54,"t":"Its sentence","d":"damage, how far, from which angle to which, over how long"},{"x":95.7,"y":49.8,"t":"remove step","d":"takes it away"},{"x":81.3,"y":62.2,"t":"more of it","d":"the rest of a swing&#39;s numbers, by the engine&#39;s names"},{"x":81.3,"y":67,"t":"half_arc","d":"0.0833 of a turn: 30° each side of where the wedge points"},{"x":81.3,"y":76.8,"t":"cooldown","d":"10 ticks after it ends before another swing may start"},{"x":81.3,"y":96.3,"t":"knockback","d":"7, as the snail&#39;s bump had"}]'>
+    <figcaption>A swing step in the snail's <code>attack</code>, from the exercise below, with <span class="ui">more of it</span> open.</figcaption>
   </figure>
-  <p>Open <span class="ui">Advanced</span> and find <b>Its own swing</b>. With no swing, it says <em>"This monster has no swing…"</em> and offers <span class="ui">+ swing</span>. The new swing is a short jab: damage 10, reach 1.5, half_arc 1/8, sweep_from −1/8, sweep_to 1/8, ticks 12, cooldown 20. Above the fields, a preview <em>plays</em> it on a loop: from above for reach and arc, and from the side for height. <span class="ui">remove the swing</span> takes it away. These fields keep the vocabulary's names; each has its <b>ⓘ</b>.</p>
+  <p>A new swing step reads <em>swing for 12 damage, 1.5 m long, from -60° to 60° over 0.2 s</em>. Tap a number to change it:</p>
   <table>
-    <thead><tr><th>Field</th><th>What it does</th></tr></thead>
+    <thead><tr><th>In the sentence</th><th>The engine's word</th><th>What it does</th></tr></thead>
     <tbody>
-      <tr><td><a href="../reference/monster-vocab.html#swing_fields.damage"><code>damage</code></a></td><td>What a hit costs. Required.</td></tr>
-      <tr><td><a href="../reference/monster-vocab.html#swing_fields.reach"><code>reach</code></a></td><td>How far, to the target's <em>surface</em>.</td></tr>
+      <tr><td>swing for … damage</td><td><a href="../reference/monster-vocab.html#swing_fields.damage"><code>damage</code></a></td><td>What a hit costs.</td></tr>
+      <tr><td>… m long</td><td><a href="../reference/monster-vocab.html#swing_fields.reach"><code>reach</code></a></td><td>How far it reaches, to the target's <em>surface</em>.</td></tr>
+      <tr><td>from …° to …°</td><td><a href="../reference/monster-vocab.html#swing_fields.sweep_from"><code>sweep_from</code></a>, <a href="../reference/monster-vocab.html#swing_fields.sweep_to"><code>sweep_to</code></a></td><td>Where the wedge starts and ends, in degrees from where the monster faces. Positive is to its left. Equal values are a <b>thrust</b> that does not turn: a horn, a spear.</td></tr>
+      <tr><td>over … s</td><td><a href="../reference/monster-vocab.html#swing_fields.ticks"><code>ticks</code></a></td><td>How long it is live. This is what makes it readable.</td></tr>
+    </tbody>
+  </table>
+  <p>Under the sentence, <span class="ui">more of it</span> folds out the rest, listed in its title by the engine's own names: <em>more of it (half_arc, min_reach, cooldown, pitch_from, pitch_to, half_pitch, knockback, hit_vfx, hit_vfx_radius, lift, slow, slow_ticks)</em>. These boxes keep the engine's units, turns and ticks, and each has its <b>ⓘ</b>. A new step starts with a <code>half_arc</code> of 0.0833 (30° each way) and a <code>cooldown</code> of 10 ticks.</p>
+  <table>
+    <thead><tr><th>Under "more of it"</th><th>What it does</th></tr></thead>
+    <tbody>
       <tr><td><a href="../reference/monster-vocab.html#swing_fields.half_arc"><code>half_arc</code></a></td><td>How wide the wedge is, either side of where it points, in turns. 0.125 is 45° each way.</td></tr>
-      <tr><td><a href="../reference/monster-vocab.html#swing_fields.sweep_from"><code>sweep_from</code></a>, <a href="../reference/monster-vocab.html#swing_fields.sweep_to"><code>sweep_to</code></a></td><td>Where the wedge starts and ends, relative to the aim. Equal values are a <b>thrust</b> that does not turn: a horn, a spear.</td></tr>
-      <tr><td><a href="../reference/monster-vocab.html#swing_fields.ticks"><code>ticks</code></a></td><td>How long it is live, in ticks. This is what makes it readable. 0 counts as 1, an instant hit.</td></tr>
       <tr><td><a href="../reference/monster-vocab.html#swing_fields.min_reach"><code>min_reach</code></a></td><td>An inner edge. Anything pressed against the monster is missed, so closing in beats it.</td></tr>
+      <tr><td><a href="../reference/monster-vocab.html#swing_fields.cooldown"><code>cooldown</code></a></td><td>Ticks after this swing ends before another may start, at most 255. The brain's own cooldown usually covers this.</td></tr>
       <tr><td><a href="../reference/monster-vocab.html#swing_fields.pitch_from"><code>pitch_from</code></a>, <a href="../reference/monster-vocab.html#swing_fields.pitch_to"><code>pitch_to</code></a>, <a href="../reference/monster-vocab.html#swing_fields.half_pitch"><code>half_pitch</code></a></td><td>The vertical part, in turns (0.25 is straight up). With <code>half_pitch</code> empty or 0 there is no height check beyond the body's height. Set it, and an overhead chop misses something at its feet.</td></tr>
-      <tr><td><a href="../reference/monster-vocab.html#swing_fields.cooldown"><code>cooldown</code></a></td><td>Ticks before another swing may start, at most 255. The brain's own cooldown usually covers this.</td></tr>
       <tr><td><code>knockback</code>, <code>lift</code>, <code>slow</code>, <code>slow_ticks</code>, <code>hit_vfx</code>, <code>hit_vfx_radius</code></td><td>As for a melee hit. A second slow from the same attacker replaces the first rather than stacking.</td></tr>
     </tbody>
   </table>
-  <p>The studio says it under the fields: <em>"Angles are turns: 0.125 is 45°. `sweep_from` equal to `sweep_to` is a thrust that does not rotate. `half_pitch` of 0 means no height check at all."</em> Fractions such as <code>1/8</code> are fine in any of these boxes.</p>
+  <p>Fractions such as <code>1/8</code> are fine in these boxes, and a decimal comma is read as a point.</p>
+
+  <h3 id="default-swing">The default swing</h3>
+  <p>Whatever a step leaves out comes from the monster's <b>default swing</b>, on <span class="ui">Advanced</span> under <b>Its default swing</b>: <em>"What a swing step leaves out. A swing is a step like any other attack (Behaviour: a state, + add a step, Attack): its numbers in it."</em> A monster with none says <em>"This monster has no swing: …"</em> and offers <span class="ui">+ swing</span>, which starts a short jab: <code>damage</code> 10, <code>reach</code> 1.5, <code>half_arc</code> 1/8, <code>sweep_from</code> −1/8, <code>sweep_to</code> 1/8, <code>ticks</code> 12, <code>cooldown</code> 20. Above its fields, a preview <em>plays</em> it on a loop: from above for reach and arc, and from the side for height. <span class="ui">remove the swing</span> takes it away. What neither the step nor the default swing gives, the engine's own default fills.</p>
+  <ul>
+    <li><b>Share, then differ.</b> Put what every swing of the monster shares in the default swing (its reach, its knockback) and give each step only what makes it different. A jab and a slam are two steps with their own numbers.</li>
+    <li><b>A step from before.</b> A monster written when a swing was a field of the monster has a step with no numbers at all. It reads <em>swing its default swing (on Advanced)</em>, and says <em>"It swings the default swing, set on Advanced. Give it numbers of its own to make this swing different from the others."</em> <span class="ui">give it numbers of its own</span> copies the default swing's numbers into the step, to change there.</li>
+    <li><b>It must hurt.</b> A swing step that ends up with no damage, none of its own and no default swing to take one from, is refused when the monster loads.</li>
+  </ul>
+
+  <h3 id="two-swings">Two swings, and the cooldown</h3>
+  <ul>
+    <li><b>A newer swing replaces one still sweeping.</b> The first stops where it is and hits nothing more. The second starts from its own <code>sweep_from</code> with a fresh list of who it has hit, so the two are two blows, and the same player can be hit by both.</li>
+    <li><b>The cooldown starts when a swing ends.</b> A swing step that comes during it does not happen, and is not kept for later. A replaced swing never ends, so it starts none.</li>
+    <li><b>The preview knows.</b> On <span class="ui">Behaviour</span>, the preview runs a swing by these rules, as it runs the other attacks, and says what it did: <em>"swings for 12"</em>, <em>"swings and misses (2.3 m, it reaches 1.5)"</em> or <em>"swing skipped: still cooling down"</em>.</li>
+  </ul>
 
   <h3>Timing a swing</h3>
   <p>The demo puts the attack state on a timeline: the wind-up before the swing step, the ticks the collider is live, and the recovery. Grey lines are the monster's decisions. Drag the green dot round the monster during the wind-up to see when a dodge works.</p>
@@ -91,17 +109,16 @@
   <p>Good swings follow three rules:</p>
   <ul>
     <li><b>A visible wind-up.</b> 0.27 to 0.53 s (16 to 32 ticks) between entering and the swing step. The attack animation should show the arm going back during it.</li>
-    <li><b>A sweep the eye can follow.</b> 8 to 12 live ticks for a claw. A big monster can take longer and sweep wider.</li>
+    <li><b>A sweep the eye can follow.</b> 0.13 to 0.2 s (8 to 12 live ticks) for a claw. A big monster can take longer and sweep wider.</li>
     <li><b>A recovery that leaves an opening.</b> The state's length should end after the swing, so the monster stands still for a moment before chasing again.</li>
   </ul>
-  <div class="callout warn"><p>A monster with a <em>swing its own swing</em> step and no swing under <b>Its own swing</b> is refused when it loads. It would otherwise swing with the engine's defaults, which nobody chose.</p></div>
 
   <h3 id="slash">How a swing looks in the game</h3>
   <p>Every swing is drawn in the game as a <b>slash streak</b>: a band near the tip of the swept wedge, laid down tick by tick between where the blade was and where it is, fading behind it. It is built from the same numbers as the collider, so what the player sees is what can hit them. It is drawn whether or not the debug overlay is on; the overlay's faint wedge and red collider are for tuning, and go with the overlay.</p>
-  <figure class="shot" data-src="../assets/shots/enemy-slash.png" data-alt="Advanced for Gem Hollow's snail, under its swing: how it looks in the game, with show, color, opacity 0.6, fade 0.22, width 0.4, blend add and texture none" data-hotspots='[{"x":21,"y":24,"t":"remove the swing","d":"The end of Its own swing"},{"x":25,"y":33,"t":"how it looks in the game","d":"This monster&#39;s look, over the module&#39;s default"},{"x":24,"y":44,"t":"show","d":"Off: not drawn at all; it still hits"},{"x":57,"y":52,"t":"color","d":"The streak&#39;s colour, or the tint of its texture"},{"x":64,"y":60,"t":"opacity","d":"How solid a new piece of the streak is"},{"x":26,"y":68,"t":"fade","d":"Seconds a piece takes to fade away"},{"x":48,"y":77,"t":"width","d":"How much of the wedge the band covers, from the tip in"},{"x":57,"y":85,"t":"blend","d":"add glows; normal paints over"},{"x":57,"y":94,"t":"texture","d":"A picture stretched along the sweep, or a plain band"}]'>
-    <figcaption>Under <b>Its own swing</b>: <b>how it looks in the game</b>, showing the engine's look, since nothing is set.</figcaption>
+  <figure class="shot" data-src="../assets/shots/enemy-slash.png" data-alt="Advanced for Gem Hollow's snail: Its default swing, with no swing and + swing, then how it looks in the game: show, color, opacity 0.6, fade 0.22, width 0.4, blend add and texture none" data-hotspots='[{"x":20.6,"y":14.8,"t":"Its default swing","d":"What a swing step leaves out; the snail has none"},{"x":57.4,"y":23.1,"t":"+ swing","d":"A default swing: a short jab to tune"},{"x":24,"y":27.9,"t":"how it looks in the game","d":"This monster&#39;s look, over the module&#39;s default"},{"x":24.5,"y":35.3,"t":"show","d":"Off: not drawn at all; it still hits"},{"x":57,"y":40.9,"t":"color","d":"The streak&#39;s colour, or the tint of its texture"},{"x":44,"y":46.4,"t":"opacity","d":"How solid a new piece of the streak is"},{"x":24.3,"y":52,"t":"fade","d":"Seconds a piece takes to fade away"},{"x":36,"y":57.5,"t":"width","d":"How much of the wedge the band covers, from the tip in"},{"x":57,"y":63.1,"t":"blend","d":"add glows; normal paints over"},{"x":57,"y":68.6,"t":"texture","d":"A picture stretched along the sweep, or a plain band"}]'>
+    <figcaption><b>Its default swing</b> on <span class="ui">Advanced</span>, and <b>how it looks in the game</b> under it, showing the engine's look, since nothing is set.</figcaption>
   </figure>
-  <p>Under the swing's fields, <b>how it looks in the game</b> sets this monster's look (<em>"How this monster's swing is drawn in the game, over the default look (Player → slash)."</em>):</p>
+  <p>On <span class="ui">Advanced</span>, under <b>Its default swing</b>, <b>how it looks in the game</b> sets this monster's look, for every swing step it has (<em>"How this monster's swing is drawn in the game, over the default look (Player → slash)."</em>). It is there whether or not the monster has a default swing:</p>
   <table>
     <thead><tr><th>Field</th><th>What it does</th><th>Engine's look</th></tr></thead>
     <tbody>
@@ -114,7 +131,7 @@
       <tr><td><span class="ui">texture</span></td><td>A picture under <code>sprites/</code> (.png or .webp), stretched along the sweep and across the band. <code>(none: a plain band)</code> draws a flat band.</td><td>none</td></tr>
     </tbody>
   </table>
-  <p>Each field shows the look the swing really has. A field you set is marked <b>(own)</b>, and the rest comes from the <b>default</b>, which is set once for the module in <b>🧍 Player</b> → <span class="ui">💨 slash</span> (it is also how other players' swings look). <span class="ui">back to the default look</span> clears everything this monster set. A monster that is deleted takes its look with it.</p>
+  <p>Each field shows the look the swing really has. A field you set is marked <b>(own)</b>, and the rest comes from the <b>default</b>, which is set once for the module in <b>Player</b> → <span class="ui">slash</span> (it is also how other players' swings look). <span class="ui">back to the default look</span> clears everything this monster set. A monster that is deleted takes its look with it.</p>
   <ul>
     <li><b>Only swings are drawn.</b> A melee hit, an instant shot or a missile has no streak: the streak follows the swept collider, and only a swing has one.</li>
     <li><b>The name is the catalogue name.</b> A monster's look is stored under its body's name in <code>assets/sprites/swings.json</code>, which the studio writes only when something is set. A module that sets nothing gets the engine's look.</li>
@@ -131,14 +148,14 @@
       <tr><td><code>tracer</code>, <code>knockback</code>, <code>hit_vfx</code>, <code>hit_vfx_radius</code>, <code>lift</code>, <code>slow</code>, <code>slow_ticks</code></td><td>A tracer drawn along the ray, by particle kind; a shove per ray; the rest as for a melee hit.</td></tr>
     </tbody>
   </table>
-  <p>The sentence has damage, range and spread; the rest have no words in the editor yet, and a monster that has them (Cinderfall's gunner fires a <code>count</code> of 3) keeps them as written.</p>
+  <p>The sentence has damage, range and spread; the rest are under the step's <span class="ui">more of it</span>, where Cinderfall's gunner has its <code>count</code> of 3.</p>
   <p>Aiming up and down is automatic: a monster's shot goes for the middle of its target's body, even on a step or a balcony. Aiming sideways is not. A shot goes the way the monster's <b>body</b> points, and the body turns at a rate. That is why Doom-style shooters add <em>the target is within 12° of where it faces</em> (<a href="../reference/monster-vocab.html#target_in_front"><code>target_in_front</code></a>) to the rule into their attack: they wait until they are lined up.</p>
   <p>A burst is several steps, not a special field. Doom's chaingunner is two instant shots at 0.12 and 0.23 s, then a short cooldown.</p>
 
   <h2 id="missiles">Missiles: the Missiles page</h2>
   <p>A missile flies. The player can see it coming and step out of its way. Missiles belong to the module: every monster and every weapon can fire every missile. They have a page of their own: choose <b>Missiles</b> in the rail, or press <span class="ui">Open Missiles</span> on a monster's <span class="ui">Attacks</span>, or <span class="ui">edit <i>name</i></span> on a step that fires one.</p>
-  <figure class="shot" data-src="../assets/shots/missiles-page.png" data-alt="The Missiles page in Cinderfall with slag_glob picked: the list of missiles with who fires each, the side view of its flight thrown on an arc onto a target 8 m away, Fire, the distance slider, and the Flight, When it hits and When it runs out panels" data-hotspots='[{"x":23,"y":18,"t":"The missiles","d":"Each with its speed, whether it falls, and who fires it"},{"x":55,"y":16,"t":"How it flies","d":"thrown to land on the target&#39;s middle · reaches 8 m in 0.73 s · peaks 0.5 m up"},{"x":56,"y":33,"t":"The side view","d":"Its path as the engine flies it, the target, and how wide its blast bursts"},{"x":34,"y":48,"t":"Fire","d":"Fly it, and burst its effects where it lands"},{"x":45,"y":48,"t":"target at","d":"How far away the target stands, 2 to 30 m"},{"x":59,"y":48,"t":"fired by a player","d":"Fired level along an aim, with no throw"},{"x":48,"y":52,"t":"The checks","d":"What would go wrong at this distance, or nothing to worry about"},{"x":82,"y":9,"t":"New, Copy of","d":"Name a new missile, or copy the one picked"},{"x":43,"y":57,"t":"Flight","d":"Speed, fall, throw, homing, life, size, bounces, splits"},{"x":65,"y":71,"t":"When it hits","d":"Effects at a tap, and what it does there: a blast of 10 within 1.8 m"},{"x":88,"y":57,"t":"When it runs out","d":"What it does when its life ends: a split in the air"}]'>
-    <figcaption>The <b>Missiles</b> page in Cinderfall, on <code>slag_glob</code>, just after <span class="ui">Fire</span>.</figcaption>
+  <figure class="shot" data-src="../assets/shots/missiles-page.png" data-alt="The Missiles page in Cinderfall with slag_glob picked and given a Trail of 13 · smoke: the list of missiles with who fires each, the side view of its flight thrown on an arc onto a target 8 m away with smoke along it, Fire, the distance slider, and the Flight, When it hits and When it runs out panels" data-hotspots='[{"x":23.2,"y":18.6,"t":"The missiles","d":"Each with its speed, whether it falls or trails, and who fires it"},{"x":55,"y":16.1,"t":"How it flies","d":"thrown to land on the target&#39;s middle · reaches 8 m in 0.73 s · peaks 0.5 m up"},{"x":56,"y":33,"t":"The side view","d":"Its path as the engine flies it, its trail along it, the target, and how wide its blast bursts"},{"x":34.4,"y":47.2,"t":"Fire","d":"Fly it, and burst its effects where it lands"},{"x":44.9,"y":47,"t":"target at","d":"How far away the target stands, 2 to 30 m"},{"x":59.1,"y":47.2,"t":"fired by a player","d":"Fired level along an aim, with no throw"},{"x":48,"y":50.6,"t":"The checks","d":"What would go wrong at this distance, or nothing to worry about"},{"x":82,"y":9.4,"t":"New, Copy of","d":"Name a new missile, or copy the one picked"},{"x":42.7,"y":55.9,"t":"Flight","d":"Speed, fall, throw, homing, life, launch height, size, bounces, splits"},{"x":65.4,"y":66,"t":"When it hits","d":"Effects at a tap, and what it does there: a blast of 10 within 1.8 m"},{"x":88.1,"y":55.9,"t":"When it runs out","d":"What it does when its life ends: a split in the air"}]'>
+    <figcaption>The <b>Missiles</b> page in Cinderfall, on <code>slag_glob</code> given a <span class="ui">Trail</span> of <em>13 · smoke</em>, just after <span class="ui">Fire</span>.</figcaption>
   </figure>
   <p>On the left are the module's missiles, each with its speed, whether it falls, homes or bounces, and who fires it (<em>used by spitter · spit</em>, or <em>not used yet</em>). At the top, type a name in <em>new missile, named</em> and press <span class="ui">New</span> (a missile of 15 m/s that lasts 3 s and hurts what it hits for 10, drawn as a glowing dot; see <a href="#looks">Looks</a>), or <span class="ui">Copy of <i>slag_glob</i></span> to start from the one picked, drawn as it is.</p>
   <h3>The side view</h3>
@@ -160,7 +177,7 @@
       <tr><td><span class="ui">Homing starts after</span></td><td>Seconds of flight before it starts to turn: fired straight, then chasing.</td><td><a href="../reference/monster-vocab.html#missile_fields.homing_after"><code>homing_after</code></a></td></tr>
       <tr><td><span class="ui">Gives up beyond</span></td><td>A target further off its heading than this many degrees is let go, and it flies straight from there.</td><td><a href="../reference/monster-vocab.html#missile_fields.homing_cone"><code>homing_cone</code></a></td></tr>
       <tr><td><span class="ui">Lasts</span></td><td>Seconds before it runs out on its own; then <em>"when it runs out"</em> happens. Always set one.</td><td><a href="../reference/monster-vocab.html#missile_fields.life"><code>life</code></a></td></tr>
-      <tr><td><span class="ui">Launch height</span></td><td>How far above the shooter's feet it starts. Mid-body is good; at the ankles it hits the first step.</td><td><a href="../reference/monster-vocab.html#missile_fields.z_offset"><code>z_offset</code></a></td></tr>
+      <tr><td><span class="ui">Launch height</span></td><td>How far above the shooter's feet it starts. Empty (<em>its middle</em>): from the middle of the shooter's body, as the engine launches it, and the side view draws it leaving there. Mid-body is good; at the ankles it hits the first step. A new missile starts at 1.4 m.</td><td><a href="../reference/monster-vocab.html#missile_fields.z_offset"><code>z_offset</code></a></td></tr>
       <tr><td><span class="ui">Hit size</span></td><td>What it collides with, as a radius. Empty: its prop's size, which is usually right.</td><td><a href="../reference/monster-vocab.html#missile_fields.radius"><code>radius</code></a></td></tr>
       <tr><td><span class="ui">Bounces</span>, <span class="ui">Keeps of its speed</span></td><td>How many times it bounces off walls, floors and ceilings before it bursts there, and how much of its speed it keeps each time (60% unless you say). A body still stops it.</td><td><a href="../reference/monster-vocab.html#missile_fields.bounces"><code>bounces</code></a>, <a href="../reference/monster-vocab.html#missile_fields.bounce_keep"><code>bounce_keep</code></a></td></tr>
       <tr><td><span class="ui">At most</span></td><td>How many missiles one shot may make, its splits and their splits together (16 unless you say).</td><td><a href="../reference/monster-vocab.html#missile_fields.max_children"><code>max_children</code></a></td></tr>
@@ -186,27 +203,38 @@
   </table>
   <p>Its harm is only what these steps do: a missile has no damage of its own. Use <em>hurt what it hit for</em>, <b>not</b> a melee hit (under <b>More</b>): a melee hit measures from the monster that fired, which by then is somewhere else.</p>
   <h3 id="looks">Looks and who fires it</h3>
-  <p><b>Looks</b> has <span class="ui">Drawn as</span>, the prop that draws it (the module's own props first, then those served with the engine); <span class="ui">While flying, plays state</span> and <span class="ui">When it bursts, plays state</span>, the prop's animation states; <span class="ui">Burst lasts</span>; and <span class="ui">Drawn at</span>, how big that prop is drawn. <b>Fired by</b> lists every monster state, weapon state and missile that fires it, each a link, and <span class="ui">delete this missile</span>.</p>
+  <p><b>Looks</b> has <span class="ui">Drawn as</span>, the prop that draws it (the module's own props first, then those served with the engine); <span class="ui">Trail</span> (<a href="#trail">below</a>); <span class="ui">While flying, plays state</span> and <span class="ui">When it bursts, plays state</span>, the prop's animation states; <span class="ui">Burst lasts</span>; and <span class="ui">Drawn at</span>, how big that prop is drawn. <b>Fired by</b> lists every monster state, weapon state and missile that fires it, each a link, and <span class="ui">delete this missile</span>.</p>
   <p><b>A missile needs a body to exist.</b> With nothing picked in <span class="ui">Drawn as</span>, it is drawn as the prop with the missile's own name; if there is no such prop, the game launches nothing at all. So the studio gives every new missile one:</p>
   <ul>
-    <li>A missile made with <span class="ui">New</span>, and one a recipe makes for you (<code>bolt</code>), gets a prop of its own name in <b>📦 Props</b>: a small glowing dot the studio paints, which nothing bumps into (<em>walk-through</em>). It shows in the game at once. <span class="ui">Drawn as</span> still reads <em>(nothing: an unseen shot)</em>, because the missile is drawn by its own name.</li>
+    <li>A missile made with <span class="ui">New</span>, and one a recipe makes for you (<code>bolt</code>), gets a prop of its own name in <b>Props</b>: a small glowing dot the studio paints, which nothing bumps into (<em>walk-through</em>). It shows in the game at once. <span class="ui">Drawn as</span> still reads <em>(nothing: an unseen shot)</em>, because the missile is drawn by its own name.</li>
     <li>A copy made with <span class="ui">Copy of <i>missile</i></span> is drawn as the one it was copied from.</li>
     <li>When a missile has nothing to be drawn as (you deleted its prop, say), the studio names it as a problem before you press Play, with a count on the rail and a line on Home under <b>What is wrong</b>: <em>"missile "spit": is drawn as the prop "spit", which the module does not have, so the game cannot fire it. Make that prop, or pick one under "Drawn as" on the Missiles page."</em></li>
   </ul>
-  <p>For a real look, make a small prop in <b>📦 Props</b> with a sheet whose state 0 flies and state 1 bursts, and pick it in <span class="ui">Drawn as</span>. Or draw over the dot: its picture is one of the module's own, named after the missile in capitals (<code>SPIT</code>).</p>
-  <figure class="shot" data-src="../assets/shots/missiles-bounce.png" data-alt="A copy of slag_glob called bouncer, with Bounces 2, fired level by a player at a target 16 m away: it lands short, bounces twice, and the page says it does not reach the target and that nothing fires it yet" data-hotspots='[{"x":23,"y":51,"t":"bouncer","d":"11 m/s, falls, bounces 2 · not used yet"},{"x":42,"y":16,"t":"lands at 10.0 m after 1.33 s","d":"Fired level, it falls short of the target"},{"x":54,"y":40,"t":"Two bounces","d":"Each keeps 60% of its speed; the blast bursts where it stops"},{"x":60,"y":48,"t":"fired by a player","d":"On: level, as a player fires it, with no throw"},{"x":60,"y":53,"t":"The checks","d":"It does not reach the target; nothing fires it yet"}]'>
+  <p>For a real look, make a small prop in <b>Props</b> with a sheet whose state 0 flies and state 1 bursts, and pick it in <span class="ui">Drawn as</span>. Or draw over the dot: its picture is one of the module's own, named after the missile in capitals (<code>SPIT</code>). Renaming that prop later keeps the missile drawn: what <span class="ui">Drawn as</span> names follows the new name, as a monster's body does.</p>
+  <h3 id="trail">A trail</h3>
+  <p><span class="ui">Trail</span>, under <b>Looks</b>, picks one of the module's particle kinds to follow the missile for its whole flight, from launch until it bursts or runs out, through every bounce (<a href="../reference/monster-vocab.html#missile_fields.trail"><code>trail</code></a>). It lists the particle kinds only, by their look (<em>13 · smoke</em>), and <em>none</em>. The specks come out at that kind's own rate: <em>"particles that follow it on its way; the kind's rate (Particles page) is how thick"</em>. Press <span class="ui">Fire</span> and the side view draws the trail along the flight. In the list of missiles, one with a trail says <em>trails</em>.</p>
+  <ul>
+    <li><b>Smoke or flame.</b> On the <b>Particles</b> page, the kind's <span class="ui">on a body</span> says what its specks do once out: <em>left behind where they came out (smoke, a trail)</em>, or <em>carried with it (a flame, an aura)</em>. A smoke trail stays in the air behind a rocket; a flame stays wrapped round a fireball.</li>
+    <li><b>The starter's kinds.</b> A module made from the starter has three kinds of its own: 20, a muzzle flash; 21, a tracer; 22, sparks. A tracer is a line, not specks, so it is not offered as a trail.</li>
+    <li><b>A kind that is not there.</b> A trail that names a tracer, or a kind the module does not have, draws nothing, and the side view's checks say so: <em>"Its trail is particle kind 21, which is a tracer, not particles: nothing follows it. Pick one under Looks."</em></li>
+  </ul>
+  <figure class="shot" data-src="../assets/shots/missiles-looks.png" data-alt="Looks for Cinderfall's slag_glob: Drawn as slag_glob, Trail 13 · smoke with its hint, While flying plays state 0, When it bursts plays state 1, Burst lasts 0.2 s, Drawn at 1; beside it, Fired by spitter · spit" data-hotspots='[{"x":65.4,"y":47,"t":"Looks","d":"How it is drawn, flying and bursting"},{"x":65.4,"y":52.7,"t":"Drawn as","d":"The prop that draws it: slag_glob"},{"x":65.4,"y":61.4,"t":"Trail","d":"A particle kind that follows it from launch until it bursts: 13 · smoke"},{"x":65.4,"y":65.4,"t":"How thick","d":"At the kind&#39;s own rate, set on the Particles page"},{"x":65.4,"y":69,"t":"While flying, plays state","d":"The prop&#39;s animation states, then Burst lasts and Drawn at"},{"x":88.1,"y":50.3,"t":"Fired by","d":"spitter · spit: a link to the state that fires it"}]'>
+    <figcaption><b>Looks</b> for <code>slag_glob</code>, with its <span class="ui">Trail</span> set to <em>13 · smoke</em>.</figcaption>
+  </figure>
+
+  <figure class="shot" data-src="../assets/shots/missiles-bounce.png" data-alt="A copy of slag_glob called bouncer, with Bounces 2, fired level by a player at a target 16 m away: it lands short, bounces twice, and the page says it does not reach the target and that nothing fires it yet" data-hotspots='[{"x":23.2,"y":50.7,"t":"bouncer","d":"11 m/s, falls, bounces 2 · not used yet"},{"x":42.4,"y":16,"t":"lands at 10.0 m after 1.33 s","d":"Fired level, it falls short of the target"},{"x":58,"y":40,"t":"Two bounces","d":"Each keeps 60% of its speed; the blast bursts where it stops"},{"x":59.7,"y":47.2,"t":"fired by a player","d":"On: level, as a player fires it, with no throw"},{"x":60,"y":51.7,"t":"The checks","d":"It does not reach the target; nothing fires it yet"}]'>
     <figcaption>A copy of <code>slag_glob</code> with <span class="ui">Bounces</span> 2, fired level as a player would: it falls short and bounces twice. A monster would have thrown it onto the target.</figcaption>
   </figure>
   <h3>Firing it</h3>
   <p>In a monster's attack state, add the step <em>fire the missile … at the target</em> (<a href="../reference/monster-vocab.html#missile"><code>missile</code></a>, in the <b>Attack</b> group); a weapon's is <em>launch the missile</em>. Tick <em>aiming ahead of it</em> (<code>lead</code>) and it aims where a moving target will be, from its speed and the missile's. Like bullets, missiles go for the target's middle; a falling one is thrown on the arc that lands there.</p>
-  <p>A fan of shots is the step's <code>count</code> and <code>arc</code>, and where it appears is its <code>offset</code>, how far in front of the body. The sentence has no words for them yet; a monster that has them, such as Cinderfall's Smelter, keeps them as written. To fan shots from the editor, fire a missile that splits at once: a short <span class="ui">Lasts</span>, and <em>split into</em> under <b>When it runs out</b>. The first exercise below does this.</p>
+  <p>A fan of shots is the step's <code>count</code> and <code>arc</code>, and where it appears is its <code>offset</code>, how far in front of the body. They are under the step's <span class="ui">more of it</span>: <code>count</code> 3 and <code>arc</code> 10 fire three shots 10° apart, as Cinderfall's Smelter fires its volleys. A missile that splits at once does the same from the missile's side: a short <span class="ui">Lasts</span>, and <em>split into</em> under <b>When it runs out</b>, so every monster and weapon that fires it fans. The first exercise below builds one.</p>
   <h3>Missiles that make missiles</h3>
   <p>A <em>split into</em> step can go in any of the four panels. In <b>When it hits</b>, it is a cluster that bursts into more; in <b>When it runs out</b>, a split in the air; in <b>On its way</b>, bomblets dropped as it flies. The new missiles launch from where the old one is, and may split again. <span class="ui">At most</span> keeps the total from one shot within a budget, 16 unless you say, because each one is a prop in the world.</p>
 
   <h2>Cooldowns</h2>
   <p>A cooldown is a <b>deadline in a number</b>, not a countdown:</p>
   <ul>
-    <li><em>start cooldown … for … s</em> (<a href="../reference/monster-vocab.html#set_cooldown"><code>set_cooldown</code></a>) writes "now + that long" into a number. Its <code>jitter</code> (no word in the editor yet) adds up to that many extra ticks, so two monsters that started together stop firing in step.</li>
+    <li><em>start cooldown … for … s</em> (<a href="../reference/monster-vocab.html#set_cooldown"><code>set_cooldown</code></a>) writes "now + that long" into a number. Its <code>jitter</code>, under <span class="ui">more of it</span>, adds up to that many extra ticks, so two monsters that started together stop firing in step.</li>
     <li><em>cooldown … is over</em> (<a href="../reference/monster-vocab.html#cooldown_ready"><code>cooldown_ready</code></a>) holds once that moment has passed. A number that was never set is ready at once.</li>
   </ul>
   <p>The number appears on <span class="ui">Advanced</span> under <b>Its numbers</b> as soon as a step or a rule names it: the recipes' <code>ready</code> is one. A monster with two attacks can have two, <code>claw_ready</code> and <code>spit_ready</code>, so a claw does not delay a spit. The preview shows each one: <em>"cooldown ready: 0.4 s left"</em>. A saved game keeps a monster's cooldowns, as the time left.</p>
@@ -232,18 +260,18 @@
       <tr><td><code>snail</code></td><td>the target is within 1.5 m and cooldown ready is over</td><td>0.5 s. At 0.23 s: melee hit for 12 within 1.4 m knocking back 7 m; a sound; start cooldown ready for 0.83 s.</td><td>0.27 s in</td></tr>
     </tbody>
   </table>
-  <figure class="shot" data-src="../assets/shots/enemy-bee-attack.png" data-alt="The bee's attack state picked: its card with four step chips, and its Timeline: a sound at 0 s, leap target at 9 m/s at 0.1 s, a melee hit for 8 within 1.3 m at 0.23 s and start cooldown ready for 1.5 s at 0.23 s" data-hotspots='[{"x":39,"y":70,"t":"The attack","d":"plays attack, stands still and faces the target, for 0.5 s then goes on to chase"},{"x":25,"y":76,"t":"Its steps, as chips","d":"Tap one to open it in the Timeline"},{"x":81,"y":55,"t":"When its time is up","d":"No branches: otherwise → chase"},{"x":81,"y":66,"t":"The Timeline","d":"Each step marked at its time, 0 to 0.5 s"},{"x":81,"y":77,"t":"The steps","d":"In the order the engine runs them, each with its time"},{"x":81,"y":95,"t":"+ add a step at 0 s","d":"While the preview runs in this state, at the moment it is at"}]'>
+  <figure class="shot" data-src="../assets/shots/enemy-bee-attack.png" data-alt="The bee's attack state picked: its card with four step chips, and its Timeline: a sound at 0 s, leap target at 9 m/s at 0.1 s, a melee hit for 8 within 1.3 m at 0.23 s and start cooldown ready for 1.5 s at 0.23 s" data-hotspots='[{"x":39,"y":72.8,"t":"The attack","d":"plays attack, stands still and faces the target, for 0.5 s then goes on to chase"},{"x":25,"y":77,"t":"Its steps, as chips","d":"Tap one to open it in the Timeline"},{"x":81,"y":58.2,"t":"When its time is up","d":"No branches: otherwise → chase"},{"x":81,"y":69.1,"t":"The Timeline","d":"Each step marked at its time, 0 to 0.5 s"},{"x":81,"y":82.2,"t":"The steps","d":"In the order the engine runs them, each with its time"},{"x":81,"y":95.6,"t":"+ add a step at 0 s","d":"While the preview runs in this state, at the moment it is at"}]'>
     <figcaption>The bee's <code>attack</code>: it buzzes, dives at you, then stings.</figcaption>
   </figure>
   <ul>
     <li><b>The bee starts from further away.</b> It enters <code>attack</code> at 2.5 m but only stings within 1.3 m. The leap closes the gap: a shove of 9 m/s towards you, which makes the dive. Step sideways during the buzz and the dive goes past you, so the sting finds nobody.</li>
     <li><b>All three land on a decision.</b> Steps at 0.17 and 0.23 s both run at the decision 16 ticks (0.27 s) in, so the slime and the snail hit at the same moment after they stop; what differs is how long they then stand still and their cooldowns (1 s and 0.83 s).</li>
-    <li><b>None of them has a swing</b>, so none draws a slash streak, and their <b>how it looks in the game</b> changes nothing yet. The exercise below gives the snail one.</li>
+    <li><b>None of them has a swing</b>, so none draws a slash streak, and their <b>how it looks in the game</b> changes nothing yet. The exercise below gives the snail a swing step.</li>
     <li><b>Gem Hollow's one missile, <code>star_shot</code></b>, on the Missiles page, is the player's: its <b>Fired by</b> names the Star Toss weapon, and no monster. Its <b>When it hits</b> has one step, <em>hurt what it hit for 20</em>, so a star kills a slime and takes two to a snail (<a href="../weapons/03-hitscan-missiles-swings.html#gem-hollow">Hitscan, missiles and swings</a>).</li>
   </ul>
 
   <h2 id="cinderfall">In Cinderfall: bullets, globs and shells</h2>
-  <p>Cinderfall, the first-person shooter example that comes with the studio (Home → examples → <span class="ui">📂 Cinderfall</span>; see <a href="../examples/02-cinderfall.html">the tour</a>), has every kind of attack but the swing. Open each monster's attack states:</p>
+  <p>Cinderfall, the first-person shooter example that comes with the studio (Home → examples → <span class="ui">Cinderfall</span>; see <a href="../examples/02-cinderfall.html">the tour</a>), has every kind of attack but the swing. Open each monster's attack states:</p>
   <table>
     <thead><tr><th>Monster, state</th><th>Lasts</th><th>Steps</th><th>Cooldown</th></tr></thead>
     <tbody>
@@ -256,7 +284,7 @@
       <tr><td><code>brute</code>, <code>slam</code></td><td>0.57 s</td><td>0.27 s: a blast of 18 damage within 3.6 m, knocking back 10 and lifting 4</td><td><code>slam</code>, 1.5 s</td></tr>
     </tbody>
   </table>
-  <figure class="shot" data-src="../assets/shots/enemy-steps-order.png" data-alt="The brute's fire state picked: its Timeline lists a sound and a shell at 0 s, a sound and a shell at 0.23 s, then start cooldown ready at 0 s, marked as running at 0.23 s, after the step before it, with a warning and put them in time order" data-hotspots='[{"x":39,"y":76,"t":"fire","d":"Two shells, 0.23 s apart"},{"x":81,"y":51,"t":"The Timeline","d":"0 to 0.6 s"},{"x":81,"y":80,"t":"A step that waits","d":"Listed after a later step, it runs at 0.23 s, after it"},{"x":81,"y":85,"t":"The warning","d":"Steps run in their order here"},{"x":68,"y":89,"t":"put them in time order","d":"Sorts the steps by their times"}]'>
+  <figure class="shot" data-src="../assets/shots/enemy-steps-order.png" data-alt="The brute's fire state picked: its Timeline lists a sound and a shell at 0 s, a sound and a shell at 0.23 s, then start cooldown ready at 0 s, marked as running at 0.23 s, after the step before it, with a warning and put them in time order" data-hotspots='[{"x":38.6,"y":72,"t":"fire","d":"Two shells, 0.23 s apart"},{"x":81.3,"y":58.4,"t":"The Timeline","d":"0 to 0.6 s"},{"x":81,"y":84,"t":"A step that waits","d":"Listed after a later step, it runs at 0.23 s, after it"},{"x":76,"y":87.3,"t":"The warning","d":"Steps run in their order here"},{"x":68.1,"y":91.1,"t":"put them in time order","d":"Sorts the steps by their times"}]'>
     <figcaption>The brute's <code>fire</code>: its cooldown is written last, at 0 s, so it really starts at 0.23 s, and the Timeline says so.</figcaption>
   </figure>
   <ul>
@@ -264,7 +292,7 @@
     <li><b>The hound throws itself.</b> <code>leap</code> is the bee's dive from Gem Hollow made bigger: a leap of 13 m/s with 4 upward, then a melee hit that only lands if you are still within 1.5 m when it comes down.</li>
     <li><b>The slam is a blast with no warning.</b> The blast centred on the brute hurts everything within 3.6 m and throws it back and up. It has no warning step; the 0.27 s of wind-up and the animation are the only sign.</li>
     <li><b>Steps run in their order.</b> The brute, the hound and the Smelter start their cooldowns with a step listed <em>last</em> but timed at 0 s. The engine walks the steps in their order, so such a step waits for the one before it: the Timeline lists it with <em>"(runs at 0.23 s, after the step before it)"</em> and offers <span class="ui">put them in time order</span>. Here it does no harm: the cooldown is long, and it starts as the second shell flies.</li>
-    <li><b>Words the editor keeps.</b> The gunner's pellet count, the cooldowns' jitter, the shells' 1.4 m <code>offset</code>, the hound's upward 4 and the slam's knockback and lift have no words in the sentences yet. They are in the files, and the game uses them.</li>
+    <li><b>Numbers under "more of it".</b> The gunner's pellet count, the cooldowns' jitter, the shells' 1.4 m <code>offset</code>, the hound's upward 4 and the slam's knockback and lift are not in the sentences. Tap a step and open its <span class="ui">more of it</span> to see and change them.</li>
   </ul>
   <p>The two monster missiles, on the Missiles page:</p>
   <table>
@@ -282,32 +310,34 @@
 
   <h2>Exercise: a brute that fans its shells</h2>
   <ol class="steps">
-    <li><p>Open Cinderfall from Home → examples → <span class="ui">📂 Cinderfall</span>, and choose <b>Missiles</b> in the rail. Pick <code>cinder_shell</code>.</p></li>
+    <li><p>Open Cinderfall from Home → examples → <span class="ui">Cinderfall</span>, and choose <b>Missiles</b> in the rail. Pick <code>cinder_shell</code>.</p></li>
+    <li><p>Under <b>Looks</b>, set <span class="ui">Trail</span> to <em>13 · smoke</em>, and press <span class="ui">Fire</span>: smoke follows the shell along its flight, left hanging behind it.</p></li>
     <li><p>Type <code>shell_fan</code> in <em>new missile, named</em>, and press <span class="ui">Copy of cinder_shell</span>. The copy is drawn as the shell is.</p></li>
     <li><p>Set its <span class="ui">Lasts</span> to 0.1. Under <b>When it runs out</b>, press <span class="ui">+ when it runs out</span> and pick <em>split into … spread over … heading …</em> (<b>Missiles</b>). Make it <em>split into 2 cinder_shell spread over 10° heading on</em>.</p></li>
-    <li><p>Choose <b>☠ Monsters</b>, pick <code>brute</code>, and on <span class="ui">Behaviour</span> tap its <code>fire</code> card. In the <b>Timeline</b>, tap the step at 0.23 s that fires a shell, and press <span class="ui">remove step</span>; remove the sound beside it too. Tap the shell at 0 s and change its missile to <code>shell_fan</code>.</p></li>
-    <li><p>Back on <b>Missiles</b>, <code>shell_fan</code> now says <em>used by brute · fire</em>. Check the rail shows no problem count, then press <span class="ui">▶ Play</span> and find a brute (the old town has one). It now fires two shells at once, 10° apart, and the gap between them widens with distance.</p></li>
+    <li><p>Choose <b>Monsters</b>, pick <code>brute</code>, and on <span class="ui">Behaviour</span> tap its <code>fire</code> card. In the <b>Timeline</b>, tap the step at 0.23 s that fires a shell, and press <span class="ui">remove step</span>; remove the sound beside it too. Tap the shell at 0 s and change its missile to <code>shell_fan</code>.</p></li>
+    <li><p>Back on <b>Missiles</b>, <code>shell_fan</code> now says <em>used by brute · fire</em>. Check the rail shows no problem count, then press <span class="ui">Play</span> and find a brute (the old town has one). It now fires two shells at once, 10° apart, each with its smoke, and the gap between them widens with distance.</p></li>
   </ol>
 
   <h2>Exercise: a snail that swipes</h2>
   <ol class="steps">
-    <li><p>Open Gem Hollow, choose <b>☠ Monsters</b> and pick <code>snail</code>. On <span class="ui">Advanced</span>, under <b>Its own swing</b>, press <span class="ui">+ swing</span>. Set <code>damage</code> 12, <code>reach</code> 1.2, <code>half_arc</code> 1/6, <code>sweep_from</code> 1/6, <code>sweep_to</code> −1/6 and <code>ticks</code> 12. Watch the preview sweep.</p></li>
-    <li><p>On <span class="ui">Behaviour</span>, tap the <code>attack</code> card. In its <b>Timeline</b>, tap the melee hit and press <span class="ui">remove step</span>. Press <span class="ui">+ add a step at 0 s</span>, pick <em>swing its own swing</em> (<b>Attack</b>), and set its <span class="ui">at</span> to 0.13.</p></li>
-    <li><p>Back on <span class="ui">Advanced</span>, under <b>how it looks in the game</b>, set <span class="ui">color</span> to a slime green and drag <span class="ui">width</span> to 0.7. Both now read <b>(own)</b>.</p></li>
-    <li><p>Check the rail shows no problem count and press <span class="ui">▶ Play</span>. Go to the third zone and let a snail come to you. You now see a green streak sweep from its left to its right; step to its left just after the streak starts, and it misses you.</p></li>
+    <li><p>Open Gem Hollow, choose <b>Monsters</b> and pick <code>snail</code>. On <span class="ui">Behaviour</span>, tap the <code>attack</code> card. In its <b>Timeline</b>, tap the melee hit and press <span class="ui">remove step</span>.</p></li>
+    <li><p>Press <span class="ui">+ add a step at 0 s</span> and pick the swing in the <b>Attack</b> group. Set its <span class="ui">at</span> to 0.13, and make its sentence <em>swing for 12 damage, 1.2 m long, from 60° to -60° over 0.2 s</em>.</p></li>
+    <li><p>Open <span class="ui">more of it</span> and set <code>knockback</code> to 7, as its bump had. Run the preview and press <span class="ui">nearer</span> until the snail attacks: its line says <em>"swings for 12"</em>.</p></li>
+    <li><p>On <span class="ui">Advanced</span>, under <b>Its default swing</b>, the snail still has no default swing, and needs none: the step carries every number. Under <b>how it looks in the game</b>, set <span class="ui">color</span> to a slime green and drag <span class="ui">width</span> to 0.7. Both now read <b>(own)</b>.</p></li>
+    <li><p>Check the rail shows no problem count and press <span class="ui">Play</span>. Go to the third zone and let a snail come to you. You now see a green streak sweep from its left to its right; step to its left just after the streak starts, and it misses you.</p></li>
   </ol>
 
   <h2>Exercise: claws you can dodge, and a fireball</h2>
   <ol class="steps">
-    <li><p>Pick <code>grunt</code>. On <span class="ui">Advanced</span>, under <b>Its own swing</b>, press <span class="ui">+ swing</span>. Set <code>damage</code> 12, <code>reach</code> 1.2, <code>half_arc</code> 1/6, <code>sweep_from</code> 1/6, <code>sweep_to</code> −1/6, and <code>ticks</code> 10. Watch the preview sweep from its left to its right.</p></li>
-    <li><p>On <span class="ui">Behaviour</span>, open the <code>attack</code> state. Set <span class="ui">Lasts</span> to 0.67. Remove the melee hit; add <em>swing its own swing</em> at 0.27 s. Set the <em>start cooldown</em> step's <span class="ui">at</span> to 0.27 too.</p></li>
+    <li><p>Pick <code>grunt</code>. On <span class="ui">Behaviour</span>, open the <code>attack</code> state. Set <span class="ui">Lasts</span> to 0.67. Remove the melee hit, and add a swing step at 0.27 s: <em>swing for 12 damage, 1.2 m long, from 60° to -60° over 0.17 s</em>. Set the <em>start cooldown</em> step's <span class="ui">at</span> to 0.27 too.</p></li>
+    <li><p>Add a second swing step at 0.4 s, a backhand: <em>swing for 8 damage, 1.2 m long, from -60° to 60° over 0.17 s</em>. It comes while the first is still sweeping, so it replaces it: the claw stops, and the backhand sweeps back the other way, and can hit the player the first one hit.</p></li>
     <li><p>Open <code>chase</code> and its rule to <code>attack</code>. Change <em>the target is within</em> to 1.8: the monster should start winding up a little outside its reach, as you walk in.</p></li>
     <li><p>Choose <b>Missiles</b>. Type <code>spit</code> and press <span class="ui">New</span>. Set <span class="ui">Speed</span> 7 and <span class="ui">Launch height</span> 0.6; under <b>When it hits</b>, make it <em>hurt what it hit for 8</em>; it is drawn as the glowing dot the studio made for it, the prop <code>spit</code>; if you made a prop of your own for it, pick that under <b>Looks</b> → <span class="ui">Drawn as</span>. Fire it at 8 m and read the checks.</p></li>
     <li><p>Back on the grunt, add a state <code>spit</code>: plays attack, stands still, faces the target, <span class="ui">Lasts</span> 0.53, then goes to <code>chase</code>. Its steps: <em>turn to face the target</em> at 0 s; <em>fire the missile spit at the target</em> at 0.27 s; <em>start cooldown spit_ready for 2.5 s</em> at 0.27 s.</p></li>
     <li><p>On <code>chase</code>, press <span class="ui">+ another rule</span>: → <code>spit</code> when <em>the target is within 12 m</em>, <em>it can see the target</em>, <em>the target is within 12° of where it faces</em> and <em>cooldown spit_ready is over</em>. Keep it <b>below</b> the rule to <code>attack</code>. Run the preview, press <span class="ui">further</span> a few times, and watch it choose <code>spit</code>.</p></li>
-    <li><p>Check the rail shows no problem count, then press <span class="ui">▶ Play</span>. From a distance, sidestep the spit. Up close, let it wind up, then step sideways as the claw starts. Try stepping to its left, then to its right, and find which side is safe.</p></li>
+    <li><p>Check the rail shows no problem count, then press <span class="ui">Play</span>. From a distance, sidestep the spit. Up close, let it wind up, then step sideways as the claw starts. Try stepping to its left, then to its right, and find which side is safe from the claw, and then from the backhand.</p></li>
   </ol>
-  <div class="callout tip"><p>The safe side is the one the sweep <em>starts</em> on, once the wedge has left it. Positive angles are to the monster's left. With <code>sweep_from</code> 1/6 (its left) and <code>sweep_to</code> −1/6 (its right), step to its left just after the claw starts. Stepping right runs into the claw.</p></div>
+  <div class="callout tip"><p>The safe side is the one the sweep <em>starts</em> on, once the wedge has left it. Positive angles are to the monster's left. With the claw going from 60° (its left) to −60° (its right), step to its left just after the claw starts. Stepping right runs into the claw. The backhand starts on the right, so it comes back for whoever stepped left.</p></div>
 
   <div class="quiz" data-answer="2">
     <p class="q">A missile's <b>When it hits</b> has a melee hit (from <b>More</b>) with a range of 1 m. It hits the player square on, and does nothing. Why?</p>
@@ -328,13 +358,22 @@
     <p class="why">Melee measures height too. Your feet at 3 m are above 2.5 m, so it misses.</p>
   </div>
   <div class="quiz" data-answer="1">
-    <p class="q">You want a horn charge: a stab straight ahead that does not sweep. Which swing does that?</p>
+    <p class="q">You want a horn charge: a stab straight ahead that does not sweep. Which swing step does that?</p>
     <ul>
-      <li><code>half_arc</code> 0.25, <code>sweep_from</code> −0.25, <code>sweep_to</code> 0.25</li>
-      <li><code>sweep_from</code> and <code>sweep_to</code> both 0, with a narrow <code>half_arc</code></li>
-      <li><code>ticks</code> 0</li>
+      <li>From -90° to 90°, with a <code>half_arc</code> of 0.25</li>
+      <li>From 0° to 0°, with a narrow <code>half_arc</code> under <span class="ui">more of it</span></li>
+      <li>One over 0 s</li>
     </ul>
-    <p class="why">Equal sweep values make a thrust that does not rotate. A narrow arc makes it a line you can step out of. <code>ticks</code> 0 is an instant hit, not a thrust.</p>
+    <p class="why">Equal angles make a thrust that does not rotate. A narrow arc makes it a line you can step out of. A swing over no time is an instant hit, not a thrust.</p>
+  </div>
+  <div class="quiz" data-answer="1">
+    <p class="q">A monster's attack has two swing steps, at 0.13 s and 0.4 s, each over 0.2 s. The first is still sweeping when the second comes. What happens?</p>
+    <ul>
+      <li>The second is dropped: a monster swings one swing at a time</li>
+      <li>The first stops where it is, and the second starts fresh, from its own angle, and can hit you again</li>
+      <li>Both sweep at once, and a hit from either counts once</li>
+    </ul>
+    <p class="why">A newer swing replaces one still sweeping, with a fresh list of who it has hit: two blows. Only a swing during the last one's cooldown does not happen.</p>
   </div>
   <div class="quiz" data-answer="1">
     <p class="q">You set Gem Hollow's <code>slime</code> slash colour to red under <b>how it looks in the game</b> and play. No red streak appears when it bumps you. Why?</p>
@@ -343,7 +382,7 @@
       <li>The slime attacks with a melee hit; only a swing, the swept collider, draws a streak</li>
       <li>The colour only applies to weapons</li>
     </ul>
-    <p class="why">The streak follows the swing's sweep, debug or not. A melee hit has no sweep to draw. Give the slime a swing and a <em>swing its own swing</em> step, and the red shows.</p>
+    <p class="why">The streak follows the swing's sweep, debug or not. A melee hit has no sweep to draw. Give the slime a swing step in place of its melee hit, and the red shows.</p>
   </div>
   <div class="quiz" data-answer="2">
     <p class="q">A spitter throws a glob that <span class="ui">Falls</span> 9 m/s² at you 8 m away. You step back to 12 m before it fires. Where does the glob land?</p>

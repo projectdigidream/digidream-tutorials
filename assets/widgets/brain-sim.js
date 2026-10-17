@@ -103,7 +103,9 @@
         if (act === 'face') m.aim = Math.atan2(player.y - m.y, player.x - m.x);
         if (act === 'melee') {
           m.swingAt = tick;
-          if (dist() < P.reach) { playerHp = Math.max(0, playerHp - 8); flash = 20; say('melee damage 8 range ' + P.reach + ': HIT (you: ' + playerHp + ')'); }
+          // a melee hit needs a clear reach: a wall between the two stops it (engine 0.2.2)
+          if (dist() < P.reach && visible()) { playerHp = Math.max(0, playerHp - 8); flash = 20; say('melee damage 8 range ' + P.reach + ': HIT (you: ' + playerHp + ')'); }
+          else if (dist() < P.reach) say('melee damage 8 range ' + P.reach + ': missed, the wall was in the way');
           else say('melee damage 8 range ' + P.reach + ': missed, you were out of range');
         }
         if (act === 'set_cooldown') m.ready = tick + 60;
@@ -185,7 +187,7 @@
     playBtn.addEventListener('click', () => { running = !running; playBtn.textContent = running ? '⏸ pause' : '▶ play'; });
     const resetBtn = h('button', { class: 'wbtn' }, '↺ reset');
     resetBtn.addEventListener('click', () => { reset(); });
-    const hitBtn = h('button', { class: 'wbtn primary' }, '💥 hit it (10)');
+    const hitBtn = h('button', { class: 'wbtn primary' }, 'hit it (10)');
     hitBtn.addEventListener('click', hit);
     const forget = h('button', { class: 'wbtn' }, 'target_none');
     forget.title = 'Forget the target, as the target_none action does';
