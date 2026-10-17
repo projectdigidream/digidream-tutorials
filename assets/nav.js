@@ -20,14 +20,14 @@ window.DNP_NAV = [
     ],
   },
   {
-    id: 'examples', title: 'Examples', icon: '📂', blurb: 'Two finished games to open and take apart: Gem Hollow, a platformer, and Cinderfall, a shooter.',
+    id: 'examples', title: 'Examples', icon: '◈', blurb: 'Two finished games to open and take apart: Gem Hollow, a platformer, and Cinderfall, a shooter.',
     pages: [
       { file: 'examples/01-gem-hollow.html', title: 'Gem Hollow, a tour', kw: 'example gem hollow platformer title menu world zones levers gates keys gems slimes bees snails cutscenes' },
       { file: 'examples/02-cinderfall.html', title: 'Cinderfall, a tour', kw: 'example cinderfall shooter fps districts hub metamap one world npc talk boss arms swap persist freedoom' },
     ],
   },
   {
-    id: 'sprites', title: 'Sprites · ThreeSprite', icon: '🎞', blurb: 'Rigged, multi-angle pixel sprites that the studio bakes into atlases.',
+    id: 'sprites', title: 'Sprites · ThreeSprite', icon: '◐', blurb: 'Rigged, multi-angle pixel sprites that the studio bakes into atlases.',
     pages: [
       { file: 'sprites/01-first-sprite.html', title: 'Your first sprite', kw: 'new sprite views mirror canvas size sprite id' },
       { file: 'sprites/02-drawing.html', title: 'Drawing', kw: 'pencil eraser dither fill pick select move pan symmetry dim parts grid' },
@@ -38,7 +38,7 @@ window.DNP_NAV = [
     ],
   },
   {
-    id: 'textures', title: 'Textures · qPainter', icon: '🧱', blurb: 'Seamless, palette-locked pixel textures, animated walls and skies.',
+    id: 'textures', title: 'Textures · qPainter', icon: '▦', blurb: 'Seamless, palette-locked pixel textures, animated walls and skies.',
     pages: [
       { file: 'textures/01-first-texture.html', title: 'Your first texture', kw: 'new texture size tools pencil soft brush ramp noise' },
       { file: 'textures/02-seamless.html', title: 'Seamless tiling', kw: 'wrap tiles offset symmetry mirror radial seam' },
@@ -57,7 +57,7 @@ window.DNP_NAV = [
     ],
   },
   {
-    id: 'sounds', title: 'Sounds · DigidreamSound', icon: '🔊', blurb: 'Game sound effects from recipes, layers and struck bodies.',
+    id: 'sounds', title: 'Sounds · DigidreamSound', icon: '∿', blurb: 'Game sound effects from recipes, layers and struck bodies.',
     pages: [
       { file: 'sounds/01-first-sound.html', title: 'Your first sound', kw: 'start from recipe gunshot randomize vary new sound library' },
       { file: 'sounds/02-shape-and-layers.html', title: 'Shape and layers', kw: 'volume pitch length brightness layer noise tone metal rings envelope' },
@@ -66,7 +66,7 @@ window.DNP_NAV = [
     ],
   },
   {
-    id: 'enemies', title: 'Enemies', icon: '☠', blurb: 'Monsters from body to brain: states, senses, attacks, missiles, pain, death and drops.',
+    id: 'enemies', title: 'Enemies', icon: '♞', blurb: 'Monsters from body to brain: states, senses, attacks, missiles, pain, death and drops.',
     pages: [
       { file: 'enemies/01-first-monster.html', title: 'Your first monster', kw: 'monster workshop body sprite height speed radius place dormant spawn' },
       { file: 'enemies/02-the-brain.html', title: 'The brain: states and transitions', kw: 'brain state transition condition see target chase wander idle think ticks' },
@@ -76,7 +76,7 @@ window.DNP_NAV = [
     ],
   },
   {
-    id: 'weapons', title: 'Weapons', icon: '🔫', blurb: 'Guns and blades: phases, hitscan, missiles, swings, ammo, pickups and the arsenal.',
+    id: 'weapons', title: 'Weapons', icon: '⌖', blurb: 'Guns and blades: phases, hitscan, missiles, swings, ammo, pickups and the arsenal.',
     pages: [
       { file: 'weapons/01-first-weapon.html', title: 'Your first weapon', kw: 'weapon editor recipe preview overview behaviour looks advanced arsenal kit slot select view model first person' },
       { file: 'weapons/02-phases.html', title: 'The phase machine', kw: 'phase state rule condition step timeline graph ticks ready fire refire cooldown set_cooldown cooldown_ready negate always held released' },
@@ -98,7 +98,7 @@ window.DNP_NAV = [
     ],
   },
   {
-    id: 'advanced', title: 'Advanced · Lua scripting', icon: '⚙', blurb: 'Script the engine in Lua from inside the studio: events, the world, panels, saving, and when to use Lua over a graph.',
+    id: 'advanced', title: 'Advanced · Lua scripting', icon: '☾', blurb: 'Script the engine in Lua from inside the studio: events, the world, panels, saving, and when to use Lua over a graph.',
     pages: [
       { file: 'advanced/01-lua-in-the-studio.html', title: 'Lua in the studio', kw: 'lua script scripts page extra lua code editor play log first script luajit' },
       { file: 'advanced/02-events-and-time.html', title: 'Events and time', kw: 'hook on_tick on_prop_use on_cross on_touch on_attack timer tick 60 deferred random determinism fx' },
@@ -110,7 +110,7 @@ window.DNP_NAV = [
     ],
   },
   {
-    id: 'luaref', title: 'Lua reference', icon: '📖', blurb: 'Every function, method, hook and table a script can reach, checked against the engine.',
+    id: 'luaref', title: 'Lua reference', icon: '§', blurb: 'Every function, method, hook and table a script can reach, checked against the engine.',
     pages: [
       { file: 'luaref/01-environment.html', title: 'The Lua environment', kw: 'luajit lua 5.1 standard library string table math sandbox trust budget print error load order globals' },
       { file: 'luaref/02-every-function.html', title: 'Every function', kw: 'dnp entity prop sector hook fx vec3 mobs triggers graphs weapons reference api' },
