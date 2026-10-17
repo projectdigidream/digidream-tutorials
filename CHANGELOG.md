@@ -49,6 +49,10 @@ anything not released yet is under **Unreleased**.
   - a recipe's weapon gets a placeholder gun;
   - the Play log counts Lua errors;
   - Android's Back button and keyboard work as expected.
+- **Lua reference, engine 0.2.2**:
+  - `dnp.can_reach` (the clear reach a melee blow needs) and `e:swing()`;
+  - trails that follow a body: `e:set_trail` and `p:set_trail`, and `trail()` to read them;
+  - `mobs.hurt` takes the attacking entity itself.
 - **Advanced · Lua scripting**: seven lessons, and a playground that runs your
   Lua against a toy level answering to the engine's names.
 - **Lua reference**: the environment, every function, method and hook (with

@@ -1435,3 +1435,54 @@ DNP_LUA_API.groups.push({
     }
   ]
 });
+
+// ---- Engine 0.2.2: trails, swings, reach ----
+(function () {
+  var g = function (id) { return DNP_LUA_API.groups.filter(function (x) { return x.id === id; })[0]; };
+  g('dnp-geometry').entries.push({
+    id: 'dnp.can_reach', sig: 'dnp.can_reach(a, b) → boolean', where: 'level',
+    doc: 'Is there no wall or shut door between `a` and `b`, for a blow struck at arm\'s length? A monster\'s melee asks this, so it no longer hits through a wall or a door at whoever stands behind it.\n\nA ledge does not stop it (the blow\'s own height test judges that). Unlike `dnp.can_see`, it measures along the floor plan at `a`\'s middle, not from its eyes.',
+    args: [
+      { name: 'a', type: 'entity', doc: 'who strikes' },
+      { name: 'b', type: 'entity', doc: 'who is struck' }
+    ],
+    returns: 'boolean (false when either is not a live entity)',
+    notes: ['Entities only, not props: a blow is struck by a body and at a body.'],
+    example: 'if dnp.length(target:pos() - e:pos()) < 2 and dnp.can_reach(e, target) then\n  mobs.hurt(target, 10, e)\nend',
+    see: ['dnp.can_see', 'mobs.hurt']
+  });
+  var trailDoc = 'A particle kind that follows this body for as long as it is here: a missile\'s smoke, a fireball\'s flame, a monster\'s aura. The kind is one of the module\'s particles (the studio\'s Particles page, or `vfx` lines in props.txt); 0 is none, and a number no particle describes draws nothing.\n\nIt costs nothing per tick: the players are told when it changes, and their devices keep it going. It stops when you set it back to 0 or the body goes.';
+  g('entity').entries.push({
+    id: 'entity.set_trail', sig: 'e:set_trail(kind)', where: 'level', doc: trailDoc,
+    args: [{ name: 'kind', type: 'integer', doc: 'a particle kind, 0 to 65535; 0 turns it off. Anything else is an error' }],
+    returns: 'nothing',
+    notes: ['Not saved: set it again when the level loads.'],
+    example: '-- an aura on a monster while it is angry\nboss:set_trail(22)\n-- later\nboss:set_trail(0)',
+    see: ['entity.trail', 'prop.set_trail', 'dnp.vfx']
+  }, {
+    id: 'entity.trail', sig: 'e:trail() → integer | nil', where: 'level',
+    doc: 'The particle kind following this body, 0 for none. `nil` for a handle that is gone.',
+    returns: 'integer, or nil',
+    see: ['entity.set_trail']
+  }, {
+    id: 'entity.swing', sig: 'e:swing()', where: 'level',
+    doc: 'Start a swing now, in the shape the body\'s attack settings hold. It is what a monster\'s swing step does. Unlike `e:press`, it works on a player too, and it replaces a swing still sweeping; inside the last swing\'s cooldown it does nothing.',
+    returns: 'nothing',
+    notes: ['A monster\'s swing step no longer presses the attack button: it calls this.'],
+    example: 'function on_prop_use(e, p)\n  if p:name() == "practice_post" then e:swing() end\nend',
+    see: ['entity.press', 'hook.on_attack']
+  });
+  g('prop').entries.push({
+    id: 'prop.set_trail', sig: 'p:set_trail(kind)', where: 'level', doc: trailDoc,
+    args: [{ name: 'kind', type: 'integer', doc: 'a particle kind, 0 to 65535; 0 turns it off' }],
+    returns: 'nothing',
+    notes: ['A missile with a Trail in the studio gets this for you, for its whole flight.'],
+    example: 'local orb = dnp.spawn_prop("orb", vec3.new(4, 2, 1))\nif orb then orb:set_trail(20) end',
+    see: ['prop.trail', 'entity.set_trail']
+  }, {
+    id: 'prop.trail', sig: 'p:trail() → integer | nil', where: 'level',
+    doc: 'The particle kind following this prop, 0 for none. `nil` for a handle that is gone.',
+    returns: 'integer, or nil',
+    see: ['prop.set_trail']
+  });
+})();

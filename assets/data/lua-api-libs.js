@@ -40,11 +40,11 @@
         args: [
           { name: 'target', type: 'entity', doc: 'who is hit; a prop or an invalid handle does nothing' },
           { name: 'amount', type: 'number', doc: 'health to take off' },
-          { name: 'by', type: 'attacker record', optional: true, doc: 'who did it. Not an entity: pass `nil`, or `mobs.synthetic_owner(e, e:facing())` to name entity `e`' },
+          { name: 'by', type: 'entity or attacker record', optional: true, doc: 'who did it: the attacking entity (on_attack\'s `attacker` is one), a record such as `mobs.synthetic_owner(e, e:facing())` gives, or `nil` for nobody. An entity that is gone counts as nobody' },
         ],
         returns: 'nothing',
         notes: ['A monster that belongs to a neighbouring level of the same world is hurt there, by that level: the hit is handed over for you.'],
-        example: 'function on_attack(attacker, target)\n  if mobs ~= nil and target ~= nil then\n    mobs.hurt(target, 10, mobs.synthetic_owner(attacker, attacker:facing()))\n  end\nend',
+        example: 'function on_attack(attacker, target)\n  if mobs ~= nil and target ~= nil then\n    mobs.hurt(target, 10, attacker)\n  end\nend',
         see: ['mobs.health', 'mobs.on_player_hurt', 'mobs.on_death', 'hook.on_attack'],
       },
       {
@@ -153,7 +153,7 @@
       },
       {
         id: 'mobs.synthetic_owner', sig: 'mobs.synthetic_owner(e, angle) → record', where: 'level',
-        doc: 'An attacker record that names entity `e`, for the `by` argument of `mobs.hurt`. With it, the graphs\' `when_hurt` and `when_dies` know who did it, and a monster that retaliates turns on `e`. `angle` is the heading the attack came along (usually `e:facing()`).',
+        doc: 'An attacker record that names entity `e`, for the `by` argument of `mobs.hurt`. With it, the graphs\' `when_hurt` and `when_dies` know who did it, and a monster that retaliates turns on `e`. `angle` is the heading the attack came along (usually `e:facing()`).\n\nYou rarely need it: `mobs.hurt` takes the entity itself and makes this record for you. Make one when the heading should be something other than the way `e` faces.',
         args: [{ name: 'e', type: 'entity' }, { name: 'angle', type: 'number', doc: 'brad' }], returns: 'record',
         see: ['mobs.hurt'],
       },
