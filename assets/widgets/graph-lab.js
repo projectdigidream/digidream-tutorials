@@ -174,9 +174,9 @@
     pic.setAttribute('viewBox', '0 0 300 130');
     pic.setAttribute('style', 'width:300px;max-width:100%;height:auto;background:var(--panel);border:1px solid var(--line);border-radius:8px');
     const varsBox = h('div', { class: 'wout', style: 'min-width:150px;line-height:1.7' });
-    const btnDie = h('button', { class: 'wbtn', type: 'button', onclick: () => evDies() }, '☠ a monster dies');
-    const btnUse = h('button', { class: 'wbtn', type: 'button', onclick: () => evUse() }, '✋ player presses use on the switch');
-    const btnEnter = h('button', { class: 'wbtn', type: 'button', onclick: () => evEnter() }, '🚶 player enters sector 3');
+    const btnDie = h('button', { class: 'wbtn', type: 'button', onclick: () => evDies() }, 'a monster dies');
+    const btnUse = h('button', { class: 'wbtn', type: 'button', onclick: () => evUse() }, 'player presses use on the switch');
+    const btnEnter = h('button', { class: 'wbtn', type: 'button', onclick: () => evEnter() }, 'player enters sector 3');
     const btnReset = h('button', { class: 'wbtn', type: 'button', onclick: () => resetWorld(true) }, 'reset the world');
     const worldPanel = h('div', { style: 'display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start;margin-top:10px' },
       pic, h('div', {}, h('div', { class: 'wlabel', style: 'margin-bottom:4px' }, 'variables'), varsBox));

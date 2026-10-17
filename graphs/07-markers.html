@@ -61,13 +61,13 @@
   <p>A marker that names a template the module does not have is not drawn. The studio catches it first: Home lists it under <span class="ui">to fix (N)</span>, as in <em>slime: its bar over it is the marker "boss", which the module's screens do not have, so it is never drawn. Make it on Screens → markers, or pick another.</em></p>
 
   <h2 id="screens">Your own templates: Screens → markers</h2>
-  <figure class="shot" data-src="../assets/shots/studio-markers-screens.png" data-alt="Screens on its markers tab: Gem Hollow's slime in a close-up with a health bar over its head; on the right the list of markers (health, replaced for the module; label, marker and debug_health, built in), + new marker, and health's name, width and height" data-hotspots='[{"x":79.3,"y":10.4,"t":"markers","d":"The fourth tab of Screens."},{"x":42.6,"y":60.6,"t":"The close-up","d":"A monster on a floor, with the marker over its head, drawn by the game&#39;s own marker code at the size the chosen device gives it."},{"x":84.4,"y":34,"t":"health","d":"Changed for this module: replaces the built-in."},{"x":84.4,"y":47.5,"t":"Built in","d":"label, marker and debug_health, as the game has them."},{"x":84.4,"y":62.3,"t":"+ new marker","d":"A template of your own, by name."},{"x":84.4,"y":81,"t":"Its box","d":"name, width and height, in UI units."}]'>
-    <figcaption><b>▣ Screens</b> → <span class="ui">markers</span>, with Gem Hollow's <code>health</code> changed for the module.</figcaption>
+  <figure class="shot" data-src="../assets/shots/studio-markers-screens.png" data-alt="Screens on its markers tab: Gem Hollow's slime in a close-up with a health bar over its head; on the right the list of markers (health, replaced for the module; label, marker and debug_health, built in), + new marker, and health's name, width and height" data-hotspots='[{"x":77.4,"y":10.6,"t":"markers","d":"The fourth tab of Screens."},{"x":42.6,"y":60.6,"t":"The close-up","d":"A monster on a floor, with the marker over its head, drawn by the game&#39;s own marker code at the size the chosen device gives it."},{"x":84.4,"y":34,"t":"health","d":"Changed for this module: replaces the built-in."},{"x":84.4,"y":47.5,"t":"Built in","d":"label, marker and debug_health, as the game has them."},{"x":84.4,"y":62.3,"t":"+ new marker","d":"A template of your own, by name."},{"x":84.4,"y":81,"t":"Its box","d":"name, width and height, in UI units."}]'>
+    <figcaption><b>Screens</b> → <span class="ui">markers</span>, with Gem Hollow's <code>health</code> changed for the module.</figcaption>
   </figure>
-  <p>In <b>▣ Screens</b>, the <span class="ui">markers</span> tab designs what markers look like. Its frame is a close-up: a monster standing on a floor with the marker over its head, drawn by the game's own marker code, at the size the device chosen in the bar gives it.</p>
+  <p>In <b>Screens</b>, the <span class="ui">markers</span> tab designs what markers look like. Its frame is a close-up: a monster standing on a floor with the marker over its head, drawn by the game's own marker code, at the size the device chosen in the bar gives it.</p>
   <ul>
     <li><b>The list</b> shows every marker the module has. Each is <em>built in</em>, <em>replaces the built-in</em> or <em>the module's</em>, and says how often it is used (<em>used 2×</em>).</li>
-    <li><b>A built-in one</b> can't be changed where it is. <span class="ui">✎ change it for this module</span> makes the module's own copy under the same name, so everything that hangs it gets the new look. <span class="ui">⧉ make a new one from it</span> copies it under a new name. <span class="ui">back to the built-in</span> undoes a change.</li>
+    <li><b>A built-in one</b> can't be changed where it is. <span class="ui">change it for this module</span> makes the module's own copy under the same name, so everything that hangs it gets the new look. <span class="ui">make a new one from it</span> copies it under a new name. <span class="ui">back to the built-in</span> undoes a change.</li>
     <li><span class="ui">+ new marker</span> asks for a name (<code>a-z</code>, <code>0-9</code> and <code>_</code>) and starts with a line of text, <code>{text}</code>.</li>
     <li><b>Its box</b>: <span class="ui">name</span>, <span class="ui">width</span> and <span class="ui">height</span>, in UI units like the HUD's. The box's bottom-centre sits on the point it hangs from. Renaming it renames it everywhere it is hung: in monsters, graphs and signs. Your own Lua scripts are yours to change.</li>
     <li><b>Its elements</b> are the HUD's: <span class="ui">+ element…</span> adds a text, a number, a bar, an image or a group. Tap one in the close-up or the list to edit it, and drag it inside the box to move it. A text shows a value with <code>{text}</code> or <code>{value}</code>; a bar is bound to <code>value</code> with <code>max</code> as its max.</li>
@@ -75,11 +75,11 @@
     <li><b>used by</b> lists the monsters, graphs, signs and scripts that hang it.</li>
     <li><span class="ui">delete marker</span> takes one of your own away. If something still hangs it, the studio asks first.</li>
   </ul>
-  <p>The tabs <span class="ui">🌐 every map</span> and <span class="ui">🗺 only <i>map</i></span> work as they do for the HUD: a map with screens of its own has its own markers, and a sign or graph on that map is checked against them.</p>
+  <p>The tabs <span class="ui">every map</span> and <span class="ui">only <i>map</i></span> work as they do for the HUD: a map with screens of its own has its own markers, and a sign or graph on that map is checked against them.</p>
 
   <h2 id="signs">Signs on a map</h2>
-  <p>A sign is a marker hung at a place, there from the moment the level loads. In the map editor, choose <span class="ui">✦ Place</span>. The <b>Place</b> palette has a sign for every marker but <code>health</code> and <code>debug_health</code>, which show numbers rather than text: <span class="ui">sign: label</span>, <span class="ui">sign: marker</span> and your own. Tap one, then tap the floor. On the map, the sign shows its text.</p>
-  <figure class="shot" data-src="../assets/shots/studio-markers-sign.png" data-alt="Gem Hollow's world map with a sign reading To the Cliffs placed in the corridor between the Isles and the Cliffs, and its form: marker label, text, at height, raised by 1.5, seen within, seen through walls, only with the debug overlay, the look of label…, delete" data-hotspots='[{"x":49,"y":50,"t":"The sign","d":"On the map it shows its text."},{"x":86.3,"y":10.4,"t":"marker","d":"Its look: label, marker, or one of your own."},{"x":86.3,"y":15.9,"t":"text","d":"What it says."},{"x":86.3,"y":26.9,"t":"raised by","d":"How far above its point, in units."},{"x":83.6,"y":60.3,"t":"the look of label…","d":"Opens Screens on its marker."}]'>
+  <p>A sign is a marker hung at a place, there from the moment the level loads. In the map editor, choose <span class="ui">Place</span>. The <b>Place</b> palette has a sign for every marker but <code>health</code> and <code>debug_health</code>, which show numbers rather than text: <span class="ui">sign: label</span>, <span class="ui">sign: marker</span> and your own. Tap one, then tap the floor. On the map, the sign shows its text.</p>
+  <figure class="shot" data-src="../assets/shots/studio-markers-sign.png" data-alt="Gem Hollow's world map with a sign reading To the Cliffs placed in the corridor between the Isles and the Cliffs, and its form: marker label, text, at height, raised by 1.5, seen within, seen through walls, only with the debug overlay, the look of label…, delete" data-hotspots='[{"x":58.2,"y":49.6,"t":"The sign","d":"On the map it shows its text."},{"x":86.3,"y":10.4,"t":"marker","d":"Its look: label, marker, or one of your own."},{"x":86.3,"y":15.9,"t":"text","d":"What it says."},{"x":86.3,"y":26.9,"t":"raised by","d":"How far above its point, in units."},{"x":83.6,"y":60.3,"t":"the look of label…","d":"Opens Screens on its marker."}]'>
     <figcaption>A <code>label</code> sign on Gem Hollow's <code>world</code> map, and its form.</figcaption>
   </figure>
   <table>
@@ -92,7 +92,7 @@
       <tr><td><span class="ui">seen within (0: anywhere)</span></td><td>Its range, in units.</td></tr>
       <tr><td><span class="ui">seen through walls</span></td><td>Drawn even with a wall in the way.</td></tr>
       <tr><td><span class="ui">only with the debug overlay</span></td><td>A sign for testing: drawn only while the overlay shows.</td></tr>
-      <tr><td><span class="ui">✎ the look of <i>label</i>…</span></td><td>Opens <b>Screens → markers</b> on its marker.</td></tr>
+      <tr><td><span class="ui">the look of <i>label</i>…</span></td><td>Opens <b>Screens → markers</b> on its marker.</td></tr>
     </tbody>
   </table>
   <p>The level's script hangs every sign as the level loads, and again when a saved game loads. A sign needs no graph, and everyone sees it. Use a graph when the marker should appear, change or go during play.</p>
@@ -108,7 +108,7 @@
     </tbody>
   </table>
   <h3>The mark node's fields</h3>
-  <figure class="shot" data-src="../assets/shots/studio-markers-graph.png" data-alt="A graph called signs on Gem Hollow's world map: when level starts linked to a mark node with marker isles, template marker, at place, x 12, y 4, z 0, text The Isles and height 2; the same fields in the side panel" data-hotspots='[{"x":30,"y":21,"t":"when level starts","d":"Runs once as the level starts, and again when a saved game loads."},{"x":53.4,"y":32.8,"t":"template","d":"Offers the module&#39;s markers: the built-in four and your own."},{"x":52.2,"y":39.9,"t":"at?","d":"entity (the default) or place."},{"x":52.7,"y":43.5,"t":"📍 where","d":"pick a point on the map fills x, y and z."},{"x":42,"y":47,"t":"Data pins","d":"x, y and z can be linked instead of typed; so can value and max."},{"x":84.4,"y":50,"t":"The side panel","d":"The picked node&#39;s fields, larger."}]'>
+  <figure class="shot" data-src="../assets/shots/studio-markers-graph.png" data-alt="A graph called signs on Gem Hollow's world map: when level starts linked to a mark node with marker isles, template marker, at place, x 12, y 4, z 0, text The Isles and height 2; the same fields in the side panel" data-hotspots='[{"x":30,"y":21,"t":"when level starts","d":"Runs once as the level starts, and again when a saved game loads."},{"x":53.4,"y":32.8,"t":"template","d":"Offers the module&#39;s markers: the built-in four and your own."},{"x":52.2,"y":39.9,"t":"at?","d":"entity (the default) or place."},{"x":52.7,"y":43.5,"t":"where","d":"pick a point on the map fills x, y and z."},{"x":42,"y":47,"t":"Data pins","d":"x, y and z can be linked instead of typed; so can value and max."},{"x":84.4,"y":50,"t":"The side panel","d":"The picked node&#39;s fields, larger."}]'>
     <figcaption>A <code>mark</code> node hanging a pointer at a place as the level starts.</figcaption>
   </figure>
   <table>
@@ -117,7 +117,7 @@
       <tr><td><code>marker</code></td><td>Its name in this graph. <code>set_marker</code> and <code>remove_marker</code> find it by this name, and their own <code>marker</code> field offers the names the graphs' marks gave.</td></tr>
       <tr><td><code>template</code></td><td>Its look. The field offers the module's markers: the built-in four and your own.</td></tr>
       <tr><td><code>at?</code></td><td><code>entity</code> (the default) or <code>place</code>. On an entity, the <b>entity</b> pin says which: unlinked, it is the event's.</td></tr>
-      <tr><td><b>📍 where</b>, <code>x?</code>, <code>y?</code>, <code>z?</code></td><td>The place, for <code>at: place</code>. <span class="ui">pick a point on the map</span> fills all three from one tap on the floor. Each can be linked instead.</td></tr>
+      <tr><td><b>where</b>, <code>x?</code>, <code>y?</code>, <code>z?</code></td><td>The place, for <code>at: place</code>. <span class="ui">pick a point on the map</span> fills all three from one tap on the floor. Each can be linked instead.</td></tr>
       <tr><td><code>text?</code></td><td>What a <code>label</code> or a pointer's caption says. Typed: it has no pin.</td></tr>
       <tr><td><code>value?</code>, <code>max?</code></td><td>What a bar or <code>debug_health</code> shows. Type a whole number, or link one. A linked number with a fraction is rounded down.</td></tr>
       <tr><td><code>height?</code></td><td>Units above the top of the body, or above the place.</td></tr>
@@ -137,7 +137,7 @@
   <h3>Worked example: a pointer over the red gate</h3>
   <p>In Gem Hollow, pulling the red lever opens the red gate (tag 11) and flies the camera over it. Its <code>levers</code> graph, on the <code>world</code> map, can also leave a pointer over the gate, so the player knows where to go, and take it down once they get there:</p>
   <pre><code>when_prop_used (lever_red) → once → … → camera_shake
-    → mark   marker: isles   template: marker   at: place   📍 where: just past the gate
+    → mark   marker: isles   template: marker   at: place   where: just past the gate
              text: The Isles   height: 2   through_walls ✓
 
 when_sector_entered (tag 11, players) → remove_marker   marker: isles</code></pre>
@@ -145,7 +145,7 @@ when_sector_entered (tag 11, players) → remove_marker   marker: isles</code></
 
   <h3>Worked example: a bar that counts the vault's keys</h3>
   <p>The <code>vault</code> graph counts keys in its variable <code>keys</code>. Give the vault door a bar that fills as keys are found:</p>
-  <pre><code>when_level_starts → mark   marker: vault   template: health   at: place   📍 where: in front of the vault door
+  <pre><code>when_level_starts → mark   marker: vault   template: health   at: place   where: in front of the vault door
                            value ← get_var keys   max: 3   height: 2   range: 30
 
 when_prop_touched (key) → remove → add_var keys → set_hud keys
@@ -175,8 +175,8 @@ dnp.mark_set(bar, { value = mobs.health(boss) })</code></pre>
   <p>The <a href="../advanced/04-panels-hud-camera.html#markers">Advanced track</a> sets markers beside panels and HUD values.</p>
 
   <h2 id="monsters">A monster's health bar</h2>
-  <p>A monster can carry a bar over its head all its life, with no graph at all. Open <b>☠ Monsters</b>, choose the monster, and on <span class="ui">Overview</span>, under <b>Toughness</b>, set <span class="ui">A bar over it</span>. It offers <code>none</code>, <code>health (the built-in bar)</code>, the other markers, and the module's own.</p>
-  <figure class="shot" data-src="../assets/shots/studio-markers-monster.png" data-alt="Overview of Gem Hollow's slime: Toughness with Health 20, Flinches 78% of hits, and A bar over it set to health (the built-in bar)" data-hotspots='[{"x":30.8,"y":57,"t":"A bar over it","d":"The marker hung over it while it lives: none, health (the built-in bar), or any other marker of the module."}]'>
+  <p>A monster can carry a bar over its head all its life, with no graph at all. Open <b>Monsters</b>, choose the monster, and on <span class="ui">Overview</span>, under <b>Toughness</b>, set <span class="ui">A bar over it</span>. It offers <code>none</code>, <code>health (the built-in bar)</code>, the other markers, and the module's own.</p>
+  <figure class="shot" data-src="../assets/shots/studio-markers-monster.png" data-alt="Overview of Gem Hollow's slime: Toughness with Health 20, Flinches 78% of hits, and A bar over it set to health (the built-in bar)" data-hotspots='[{"x":30.8,"y":53.3,"t":"A bar over it","d":"The marker hung over it while it lives: none, health (the built-in bar), or any other marker of the module."}]'>
     <figcaption><span class="ui">A bar over it</span> on the slime's <span class="ui">Overview</span>.</figcaption>
   </figure>
   <p>The game hangs it over the monster when it spawns, keeps its <code>value</code> (the monster's health) and <code>max</code> (its full health) up to date with every hit, and takes it down when the monster dies. A corpse has no bar. A revived monster gets its bar back.</p>
@@ -215,15 +215,15 @@ dnp.mark_set(bar, { value = mobs.health(boss) })</code></pre>
 
   <h2>Exercise: a sign over the lever, a pointer over the gate</h2>
   <ol class="steps">
-    <li><p>Open Gem Hollow (Home → <span class="ui">◆ examples</span> → <span class="ui">📂 Gem Hollow</span>; <span class="ui">a fresh copy</span> if you have changed it before), then <b>◇ Graphs</b>, and tap <span class="ui">levers</span> under <span class="ui">world</span>. The red note is the red lever.</p></li>
+    <li><p>Open Gem Hollow (Home → <span class="ui">examples</span> → <span class="ui">Gem Hollow</span>; <span class="ui">a fresh copy</span> if you have changed it before), then <b>Graphs</b>, and tap <span class="ui">levers</span> under <span class="ui">world</span>. The red note is the red lever.</p></li>
     <li><p>Press <span class="ui">+ node…</span>, type <code>mark</code> and choose <span class="ui">mark</span>. Set <span class="ui">marker</span> to <code>lever</code>, <span class="ui">template</span> to <code>label</code> (the field offers the module's markers), <span class="ui">text?</span> to <code>pulled</code> and <span class="ui">height?</span> to <code>0.5</code>.</p></li>
     <li><p>Drag a link from <code>whenpropus1</code>'s <b>prop</b> pin to the new node's <b>entity</b> pin. Without it, the sign would hang on the event's entity: the player who pulled.</p></li>
     <li><p>Drag a link from <code>camerashak9</code>'s <b>then</b>, the end of the red note's top row, to the new node's <b>in</b>.</p></li>
     <li><p>Add a second <span class="ui">mark</span>. Set <span class="ui">marker</span> to <code>isles</code>, <span class="ui">template</span> to <code>marker</code>, <span class="ui">at?</span> to <code>place</code>. Press <span class="ui">pick a point on the map</span> and tap the floor just past the red gate. Set <span class="ui">text?</span> to <code>The Isles</code>, <span class="ui">height?</span> to <code>2</code>, and turn on <span class="ui">through_walls?</span>. Link the first mark's <b>then</b> to its <b>in</b>.</p></li>
-    <li><p>Close the graph window, open the <code>world</code> map and press <span class="ui">▶ Play</span>. Walk to the red lever and pull it (use, <kbd>E</kbd>). When the camera comes back, <code>pulled</code> hangs over the lever and a ▼ <code>The Isles</code> over the gate.</p></li>
+    <li><p>Close the graph window, open the <code>world</code> map and press <span class="ui">Play</span>. Walk to the red lever and pull it (use, <kbd>E</kbd>). When the camera comes back, <code>pulled</code> hangs over the lever and a ▼ <code>The Isles</code> over the gate.</p></li>
     <li><p>Walk away round a corner. The sign over the lever hides behind the wall. The pointer stays, because it draws through walls.</p></li>
     <li><p>Back in the graph, add <span class="ui">when sector entered</span> with <span class="ui">tag?</span> <code>11</code>, and link it to a <span class="ui">remove marker</span> with <span class="ui">marker</span> <code>isles</code>. Play again: the pointer goes as you walk through the gate.</p></li>
-    <li><p>Now a sign with no graph. On the <code>world</code> map, choose <span class="ui">✦ Place</span>, tap <span class="ui">sign: label</span>, and tap the floor beside the red lever. Set its <span class="ui">text</span> to <code>Pull me</code>. Play: the sign is there from the start.</p></li>
+    <li><p>Now a sign with no graph. On the <code>world</code> map, choose <span class="ui">Place</span>, tap <span class="ui">sign: label</span>, and tap the floor beside the red lever. Set its <span class="ui">text</span> to <code>Pull me</code>. Play: the sign is there from the start.</p></li>
   </ol>
 
   <div class="quiz" data-answer="1">

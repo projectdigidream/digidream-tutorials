@@ -19,7 +19,7 @@
   <h1>Touching the world</h1>
   <p class="lede">A level is three kinds of thing: entities that move and think, props that sit, and rooms. This page shows how to find each one from Lua, read it, and change it.</p>
   <div class="goal">
-    <b>You'll learn</b><span>the methods of entities, props and rooms, how to find a room by its tag, lights, textures and weather, moving rooms with <code>move_parametric</code>, spawning monsters and props, hurting and noticing deaths, line of sight, and sound, music and particles</span>
+    <b>You'll learn</b><span>the methods of entities, props and rooms, how to find a room by its tag, lights, textures and weather, moving rooms with <code>move_parametric</code>, spawning monsters and props, hurting, swinging and noticing deaths, line of sight and reach, and sound, music, particles and trails</span>
     <b>Time</b><span>40 minutes</span>
     <b>Needs</b><span><a href="02-events-and-time.html">Events and time</a>; the example Gem Hollow</span>
   </div>
@@ -52,7 +52,7 @@
 if spot then e:teleport(spot) end</code></pre>
 
   <h2 id="props">Props</h2>
-  <p>A prop is a body without a brain: a lever, a coin, a crate. <a href="../luaref/02-every-function.html#dnp.props"><code>dnp.props()</code></a> lists them and <a href="../luaref/02-every-function.html#dnp.prop"><code>dnp.prop(i)</code></a> gets one. A prop's <a href="../luaref/02-every-function.html#prop.name"><code>p:name()</code></a> is the name it has in <b>📦 Props</b>. Finding by name is the robust way:</p>
+  <p>A prop is a body without a brain: a lever, a coin, a crate. <a href="../luaref/02-every-function.html#dnp.props"><code>dnp.props()</code></a> lists them and <a href="../luaref/02-every-function.html#dnp.prop"><code>dnp.prop(i)</code></a> gets one. A prop's <a href="../luaref/02-every-function.html#prop.name"><code>p:name()</code></a> is the name it has in <b>Props</b>. Finding by name is the robust way:</p>
   <pre><code>local function find_prop(name)
   for _, p in ipairs(dnp.props()) do
     if p:name() == name then return p end
@@ -120,7 +120,7 @@ dnp.set_sector_texture(s:index(), "floor", "LAVA1")   -- or "ceiling"
 dnp.set_sector_effect(s:index(), "fog", { density = 0.5, color = "#203040" })
 dnp.set_sector_effect(s:index(), "snow")             -- rain, snow, dust, embers, fog
 dnp.set_sector_effect(s:index(), "snow", false)      -- stop it</code></pre>
-  <p>A wall's picture is <a href="../luaref/02-every-function.html#dnp.set_side_texture"><code>dnp.set_side_texture(side, "upper"|"middle"|"lower", NAME)</code></a>. Texture names are the ones in <b>🧱 Textures</b>. Every one of these is kept by the server, saved with the level, and sent to players who arrive later.</p>
+  <p>A wall's picture is <a href="../luaref/02-every-function.html#dnp.set_side_texture"><code>dnp.set_side_texture(side, "upper"|"middle"|"lower", NAME)</code></a>. Texture names are the ones in <b>Textures</b>. Every one of these is kept by the server, saved with the level, and sent to players who arrive later.</p>
 
   <h3 id="move">Moving rooms: move_parametric</h3>
   <p>Doors, lifts, rafts and spinning platforms are rooms that move. <code>move_parametric</code> gives a room a whole motion at once:</p>
@@ -170,7 +170,7 @@ end
   <p>A monster comes from the mob runtime, so it gets its brain and its health:</p>
   <pre><code>local m = mobs.spawn("slime", vec3.new(12, 4, 0))
 local sleeper = mobs.spawn("bee", where, { dormant = true })  -- placed asleep, as the Place tool's dormant does</code></pre>
-  <p>The kind is the monster's name in <b>☠ Monsters</b>. <a href="../luaref/02-every-function.html#mobs.has"><code>mobs.has("slime")</code></a> says whether the module has it. A prop comes from <a href="../luaref/02-every-function.html#dnp.spawn_prop"><code>dnp.spawn_prop(name, pos)</code></a>, with the name from <b>📦 Props</b>. Both return the new handle, or <code>nil</code> and a line in the log.</p>
+  <p>The kind is the monster's name in <b>Monsters</b>. <a href="../luaref/02-every-function.html#mobs.has"><code>mobs.has("slime")</code></a> says whether the module has it. A prop comes from <a href="../luaref/02-every-function.html#dnp.spawn_prop"><code>dnp.spawn_prop(name, pos)</code></a>, with the name from <b>Props</b>. Both return the new handle, or <code>nil</code> and a line in the log.</p>
   <div class="callout"><p>A level that is being put back from a save holds back what its scripts spawn while they load. Spawning later, in a hook, is not held back, and is not saved either unless you save it yourself. See <a href="05-state-and-bridges.html#restoring">Restoring</a>.</p></div>
 
   <h2 id="hits">Hits and deaths</h2>
@@ -178,7 +178,8 @@ local sleeper = mobs.spawn("bee", where, { dormant = true })  -- placed asleep, 
   <table>
     <thead><tr><th>Function</th><th>Does</th></tr></thead>
     <tbody>
-      <tr><td><a href="../luaref/02-every-function.html#mobs.hurt"><code>mobs.hurt(target, amount, by)</code></a></td><td>hurt a monster or a player, through the monsters' own rules: pain, death, loot, graphs' <a href="../reference/graph-nodes.html#when_hurt"><code>when_hurt</code></a></td></tr>
+      <tr><td><a href="../luaref/02-every-function.html#mobs.hurt"><code>mobs.hurt(target, amount, by)</code></a></td><td>hurt a monster or a player, through the monsters' own rules: pain, death, loot, graphs' <a href="../reference/graph-nodes.html#when_hurt"><code>when_hurt</code></a>. <code>by</code> may be the attacking entity itself, <code>mobs.hurt(target, 10, e)</code>: you no longer need <code>mobs.synthetic_owner</code> to make a record of it</td></tr>
+      <tr><td><a href="../luaref/02-every-function.html#entity.swing"><code>e:swing()</code></a></td><td>start a swing now, in the shape the body's attack settings hold, for a monster or a player. A newer swing replaces one still sweeping; inside the last one's cooldown nothing happens. What it reaches comes to <code>on_attack</code>, as with any swing</td></tr>
       <tr><td><a href="../luaref/02-every-function.html#mobs.health"><code>mobs.health(e)</code></a>, <a href="../luaref/02-every-function.html#mobs.set_health"><code>mobs.set_health(e, hp)</code></a></td><td>a monster's health; <code>nil</code> for anything that is not a living monster here</td></tr>
       <tr><td><a href="../luaref/02-every-function.html#mobs.on_death"><code>mobs.on_death = function(m, by) … end</code></a></td><td>yours to set: called when a monster dies. <code>m.e</code> is its entity, <code>m.kind</code> its kind</td></tr>
       <tr><td><a href="../luaref/02-every-function.html#mobs.on_player_death"><code>mobs.on_player_death = function(e, by) … end</code></a></td><td>called after a player dies and is sent home</td></tr>
@@ -193,26 +194,29 @@ end</code></pre>
   <p><code>by</code> is whoever did it: a record with <code>.e</code> for a monster or a weapon, the attacker's entity when a script passed one, or <code>nil</code>. <a href="06-recipes.html#score">Recipe 6</a> shows how to get a player out of it.</p>
 
   <h3>Line of sight</h3>
-  <p><a href="../luaref/02-every-function.html#dnp.can_see"><code>dnp.can_see(a, b)</code></a> is true when nothing stands between two entities' eyes. <a href="../luaref/02-every-function.html#dnp.hitscan"><code>dnp.hitscan(e, range[, spread[, slope]])</code></a> fires an instant ray along <code>e</code>'s facing and returns what it hit (or <code>nil</code>) and where the ray ended. <a href="../luaref/02-every-function.html#dnp.find_path"><code>dnp.find_path(from_sector, to_sector)</code></a> finds a route between rooms, but a level gets only 64 route searches a tick, shared with its monsters. When it says <code>nil, "path budget"</code>, try again next tick.</p>
+  <p><a href="../luaref/02-every-function.html#dnp.can_see"><code>dnp.can_see(a, b)</code></a> is true when nothing stands between two entities' eyes. <a href="../luaref/02-every-function.html#dnp.can_reach"><code>dnp.can_reach(a, b)</code></a> asks the same for a blow struck at arm's length: no wall or shut door between them (a ledge does not count). A monster's melee asks it, so check it before your own script hurts what stands in front of <code>a</code>. <a href="../luaref/02-every-function.html#dnp.hitscan"><code>dnp.hitscan(e, range[, spread[, slope]])</code></a> fires an instant ray along <code>e</code>'s facing and returns what it hit (or <code>nil</code>) and where the ray ended. <a href="../luaref/02-every-function.html#dnp.find_path"><code>dnp.find_path(from_sector, to_sector)</code></a> finds a route between rooms, but a level gets only 64 route searches a tick, shared with its monsters. When it says <code>nil, "path budget"</code>, try again next tick.</p>
 
   <h2 id="sound">Sound, music and particles</h2>
   <pre><code>dnp.sound("world.lever", p)                         -- from a prop, following it
 dnp.sound("world.secret", e:pos())                  -- from a point
 dnp.music(nil, "boss", 800, "next_bar")              -- everyone here: cue, fade in ms, when
 dnp.music(e, "default")                              -- one player
-dnp.vfx(3, e:pos())                                  -- particle kind 3</code></pre>
+dnp.vfx(3, e:pos())                                  -- particle kind 3
+e:set_trail(3)                                       -- kind 3 follows e
+e:set_trail(0)                                       -- and stops</code></pre>
   <ul>
-    <li>Sound names are the ones in <b>🔊 Sounds</b>. A name the pack doesn't have is silent.</li>
-    <li>Music cues are the map's cues in <b>♪ Music</b>. The last argument is <code>"next_bar"</code>, <code>"loop_end"</code> or <code>"now"</code>.</li>
-    <li>A particle kind is the number shown in <b>✨ Particles</b>.</li>
+    <li>Sound names are the ones in <b>Sounds</b>. A name the pack doesn't have is silent.</li>
+    <li>Music cues are the map's cues in <b>Music</b>. The last argument is <code>"next_bar"</code>, <code>"loop_end"</code> or <code>"now"</code>.</li>
+    <li>A particle kind is the number shown in <b>Particles</b>.</li>
+    <li><a href="../luaref/02-every-function.html#entity.set_trail"><code>e:set_trail(kind)</code></a> and <a href="../luaref/02-every-function.html#prop.set_trail"><code>p:set_trail(kind)</code></a> hang a <b>trail</b> on a body: the particle kind follows it until you set it back to 0 or the body goes. An aura on a monster, smoke behind a prop. It is not saved, so set it again when the level loads.</li>
   </ul>
 
   <h2>Try it in the studio</h2>
   <ol class="steps">
-    <li><p>Open Gem Hollow from Home → <span class="ui">◆ examples</span>. In <b>🗺 Maps</b>, open <code>world</code> and tap the red gate with <span class="ui">⌖ Select</span>. Its tag is 11.</p></li>
-    <li><p>In <b>📜 Scripts</b>, add a script called <code>world</code>. Write an <a href="../luaref/02-every-function.html#hook.on_prop_use"><code>on_prop_use</code></a> that, for the prop named <code>lever_blue</code>, finds the rooms tagged 900 (the water) and calls <a href="../luaref/02-every-function.html#dnp.set_sector_light"><code>dnp.set_sector_light(s:index(), 40, 3)</code></a> on each.</p></li>
+    <li><p>Open Gem Hollow from Home → <span class="ui">examples</span>. In <b>Maps</b>, open <code>world</code> and tap the red gate with <span class="ui">Select</span>. Its tag is 11.</p></li>
+    <li><p>In <b>Scripts</b>, add a script called <code>world</code>. Write an <a href="../luaref/02-every-function.html#hook.on_prop_use"><code>on_prop_use</code></a> that, for the prop named <code>lever_blue</code>, finds the rooms tagged 900 (the water) and calls <a href="../luaref/02-every-function.html#dnp.set_sector_light"><code>dnp.set_sector_light(s:index(), 40, 3)</code></a> on each.</p></li>
     <li><p>In the same hook, play <code>world.secret</code> at the lever with <a href="../luaref/02-every-function.html#dnp.sound"><code>dnp.sound</code></a>.</p></li>
-    <li><p>Press <span class="ui">▶ Play</span>, find the blue lever and use it. The water darkens over three seconds.</p></li>
+    <li><p>Press <span class="ui">Play</span>, find the blue lever and use it. The water darkens over three seconds.</p></li>
     <li><p>Change <code>40, 3</code> to <code>40, 0</code> and play again. The change is instant now.</p></li>
   </ol>
 

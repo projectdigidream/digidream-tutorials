@@ -29,7 +29,7 @@
   <h3>Where it says so</h3>
   <ul>
     <li><b>The graph window</b>: a count of problems in red in the bar, and the problems themselves in red in the side panel.</li>
-    <li><b>◇ Graphs</b>: each row shows how many problems its graph has, and the first one.</li>
+    <li><b>Graphs</b>: each row shows how many problems its graph has, and the first one.</li>
     <li><b>Home</b>: under <span class="ui">to fix (N)</span>, one line per problem in the whole module. Tap a line to go there. With none, Home says <em>nothing wrong that the studio can see</em>.</li>
     <li><b>Play and Export</b> refuse to start while any graph has a problem. The status line names it: <em>first's graph doors: …</em>.</li>
   </ul>
@@ -105,7 +105,7 @@
     <li><p><b>Is the branch deciding on what you think?</b> Put a <code>do log</code> on <i>both</i> of its exits, so the log says which way it went. (A <code>do log</code>'s <code>text</code> has a data pin, but it takes text only: a linked number would be skipped.) Remember: 0 is true, and a value read earlier in the same run is remembered.</p></li>
     <li><p><b>Does the action reach the right thing?</b> An unlinked <code>entity</code> is the event's. A linked one that yields nil does nothing. A cutscene node with no player to show to says <em>acted on no player</em>.</p></li>
     <li><p><b>Is it later than you think?</b> A delay's far side runs later, and pending delays are dropped by a save and a load.</p></li>
-    <li><p><b>Is it a cutscene?</b> Use <span class="ui">▶ scene</span> in the graph window to see the timing without playing.</p></li>
+    <li><p><b>Is it a cutscene?</b> Use <span class="ui">scene</span> in the graph window to see the timing without playing.</p></li>
   </ol>
 
   <h2>In Gem Hollow</h2>
@@ -133,6 +133,7 @@
       <tr><td>A cutscene node after <code>when_dies</code></td><td>The dead monster is not a player: acted on no player</td><td>Tick <code>everyone</code>, or link <code>by</code> (the killer)</td></tr>
       <tr><td><code>remove</code> or <code>kill</code> after a touch, unlinked</td><td>It acts on the player who touched</td><td>Link the start node's <code>prop</code> (or the right entity)</td></tr>
       <tr><td><code>when_dies</code> for an arena</td><td>Counts every death in the level</td><td>Guard with a flag, or set <code>kind</code></td></tr>
+      <tr><td>Counting kills by <code>by</code> in a game graph's <code>when_dies</code></td><td>Some kills count for nobody: <code>by</code> is empty there when the killer is out of the game's reach</td><td>Count kills in the map's graph, and call the game with the result</td></tr>
       <tr><td>Expecting a variable per player</td><td>One player's key opens the door for everyone</td><td>Accept it, or keep it in Lua</td></tr>
       <tr><td>A <code>delay</code> loop expected to survive a load</td><td>Pending delays are not saved</td><td>Restart it from <code>when_level_starts</code></td></tr>
       <tr><td>Two start nodes for one event that depend on each other's order</td><td>They run in file order, which you may not expect</td><td>Join them into one chain, with a <code>sequence</code></td></tr>

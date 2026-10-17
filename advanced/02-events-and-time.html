@@ -25,7 +25,7 @@
   </div>
 
   <h2 id="hooks">Every hook</h2>
-  <p>A hook is a global function with a fixed name. Define it in a 📜 script and the engine calls it. If several scripts define the same hook, each one runs, in load order.</p>
+  <p>A hook is a global function with a fixed name. Define it in a script and the engine calls it. If several scripts define the same hook, each one runs, in load order.</p>
   <table>
     <thead><tr><th>Hook</th><th>Arguments</th><th>Fires</th></tr></thead>
     <tbody>
@@ -35,7 +35,7 @@
       <tr><td><a href="../luaref/02-every-function.html#hook.on_touch"><code>on_touch(e, prop)</code></a></td><td>who, which prop</td><td><b>every tick</b> while a body overlaps a prop</td></tr>
       <tr><td><a href="../luaref/02-every-function.html#hook.on_interact"><code>on_interact(e, side, sector)</code></a></td><td>who, the wall's number, the room's number</td><td>a player presses use facing a wall flagged <span class="ui">usable</span></td></tr>
       <tr><td><a href="../luaref/02-every-function.html#hook.on_cross"><code>on_cross(e, side, sector)</code></a></td><td>who, the wall's number, the room's number</td><td>a body crosses a wall flagged <span class="ui">trigger</span></td></tr>
-      <tr><td><a href="../luaref/02-every-function.html#hook.on_attack"><code>on_attack(attacker, target)</code></a></td><td>who swung, what it reached (an entity or a prop)</td><td>a swing connects</td></tr>
+      <tr><td><a href="../luaref/02-every-function.html#hook.on_attack"><code>on_attack(attacker, target)</code></a></td><td>who swung, what it reached (an entity or a prop)</td><td>a swing connects: a weapon's, a monster's, or one a script started with <a href="../luaref/02-every-function.html#entity.swing"><code>e:swing()</code></a></td></tr>
       <tr><td><a href="../luaref/02-every-function.html#hook.on_crush"><code>on_crush(e, sector, how)</code></a></td><td>who, the room, <code>"vertical"</code> or <code>"pinned"</code></td><td>the first tick a body is crushed</td></tr>
       <tr><td><a href="../luaref/02-every-function.html#hook.on_ui_event"><code>on_ui_event(e, ui_id, widget_id, value)</code></a></td><td>who, which panel, which widget, its value</td><td>a player presses, flips, slides or picks on a panel your script opened (<a href="04-panels-hud-camera.html">Panels</a>)</td></tr>
     </tbody>
@@ -206,10 +206,10 @@ print("three quarters of 10 is " .. tostring(d))</code></pre>
 
   <h2>Try it in the studio</h2>
   <ol class="steps">
-    <li><p>Open Gem Hollow from Home → <span class="ui">◆ examples</span>, then <b>📜 Scripts</b>. Add a script called <code>timers</code>.</p></li>
+    <li><p>Open Gem Hollow from Home → <span class="ui">examples</span>, then <b>Scripts</b>. Add a script called <code>timers</code>.</p></li>
     <li><p>Paste the arrivals script from above. Below it, add a repeating timer that prints <a href="../luaref/02-every-function.html#dnp.player_count"><code>dnp.player_count()</code></a> every 5 seconds (300 ticks).</p></li>
-    <li><p>Open the <code>world</code> map and press <span class="ui">▶ Play</span>. Walk around for 20 seconds, then come back with <b>◀ Studio</b>.</p></li>
-    <li><p>Open <span class="ui">📋 play log</span>. Find your arrival line, then the count every 300 ticks.</p></li>
+    <li><p>Open the <code>world</code> map and press <span class="ui">Play</span>. Walk around for 20 seconds, then come back with <b>◀ Studio</b>.</p></li>
+    <li><p>Open <span class="ui">play log</span>. Find your arrival line, then the count every 300 ticks.</p></li>
     <li><p>Change your timer's <code>&gt;=</code> to <code>==</code> and set the next tick to <a href="../luaref/02-every-function.html#dnp.tick"><code>dnp.tick() + 300.5</code></a>. Play again. The timer never fires again, because no tick is ever equal to a fraction. Put it back.</p></li>
   </ol>
 

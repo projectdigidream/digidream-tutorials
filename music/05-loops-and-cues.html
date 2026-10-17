@@ -100,19 +100,19 @@
   <figure class="shot" data-src="../assets/shots/studio-music-page.png" data-alt="The studio's Music page in Gem Hollow: the menu map's default cue on title, and the five tracks of the module">
     <figcaption>The Music page in Gem Hollow, with the <code>menu</code> map open: its one cue on top, the module's five tracks below.</figcaption>
   </figure>
-  <p>In the studio, open <b>♪ Music</b> from the rail. The page, titled <b>Soundtrack</b>, has two parts.</p>
+  <p>In the studio, open <b>Music</b> from the rail. The page, titled <b>Soundtrack</b>, has two parts.</p>
   <h3>Tracks in the module</h3>
   <p>Under <b>♫ tracks in the module</b>, every track the module has, with its size (or <em>not baked yet</em>), how many cues use it (<em>in 1 cue(s)</em>), <em>from its project</em> when the studio keeps its <code>.msproj</code>, and buttons:</p>
   <ul>
     <li><span class="ui">+ new track</span> asks for a name and opens a new project in DigidreamSynth, right inside the studio. It needs the DigidreamSynth plugin.</li>
-    <li><span class="ui">✎ edit in DigidreamSynth</span> opens that track's project. <span class="ui">‹ studio</span> saves it on the way back; <span class="ui">✕</span> throws the changes away. If you left the editor without either (a closed tab, say), the next open asks whether to <span class="ui">go on with it</span> or <span class="ui">start from the saved one</span>.</li>
+    <li><span class="ui">edit in DigidreamSynth</span> opens that track's project. <span class="ui">studio</span> saves it on the way back; <span class="ui">✕</span> throws the changes away. If you left the editor without either (a closed tab, say), the next open asks whether to <span class="ui">go on with it</span> or <span class="ui">start from the saved one</span>.</li>
     <li><span class="ui">+ import track (.mstk)</span> adds a track baked elsewhere. If the map has no <code>default</code> cue yet, the track becomes it.</li>
     <li><span class="ui">bake now</span> bakes the project into its track at once. <span class="ui">▶</span> listens, <span class="ui">■</span> stops, <span class="ui">✕</span> deletes the track and every cue that uses it.</li>
   </ul>
-  <p>A track you make in the studio is kept as its project, <code>sources/music/NAME.msproj</code>. The game plays the baked file, <code>assets/music/NAME.mstk</code>, and the studio makes it from the project when you press <span class="ui">▶ Play</span> or <span class="ui">⇪ Export</span>, or <span class="ui">bake now</span>. You never handle the <code>.mstk</code> yourself.</p>
+  <p>A track you make in the studio is kept as its project, <code>sources/music/NAME.msproj</code>. The game plays the baked file, <code>assets/music/NAME.mstk</code>, and the studio makes it from the project when you press <span class="ui">Play</span> or <span class="ui">Export</span>, or <span class="ui">bake now</span>. You never handle the <code>.mstk</code> yourself.</p>
 
   <h3>The map's cues</h3>
-  <p>The top part, <b>♪ <em>map</em>: cues</b>, belongs to the map you have open: every map keeps its own. Each cue is a name and a track. <span class="ui">+ cue</span> adds one (the first is suggested as <code>default</code>, the next as <code>fight</code>); the list beside it picks the track; <span class="ui">▶</span> listens; <span class="ui">✕</span> removes the cue.</p>
+  <p>The top part, <b><em>map</em>: cues</b>, belongs to the map you have open: every map keeps its own. Each cue is a name and a track. <span class="ui">+ cue</span> adds one (the first is suggested as <code>default</code>, the next as <code>fight</code>); the list beside it picks the track; <span class="ui">▶</span> listens; <span class="ui">✕</span> removes the cue.</p>
   <ul>
     <li>The cue called <code>default</code> starts with the map. A map with cues but no <code>default</code> gets a warning when you play or export.</li>
     <li>The others play only when a trigger or a script asks for them by name.</li>
@@ -159,7 +159,7 @@
   <ol class="steps">
     <li><p>On the Music page, give your map a <code>default</code> cue with the <code>calm</code> track and a <code>fight</code> cue with the <code>fight</code> track.</p></li>
     <li><p>In the map editor, add a trigger on a doorway into a room, with the <code>music</code> action: cue <code>fight</code>, at <code>next_bar</code>. (Triggers are covered in <a href="../studio/04-triggers.html">Triggers</a>.)</p></li>
-    <li><p>Press <span class="ui">▶ Play</span>. The map starts on <code>calm</code>; walk through the doorway and the music turns to <code>fight</code> on the next bar.</p></li>
+    <li><p>Press <span class="ui">Play</span>. The map starts on <code>calm</code>; walk through the doorway and the music turns to <code>fight</code> on the next bar.</p></li>
   </ol>
 
   <h2 id="gemhollow">In Gem Hollow</h2>
@@ -189,14 +189,14 @@
     <li>The five tracks are unrelated songs, not slices of one parent, so the game swaps them with the fade instead of crossfading on the beat.</li>
   </ul>
   <ol class="steps">
-    <li><p>Open Gem Hollow. In <b>🗺 Maps</b>, tap <code>world</code>, then open <b>♪ Music</b>. The top part now reads <b>world: cues</b>, with four cues.</p></li>
+    <li><p>Open Gem Hollow. In <b>Maps</b>, tap <code>world</code>, then open <b>Music</b>. The top part now reads <b>world: cues</b>, with four cues.</p></li>
     <li><p>Press <span class="ui">▶</span> beside <code>cliffs</code> to hear <code>castle</code>, and <span class="ui">■</span> to stop.</p></li>
-    <li><p>Change the <code>keep</code> cue's track from <code>shrine</code> to <code>castle</code> in its list. Press <span class="ui">▶ Play</span>, reach the third flag, and the music does not change: both zones now play <code>castle</code>. Put it back with <span class="ui">↶ Undo</span>.</p></li>
-    <li><p>Open <span class="ui">✎ edit in DigidreamSynth</span> on <code>airship</code> and go to <span class="ui">Cut &amp; Loop</span>. Press <span class="ui">Bake project → load here</span>, drag across bars 1–16 and press <span class="ui">▶ Loop region</span> to hear how the seam sounds when those 16 bars repeat. Add it as a slice called <code>meadow</code>, then try it against the whole song in <span class="ui">Cues</span>. Leave with <span class="ui">✕</span>.</p></li>
+    <li><p>Change the <code>keep</code> cue's track from <code>shrine</code> to <code>castle</code> in its list. Press <span class="ui">Play</span>, reach the third flag, and the music does not change: both zones now play <code>castle</code>. Put it back with <span class="ui">Undo</span>.</p></li>
+    <li><p>Press <span class="ui">edit in DigidreamSynth</span> on <code>airship</code> and go to <span class="ui">Cut &amp; Loop</span>. Press <span class="ui">Bake project → load here</span>, drag across bars 1–16 and press <span class="ui">▶ Loop region</span> to hear how the seam sounds when those 16 bars repeat. Add it as a slice called <code>meadow</code>, then try it against the whole song in <span class="ui">Cues</span>. Leave with <span class="ui">✕</span>.</p></li>
   </ol>
 
   <h2 id="cinderfall">In Cinderfall: a tune per district, and a boss</h2>
-  <div class="callout tip"><p>Cinderfall, the first-person shooter example, comes with the studio: on Home, under <span class="ui">◆ examples</span>, press <span class="ui">📂 Cinderfall</span>. The <a href="../examples/02-cinderfall.html">Cinderfall tour</a> walks round it.</p></div>
+  <div class="callout tip"><p>Cinderfall, the first-person shooter example, comes with the studio: on Home, under <span class="ui">examples</span>, press <span class="ui">Cinderfall</span>. The <a href="../examples/02-cinderfall.html">Cinderfall tour</a> walks round it.</p></div>
   <figure class="shot" data-src="../assets/shots/cinder-music-cues.png" data-alt="The Music page in Cinderfall with w_heart_w open: three cues, default on heart, boss on boss and victory on victory, above the module's nine tracks" data-hotspots='[{"x":30,"y":10,"t":"w_heart_w: cues","d":"the map picked in Maps"},{"x":60,"y":15.3,"t":"default → heart","d":"the Heart&#39;s own tune, from the moment you arrive"},{"x":60,"y":21.3,"t":"boss → boss","d":"asked for by the story graph on the arena island"},{"x":60,"y":27.3,"t":"victory → victory","d":"asked for when the Smelter dies"},{"x":23,"y":45.8,"t":"in 1 cue(s)","d":"only w_heart_w names the boss track"},{"x":23,"y":60.4,"t":"heart: in 3 cue(s)","d":"both halves of the Heart, and the hub's seal cue"}]'>
     <figcaption>The Music page in Cinderfall, with <code>w_heart_w</code> open: three cues, then the module's nine tracks.</figcaption>
   </figure>
@@ -229,10 +229,10 @@ n_epilogue               default: victory       (the morning after)</code></pre>
   <p>The choices are the opposite of Gem Hollow's zone changes. A boss can't wait for the next bar: both switches are <code>now</code>. The boss fades in fast (0.8 s) because the fight starts at once; the victory takes 1.5 s, under the rumble and the shake, as the furnace dies. <code>everyone</code> is off on both, so a second player elsewhere in the world keeps their own district's tune. The sting on the way in ducks the music by 6 dB for 2 s, so the boss track comes up out of a hush. The roar comes from the Smelter's own <code>roar</code> state, which plays <code>smelter.roar</code> when it first sees you.</p>
   <p><code>w_heart_e</code> has only its <code>default</code>: the arena is in the west half, so only the west half names the cues its graph asks for.</p>
   <ol class="steps">
-    <li><p>Open Cinderfall from Home → <span class="ui">◆ examples</span>. In <b>🗺 Maps</b>, tap <code>w_heart_w</code>, then open <b>♪ Music</b>. The top part reads <b>w_heart_w: cues</b>, with three cues.</p></li>
+    <li><p>Open Cinderfall from Home → <span class="ui">examples</span>. In <b>Maps</b>, tap <code>w_heart_w</code>, then open <b>Music</b>. The top part reads <b>w_heart_w: cues</b>, with three cues.</p></li>
     <li><p>Press <span class="ui">▶</span> beside <code>boss</code>, then beside <code>victory</code>, to hear the two ends of the fight. <span class="ui">■</span> stops.</p></li>
     <li><p>Open the map's <code>story</code> graph (<a href="../graphs/01-thinking-in-graphs.html">Graphs</a> shows how). On the first <code>action</code> node, change <code>at</code> from <code>now</code> to <code>next_bar</code>. Play to the arena: the boss music now waits for the Heart's bar to end, up to 2.7 s at 88 bpm. Decide which you prefer.</p></li>
-    <li><p>In <b>🗺 Maps</b>, tap <code>w_hub</code> and open <b>♪ Music</b>: two cues, <code>default</code> on <code>hub</code> and <code>seal</code> on <code>heart</code>. Point <code>seal</code> at <code>boss</code> instead. In the hub's <code>story</code> graph, on the <code>action</code> node with cue <code>seal</code>, change <code>at</code> to <code>next_bar</code>. Play the hub to the seal: the square now turns to the boss's driving tune on the next bar line. Decide whether it says more than the Heart's tune, and put it back.</p></li>
+    <li><p>In <b>Maps</b>, tap <code>w_hub</code> and open <b>Music</b>: two cues, <code>default</code> on <code>hub</code> and <code>seal</code> on <code>heart</code>. Point <code>seal</code> at <code>boss</code> instead. In the hub's <code>story</code> graph, on the <code>action</code> node with cue <code>seal</code>, change <code>at</code> to <code>next_bar</code>. Play the hub to the seal: the square now turns to the boss's driving tune on the next bar line. Decide whether it says more than the Heart's tune, and put it back.</p></li>
   </ol>
 
   <div class="quiz" data-answer="2">

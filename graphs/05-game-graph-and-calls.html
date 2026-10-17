@@ -19,20 +19,20 @@
   <h1>The game graph, calls and maps</h1>
   <p class="lede">A map's graph lives and dies with its level. A game graph runs once for the whole game, and remembers across every map. This page shows how the two talk, how players move between maps, how many graphs a map can hold, and where graphs stop and Lua begins.</p>
   <div class="goal">
-    <b>You'll learn</b><span>what a game graph can and cannot do, how <code>call</code> and <code>on_call</code> carry a value across, how Gem Hollow's title screen starts the game and quits, how to send a player to another map and greet them there, the map's 16 script slots, what a save keeps of the game, and the ways into Lua</span>
-    <b>Time</b><span>35 minutes</span>
+    <b>You'll learn</b><span>what a game graph can and cannot do, how one game graph answers a player's death on every map (the starter's death screen), how <code>call</code> and <code>on_call</code> carry a value across, how Gem Hollow's title screen starts the game and quits, how to send a player to another map and greet them there, the map's 16 script slots, what a save keeps of the game, and the ways into Lua</span>
+    <b>Time</b><span>40 minutes</span>
     <b>Needs</b><span><a href="02-variables-and-numbers.html">Variables, numbers and saving</a>, and Gem Hollow open: it has two maps, a title and a level</span>
   </div>
 
   <h2>Two places a graph can run</h2>
-  <p>In <b>◇ Graphs</b>, the list starts with <span class="ui">the game's graphs</span> and their <span class="ui">+ new graph for the game</span>, then one group per map with <span class="ui">+ new graph on <i>map</i></span>. Under the hood they run in different places:</p>
+  <p>In <b>Graphs</b>, the list starts with <span class="ui">the game's graphs</span> and their <span class="ui">+ new graph for the game</span>, then one group per map with <span class="ui">+ new graph on <i>map</i></span>. Under the hood they run in different places:</p>
   <table>
     <thead><tr><th></th><th>A map's graph</th><th>A game graph</th></tr></thead>
     <tbody>
       <tr><td>Runs in</td><td>that map's level, once per level</td><td>the game, once, not in any level</td></tr>
       <tr><td>Variables</td><td>start again with the level (unless the module keeps level state)</td><td>kept from level to level; saved with the game</td></tr>
       <tr><td>Can touch</td><td>everything in its level: sectors, walls, spawns, triggers</td><td>players and their view; nothing that needs a level's map</td></tr>
-      <tr><td>Hears</td><td>everything that happens in the level</td><td>players arriving and leaving, every tick, props touched and used, panels, buttons, weapons</td></tr>
+      <tr><td>Hears</td><td>everything that happens in the level</td><td>players arriving and leaving, every tick, props touched and used, panels, buttons, weapons, and every death and hurt on any map</td></tr>
       <tr><td>Costs</td><td>one of the map's script slots</td><td>no slot</td></tr>
     </tbody>
   </table>
@@ -41,11 +41,46 @@
   <h3>What a game graph may use</h3>
   <p>Its node menu only offers what works there:</p>
   <ul>
-    <li><b>Start nodes</b> that aren't tied to a level: <a href="../reference/graph-nodes.html#when_player_arrives"><code>when_player_arrives</code></a>, <a href="../reference/graph-nodes.html#when_player_leaves"><code>when_player_leaves</code></a>, <a href="../reference/graph-nodes.html#every"><code>every</code></a>, <a href="../reference/graph-nodes.html#after"><code>after</code></a>, <a href="../reference/graph-nodes.html#when_prop_used"><code>when_prop_used</code></a>, <a href="../reference/graph-nodes.html#when_prop_touched"><code>when_prop_touched</code></a>, <a href="../reference/graph-nodes.html#when_button_pressed"><code>when_button_pressed</code></a>, <a href="../reference/graph-nodes.html#when_panel_used"><code>when_panel_used</code></a>, the weapon events, <a href="../reference/graph-nodes.html#on_call"><code>on_call</code></a>. Of the trigger events: <code>on_tick</code>, <code>on_touch</code>, <code>on_prop_use</code>, <code>on_ui_event</code>, <code>on_player_enter</code>, <code>on_player_leave</code>.</li>
+    <li><b>Start nodes</b> that aren't tied to a level: <a href="../reference/graph-nodes.html#when_player_arrives"><code>when_player_arrives</code></a>, <a href="../reference/graph-nodes.html#when_player_leaves"><code>when_player_leaves</code></a>, <a href="../reference/graph-nodes.html#every"><code>every</code></a>, <a href="../reference/graph-nodes.html#after"><code>after</code></a>, <a href="../reference/graph-nodes.html#when_prop_used"><code>when_prop_used</code></a>, <a href="../reference/graph-nodes.html#when_prop_touched"><code>when_prop_touched</code></a>, <a href="../reference/graph-nodes.html#when_button_pressed"><code>when_button_pressed</code></a>, <a href="../reference/graph-nodes.html#when_panel_used"><code>when_panel_used</code></a>, the weapon events, <a href="../reference/graph-nodes.html#when_dies"><code>when_dies</code></a> and <a href="../reference/graph-nodes.html#when_hurt"><code>when_hurt</code></a> (<a href="#deaths">below</a>), <a href="../reference/graph-nodes.html#on_call"><code>on_call</code></a>. Of the trigger events: <code>on_tick</code>, <code>on_touch</code>, <code>on_prop_use</code>, <code>on_ui_event</code>, <code>on_player_enter</code>, <code>on_player_leave</code>.</li>
     <li><b>Actions</b> on entities and on a player's view: <a href="../reference/graph-nodes.html#damage"><code>damage</code></a>, <a href="../reference/graph-nodes.html#heal"><code>heal</code></a>, <a href="../reference/graph-nodes.html#push"><code>push</code></a>, <a href="../reference/graph-nodes.html#play_sound"><code>play_sound</code></a>, the panel nodes, the cutscene nodes, <a href="../reference/graph-nodes.html#camera_follow"><code>camera_follow</code></a>, <a href="../reference/graph-nodes.html#camera_shake"><code>camera_shake</code></a>, weapons, <a href="../reference/graph-nodes.html#change_map"><code>change_map</code></a>, <a href="../reference/graph-nodes.html#quit_game"><code>quit_game</code></a>, the storage nodes. Of the trigger actions: <code>set_hp</code>, <code>set_solid</code>, <code>set_animation</code>, <code>despawn</code>, <code>add_effect</code>, <code>music</code>, <code>ui_open</code>, <code>ui_close</code>, <code>camera</code>, <code>screen</code>, <code>counter_add</code>, <code>counter_set</code>, <code>set_property</code>, <code>log</code>, <code>lua</code>.</li>
     <li>All of flow and data.</li>
   </ul>
-  <p>Everything marked <em>level only</em> in <a href="../reference/graph-nodes.html">Every graph node</a> is refused: doors, floors, <a href="../reference/graph-nodes.html#spawn"><code>spawn</code></a>, <a href="../reference/graph-nodes.html#teleport"><code>teleport</code></a>, <a href="../reference/graph-nodes.html#when_sector_entered"><code>when_sector_entered</code></a>, <a href="../reference/graph-nodes.html#when_dies"><code>when_dies</code></a>, camera paths, the sky. The studio says <em>a … acts on a level, and the game has none -- call the level's graph (a call node, to level) and do it there</em>. The other way round, a map's graph refuses the game's own events: <em>'on_player_enter' reaches only the game's graph</em>. (<a href="../reference/graph-nodes.html#when_player_arrives"><code>when_player_arrives</code></a> works in both.)</p>
+  <p>Everything marked <em>level only</em> in <a href="../reference/graph-nodes.html">Every graph node</a> is refused: doors, floors, <a href="../reference/graph-nodes.html#spawn"><code>spawn</code></a>, <a href="../reference/graph-nodes.html#teleport"><code>teleport</code></a>, <a href="../reference/graph-nodes.html#when_sector_entered"><code>when_sector_entered</code></a>, <a href="../reference/graph-nodes.html#when_level_starts"><code>when_level_starts</code></a>, camera paths, the sky. The studio says <em>a … acts on a level, and the game has none -- call the level's graph (a call node, to level) and do it there</em>. The other way round, a map's graph refuses the game's own events: <em>'on_player_enter' reaches only the game's graph</em>. (<a href="../reference/graph-nodes.html#when_player_arrives"><code>when_player_arrives</code></a>, <a href="../reference/graph-nodes.html#when_dies"><code>when_dies</code></a> and <a href="../reference/graph-nodes.html#when_hurt"><code>when_hurt</code></a> work in both.)</p>
+
+  <h2 id="deaths">Deaths and hurts, on any map</h2>
+  <p><a href="../reference/graph-nodes.html#when_dies"><code>when_dies</code></a> and <a href="../reference/graph-nodes.html#when_hurt"><code>when_hurt</code></a> work in a game graph too. There they hear a death or a hurt on <b>every</b> map of the module, a map you draw later included. So one game graph can answer a player's death everywhere, and no map needs a chain of its own for it.</p>
+  <ul>
+    <li><b>The same filters</b> as in a map's graph: <code>what</code> (<code>players</code>, <code>monsters</code> or <code>anyone</code>) and <code>kind</code> (one monster, by name). <code>when_dies</code> watches <code>monsters</code> unless you change it; <code>when_hurt</code> watches <code>anyone</code>.</li>
+    <li><b><code>entity</code></b> is who died or was hurt. When that is a player, a fade, a subtitle or a panel left unlinked reaches them.</li>
+    <li><b><code>by</code></b> is whoever did it. In a game graph it is empty when the killer is out of the game's reach, so don't build on it there. Count kills in the map's graph, where <code>by</code> is the killer whenever there was one.</li>
+    <li><b><code>amount</code></b>, on <code>when_hurt</code>, is how much the hit took.</li>
+    <li><b>The map hears it too.</b> A map's own <code>when_dies</code> still runs. The map's graph can move the player to a checkpoint while the game's graph shows the death.</li>
+  </ul>
+
+  <h3 id="death-screen">Worked example: the starter's death screen</h3>
+  <p>Every new module is a copy of the starter, and the starter has two game graphs. <code>welcome</code> says the keys once, as the game starts. <code>death</code> shows the player's death, on every map: the screen goes dark, a line is said, and it clears. Open it from <b>Graphs</b>: under <span class="ui">the game's graphs</span>, tap <span class="ui">death</span>.</p>
+  <figure class="shot" data-src="../assets/shots/graph-starter-death.png" data-alt="The starter's death game graph: when_dies for players, a fade to black, the subtitle You died. Back to the start!, and a fade back to clear; the dies node is picked" data-hotspots='[{"x": 15.2, "y": 11.2, "t": "The game", "d": "A game graph: the window names the game, not a map."}, {"x": 21.6, "y": 11.2, "t": "Two game graphs", "d": "welcome says the keys once; death is this one."}, {"x": 16.7, "y": 33.0, "t": "dies", "d": "when_dies, what: players. A player&#39;s death, on any map."}, {"x": 27.4, "y": 54.7, "t": "by", "d": "Who killed them, or empty when the killer is out of the game&#39;s reach."}, {"x": 33.3, "y": 33.0, "t": "dark", "d": "fade to black over 0.4 seconds."}, {"x": 42.8, "y": 53.8, "t": "done", "d": "dark&#39;s done comes when the screen is black: then the line."}, {"x": 50.3, "y": 33.0, "t": "said", "d": "subtitle: You died. Back to the start! for 2.5 seconds. Its then, top right, goes on at once."}, {"x": 64.4, "y": 33.0, "t": "back", "d": "fade back to clear over 1 second, on the start."}, {"x": 43.3, "y": 20.9, "t": "The note", "d": "What the graph does, and what to change."}, {"x": 88.9, "y": 33.6, "t": "The picked node", "d": "when_dies: in a game graph, a death on any map."}]'>
+    <figcaption>The starter's <code>death</code> graph, in a new module, with the <code>dies</code> node picked.</figcaption>
+  </figure>
+  <pre><code>the game, graph death:
+  when_dies (what: players) → fade (to: black, 0.4 s)
+      ─done→ subtitle "You died. Back to the start!" (2.5 s)
+      ─then→ fade (to: clear, 1 s)</code></pre>
+  <ul>
+    <li><b>Players, not monsters.</b> <code>dies</code> sets <code>what</code> to <code>players</code>. Left at its default, it would hear the monsters' deaths instead, and its fade would reach no one: a monster is not a player.</li>
+    <li><b>Who sees it.</b> Nothing is linked to the fades' or the subtitle's <code>entity</code>, so each takes the event's: the player who died. With several players, only that one sees it.</li>
+    <li><b>Dark first.</b> <code>dark</code>'s <b>done</b> comes when the fade has finished, so the line comes once the screen is dark. A subtitle's <b>then</b> comes at once, so <code>back</code> starts to clear the screen as the line is said.</li>
+    <li><b>Where the player is.</b> When a player's health runs out, the monster runtime heals them and sends them back to where they started on the map, at once. So the screen clears on the start, as the graph's note says: the player is already back there.</li>
+    <li><b>Every map, no slot.</b> It is a game graph, so it takes none of a map's 16 script slots, and the map you add next week has it too.</li>
+  </ul>
+  <p>Change the words, add a <a href="../reference/graph-nodes.html#play_sound"><code>play_sound</code></a>, or open a panel of your own in place of the subtitle (a "try again" screen). To act in the level, at a checkpoint say, call it: a <code>call</code> to <code>level</code> with the player as <code>entity</code>, answered by an <code>on_call</code> in each map's graph that does the <a href="../reference/graph-nodes.html#teleport"><code>teleport</code></a>.</p>
+
+  <h3>Hurts: a count for the whole game</h3>
+  <pre><code>the game, graph wounds      vars: taken = 0
+  when_hurt (what: players) → add_var taken (value ← when_hurt.amount)
+      → set_hud (name: taken, value ← get_var taken)</code></pre>
+  <p>Every hit on a player, on any map, adds its <code>amount</code> to <code>taken</code>, and a HUD text with <code>{hud.taken}</code> shows the total. A game graph's variable is kept from map to map, so the count carries on in the next one.</p>
+
 
   <h2>Calls: crossing over</h2>
   <p>A <a href="../reference/graph-nodes.html#call"><code>call</code></a> node starts every <a href="../reference/graph-nodes.html#on_call"><code>on_call</code></a> node of the same name, <b>now</b>, and then carries on. It sends one <code>value</code> and one <code>entity</code>.</p>
@@ -137,13 +172,13 @@ when_panel_used (title › quit) → close_panel title → quit_game</code></pre
   <p>So a score, quest flags and unlocked doors belong in a game graph. A map's own puzzle state belongs in the map's graph, kept by <span class="ui">levels keep their state</span>.</p>
 
   <h2 id="cinderfall">In Cinderfall: two game graphs and nine maps that ask them</h2>
-  <div class="callout tip"><p>Cinderfall comes with the studio: on <b>Home</b>, under <span class="ui">◆ examples</span>, press <span class="ui">📂 Cinderfall</span>. <a href="../examples/02-cinderfall.html">Cinderfall, the tour</a> walks through the whole game.</p></div>
+  <div class="callout tip"><p>Cinderfall comes with the studio: on <b>Home</b>, under <span class="ui">examples</span>, press <span class="ui">Cinderfall</span>. <a href="../examples/02-cinderfall.html">Cinderfall, the tour</a> walks through the whole game.</p></div>
   <p>Gem Hollow is one level, so it never needs the game's side. Cinderfall, an example first-person shooter, is built around it. Its <code>maps/metamap.txt</code> lays nine maps on one grid, so its five districts (the mine, the foundry, the old town with the hub, the railhead and the Heart) are walked into without a load. Each map's graphs run in its own level, and two game graphs hold everything that has to cross from one map to the next:</p>
   <ul>
     <li><code>arms</code>: the weapon wheel on <kbd>Tab</kbd> and the quick swap on <kbd>X</kbd>. It is taken apart in <a href="../weapons/01-first-weapon.html#cinderfall">Your first weapon</a>.</li>
     <li><code>progress</code>: the story's state. Its variables are <code>key_red</code>, <code>key_blue</code>, <code>key_yellow</code>, <code>cores</code>, <code>valves</code>, <code>secrets</code> and <code>kills</code>, all starting at 0.</li>
   </ul>
-  <p>In <b>◇ Graphs</b>, the <code>progress</code> row lists what it calls (<code>open_red</code>, <code>need_red</code> … <code>respawn</code>) and what it answers (<code>got_red</code>, <code>try_red</code> … <code>died</code>).</p>
+  <p>In <b>Graphs</b>, the <code>progress</code> row lists what it calls (<code>open_red</code>, <code>need_red</code> … <code>respawn</code>) and what it answers (<code>got_red</code>, <code>try_red</code> … <code>died</code>).</p>
   <figure class="shot" data-src="../assets/shots/cinder-progress.png" data-alt="Cinderfall's progress game graph at 64%: the red keycard note, with got_red kept in key_red and shown on the HUD, and try_red answered with open_red or need_red; call16 is picked" data-hotspots='[{"x":32.7,"y":23.5,"t":"One note per question","d":"The red keycard. The blue and yellow notes below are the same chains with their own names."},{"x":18.1,"y":27.2,"t":"A level reports","d":"on_call got_red: a map&#39;s graph saw the red card picked up."},{"x":26.9,"y":27.2,"t":"The game keeps it","d":"set_var key_red to 1. A game variable is kept from level to level."},{"x":35.6,"y":27.2,"t":"On the HUD","d":"set_hud key_red 1: the HUD shows the card while it is above 0."},{"x":18.1,"y":40.1,"t":"A door asks","d":"on_call try_red: the player used a red door, in whatever map it is."},{"x":18.4,"y":52.9,"t":"Has it?","d":"compare key_red &gt;= 1, into the branch."},{"x":36.2,"y":40.1,"t":"Yes: open_red","d":"call, to level, name open_red."},{"x":44.3,"y":40.1,"t":"No: need_red","d":"call, to level, name need_red."},{"x":29.7,"y":48.7,"t":"Which level","d":"Both calls take their entity from the on_call: the player who asked, so the answer goes to the level that player is in."},{"x":86.5,"y":36.6,"t":"to: level","d":"A call to a level from the game needs an entity to say which."}]'>
     <figcaption>Cinderfall's <code>progress</code> graph at 64%, on the red keycard, with <code>call16</code> picked.</figcaption>
   </figure>
@@ -177,6 +212,7 @@ the game, graph progress:
 the game, graph progress:
   on_call died → call (to: level, name: respawn) → fade black (0.4 s) ─done→ delay 36 ticks → fade clear (1 s)</code></pre>
   <p>The game's <code>call</code> goes to the level of its entity, the player who died, so the map they died in moves them to its own start. The fade is done by the game, as the graph's note says, because a fade sent by a map reaches only a player the server counts as in that map, and a moved player is counted there a tick later.</p>
+  <div class="callout tip"><p>Cinderfall was made before a game graph could hear deaths. Built today, its maps' <code>when_dies (players) → call died</code> chains could go: one <code>when_dies (players)</code> in <code>progress</code>, in place of <code>on_call died</code>, hears the death on whichever map tells it. The respawn would still be a call to the player's level, because <code>teleport</code> is level only (<a href="#deaths">Deaths and hurts, on any map</a>).</p></div>
 
   <h2>Graphs or Lua?</h2>
   <p>Graphs cover most map logic. Reach for Lua when you need what the vocabulary does not say:</p>
@@ -189,20 +225,29 @@ the game, graph progress:
   <p>There are three ways in, from small to large:</p>
   <ol>
     <li><b><span class="ui">do lua</span></b>, the trigger action <code>lua</code>, as a node. Its <code>code</code> is a snippet that runs with <code>ev</code>, the event (<code>ev.entity</code>, <code>ev.sector</code> …).</li>
-    <li><b>📜 Scripts</b>: the module's own Lua files. A script runs in <em>every level</em>, after the module's monsters are loaded, and its hooks run alongside everyone else's. See <a href="../studio/06-graphs.html">Graphs</a>.</li>
+    <li><b>Scripts</b>: the module's own Lua files. A script runs in <em>every level</em>, after the module's monsters are loaded, and its hooks run alongside everyone else's. See <a href="../studio/06-graphs.html">Graphs</a>.</li>
     <li><b>Calling a graph from Lua.</b> A level's script can start that level's <code>on_call</code> nodes with <code>graphs.call("name", entity, value)</code>, and the game's with <code>dnp.call_game("graph_call", "name", value, entity)</code>. So Lua can do the hard part and hand the result to a graph.</li>
   </ol>
-  <div class="callout warn"><p>A <code>do lua</code> written in the studio is stored as text and compiled with <code>loadstring</code>. A server running in its strict trust profile removes <code>loadstring</code>, and then refuses the code at load rather than run the graph with a piece missing. If your module will be hosted that way, put the Lua in 📜 Scripts instead.</p></div>
+  <div class="callout warn"><p>A <code>do lua</code> written in the studio is stored as text and compiled with <code>loadstring</code>. A server running in its strict trust profile removes <code>loadstring</code>, and then refuses the code at load rather than run the graph with a piece missing. If your module will be hosted that way, put the Lua in <b>Scripts</b> instead.</p></div>
 
   <h2>Exercise: the game counts the gems</h2>
   <p>Gem Hollow counts gems in the <code>world</code> map's graph, so the count is lost when the level starts over. Hand each gem to a game graph as well, which keeps its count from level to level.</p>
   <ol class="steps">
-    <li><p>Open Gem Hollow (<b>Home</b>, <span class="ui">examples</span>, <span class="ui">Gem Hollow</span>), then <b>◇ Graphs</b>, and tap <span class="ui">pickups</span> under <span class="ui">world</span>.</p></li>
-    <li><p>In the gem chain, link <code>subtitle12</code>'s <b>done</b> to a new <a href="../reference/graph-nodes.html#call"><code>call</code></a>: <code>to</code> <code>game</code>, <code>name</code> <code>gem_found</code>, <code>value</code> <code>1</code>. Back in <b>◇ Graphs</b>, the <code>pickups</code> row says <em>calls gem_found</em>, and a warning says nothing answers it.</p></li>
+    <li><p>Open Gem Hollow (<b>Home</b>, <span class="ui">examples</span>, <span class="ui">Gem Hollow</span>), then <b>Graphs</b>, and tap <span class="ui">pickups</span> under <span class="ui">world</span>.</p></li>
+    <li><p>In the gem chain, link <code>subtitle12</code>'s <b>done</b> to a new <a href="../reference/graph-nodes.html#call"><code>call</code></a>: <code>to</code> <code>game</code>, <code>name</code> <code>gem_found</code>, <code>value</code> <code>1</code>. Back in <b>Graphs</b>, the <code>pickups</code> row says <em>calls gem_found</em>, and a warning says nothing answers it.</p></li>
     <li><p>Press <span class="ui">+ new graph for the game</span>, name it <code>progress</code>, and add a variable <code>gems</code> starting at 0.</p></li>
     <li><p>Add an <a href="../reference/graph-nodes.html#on_call"><code>on_call</code></a> named <code>gem_found</code>. The warning goes away, and the game's row says <em>answers gem_found</em>.</p></li>
     <li><p>Link it to an <a href="../reference/graph-nodes.html#add_var"><code>add_var</code></a> <code>gems</code>, with <code>value</code> linked from the on_call's <code>value</code>, then to a <span class="ui">do log</span> with the text <code>the game counted a gem</code>.</p></li>
     <li><p>Try adding an <a href="../reference/graph-nodes.html#open_door"><code>open_door</code></a> to the <code>progress</code> graph. It isn't in its menu: the game has no level. Then play, find a gem, and look for your line in <code>play-server.log</code> (<a href="06-debugging.html">Debugging graphs</a>).</p></li>
+  </ol>
+
+  <h2>Exercise: your own death screen</h2>
+  <p>A new module comes with the starter's <code>death</code> graph. Make its line your own, then die to see it.</p>
+  <ol class="steps">
+    <li><p>On <b>Home</b>, press <span class="ui">new module</span>. Type an id, <code>deathtest</code> say, and choose <span class="ui">a platformer, seen from outside</span>. The new module is a copy of the starter.</p></li>
+    <li><p>Open <b>Graphs</b>. Under <span class="ui">the game's graphs</span>, tap <span class="ui">death</span>.</p></li>
+    <li><p>On the <code>said</code> node, change the text to <code>Ouch. Try again!</code>, and its <code>seconds</code> to <code>4</code>.</p></li>
+    <li><p>Press <span class="ui">Play</span> in the rail. Find the spirit and let it bite you until you fall. The screen goes dark, your line is said, and you are back at the start.</p></li>
   </ol>
 
   <div class="quiz" data-answer="2">
@@ -213,6 +258,15 @@ the game, graph progress:
       <li>Nothing: a call to a level needs an entity to say which, so it is skipped and logged</li>
     </ul>
     <p class="why">An <code>every</code> run has no entity. Link a player in, for example from a variable or a <code>when_player_arrives</code> chain.</p>
+  </div>
+  <div class="quiz" data-answer="1">
+    <p class="q">A module has twelve maps. Where does one graph go that shows a death screen on all of them?</p>
+    <ul>
+      <li>In each map's graph: <code>when_dies</code> is a level's event</li>
+      <li>In a game graph, with <code>when_dies</code> (what: players)</li>
+      <li>Nowhere: a game graph has no level, so it hears no deaths</li>
+    </ul>
+    <p class="why">In a game graph, <code>when_dies</code> and <code>when_hurt</code> hear a death or a hurt on any map. The starter's <code>death</code> graph is exactly this.</p>
   </div>
   <div class="quiz" data-answer="0">
     <p class="q">A module has monsters. How many graphs can one of its maps hold?</p>

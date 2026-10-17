@@ -414,7 +414,7 @@ function EM.despawn(self)
   if a and a.kind == 0 then fail('despawn: a player is not a scripted agent') end
   if a then a.active = false a.gen = a.gen + 1 end
 end
-for _, n in ipairs({ 'param', 'base_param', 'add_effect', 'remove_effect', 'set_input', 'press', 'release', 'set_body_param' }) do
+for _, n in ipairs({ 'param', 'base_param', 'add_effect', 'remove_effect', 'set_input', 'press', 'release', 'set_body_param', 'swing', 'set_trail' }) do
   EM[n] = notin('e:' .. n)
 end
 ENT.__index = function(_, k) return EM[k] end
@@ -450,6 +450,7 @@ function PM.despawn(self)
   p.gen = p.gen + 1
   return true
 end
+PM.set_trail = notin('p:set_trail')
 PROP.__index = function(_, k) return PM[k] end
 PROP.__eq = function(a, b) local p, q = hof(a, 'p'), hof(b, 'p') return p and q and p.idx == q.idx and p.gen == q.gen or false end
 PROP.__tostring = function(a) return fmt('prop(%d)', rawget(a, HK).idx) end
@@ -893,7 +894,7 @@ dnp = {
 }
 with_missing(dnp, 'dnp.', { 'side', 'hitscan', 'can_see', 'sweep', 'sweep_hit', 'find_path', 'length', 'atan2', 'dir',
   'blast_reach', 'knock_impulse', 'path_length', 'side_texture', 'set_side_texture', 'spawn_enemy', 'sky', 'export',
-  'call_game', 'game_has', 'call_level', 'call_owner', 'predict_sounds', 'mob_set', 'mob_state', 'stale_ops' })
+  'call_game', 'game_has', 'call_level', 'call_owner', 'predict_sounds', 'mob_set', 'mob_state', 'stale_ops', 'can_reach' })
 
 -- --------------------------------------------------------------- runtimes
 local function mob_record(a) return a.mob end

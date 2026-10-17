@@ -17,7 +17,7 @@
 <body>
 <article>
   <h1>Recipes: six scripts</h1>
-  <p class="lede">Six whole scripts, each one a feature. Paste one into 📜 Scripts, change the names at the top to yours, and press Play.</p>
+  <p class="lede">Six whole scripts, each one a feature. Paste one into <b>Scripts</b>, change the names at the top to yours, and press Play.</p>
   <div class="goal">
     <b>You'll learn</b><span>how the pieces of the earlier pages fit together in real features: waves of monsters with a countdown, a lift that follows a pressure plate, a shop panel, a day and night cycle, a checkpoint kept in a save game, and a score per player</span>
     <b>Time</b><span>45 minutes</span>
@@ -30,11 +30,11 @@
     <li><b>Things are found late</b>, the first time a hook needs them, because the map's props don't exist yet when your script loads.</li>
     <li><b>Plain Lua 5.1</b>, and only the engine functions from this track.</li>
   </ul>
-  <p>Paste each one as a script of its own in <b>📜 Scripts</b>. Scripts don't see each other's <code>local</code> names, so two recipes never clash, and their hooks all run.</p>
+  <p>Paste each one as a script of its own in <b>Scripts</b>. Scripts don't see each other's <code>local</code> names, so two recipes never clash, and their hooks all run.</p>
 
   <h2 id="arena">1. A wave arena with a countdown</h2>
   <p><b>What it does.</b> A player crosses the arena's entrance. The HUD counts down five seconds, then a wave of monsters appears in the arena. When the last one dies, the next countdown starts. After three waves, the HUD says the arena is clear.</p>
-  <p><b>Where.</b> 📜 Scripts, as <code>arena.lua</code>. In the map, give the arena room a tag (here 1) and flag its entrance wall <span class="ui">trigger</span>. Add a HUD text with <code>{hud.arena}</code> in <b>▣ Screens</b>.</p>
+  <p><b>Where.</b> <b>Scripts</b>, as <code>arena.lua</code>. In the map, give the arena room a tag (here 1) and flag its entrance wall <span class="ui">trigger</span>. Add a HUD text with <code>{hud.arena}</code> in <b>Screens</b>.</p>
   <script type="text/plain" id="lua-arena">-- arena.lua: crossing the entrance starts three waves.
 local KIND = "imp"             -- a monster from Monsters (in Gem Hollow: "slime")
 local ARENA_TAG = 1            -- the arena room's tag
@@ -122,7 +122,7 @@ end
 
   <h2 id="plate">2. A pressure plate lift</h2>
   <p><b>What it does.</b> While anyone stands on a plate, a lift goes down. When nobody does, it comes back up, from wherever it got to. Step off halfway, and it turns round smoothly.</p>
-  <p><b>Where.</b> 📜 Scripts, as <code>plate.lua</code>. You need a prop named <code>plate</code> (not solid, so players can stand in it) and a room tagged 7 for the lift.</p>
+  <p><b>Where.</b> <b>Scripts</b>, as <code>plate.lua</code>. You need a prop named <code>plate</code> (not solid, so players can stand in it) and a room tagged 7 for the lift.</p>
   <script type="text/plain" id="lua-plate">-- plate.lua: the lift goes down while the plate is pressed.
 local PLATE = "plate"       -- the prop's name in Props
 local LIFT_TAG = 7
@@ -188,7 +188,7 @@ end
 
   <h2 id="shop">3. A shop that sells health</h2>
   <p><b>What it does.</b> Using the shopkeeper opens a panel with two potions. Each player starts with 50 gold, shown on their HUD. A potion costs gold and heals, never past full health.</p>
-  <p><b>Where.</b> 📜 Scripts, as <code>shop.lua</code>. A usable prop for the shopkeeper; in Cinderfall, try <code>vos</code>. A HUD text with <code>Gold {hud.gold}</code> in <b>▣ Screens</b>. The sounds are Gem Hollow's: use names from your own <b>🔊 Sounds</b>.</p>
+  <p><b>Where.</b> <b>Scripts</b>, as <code>shop.lua</code>. A usable prop for the shopkeeper; in Cinderfall, try <code>vos</code>. A HUD text with <code>Gold {hud.gold}</code> in <b>Screens</b>. The sounds are Gem Hollow's: use names from your own <b>Sounds</b>.</p>
   <pre><code>-- shop.lua: a shopkeeper sells potions for gold.
 local SHOPKEEPER = "shopkeeper"
 local START_GOLD = 50
@@ -255,7 +255,7 @@ end</code></pre>
 
   <h2 id="daynight">4. Day and night</h2>
   <p><b>What it does.</b> Every two minutes, the light of every outdoor room fades between day and night over 20 seconds. Rooms with a chosen tag, such as houses with their own lamps, keep their light.</p>
-  <p><b>Where.</b> 📜 Scripts, as <code>daynight.lua</code>. Tag your indoor rooms 50, or change <code>INDOOR_TAG</code>.</p>
+  <p><b>Where.</b> <b>Scripts</b>, as <code>daynight.lua</code>. Tag your indoor rooms 50, or change <code>INDOOR_TAG</code>.</p>
   <pre><code>-- daynight.lua: outdoor rooms fade between day and night.
 local DAY, NIGHT = 220, 70          -- light levels, 0..255
 local HALF_DAY = 2 * 60 * 60        -- ticks of day, then of night: 2 minutes
@@ -298,7 +298,7 @@ end</code></pre>
 
   <h2 id="checkpoint">5. A checkpoint that survives a save</h2>
   <p><b>What it does.</b> Touching a flag makes it your checkpoint, with a sound. When you die, you come back at your last flag instead of the level's start. Save the game with <kbd>F5</kbd>, load it with <kbd>F9</kbd>, and your checkpoint is still yours.</p>
-  <p><b>Where.</b> 📜 Scripts, as <code>checkpoint.lua</code>. Flag props named <code>flag1</code> to <code>flag3</code>, and <span class="ui">save and load games</span> on in <b>⚙ Settings</b>. Gem Hollow already does this with its <code>checkpoints</code> graph, so try it in a module of your own.</p>
+  <p><b>Where.</b> <b>Scripts</b>, as <code>checkpoint.lua</code>. Flag props named <code>flag1</code> to <code>flag3</code>, and <span class="ui">save and load games</span> on in <b>Settings</b>. Gem Hollow already does this with its <code>checkpoints</code> graph, so try it in a module of your own.</p>
   <pre><code>-- checkpoint.lua: touch a flag to make it where you come back.
 local FLAGS = { flag1 = true, flag2 = true, flag3 = true }
 local SOUND = "world.checkpoint"
@@ -342,7 +342,7 @@ end)</code></pre>
 
   <h2 id="score">6. A score per player</h2>
   <p><b>What it does.</b> When a monster dies, the player who killed it scores points by the monster's kind. Each player's score is on their own HUD.</p>
-  <p><b>Where.</b> 📜 Scripts, as <code>score.lua</code>: everything above the <em>playground only</em> line. A HUD text with <code>Score {hud.score}</code> in <b>▣ Screens</b>. The kinds are Gem Hollow's monsters.</p>
+  <p><b>Where.</b> <b>Scripts</b>, as <code>score.lua</code>: everything above the <em>playground only</em> line. A HUD text with <code>Score {hud.score}</code> in <b>Screens</b>. The kinds are Gem Hollow's monsters.</p>
   <script type="text/plain" id="lua-score">-- score.lua: points per kill, per player, on the HUD.
 local POINTS = { slime = 10, bee = 25, snail = 5 }   -- any other kind: 1
 local score = {}                                     -- player index -> points
@@ -397,10 +397,10 @@ end
 
   <h2>Try one in the studio</h2>
   <ol class="steps">
-    <li><p>Open Gem Hollow from Home → <span class="ui">◆ examples</span>. In <b>📜 Scripts</b>, add <code>score</code> and paste recipe 6, without the playground part.</p></li>
-    <li><p>In <b>▣ Screens</b>, on the <span class="ui">HUD</span> tab, press <span class="ui">+ element…</span> and add a text that reads <code>Score {hud.score}</code>. Drag it to a free corner.</p></li>
+    <li><p>Open Gem Hollow from Home → <span class="ui">examples</span>. In <b>Scripts</b>, add <code>score</code> and paste recipe 6, without the playground part.</p></li>
+    <li><p>In <b>Screens</b>, on the <span class="ui">HUD</span> tab, press <span class="ui">+ element…</span> and add a text that reads <code>Score {hud.score}</code>. Drag it to a free corner.</p></li>
     <li><p>Play <code>world</code> and defeat a slime and a bee. The score shows 10, then 35.</p></li>
-    <li><p>Open <span class="ui">📋 play log</span> and find the <code>scores; total</code> lines.</p></li>
+    <li><p>Open <span class="ui">play log</span> and find the <code>scores; total</code> lines.</p></li>
     <li><p>Change <code>slime = 10</code> to <code>slime = 100</code> and play again. Nothing else needs to change.</p></li>
   </ol>
 
@@ -429,7 +429,7 @@ end
       <li>50: each level's script has its own <code>gold</code> table</li>
       <li>None</li>
     </ul>
-    <p class="why">A 📜 script runs separately in every level. Gold that follows the player belongs to a game graph.</p>
+    <p class="why">A script runs separately in every level. Gold that follows the player belongs to a game graph.</p>
   </div>
 </article>
 </body>

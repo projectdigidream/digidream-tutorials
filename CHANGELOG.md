@@ -53,6 +53,12 @@ anything not released yet is under **Unreleased**.
   - A plugin editor's bar says when its changes are kept.
 
   The playtest fixes are covered where their features are taught, and screenshots are retaken.
+- **Graphs, engine 0.2.2:** a game graph hears deaths and hurts on any map. A
+  worked example is the starter's death screen, and there is an exercise for
+  your own. Advanced covers `mobs.hurt` taking the attacker, `e:swing()`,
+  `dnp.can_reach` and trails. The glossary adds game graph, death screen and
+  trail, and rewrites swing. The shortcuts say ⌘V no longer switches to the
+  game view.
 - **Flat glyphs**: no colour emoji as icons in the sidebar, the landing page or
   the studio's labels quoted in the pages, as the studio dropped them (0.4.1).
 - **Written for people who use the apps**, not build them: no terminal, build

@@ -23,10 +23,10 @@
   <table>
     <thead><tr><th>Editor</th><th>Source (kept in the module)</th><th>Baked into</th><th>When it is baked</th></tr></thead>
     <tbody>
-      <tr><td>🎞 ThreeSprite</td><td><code>sources/sprites/NAME.tsprite</code></td><td><code>assets/sprites/NAME.json</code> + <code>NAME.png</code> (an atlas)</td><td>on <span class="ui">‹ studio</span>, and at Play / Export if stale</td></tr>
-      <tr><td>🧱 qPainter</td><td><code>sources/textures/NAME.texproj.json</code></td><td><code>assets/textures/NAME.png</code>. Visible layers are flattened; a multi-frame project becomes a vertical sheet.</td><td>on <span class="ui">‹ studio</span>, and at Play / Export if stale</td></tr>
-      <tr><td>♪ DigidreamSynth</td><td><code>sources/music/NAME.msproj</code></td><td><code>assets/music/NAME.mstk</code>, with mastering baked in</td><td>only at Play, Export or <span class="ui">bake now</span></td></tr>
-      <tr><td>🔊 DigidreamSound</td><td><code>sources/sounds/ID.sfxproj</code> (one per pack)</td><td>merged into <code>assets/sounds/bank.sfxproj</code>; when two packs share a name, the higher pack wins</td><td>when the module is written (no baker)</td></tr>
+      <tr><td>ThreeSprite</td><td><code>sources/sprites/NAME.tsprite</code></td><td><code>assets/sprites/NAME.json</code> + <code>NAME.png</code> (an atlas)</td><td>when you go back with <span class="ui">studio</span>, and at Play / Export if stale</td></tr>
+      <tr><td>qPainter</td><td><code>sources/textures/NAME.texproj.json</code></td><td><code>assets/textures/NAME.png</code>. Visible layers are flattened; a multi-frame project becomes a vertical sheet.</td><td>when you go back with <span class="ui">studio</span>, and at Play / Export if stale</td></tr>
+      <tr><td>DigidreamSynth</td><td><code>sources/music/NAME.msproj</code></td><td><code>assets/music/NAME.mstk</code>, with mastering baked in</td><td>only at Play, Export or <span class="ui">bake now</span></td></tr>
+      <tr><td>DigidreamSound</td><td><code>sources/sounds/ID.sfxproj</code> (one per pack)</td><td>merged into <code>assets/sounds/bank.sfxproj</code>; when two packs share a name, the higher pack wins</td><td>when the module is written (no baker)</td></tr>
     </tbody>
   </table>
   <p>A plain PNG texture becomes a qPainter project the first time you edit it. Baked results are kept on the device, so unchanged sources are not baked again.</p>
@@ -39,7 +39,7 @@
       <tr><td><code>assets/animations.txt</code></td><td><code>sheet NAME vertical N</code> lines for animated textures (an <code>fps</code> is added when it isn't 8)</td><td>a texture's <span class="ui">cut &amp; speed…</span></td></tr>
       <tr><td><code>assets/music/index.json</code></td><td><code>{ map: { cue: "track.mstk" } }</code>. A map starts on its <code>default</code> cue.</td><td>each map's music cues</td></tr>
       <tr><td><code>assets/props.txt</code></td><td>props, with <code>atlas NAME</code> naming their sprite sheet</td><td>Props</td></tr>
-      <tr><td><code>assets/sprites/swings.json</code></td><td>how every melee swing's slash looks: the default, then weapons by name and monsters by catalogue name. Written only when something is set.</td><td>Player → <span class="ui">💨 slash</span>, and the swing panels on Monsters' and Weapons' <span class="ui">Advanced</span></td></tr>
+      <tr><td><code>assets/sprites/swings.json</code></td><td>how every melee swing's slash looks: the default, then weapons by name and monsters by catalogue name. Written only when something is set.</td><td>Player → <span class="ui">slash</span>, and the swing panels on Monsters' and Weapons' <span class="ui">Advanced</span></td></tr>
       <tr><td><code>assets/sprites/weapons.json</code> · <code>assets/sprites/index.json</code></td><td>the first-person weapons: each weapon's frames at rest and firing (picture, tics at 35 a second, flash), and each picture's size and where it sits on the screen. Written only when a weapon has a first-person view.</td><td>Weapons → <span class="ui">Looks</span> → <b>Held in first person</b></td></tr>
     </tbody>
   </table>
@@ -58,8 +58,8 @@
       <tr><td><code>cues.json</code></td><td>Pieces and the rules between them</td><td>DigidreamSynth Cues</td></tr>
       <tr><td><code>.sfxproj</code></td><td>A sound bank: groups, effects, master and sounds (each with takes and rings)</td><td>DigidreamSound; the game loads it as is</td></tr>
       <tr><td><code>.sfxb</code></td><td>A sealed binary sound bank, for other games that embed the sound engine</td><td>DigidreamSound standalone</td></tr>
-      <tr><td><code>.skin.json</code> · <code>.skin.js</code></td><td>A studio style: a uikit skin baked into one file. Kept on the device, never in a module.</td><td>Home's Style card or Settings → Look: <span class="ui">⇩ import a style…</span></td></tr>
-      <tr><td><code>.dnpplugin</code></td><td>A studio plugin</td><td>Home → <span class="ui">🧩 plugins</span></td></tr>
+      <tr><td><code>.skin.json</code> · <code>.skin.js</code></td><td>A studio style: a uikit skin baked into one file. Kept on the device, never in a module.</td><td>Home's Style card or Settings → Look: <span class="ui">import a style…</span></td></tr>
+      <tr><td><code>.dnpplugin</code></td><td>A studio plugin</td><td>Home → <span class="ui">plugins</span></td></tr>
       <tr><td>palettes</td><td><code>.gpl</code>, <code>.hex</code>, <code>.pal</code>, <code>.png</code> strips</td><td>ThreeSprite and qPainter</td></tr>
     </tbody>
   </table>
@@ -67,7 +67,7 @@
   <div class="quiz" data-answer="1">
     <p class="q">You changed a melody in DigidreamSynth and went back to the studio. When does the game's .mstk change?</p>
     <ul>
-      <li>Right away, when you press ‹ studio</li>
+      <li>Right away, when you press studio</li>
       <li>At the next Play or Export, or when you press bake now</li>
       <li>Never; you have to export the .mstk by hand</li>
     </ul>

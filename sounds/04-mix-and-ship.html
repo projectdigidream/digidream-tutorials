@@ -109,12 +109,12 @@
   <figure class="shot" data-src="../assets/shots/studio-sounds-page.png" data-alt="The studio's Sounds page in Gem Hollow: one pack, meadow, with 30 sounds, and the sounds listed with who uses them">
     <figcaption>The Sounds page in Gem Hollow: one pack, then every sound with who uses it and a ▶.</figcaption>
   </figure>
-  <p>Open <span class="ui">🔊 Sounds</span> from the rail or Home. The page has:</p>
+  <p>Open <span class="ui">Sounds</span> from the rail or Home. The page has:</p>
   <ul>
-    <li><span class="ui">+ new sound pack</span> — asks for a name, then opens DigidreamSound on the new pack;</li>
+    <li><span class="ui">+ new sound pack</span> — asks for a name, then opens DigidreamSound on the new pack. It starts empty, under that name, with the three groups <b>world</b>, <b>player</b> and <b>ui</b>;</li>
     <li><span class="ui">+ import sound packs (.sfxproj)</span> — takes one or more project files. Each is checked by the sound engine's own loader first, so a file that parses but would not play is refused;</li>
-    <li>the packs, <b>highest first</b>, each with <span class="ui">✎ edit in DigidreamSound</span> (and <span class="ui">open with…</span> when more than one editor can open a pack), <span class="ui">↑</span> and <span class="ui">↓</span> to change its priority, <span class="ui">✕</span> to remove it, an <b>in the game</b> switch to leave it out without removing it, and how many sounds it has (and how many of them a pack above already gives);</li>
-    <li>every sound, grouped by pack, with the monsters, weapons and pickups that use it and a <span class="ui">▶</span> to hear it. Graphs and scripts are not counted there: in Gem Hollow, <code>world.checkpoint</code> shows no user although a graph plays it.</li>
+    <li>the packs, <b>highest first</b>, each with <span class="ui">edit in DigidreamSound</span> (and <span class="ui">open with…</span> when more than one editor can open a pack), <span class="ui">↑</span> and <span class="ui">↓</span> to change its priority, <span class="ui">✕</span> to remove it, an <b>in the game</b> switch to leave it out without removing it, and how many sounds it has (and how many of them a pack above already gives);</li>
+    <li>every sound, grouped by pack, with what uses it and a <span class="ui">▶</span> to hear it. Monsters, missiles, weapons and pickups are named, and so are graphs: a <code>play_sound</code>, or a typed subtitle's letter sound, shows as <code>graph <i>map</i>.<i>name</i></code> (in Gem Hollow, <code>world.checkpoint</code> is played by <code>graph world.checkpoints</code>). Scripts are not counted: a sound only Lua plays shows no user.</li>
   </ul>
   <div class="diagram"><svg viewBox="0 0 560 130" font-size="13" role="img" aria-label="Packs in sources/sounds are merged in priority order into assets/sounds/bank.sfxproj">
     <rect class="acc" x="10" y="10" width="200" height="30" rx="6"/><text x="110" y="30" text-anchor="middle">sources/sounds/mine.sfxproj</text>
@@ -157,8 +157,8 @@ dnp.sound("weapon.pistol.fire", e, { predicted = true })  -- e's client already 
 }</code></pre>
   <div class="callout warn"><p>A sound may be dropped — by distance, by a limit, by the network. Never make it the only sign of anything. A door that opens should also move; a hit should also flash.</p></div>
   <ol class="steps">
-    <li><p>In the studio, open <span class="ui">🔊 Sounds</span> and press <span class="ui">+ new sound pack</span>. Call it <code>mine</code>.</p></li>
-    <li><p>In DigidreamSound, make <code>world.door.open</code> from <span class="ui">🚪 Door / mechanism</span>, on the <b>world</b> group. Press <span class="ui">‹ studio</span>.</p></li>
+    <li><p>In the studio, open <span class="ui">Sounds</span> and press <span class="ui">+ new sound pack</span>. Call it <code>mine</code>.</p></li>
+    <li><p>In DigidreamSound, make <code>world.door.open</code> from <span class="ui">🚪 Door / mechanism</span>, on the <b>world</b> group. Press <span class="ui">studio</span>.</p></li>
     <li><p>If the module has another pack with the same name, move <code>mine</code> to the top with <span class="ui">↑</span> and check the report says yours is kept.</p></li>
     <li><p>Press <span class="ui">▶</span> beside <code>world.door.open</code> to hear it from the merged bank. Then play the module and open a door.</p></li>
   </ol>
@@ -186,22 +186,22 @@ dnp.sound("weapon.pistol.fire", e, { predicted = true })  -- e's client already 
   </table>
   <p>Six sounds are in the pack but nothing calls them yet: <code>player.step</code>, <code>world.door.close</code>, <code>world.lift</code>, <code>ui.open</code>, <code>ui.close</code> and <code>ui.select</code>. They are ready for your own graphs.</p>
   <ol class="steps">
-    <li><p>Open Gem Hollow and the <code>world</code> map's graphs (<a href="../graphs/01-thinking-in-graphs.html">Graphs</a> shows how). In <code>world.pickups</code>, find the <code>play_sound</code> node after the coin and change its sound to <code>pickup.gem</code>. Press <span class="ui">▶ Play</span> and grab a coin: it sparkles like a gem. Change it back.</p></li>
+    <li><p>Open Gem Hollow and the <code>world</code> map's graphs (<a href="../graphs/01-thinking-in-graphs.html">Graphs</a> shows how). In <code>world.pickups</code>, find the <code>play_sound</code> node after the coin and change its sound to <code>pickup.gem</code>. Press <span class="ui">Play</span> and grab a coin: it sparkles like a gem. Change it back.</p></li>
     <li><p>In <code>world.intro</code>, select one of the <code>subtitle</code> nodes, set its <code>mode</code> to <code>typed</code> and its <code>sound</code> to <code>ui.select</code>. Play: the story line types itself out with a click per step.</p></li>
-    <li><p>In <b>🔊 Sounds</b>, open <code>meadow</code> and replace <code>world.door.open</code> with something heavier (press <span class="ui">🚪 Door / mechanism</span> until one fits). Press <span class="ui">‹ studio</span>, then pull the red lever in the game: the gate uses your door.</p></li>
+    <li><p>In <b>Sounds</b>, open <code>meadow</code> and replace <code>world.door.open</code> with something heavier (press <span class="ui">🚪 Door / mechanism</span> until one fits). Press <span class="ui">studio</span>, then pull the red lever in the game: the gate uses your door.</p></li>
   </ol>
 
   <h2 id="cinderfall">In Cinderfall</h2>
-  <div class="callout tip"><p>Cinderfall, the first-person shooter example, comes with the studio: on Home, under <span class="ui">◆ examples</span>, press <span class="ui">📂 Cinderfall</span>. The <a href="../examples/02-cinderfall.html">Cinderfall tour</a> walks round it.</p></div>
+  <div class="callout tip"><p>Cinderfall, the first-person shooter example, comes with the studio: on Home, under <span class="ui">examples</span>, press <span class="ui">Cinderfall</span>. The <a href="../examples/02-cinderfall.html">Cinderfall tour</a> walks round it.</p></div>
   <figure class="shot" data-src="../assets/shots/cinder-sounds-page.png" data-alt="The studio's Sounds page in Cinderfall: one pack, Cinderfall (generated), 68 sounds, and beside each sound who calls it" data-hotspots='[{"x":24,"y":22.5,"t":"One pack","d":"Cinderfall (generated) (cinderfall), in the game"},{"x":19,"y":32.5,"t":"68 sounds","d":"the merged bank is exactly this pack"},{"x":61,"y":55.5,"t":"Called by graphs","d":"player.pain: four graphs, for the lava floors"},{"x":73,"y":67.4,"t":"Called by every weapon","d":"wpn.draw: each weapon&#39;s draw phase plays it"},{"x":74,"y":73.4,"t":"Called by weapons","d":"wpn.dry: the revolver, scatter, riveter and flare"}]'>
-    <figcaption>🔊 Sounds in Cinderfall: one pack of 68, and beside each sound the graphs or weapons that call it.</figcaption>
+    <figcaption><b>Sounds</b> in Cinderfall: one pack of 68, and beside each sound the graphs or weapons that call it.</figcaption>
   </figure>
   <p>Cinderfall has one pack, <code>cinderfall</code>, so the merged <code>assets/sounds/bank.sfxproj</code> is the same 68 sounds. The Sounds page lists, beside each one, what calls it. All three ways of calling are in use:</p>
   <table>
     <thead><tr><th>From</th><th>Where</th><th>Sounds</th></tr></thead>
     <tbody>
       <tr><td>monsters (<code>maps/module.lua</code>)</td><td>the sequences of the husk, gunner, hound, spitter, brute and Smelter: sight, attack, pain, death</td><td><code>husk.*</code>, <code>gunner.*</code> (and <code>gunner.fire</code> with each shot), <code>hound.*</code>, <code>spitter.*</code>, <code>brute.*</code>, <code>smelter.*</code>; the Smelter's volley reuses <code>brute.fire</code></td></tr>
-      <tr><td>missiles (<b>☠ Monsters</b> → missiles)</td><td><code>on_hit</code>, <code>from</code> the impact</td><td><code>glob.splat</code> (the spitter's slag), <code>boom</code> (the cinder shell, the flare)</td></tr>
+      <tr><td>missiles (the <b>Missiles</b> page)</td><td><code>on_hit</code>, <code>from</code> the impact</td><td><code>glob.splat</code> (the spitter's slag), <code>boom</code> (the cinder shell, the flare)</td></tr>
       <tr><td>weapons (<code>maps/arsenal.lua</code>)</td><td>the phases of the wrench, revolver, scattergun, riveter and flare gun</td><td><code>wpn.draw</code> at the first tick of every weapon's <code>draw</code> phase, as it comes up. Every shot and swing <code>predicted</code>: <code>wpn.wrench.swing</code>, <code>wpn.*.fire</code>, <code>wpn.scatter.double</code>. Not predicted: <code>wpn.revolver.cock</code>, <code>.reload</code>, <code>wpn.scatter.pump</code>, <code>wpn.riveter.spin</code>, <code>wpn.flare.reload</code>, <code>wpn.dry</code></td></tr>
       <tr><td>pickups (<code>maps/arsenal.lua</code>)</td><td>weapons, ammo, stim and medkit</td><td><code>pickup.weapon</code>, <code>pickup.ammo</code>, <code>pickup.health</code></td></tr>
       <tr><td>scripts</td><td><code>player_setup.lua</code>; <code>module.lua</code></td><td><code>player.jump</code>, <code>player.land</code>; <code>player.pain</code>, <code>player.death</code></td></tr>
@@ -215,8 +215,8 @@ dnp.sound("weapon.pistol.fire", e, { predicted = true })  -- e's client already 
   <p>The voices are timed to the typing. At 38 letters a second, two at a time, a step comes every 53 ms, and each voice blip lasts 52 ms: one blip per step, never overlapping into a buzz.</p>
   <p>Every sound in the pack has a caller. Sounds nothing would play were taken out (there is no clang for a wrench hit, no door closing, no lift), so the bank the game loads carries nothing it never uses.</p>
   <ol class="steps">
-    <li><p>Open Cinderfall from Home → <span class="ui">◆ examples</span> and open <b>🔊 Sounds</b>. Scroll the list: each sound with a caller says who, such as <em>revolver, scatter, riveter, flare</em> beside <code>wpn.dry</code>.</p></li>
-    <li><p>Give the revolver a draw of its own. In <b>🔫 Weapons</b>, open <code>revolver</code> and pick the <code>draw</code> phase, 8 ticks long: its one step is a <code>sound</code> step for <code>wpn.draw</code> at tick 0, the same as every other weapon's. Add a second <code>sound</code> step for <code>wpn.revolver.cock</code> at tick 6. Play and switch to the revolver: it comes up and cocks, ready to fire. Back on <b>🔊 Sounds</b>, <code>wpn.revolver.cock</code> still says <em>revolver</em>, now for two phases.</p></li>
+    <li><p>Open Cinderfall from Home → <span class="ui">examples</span> and open <b>Sounds</b>. Scroll the list: each sound with a caller says who, such as <em>revolver, scatter, riveter, flare</em> beside <code>wpn.dry</code>.</p></li>
+    <li><p>Give the revolver a draw of its own. In <b>Weapons</b>, open <code>revolver</code> and pick the <code>draw</code> phase, 8 ticks long: its one step is a <code>sound</code> step for <code>wpn.draw</code> at tick 0, the same as every other weapon's. Add a second <code>sound</code> step for <code>wpn.revolver.cock</code> at tick 6. Play and switch to the revolver: it comes up and cocks, ready to fire. Back on <b>Sounds</b>, <code>wpn.revolver.cock</code> still says <em>revolver</em>, now for two phases.</p></li>
     <li><p>Give a speaker a new voice. In <code>w_hub</code>'s <code>story</code> graph, pick one of Pip's <code>subtitle</code> nodes and set its <code>sound</code> to <code>voice.carrow</code>. Play and talk to Pip: the child now speaks in Brother Carrow's low blip. Change it back.</p></li>
   </ol>
 

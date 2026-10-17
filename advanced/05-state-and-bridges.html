@@ -25,7 +25,7 @@
   </div>
 
   <h2 id="switches">What the module keeps on its own</h2>
-  <p>In <b>⚙ Settings</b>, three switches say what the module saves:</p>
+  <p>In <b>Settings</b>, three switches say what the module saves:</p>
   <table>
     <thead><tr><th>Switch</th><th>What it does</th></tr></thead>
     <tbody>
@@ -130,7 +130,7 @@ end
   <div class="widget" data-widget="lua-playground" data-title="Graphs, triggers and a function for both" data-code="lua-bridge" data-events="use"></div>
 
   <h2 id="triggers">Talking to triggers</h2>
-  <p>The trigger runtime (<b>⚡ Triggers</b> in the map editor) keeps counters and named properties. A script can read them and set properties:</p>
+  <p>The trigger runtime (<b>Triggers</b> in the map editor) keeps counters and named properties. A script can read them and set properties:</p>
   <ul>
     <li><a href="../luaref/02-every-function.html#triggers.counter"><code>triggers.counter(name)</code></a>: a counter's value, <code>0</code> if never counted;</li>
     <li><a href="../luaref/02-every-function.html#triggers.property"><code>triggers.property(name)</code></a>, <a href="../luaref/02-every-function.html#triggers.set_property"><code>triggers.set_property(name, value)</code></a>: a named value;</li>
@@ -168,8 +168,8 @@ end</code></pre>
 
   <h2>Try it in the studio</h2>
   <ol class="steps">
-    <li><p>Open Gem Hollow from Home → <span class="ui">◆ examples</span>. In <b>⚙ Settings</b>, turn on <span class="ui">save and load games</span>.</p></li>
-    <li><p>In <b>📜 Scripts</b>, add a script called <code>pulls</code>:</p>
+    <li><p>Open Gem Hollow from Home → <span class="ui">examples</span>. In <b>Settings</b>, turn on <span class="ui">save and load games</span>.</p></li>
+    <li><p>In <b>Scripts</b>, add a script called <code>pulls</code>:</p>
 <pre><code>local pulls = 0
 
 function on_prop_use(e, p)
@@ -183,8 +183,8 @@ end, function(n)
   pulls = n
   print("restored pulls: " .. n)
 end)</code></pre></li>
-    <li><p>Press <span class="ui">▶ Play</span> on <code>world</code>. Use a lever twice, then press <kbd>F5</kbd> to save. Use a lever once more, then press <kbd>F9</kbd> to load.</p></li>
-    <li><p>Come back and open <span class="ui">📋 play log</span>. You see <code>pulls: 1</code>, <code>pulls: 2</code>, <code>pulls: 3</code>, then <code>restored pulls: 2</code>. Loading started the level's scripts again, and your <code>load</code> put the count back.</p></li>
+    <li><p>Press <span class="ui">Play</span> on <code>world</code>. Use a lever twice, then press <kbd>F5</kbd> to save. Use a lever once more, then press <kbd>F9</kbd> to load.</p></li>
+    <li><p>Come back and open <span class="ui">play log</span>. You see <code>pulls: 1</code>, <code>pulls: 2</code>, <code>pulls: 3</code>, then <code>restored pulls: 2</code>. Loading started the level's scripts again, and your <code>load</code> put the count back.</p></li>
     <li><p>Remove the <a href="../luaref/02-every-function.html#dnp.persist"><code>dnp.persist</code></a> call and try again. After <kbd>F9</kbd>, the next pull prints <code>pulls: 1</code>: the count started over with the level.</p></li>
   </ol>
   <div class="callout tip"><p><code>load</code> runs after the top of your script, so it has the last word over a starting value. Saving is for one player: with two players connected, <kbd>F5</kbd> is refused, and says why.</p></div>

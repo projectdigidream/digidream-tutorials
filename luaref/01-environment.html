@@ -57,7 +57,7 @@
   <table>
     <thead><tr><th>You write it in</th><th>Runs in</th><th>When</th></tr></thead>
     <tbody>
-      <tr><td><b>📜 Scripts</b>, <span class="ui">+ script</span></td><td>every level of the module, a copy in each</td><td>once as the level loads, then whenever its hooks are called</td></tr>
+      <tr><td><b>Scripts</b>, <span class="ui">+ script</span></td><td>every level of the module, a copy in each</td><td>once as the level loads, then whenever its hooks are called</td></tr>
       <tr><td>Map settings → <span class="ui">extra Lua</span></td><td>that one map's level</td><td>once as the level loads, last of all</td></tr>
       <tr><td>A graph's <code>action</code> node set to <span class="ui">do lua</span>, or a trigger's <code>lua</code> action</td><td>the level; in a game graph, the game machine</td><td>each time the run reaches it</td></tr>
     </tbody>
@@ -69,10 +69,10 @@
   <p>When a level loads, its scripts run top to bottom, one file after another, in this order:</p>
   <ol>
     <li>The engine's runtimes the map needs: the monster runtime (<code>mobs</code>) when the module has monsters or weapons; the trigger runtime (<code>triggers</code>) when the map has triggers or a graph; the graph runtime (<code>graphs</code>) and the map's graphs when it has one.</li>
-    <li>The module's monster definitions, then your 📜 scripts, in the order the Scripts page lists them. Each script is wrapped in <code>do … end</code>, so its <code>local</code>s are its own.</li>
+    <li>The module's monster definitions, then your scripts, in the order the Scripts page lists them. Each script is wrapped in <code>do … end</code>, so its <code>local</code>s are its own.</li>
     <li>The map's own file: its <span class="ui">extra Lua</span>, then its camera, the props and monsters placed in the editor, and its triggers.</li>
   </ol>
-  <p>So at the top of a 📜 script the map's props and monsters <b>do not exist yet</b>. Look them up inside a hook. A level has 16 script slots; Map settings shows how many are used.</p>
+  <p>So at the top of a script the map's props and monsters <b>do not exist yet</b>. Look them up inside a hook. A level has 16 script slots; Map settings shows how many are used.</p>
   <p>When a saved level is being restored, the same files run, but <a href="02-every-function.html#dnp.restoring"><code>dnp.restoring()</code></a> is true while they do, and the placed monsters come from the save rather than from the map.</p>
   <p>The game machine loads the weapon runtime and the module's arsenal, the player's sounds, and the trigger and graph runtimes with the game graphs, when the module has each of them.</p>
 
@@ -88,7 +88,7 @@
       <tr><td><a href="02-every-function.html#weapons.api"><code>weapons</code></a></td><td>inventories and ammunition</td><td>in the game machine, when the module has weapons</td></tr>
     </tbody>
   </table>
-  <p>A 📜 script runs in every level, and not every level has every runtime. Guard: <code>if mobs ~= nil then … end</code>. Your own globals are shared by every script in the same machine; prefer <code>local</code>.</p>
+  <p>A script runs in every level, and not every level has every runtime. Guard: <code>if mobs ~= nil then … end</code>. Your own globals are shared by every script in the same machine; prefer <code>local</code>.</p>
 
   <h2 id="hooks">Hooks</h2>
   <p>A hook is a <b>global</b> function with a name the engine knows, such as <a href="02-every-function.html#hook.on_tick"><code>on_tick</code></a> or <a href="02-every-function.html#hook.on_prop_use"><code>on_prop_use</code></a>. Define it with <code>function on_tick()</code>, never <code>local function</code>.</p>
@@ -135,7 +135,7 @@
   <p>The counts start again for every call and every tick, so a script that hit a limit runs normally next time. <a href="../advanced/07-lua-or-graphs.html#fast">Keeping scripts fast</a> lists the usual causes of the warning.</p>
 
   <h2 id="trust">Trust profiles</h2>
-  <p>Whoever hosts a server chooses how much a script may reach. The studio's <span class="ui">▶ Play</span> uses the default.</p>
+  <p>Whoever hosts a server chooses how much a script may reach. The studio's <span class="ui">Play</span> uses the default.</p>
   <table>
     <thead><tr><th></th><th>Default</th><th>Strict</th></tr></thead>
     <tbody>
@@ -151,10 +151,10 @@
       <tr><td>precompiled bytecode</td><td>refused</td><td>refused</td></tr>
     </tbody>
   </table>
-  <p>A module that keeps its Lua in 📜 Scripts and uses only the "yes / yes" rows runs the same under both.</p>
+  <p>A module that keeps its Lua in <b>Scripts</b> and uses only the "yes / yes" rows runs the same under both.</p>
 
   <h2 id="errors">Errors and the Play log</h2>
-  <p>Everything Lua prints and every Lua error goes into <code>play-server.log</code>, which the studio's Play log page shows (Home → <span class="ui">📋 play log</span>, or a map's <span class="ui">⋯</span> → <span class="ui">Play log…</span>). Lines that look like failures are listed first. The shapes:</p>
+  <p>Everything Lua prints and every Lua error goes into <code>play-server.log</code>, which the studio's Play log page shows (Home → <span class="ui">play log</span>, or a map's <span class="ui">More</span> → <span class="ui">Play log…</span>). Lines that look like failures are listed first. The shapes:</p>
   <table>
     <thead><tr><th>Line</th><th>Means</th><th>Then</th></tr></thead>
     <tbody>
@@ -166,10 +166,10 @@
       <tr><td><code>mobs: …</code>, <code>[graphs] …</code>, <code>[weapons] …</code></td><td>a runtime reporting a problem with its data, such as an unknown monster kind</td><td>usually that one thing is skipped</td></tr>
     </tbody>
   </table>
-  <p>Line numbers count lines of the file the studio wrote: all 📜 scripts and the monster definitions share <code>module.lua</code>. Find your place by the hook's name and the message.</p>
+  <p>Line numbers count lines of the file the studio wrote: all scripts and the monster definitions share <code>module.lua</code>. Find your place by the hook's name and the message.</p>
 
   <div class="quiz" data-answer="1">
-    <p class="q">Two 📜 scripts both define <code>function on_tick()</code>. What happens?</p>
+    <p class="q">Two scripts both define <code>function on_tick()</code>. What happens?</p>
     <ul>
       <li>The second replaces the first</li>
       <li>Both run every tick, in load order</li>
@@ -181,8 +181,8 @@
     <p class="q">Your module will be hosted on a strict server. Which of these still works?</p>
     <ul>
       <li>A graph with a <span class="ui">do lua</span> line</li>
-      <li><code>os.time()</code> in a 📜 script</li>
-      <li><code>dnp.random(1, 6)</code> in a 📜 script</li>
+      <li><code>os.time()</code> in a script</li>
+      <li><code>dnp.random(1, 6)</code> in a script</li>
     </ul>
     <p class="why">Strict removes <code>os</code> and the compiler a <span class="ui">do lua</span> line needs; <code>dnp</code> stays.</p>
   </div>

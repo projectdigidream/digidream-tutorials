@@ -134,13 +134,13 @@
   </table>
   <p>The other world sounds keep a 3 to 30 unit range with the <b>Natural</b> fade; the player, pickup, ui and cine sounds are not placed in the world, so Distance does not apply to them. Nothing in the pack repeats until stopped, and nothing is rendered live.</p>
   <ol class="steps">
-    <li><p>Open the <code>meadow</code> pack from Gem Hollow's <b>🔊 Sounds</b> page. Select <code>coin</code>: <span class="ui">At most, at once</span> is 3 and <span class="ui">Minimum gap</span> 40 ms, for a row of coins grabbed in one run.</p></li>
-    <li><p>Set its <span class="ui">Pitch</span> under <span class="ui">Different every time</span> to ± 50¢ and press <kbd>Space</kbd> a few times. A row of coins would now chime at slightly different pitches. Keep it with <span class="ui">‹ studio</span> or leave with <span class="ui">✕</span>.</p></li>
+    <li><p>Open the <code>meadow</code> pack from Gem Hollow's <b>Sounds</b> page. Select <code>coin</code>: <span class="ui">At most, at once</span> is 3 and <span class="ui">Minimum gap</span> 40 ms, for a row of coins grabbed in one run.</p></li>
+    <li><p>Set its <span class="ui">Pitch</span> under <span class="ui">Different every time</span> to ± 50¢ and press <kbd>Space</kbd> a few times. A row of coins would now chime at slightly different pitches. Keep it with <span class="ui">studio</span> or leave with <span class="ui">✕</span>.</p></li>
     <li><p>Select <code>door.open</code> and scroll the panel down to <span class="ui">Fade</span>. Compare it with <span class="ui">Even</span> later in <a href="04-mix-and-ship.html#test">Test in the engine</a>.</p></li>
   </ol>
 
   <h2 id="cinderfall">In Cinderfall: settings for a shooter</h2>
-  <div class="callout tip"><p>Cinderfall, the first-person shooter example, comes with the studio: on Home, under <span class="ui">◆ examples</span>, press <span class="ui">📂 Cinderfall</span>. The <a href="../examples/02-cinderfall.html">Cinderfall tour</a> walks round it.</p></div>
+  <div class="callout tip"><p>Cinderfall, the first-person shooter example, comes with the studio: on Home, under <span class="ui">examples</span>, press <span class="ui">Cinderfall</span>. The <a href="../examples/02-cinderfall.html">Cinderfall tour</a> walks round it.</p></div>
   <figure class="shot" data-src="../assets/shots/cinder-sound-roar.png" data-alt="DigidreamSound with Cinderfall's smelter.roar: world group, at most 1, minimum gap 1.5 s, pitch ±1.5 st, full volume to 3 and silent from 30 units with a Natural fade" data-hotspots='[{"x":93,"y":20.4,"t":"world","d":"placed in the world: it fades with distance"},{"x":97,"y":38,"t":"At most 1","d":"one boss, one roar"},{"x":95,"y":47.8,"t":"Minimum gap 1.50 s","d":"the brood roar and the opening roar cannot pile up"},{"x":95,"y":56,"t":"± 1.5 st","d":"a little different each time"},{"x":93,"y":76.6,"t":"3 to 30 units","d":"the same range as a husk&#39;s groan"},{"x":88,"y":84.3,"t":"Natural","d":"the fade between"},{"x":30,"y":45.8,"t":"peak −3.0 dB","d":"no too loud badge: see below"}]'>
     <figcaption>In the game for <code>smelter.roar</code>: one at a time, at least 1.5 s apart, heard from 3 to 30 units.</figcaption>
   </figure>
@@ -163,9 +163,9 @@
   <p>Nothing repeats until stopped, and nothing is rendered live: even the train is a one-shot.</p>
   <p>No row in the library says <em>too loud</em>. Unlike Gem Hollow, Cinderfall's <b>world</b> and <b>player</b> groups are at 0 dB, so nothing brings a sound back down in the game: each sound's own gain has to leave room. The pack's gains were all lowered by about 9 dB to get there: <code>player.jump</code> is at −0.3 dB, <code>wpn.revolver.fire</code> at +1 dB, and <code>smelter.roar</code> now peaks at <em>−3.0 dB</em>.</p>
   <ol class="steps">
-    <li><p>Open Cinderfall from Home → <span class="ui">◆ examples</span>, open <b>🔊 Sounds</b> and press <span class="ui">✎ edit in DigidreamSound</span> on its pack. Click <code>roar</code> under SMELTER. The arena is wide: set <span class="ui">Silent from</span> to 60 and <span class="ui">Full volume to</span> to 8, so the boss is heard from across it.</p></li>
+    <li><p>Open Cinderfall from Home → <span class="ui">examples</span>, open <b>Sounds</b> and press <span class="ui">edit in DigidreamSound</span> on its pack. Click <code>roar</code> under SMELTER. The arena is wide: set <span class="ui">Silent from</span> to 60 and <span class="ui">Full volume to</span> to 8, so the boss is heard from across it.</p></li>
     <li><p>See what the 9 dB cut saved. Click <code>jump</code> under PLAYER and, in the <b>Shape</b> card, drag <span class="ui">Volume</span> from −0.3 up to about +9 dB, where the pack had it before: the waveform turns red and the badge says <em>too loud</em>. Press <span class="ui">Fix level</span>: the volume drops so the loudest moment is at −6 dB, and the badge is a plain peak again. Undo twice, with the arrow at the top right, to go back to −0.3.</p></li>
-    <li><p>Click <code>riveter.fire</code> and set <span class="ui">At most, at once</span> to 1, <span class="ui">Then</span> to <span class="ui">Cut the oldest</span>. Test it in the game: a burst now cuts each rivet short, a harder, drier rattle. Decide which you like, and leave with <span class="ui">‹ studio</span> or <span class="ui">✕</span>.</p></li>
+    <li><p>Click <code>riveter.fire</code> and set <span class="ui">At most, at once</span> to 1, <span class="ui">Then</span> to <span class="ui">Cut the oldest</span>. Test it in the game: a burst now cuts each rivet short, a harder, drier rattle. Decide which you like, and leave with <span class="ui">studio</span> or <span class="ui">✕</span>.</p></li>
   </ol>
 
   <div class="quiz" data-answer="1">

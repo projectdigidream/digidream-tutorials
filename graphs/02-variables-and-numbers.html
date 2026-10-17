@@ -54,7 +54,7 @@
       <tr><td>45 movement rules: <a href="../reference/graph-nodes.html#prop.move_speed"><code>move_speed</code></a>, <a href="../reference/graph-nodes.html#prop.jump_impulse"><code>jump_impulse</code></a>, <a href="../reference/graph-nodes.html#prop.max_jumps"><code>max_jumps</code></a>, <a href="../reference/graph-nodes.html#prop.gravity_scale"><code>gravity_scale</code></a>, <a href="../reference/graph-nodes.html#prop.dash_speed"><code>dash_speed</code></a>, <a href="../reference/graph-nodes.html#prop.input_scale"><code>input_scale</code></a>, <a href="../reference/graph-nodes.html#prop.attack_enabled"><code>attack_enabled</code></a> …</td><td>mostly numbers, some true/false</td><td>yes, all of them</td></tr>
     </tbody>
   </table>
-  <p>That is 59 properties: 14 of the body's own, and the 45 movement rules from <a href="../studio/07-workshops.html#player">the 🧍 Player page</a>. The full list, with what each one means, is in <a href="../reference/graph-nodes.html">Every graph node</a>.</p>
+  <p>That is 59 properties: 14 of the body's own, and the 45 movement rules from <a href="../studio/07-workshops.html#player">the Player page</a>. The full list, with what each one means, is in <a href="../reference/graph-nodes.html">Every graph node</a>.</p>
   <h3>Setting a movement rule</h3>
   <ul>
     <li><b>On a player</b>, setting a movement rule makes a <b>lasting effect</b>, and a later set replaces it. The engine never lets a script rewrite a player's body directly, because the player's own machine predicts their movement and must agree.</li>
@@ -64,7 +64,7 @@
 
   <h2 id="counters">Counters: Gem Hollow's coins and gems</h2>
   <p>A counter is a number variable, an <a href="../reference/graph-nodes.html#add_var"><code>add_var</code></a> that adds to it, and something that reads it. Gem Hollow's <code>pickups</code> graph (on the <span class="ui">world</span> map) counts coins and gems this way. Its variables tab has <code>coins</code> and <code>gems</code>, both starting at 0.</p>
-  <figure class="shot" data-src="../assets/shots/graph-gem-pickups.png" data-alt="Gem Hollow's pickups graph: a coin chain, a gem chain and a HUD start chain, each in its own note" data-hotspots='[{"x":19.8,"y":18.7,"t":"Every coin","d":"when_prop_touched, prop coin: one start node for all 152 coins, because they are all the same prop."},{"x":24.2,"y":23,"t":"Remove the coin","d":"prop goes into remove&#39;s entity, so the coin goes, not the player."},{"x":37.5,"y":20.3,"t":"Count it","d":"add_var coins, value 1."},{"x":46.6,"y":20.3,"t":"Show it","d":"set_hud coins, its value linked from get_var coins."},{"x":55.7,"y":32.5,"t":"Read after the add","d":"get_var coins is pulled when set_hud runs, after add_var, so it gives the new count."},{"x":64.6,"y":49.5,"t":"A gem says so","d":"The gem chain is the same, plus a subtitle."},{"x":19.8,"y":78.6,"t":"HUD start","d":"when_player_arrives writes both counters, so the HUD reads 0 rather than blank."},{"x":88.9,"y":33.6,"t":"Linked, not typed","d":"The picked set_hud&#39;s value says linked from getvar6.value."}]'>
+  <figure class="shot" data-src="../assets/shots/graph-gem-pickups.png" data-alt="Gem Hollow's pickups graph: a coin chain, a gem chain and a HUD start chain, each in its own note" data-hotspots='[{"x": 18.1, "y": 16.3, "t": "Every coin", "d": "when_prop_touched, prop coin: one start node for all 152 coins, because they are all the same prop."}, {"x": 24.2, "y": 20.1, "t": "Remove the coin", "d": "prop goes into remove&#39;s entity, so the coin goes, not the player."}, {"x": 34.6, "y": 16.3, "t": "Count it", "d": "add_var coins, value 1."}, {"x": 42.9, "y": 16.3, "t": "Show it", "d": "set_hud coins, its value linked from get_var coins."}, {"x": 51.2, "y": 28.5, "t": "Read after the add", "d": "get_var coins is pulled when set_hud runs, after add_var, so it gives the new count."}, {"x": 59.4, "y": 44.8, "t": "A gem says so", "d": "The gem chain is the same, plus a subtitle."}, {"x": 18.1, "y": 73.4, "t": "HUD start", "d": "when_player_arrives writes both counters, so the HUD reads 0 rather than blank."}, {"x": 90.0, "y": 33.7, "t": "Linked, not typed", "d": "The picked set_hud&#39;s value says linked from getvar6.value."}]'>
     <figcaption>Gem Hollow's <code>pickups</code> graph, with <code>sethud4</code> picked.</figcaption>
   </figure>
   <pre><code>when_prop_touched (coin) ──then──▶ remove ──▶ add_var coins +1 ──▶ set_hud coins ──▶ play_sound pickup.coin
@@ -139,7 +139,7 @@
   </table>
 
   <h3 id="cinderfall">In Cinderfall: flags that cross districts</h3>
-  <p>Cinderfall, an example first-person shooter that comes with the studio (Home → <span class="ui">◆ examples</span>; see <a href="../examples/02-cinderfall.html">the tour</a>), is nine maps joined into one world. You walk from the mine into the foundry without a load, and a level you walked away from may unload behind you. It splits its state three ways:</p>
+  <p>Cinderfall, an example first-person shooter that comes with the studio (Home → <span class="ui">examples</span>; see <a href="../examples/02-cinderfall.html">the tour</a>), is nine maps joined into one world. You walk from the mine into the foundry without a load, and a level you walked away from may unload behind you. It splits its state three ways:</p>
   <table>
     <thead><tr><th>What</th><th>Where it lives</th><th>Why there</th></tr></thead>
     <tbody>
@@ -173,7 +173,7 @@ on_call finished → set_var last (value ← on_call.value)
   <h2>Exercise: a reward for all five gems</h2>
   <p>Gem Hollow says <em>A gem! Five are hidden in the hollow.</em> for every gem. Make the fifth say something else.</p>
   <ol class="steps">
-    <li><p>Open Gem Hollow (<b>Home</b>, <span class="ui">examples</span>, <span class="ui">Gem Hollow</span>), then <b>◇ Graphs</b>, and tap <span class="ui">pickups</span> under <span class="ui">world</span>. Open the <span class="ui">variables</span> tab: <code>coins</code> and <code>gems</code> both start at 0.</p></li>
+    <li><p>Open Gem Hollow (<b>Home</b>, <span class="ui">examples</span>, <span class="ui">Gem Hollow</span>), then <b>Graphs</b>, and tap <span class="ui">pickups</span> under <span class="ui">world</span>. Open the <span class="ui">variables</span> tab: <code>coins</code> and <code>gems</code> both start at 0.</p></li>
     <li><p>In the gem chain, tap the white link from <code>playsound11</code> to <code>subtitle12</code> to delete it.</p></li>
     <li><p>Add a <a href="../reference/graph-nodes.html#branch"><code>branch</code></a> and a <a href="../reference/graph-nodes.html#compare"><code>compare</code></a> (<code>op</code> <code>&gt;=</code>, <code>b</code> <code>5</code>). Link <code>getvar13</code>'s <b>value</b> into the compare's <b>a</b>, and the compare's <b>value</b> into the branch's <b>cond</b>. Reusing <code>getvar13</code> is fine: this run first pulls it at <code>sethud10</code>, after the add.</p></li>
     <li><p>Link <code>playsound11</code>'s <b>then</b> to the branch, and the branch's <b>false</b> to <code>subtitle12</code>.</p></li>
