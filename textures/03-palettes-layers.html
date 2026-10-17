@@ -25,7 +25,7 @@
   </div>
 
   <h2>The palette panel</h2>
-  <p>qPainter starts with <b>Sweetie 16</b>, a 16-colour palette. At the top of the panel are the primary and secondary colour boxes, the 50% dither preview, and <span class="ui">⇄</span>. Below the swatches is a row of buttons:</p>
+  <p>qPainter starts with <b>Sweetie 16</b>, a 16-colour palette. The palette is the first thing in the side panel, and stays there whatever tool you pick. At its top are the primary and secondary colour boxes, the 50% dither preview, and <span class="ui">⇄</span>. Below the swatches is a row of buttons:</p>
   <table>
     <thead><tr><th>Button</th><th>What it does</th></tr></thead>
     <tbody>
@@ -44,7 +44,7 @@
   </ul>
 
   <h2>Lock</h2>
-  <p><span class="ui">Lock</span> in the top bar restricts all painting to the palette. Any colour a tool makes is snapped to a palette colour, and a half-transparent result becomes fully opaque or fully transparent. The menu beside it decides what happens to soft blends, such as the edge of a soft brush:</p>
+  <p><span class="ui">Lock</span> in the top bar restricts all painting to the palette. Any colour a tool makes is snapped to a palette colour, and a half-transparent result becomes fully opaque or fully transparent. While Lock is on, a menu appears beside it. It decides what happens to soft blends, such as the edge of a soft brush:</p>
   <ul>
     <li><span class="ui">snap nearest</span>: each blended pixel becomes the closest palette colour. You get hard bands.</li>
     <li><span class="ui">snap dither</span>: each blended pixel alternates between its two closest palette colours in a Bayer pattern. You get a dithered gradient, as if you had dithered it by hand.</li>
@@ -60,12 +60,12 @@
     <li>New ramp colours are added to the palette for you.</li>
     <li>Click a ramp to make it the <b>active ramp</b>; it is highlighted. <span class="ui">×</span> deletes it.</li>
   </ul>
-  <p>The <b>◐ Ramp shade brush</b> (<kbd>H</kbd>) moves each pixel it touches one step lighter along its ramp. Right-click or <kbd>Shift</kbd> moves it one step darker. Each pixel changes at most once per stroke, so you build shading up with repeated strokes. A pixel whose colour isn't in any ramp is left alone, which is why the brush seems to do nothing on a texture with no ramps.</p>
+  <p>The <b>Ramp shade brush</b> (<kbd>H</kbd>) moves each pixel it touches one step lighter along its ramp. Right-click or <kbd>Shift</kbd> moves it one step darker. Each pixel changes at most once per stroke, so you build shading up with repeated strokes. A pixel whose colour isn't in any ramp is left alone, which is why the brush seems to do nothing on a texture with no ramps.</p>
 
   <h2>Dither</h2>
   <p>Dithering blends two colours by arranging pixels of both, instead of inventing a colour in between. qPainter has two tools for it.</p>
   <h3>The Dither brush</h3>
-  <p>The <b>▦ Dither brush</b> (<kbd>D</kbd>) paints a pattern of primary and secondary. Its options:</p>
+  <p>The <b>Dither brush</b> (<kbd>D</kbd>) paints a pattern of primary and secondary. Its options:</p>
   <ul>
     <li><span class="ui">Pattern</span>: <span class="ui">Checker 50%</span>, <span class="ui">Bayer 2×2</span>, <span class="ui">Bayer 4×4</span>, <span class="ui">Bayer 8×8</span>, <span class="ui">Lines —</span>, <span class="ui">Lines |</span>, <span class="ui">Diagonal</span>, or <span class="ui">Custom (click to edit)</span>. For Custom, click the cells of the 8×8 preview to toggle them.</li>
     <li><span class="ui">Density</span>: how much of the pattern is primary. The Bayer patterns go smoothly from 0 to 100%.</li>
@@ -74,12 +74,12 @@
   </ul>
   <p>Patterns are anchored to the canvas, not to the stroke. Overlapping strokes, symmetry copies and wrapped edges all line up. <span class="ui">Fill with pattern</span> on the Fill tool uses the same pattern settings.</p>
   <h3>The Dithered gradient</h3>
-  <p>The <b>▤ Dithered gradient</b> (<kbd>J</kbd>) fills from where you start dragging to where you stop. It goes from primary to secondary, or through the whole active ramp with <span class="ui">Use active ramp</span>. <span class="ui">Radial</span> makes it round, and a right-drag reverses it. It is always dithered with the current pattern, so it only uses the palette colours it blends between.</p>
+  <p>The <b>Dithered gradient</b> (<kbd>J</kbd>) fills from where you start dragging to where you stop. It goes from primary to secondary, or through the whole active ramp with <span class="ui">Use active ramp</span>. <span class="ui">Radial</span> makes it round, and a right-drag reverses it. It is always dithered with the current pattern, so it only uses the palette colours it blends between.</p>
 
   <h3>Replace and Smooth</h3>
   <ul>
-    <li>The <b>⇄ Replace color brush</b> (<kbd>R</kbd>) recolours only the colour under the start of the stroke, and leaves every other colour alone. <span class="ui">Tolerance</span> widens what counts as the same colour. It is the quickest way to recolour one material, such as the moss on a stone wall.</li>
-    <li>The <b>≈ Smooth / AA helper</b> (<kbd>A</kbd>) replaces each pixel with the palette colour nearest to the average of it and its four neighbours. Run it lightly along a jagged edge.</li>
+    <li>The <b>Replace color brush</b> (<kbd>R</kbd>) recolours only the colour under the start of the stroke, and leaves every other colour alone. <span class="ui">Tolerance</span> widens what counts as the same colour. It is the quickest way to recolour one material, such as the moss on a stone wall.</li>
+    <li>The <b>Smooth / AA helper</b> (<kbd>A</kbd>) replaces each pixel with the palette colour nearest to the average of it and its four neighbours. Run it lightly along a jagged edge.</li>
   </ul>
 
   <h3>Exercise: a two-tone transition</h3>
@@ -139,27 +139,27 @@
   <p>Open BRICKGREY and the line under the palette reads <em>60 colors used · 60 in palette</em>: nothing off-palette. SKYHILLS is the exception. Its palette holds 16 colours but its soft clouds use 1617, so it reads <em>1615 off-palette</em>. A sky is a smooth picture, not pixel art, so that is expected; don't turn on <span class="ui">Lock</span> there.</p>
 
   <h2 id="cinderfall">In Cinderfall</h2>
-  <div class="callout tip"><p>Cinderfall, the first-person shooter example, comes with the studio: on Home, under <span class="ui">◆ examples</span>, press <span class="ui">📂 Cinderfall</span>. The <a href="../examples/02-cinderfall.html">Cinderfall tour</a> walks round it.</p></div>
+  <div class="callout tip"><p>Cinderfall, the first-person shooter example, comes with the studio: on Home, under <span class="ui">examples</span>, press <span class="ui">Cinderfall</span>. The <a href="../examples/02-cinderfall.html">Cinderfall tour</a> walks round it.</p></div>
   <p>Cinderfall's 119 textures also carry their own palettes, made from their own pixels: from 3 colours (HUDCROSS, HUDSECRET) through 16 for many, such as TECHTAN, MACHINE2 and PIPEWALL, 26 for BRICKRED and 38 for ROCKBROWN, up to 59 for PIPES and RUSTPANEL. Each line under the palette reads <em>N colors used · N in palette</em>, the sky SKYDUSK included (<em>21 colors used · 21 in palette</em>): unlike Gem Hollow's soft sky, it is pixel art like everything else.</p>
   <p>The Freedoom pictures were drawn for DOOM's one 256-colour palette, but after compositing and renaming they do not share one here: together the 105 Freedoom textures use 424 different colours. That leaves you free to pull any of them towards a look of your own, which is what the exercise below does.</p>
   <p>Every texture has one layer: <b>Freedoom <i>NAME</i></b> for the Freedoom ones (the original's name), <b>Sky</b> for the two skies, <b>Icon</b> for the HUD and weapon icons. Nothing is <span class="ui">Lock</span>ed.</p>
 
   <h3>Exercise: a hot rock wall in lava's colours</h3>
   <ol class="steps">
-    <li><p>Open Cinderfall from Home → <span class="ui">◆ examples</span> and open <b>🧱 Textures</b>. Click <b>LAVA</b> and press <span class="ui">export project</span>: you get <code>LAVA.texproj.json</code>, 19 colours.</p></li>
+    <li><p>Open Cinderfall from Home → <span class="ui">examples</span> and open <b>Textures</b>. Click <b>LAVA</b> and press <span class="ui">export project</span>: you get <code>LAVA.texproj.json</code>, 19 colours.</p></li>
     <li><p>Click <b>STONEDARK</b>, press <span class="ui">duplicate</span> and keep <code>STONEDARK_2</code>. Press <span class="ui">edit in qPainter</span>.</p></li>
     <li><p>Palette <span class="ui">Import…</span> → <span class="ui">Replace palette…</span>, and pick <code>LAVA.texproj.json</code>. Then <span class="ui">Remap…</span> → <span class="ui">ordered dither</span>. The stone is now drawn in lava's reds and yellows, and still tiles.</p></li>
-    <li><p>Turn on <span class="ui">Lock</span> and add a few bright cracks with <kbd>P</kbd>: every stroke stays in the lava palette. Press <span class="ui">‹ studio</span> and use it round the boss arena's lava.</p></li>
+    <li><p>Turn on <span class="ui">Lock</span> and add a few bright cracks with <kbd>P</kbd>: every stroke stays in the lava palette. Press <span class="ui">studio</span> and use it round the boss arena's lava.</p></li>
   </ol>
 
   <h2>Exercise: snowy grass from two Gem Hollow textures</h2>
   <ol class="steps">
-    <li><p>On <b>Home</b>, under <b>Examples</b>, press <span class="ui">📂 Gem Hollow</span> and open <b>🧱 Textures</b>.</p></li>
+    <li><p>On <b>Home</b>, under <span class="ui">examples</span>, press <span class="ui">Gem Hollow</span> and open <b>Textures</b>.</p></li>
     <li><p>Click <b>SNOWROCK</b> and press <span class="ui">export project</span>. You now have <code>SNOWROCK.texproj.json</code>.</p></li>
     <li><p>Click <b>GRASS</b>, press <span class="ui">duplicate</span> and keep <code>GRASS_2</code>. Press <span class="ui">edit in qPainter</span>.</p></li>
     <li><p>Palette <span class="ui">Import…</span> → <span class="ui">Replace palette…</span>, and pick <code>SNOWROCK.texproj.json</code>. The swatches turn to SNOWROCK's greys and whites; the picture doesn't change yet.</p></li>
     <li><p><span class="ui">Remap…</span> → <span class="ui">nearest</span>. The grass is now drawn in snow colours, and still tiles.</p></li>
-    <li><p>Press <span class="ui">+</span> under <b>Layers</b> for a detail layer, and scatter a few white specks with <kbd>N</kbd>. Hide and show the layer to compare, leave it visible, and press <span class="ui">‹ studio</span>.</p></li>
+    <li><p>Press <span class="ui">+</span> under <b>Layers</b> for a detail layer, and scatter a few white specks with <kbd>N</kbd>. Hide and show the layer to compare, leave it visible, and press <span class="ui">studio</span>.</p></li>
   </ol>
 
   <h2>Check yourself</h2>
@@ -180,6 +180,15 @@
       <li><span class="ui">snap dither</span></li>
     </ul>
     <p class="why">snap dither turns each blended pixel into a Bayer mix of its two nearest palette colours. snap nearest picks one colour, which gives bands.</p>
+  </div>
+  <div class="quiz" data-answer="1">
+    <p class="q">You look for <span class="ui">snap dither</span> in qPainter's top bar, and it isn't there. Why?</p>
+    <ul>
+      <li>It moved into the palette panel</li>
+      <li><span class="ui">Lock</span> is off: the snap menu shows only while Lock is on</li>
+      <li>Only standalone qPainter has it</li>
+    </ul>
+    <p class="why">The top bar shows a control only while it applies. Tick Lock, and the snap menu appears beside it.</p>
   </div>
   <div class="quiz" data-answer="0">
     <p class="q">You want to hand a friend exactly the colours a finished texture uses. Which export?</p>

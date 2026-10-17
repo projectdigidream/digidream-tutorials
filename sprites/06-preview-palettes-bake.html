@@ -19,7 +19,7 @@
   <h1>3D preview, palettes, baking</h1>
   <p class="lede">The last steps before a sprite goes into the game: walk round it in 3D to catch a view that jumps, keep its colours in order, set how tall it stands, and know what the studio makes from it.</p>
   <div class="goal">
-    <b>You'll learn</b><span>the 3D tab and its controls, the palette editor and palette files, Project settings, what the bake makes and how tall the sprite stands, the Export tab, and what is inside a .tsprite</span>
+    <b>You'll learn</b><span>the 3D tab and its controls, the palette editor and palette files, Project settings, what the bake makes and how tall the sprite stands, the Export tab and the format it opens on, and what is inside a .tsprite</span>
     <b>Time</b><span>25 minutes</span>
     <b>Needs</b><span>an animated sprite (see <a href="04-animate.html">Animating</a>)</span>
   </div>
@@ -75,7 +75,7 @@
     <tbody>
       <tr><td><span class="ui">Name</span>, <span class="ui">Sprite id</span></td><td>As in the New sprite dialog.</td></tr>
       <tr><td><b>Canvas</b></td><td>Shown, not editable: it is fixed after creation.</td></tr>
-      <tr><td><b>Views</b>, <b>Mirror symmetry</b></td><td>Change the view count or mirroring. A warning says that images drawn for views that no longer exist are dropped. It is undoable.</td></tr>
+      <tr><td><b>Views</b>, <b>Mirror symmetry</b></td><td>Change the view count or mirroring, whatever <span class="ui">How is it seen?</span> said when the sprite was made: give a <span class="ui">One picture</span> sprite 8 views, say. A warning says that images drawn for views that no longer exist are dropped. It is undoable.</td></tr>
       <tr><td><span class="ui">Camera elevation</span></td><td>Degrees above the horizon that every view's camera looks down from, for bones and solids. 0 is level.</td></tr>
       <tr><td><span class="ui">Depth scaling</span></td><td>0 (off) to 40. How much a bone travelling towards the camera grows what hangs off it, and travelling away shrinks it. 1 is barely visible; 5–20 is where it reads. The rest pose never changes size.</td></tr>
       <tr><td><span class="ui">World height</span></td><td>How tall the sprite stands in the world, in units. It is written into the sheet's manifest.</td></tr>
@@ -83,28 +83,28 @@
   </table>
 
   <h2>Baking in the studio</h2>
-  <p>Inside the studio you don't use the Export tab. Pressing <span class="ui">‹ studio</span> saves the project as <code>sources/sprites/NAME.tsprite</code> and bakes it into <code>assets/sprites/NAME.json</code> and <code>NAME.png</code>. Play and Export bake again any sprite whose project changed. ThreeSprite's own runtime composes the sheet, in the same layout as its Atlas + JSON export: every view of every frame, mirrored views included, trimmed and packed, with each frame's feet, every animation's fps and loop, and the world height. A view with its own layer order (see <a href="03-rig.html#layer-order">Layer order, per view</a>) is baked in that order, so an arm drawn behind the body from the back stays behind it in the game. To take a sprite out of the studio, its card on the Sprites page has <span class="ui">export .tsprite</span> (the project) and <span class="ui">export sheet</span> (the baked sheet, <code>NAME-sheet.zip</code> of json + png, which imports again), and <span class="ui">duplicate</span> copies all of it under a new name.</p>
+  <p>Inside the studio you don't use the Export tab. Pressing <span class="ui">studio</span> saves the project as <code>sources/sprites/NAME.tsprite</code> and bakes it into <code>assets/sprites/NAME.json</code> and <code>NAME.png</code>. Play and Export bake again any sprite whose project changed. ThreeSprite's own runtime composes the sheet, in the same layout as its Atlas + JSON export: every view of every frame, mirrored views included, trimmed and packed, with each frame's feet, every animation's fps and loop, and the world height. A view with its own layer order (see <a href="03-rig.html#layer-order">Layer order, per view</a>) is baked in that order, so an arm drawn behind the body from the back stays behind it in the game. To take a sprite out of the studio, its card on the Sprites page has <span class="ui">export .tsprite</span> (the project) and <span class="ui">export sheet</span> (the baked sheet, <code>NAME-sheet.zip</code> of json + png, which imports again), and <span class="ui">duplicate</span> copies all of it under a new name.</p>
   <ul>
     <li>The sheet is named after the studio's name for it, whatever the project's sprite id says.</li>
     <li>Props and monsters choose a sheet by that name. In the monster editor, <span class="ui">Looks</span> picks it under <span class="ui">sprite</span>, and each state is matched to one of its animations by name (see <a href="../studio/07-workshops.html">Monsters, weapons, player</a>).</li>
   </ul>
   <h3 id="loops">Which animations loop</h3>
-  <p>A sheet baked from a project has a section on its card in <b>🎞 Sprites</b>, <b>which animations loop</b>: one <span class="ui">loops</span> switch per animation, named with its frames and fps (<em>death · 10 frames at 10 fps</em>). An animation that loops starts again from its first frame. One that does not plays once and holds its last frame, which is what a death or an attack wants.</p>
-  <p>ThreeSprite's own <span class="ui">loop</span> tick is often left at its default, looping, even on a death. So the studio keeps its own choice in the module, and every later bake keeps it: press <span class="ui">‹ studio</span> again and the death still plays once. An animation you never switch keeps what the project says.</p>
+  <p>A sheet baked from a project has a section on its card in <b>Sprites</b>, <b>which animations loop</b>: one <span class="ui">loops</span> switch per animation, named with its frames and fps (<em>death · 10 frames at 10 fps</em>). An animation that loops starts again from its first frame. One that does not plays once and holds its last frame, which is what a death or an attack wants.</p>
+  <p>ThreeSprite's own <span class="ui">loop</span> tick is often left at its default, looping, even on a death. So the studio keeps its own choice in the module, and every later bake keeps it: press <span class="ui">studio</span> again and the death still plays once. An animation you never switch keeps what the project says.</p>
   <ol class="steps">
-    <li><p>In <b>🎞 Sprites</b>, click a sheet you baked from a project. Under <b>which animations loop</b>, switch its <code>death</code> off.</p></li>
-    <li><p>Edit the sprite in ThreeSprite and press <span class="ui">‹ studio</span>. The card still shows <code>death</code> switched off.</p></li>
+    <li><p>In <b>Sprites</b>, click a sheet you baked from a project. Under <b>which animations loop</b>, switch its <code>death</code> off.</p></li>
+    <li><p>Edit the sprite in ThreeSprite and press <span class="ui">studio</span>. The card still shows <code>death</code> switched off.</p></li>
   </ol>
   <h3>How tall it stands</h3>
   <p>The manifest's world height is the one number the game scales every frame of the sheet by. In the studio, the monster editor shows it on <span class="ui">Advanced</span>, under <b>Its body states</b>, as <span class="ui">sprite height</span>. Changing it there rewrites the sheet's manifest, and every monster drawn with that sheet grows with it. A body's <b>scale</b> multiplies the size for that body alone.</p>
-  <div class="callout warn"><p>A bake writes the world height from the ThreeSprite project. If you set <b>sprite height</b> in the studio and later edit the sprite and press <span class="ui">‹ studio</span>, the project's <span class="ui">World height</span> comes back. Set the same number in Project settings to keep it.</p></div>
+  <div class="callout warn"><p>A bake writes the world height from the ThreeSprite project. If you set <b>sprite height</b> in the studio and later edit the sprite and press <span class="ui">studio</span>, the project's <span class="ui">World height</span> comes back. Set the same number in Project settings to keep it.</p></div>
   <ol class="steps">
-    <li><p>In ThreeSprite, open Project settings and set <span class="ui">World height</span> to <code>1.5</code>. Press <span class="ui">Apply</span>, then <span class="ui">‹ studio</span>.</p></li>
-    <li><p>In the studio, open a monster in <b>☠ Monsters</b>, go to <span class="ui">Advanced</span>, and under <b>Its body states</b> choose your sheet under <span class="ui">sprite sheet</span>. Its <span class="ui">sprite height</span> reads 1.5.</p></li>
+    <li><p>In ThreeSprite, open Project settings and set <span class="ui">World height</span> to <code>1.5</code>. Press <span class="ui">Apply</span>, then <span class="ui">studio</span>.</p></li>
+    <li><p>In the studio, open a monster in <b>Monsters</b>, go to <span class="ui">Advanced</span>, and under <b>Its body states</b> choose your sheet under <span class="ui">sprite sheet</span>. Its <span class="ui">sprite height</span> reads 1.5.</p></li>
   </ol>
 
   <h2 id="cinderfall">In Cinderfall</h2>
-  <div class="callout tip"><p>Cinderfall, the first-person shooter example, comes with the studio: on Home, under <span class="ui">◆ examples</span>, press <span class="ui">📂 Cinderfall</span>. The <a href="../examples/02-cinderfall.html">Cinderfall tour</a> walks round it.</p></div>
+  <div class="callout tip"><p>Cinderfall, the first-person shooter example, comes with the studio: on Home, under <span class="ui">examples</span>, press <span class="ui">Cinderfall</span>. The <a href="../examples/02-cinderfall.html">Cinderfall tour</a> walks round it.</p></div>
   <figure class="shot" data-src="../assets/shots/cinder-sprite-smelter-3d.png" data-alt="ThreeSprite's 3D tab with Cinderfall's boss SMELTER: a hulking furnace-chested figure with a cannon arm, built from solids, and its 9-colour palette" data-hotspots='[{"x":5,"y":6,"t":"176px · 8 views","d":"the biggest canvas in the module"},{"x":60,"y":6,"t":"3D","d":"walk round the model to catch a view that jumps"},{"x":37,"y":60,"t":"SMELTER","d":"BRUTE&#39;s 13-bone rig, scaled up; the cannon on handR"},{"x":80,"y":11,"t":"SMELTER colours","d":"9 swatches"},{"x":40,"y":98,"t":"idle · Spread 8","d":"play an animation, or lay all eight views out round it"}]'>
     <figcaption>Cinderfall's boss, <code>SMELTER</code>, in the 3D tab: 11 solids parts on a 13-bone rig, 9 colours.</figcaption>
   </figure>
@@ -132,12 +132,17 @@ state 15 → reload   (set by the reload phase)</code></pre>
   <p>Every weapon uses scale 1.4 at x 96, y 40, so all five sit in the same place on the 320 × 200 screen. The riveter's <code>fire</code> state is set to loop, for as long as the trigger is held. See <a href="../weapons/02-phases.html#first-person">Phases in first person</a>.</p>
   <ol class="steps">
     <li><p>Open Cinderfall's <code>SMELTER</code> in ThreeSprite, open the 3D tab and drag round it. Then open Project settings: <span class="ui">World height</span> reads 9.21.</p></li>
-    <li><p>Set it to <code>7</code>, press <span class="ui">Apply</span> and <span class="ui">‹ studio</span>. Play to the boss arena in <code>w_heart_w</code>: the boss is smaller, but it fills as much floor as before, since its body did not change.</p></li>
-    <li><p>Undo it on the studio's page with <span class="ui">↶ Undo</span>.</p></li>
+    <li><p>Set it to <code>7</code>, press <span class="ui">Apply</span> and <span class="ui">studio</span>. Play to the boss arena in <code>w_heart_w</code>: the boss is smaller, but it fills as much floor as before, since its body did not change.</p></li>
+    <li><p>Undo it on the studio's page with <span class="ui">Undo</span> in the rail.</p></li>
   </ol>
 
   <h2 id="export-standalone">The Export tab (standalone)</h2>
+  <figure class="shot" data-src="../assets/shots/sprite-export.png" data-alt="ThreeSprite's Export tab inside the studio, with Gem Hollow's COIN: the line saying the game needs nothing from here, Doom-style PNGs chosen, and the six files COINA0.png to COINF0.png" data-hotspots='[{"x":23,"y":12.4,"t":"Inside the studio","d":"the game needs nothing from here: the studio builds this sprite into it by itself"},{"x":23,"y":24.8,"t":"Doom-style PNGs","d":"chosen first because COIN fits: a 4-letter id, 1 view, 6 frames"},{"x":23,"y":35,"t":"Atlas + JSON","d":"what the tab opens on for a sprite that does not fit Doom-style"},{"x":13,"y":61.6,"t":"Animations and options","d":"tick what to export; each format has its option"},{"x":60,"y":18.8,"t":"Files","d":"the list of what will be written"},{"x":47,"y":27.3,"t":"Download zip","d":"in a browser; folder or zip on the desktop, zip on Android"}]'>
+    <figcaption>The Export tab inside the studio, with Gem Hollow's COIN. It opens on Doom-style PNGs because COIN fits them.</figcaption>
+  </figure>
   <p>On its own, ThreeSprite writes files from the <span class="ui">Export</span> tab. Pick a format, tick the animations to include, set the format's option, and check the file list on the right before writing.</p>
+  <p>Inside the studio you never need it, and the tab says so first: <em>The game needs nothing from here: the studio builds this sprite into it by itself. Export only to use the sprite somewhere else.</em></p>
+  <p>The tab opens on <b>Doom-style PNGs</b> only when the sprite fits them: an id of exactly 4 capitals or digits, 1, 8 or 16 views, and at most 26 frames across its animations. Any other sprite opens on <b>Atlas + JSON</b>. If you then pick a format the sprite can't use, a warning over the file list names the format, such as <em>Can't export as Doom-style PNGs:</em>, and lists what is wrong, and the export buttons are greyed out.</p>
   <table>
     <thead><tr><th>Format</th><th>What it writes</th><th>Limits and options</th></tr></thead>
     <tbody>
@@ -165,8 +170,17 @@ thumbnail.png                   a small preview</code></pre>
     </ul>
     <p class="why">Doom names carry a rotation digit, and only 1, 8 and 16 views map onto it. Change the view count, choose Front view only, or use Atlas + JSON.</p>
   </div>
+  <div class="quiz" data-answer="0">
+    <p class="q">You open the Export tab on a sprite whose id is <code>SLIME</code>. Which format is chosen?</p>
+    <ul>
+      <li>Atlas + JSON, because a 5-letter id doesn't fit Doom-style names</li>
+      <li>Doom-style PNGs, always first</li>
+      <li>None: it opens on an error</li>
+    </ul>
+    <p class="why">The tab starts on Doom-style PNGs only for a sprite that fits them: a 4-character id, 1, 8 or 16 views, and at most 26 frames. Anything else starts on Atlas + JSON.</p>
+  </div>
   <div class="quiz" data-answer="2">
-    <p class="q">You set a sheet's sprite height to 2 in the studio, then edit the sprite and press ‹ studio. The project's World height is still 1. How tall is the sheet now?</p>
+    <p class="q">You set a sheet's sprite height to 2 in the studio, then edit the sprite and press studio. The project's World height is still 1. How tall is the sheet now?</p>
     <ul>
       <li>2, because the studio remembers it</li>
       <li>3, the two added together</li>

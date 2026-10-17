@@ -19,13 +19,13 @@
   <h1>Rig, bones and parts</h1>
   <p class="lede">The art is 2D, but the skeleton is 3D. Bones live in the character's own space and are projected into every view, so one rig and one set of keys move all the views at once. This page builds a rig, hangs parts on it, and covers skinning, layer order and solids.</p>
   <div class="goal">
-    <b>You'll learn</b><span>how bones and parts fit together, every field in the Inspector, the canvas gestures, variants, skinning, per-view layer order, and solids</span>
+    <b>You'll learn</b><span>how bones and parts fit together, every field in the Inspector and which way its moves go on screen, the canvas gestures, variants, skinning, per-view layer order, and solids</span>
     <b>Time</b><span>25 minutes</span>
     <b>Needs</b><span>a sprite with something drawn in it (see <a href="02-drawing.html">Drawing</a>)</span>
   </div>
 
-  <figure class="shot" data-src="../assets/shots/sprite-rig.png" data-alt="ThreeSprite's Rig tab with HERO's eleven bones drawn over it" data-hotspots='[{"x":54,"y":6,"t":"Rig","d":"the tab"},{"x":41,"y":63,"t":"The bones","d":"drag a root to move, a tip to turn; Shift-drag a tip for length"},{"x":86,"y":11,"t":"Bones panel header","d":"draw a bone, add a child, delete"},{"x":82,"y":24,"t":"The bone tree","d":"children indented; the number is how many parts hang on each"},{"x":88,"y":60,"t":"Inspector: bone","d":"name, parent, position, rotation, length"},{"x":88,"y":90,"t":"Inspector: part","d":"the selected part, and the bone it hangs from"}]'>
-    <figcaption>Gem Hollow's HERO in the Rig tab, from the front: the root bone <code>hips</code> is selected.</figcaption>
+  <figure class="shot" data-src="../assets/shots/sprite-rig.png" data-alt="ThreeSprite's Rig tab with HERO's eleven bones drawn over it" data-hotspots='[{"x":48.4,"y":6,"t":"Rig","d":"the tab"},{"x":41,"y":63,"t":"The bones","d":"drag a root to move, a tip to turn; Shift-drag a tip for length"},{"x":77.6,"y":15.9,"t":"Canvas background","d":"the same swatch as in Draw"},{"x":86,"y":11,"t":"Bones panel header","d":"draw a bone, add a child, delete"},{"x":82,"y":24,"t":"The bone tree","d":"children indented; the number is how many parts hang on each"},{"x":88,"y":47,"t":"Inspector: bone","d":"name, parent, position, rotation, length"},{"x":86,"y":56.7,"t":"Pos right ← · Pos up ↑ · Pos forward ⊙","d":"where each move goes on screen in this view: from the front, the hips&#39; right is your left, and forward comes towards you"},{"x":88,"y":88,"t":"Inspector: part","d":"the selected part, and the bone it hangs from"}]'>
+    <figcaption>Gem Hollow's HERO in the Rig tab, from the front: the root bone <code>hips</code> is selected, and the arrows after <span class="ui">Pos right</span>, <span class="ui">Pos up</span> and <span class="ui">Pos forward</span> say where each goes on screen.</figcaption>
   </figure>
 
   <h2>Bones and parts</h2>
@@ -64,7 +64,7 @@
     <tbody>
       <tr><td><span class="ui">Name</span></td><td>The bone's name. It shows in the timeline too.</td></tr>
       <tr><td><span class="ui">Parent</span></td><td>Another bone, or <span class="ui">(none — root)</span>.</td></tr>
-      <tr><td><span class="ui">Pos right</span> · <span class="ui">Pos up</span> · <span class="ui">Pos forward</span></td><td>Where its root is, in the parent's frame (from the feet, for a root bone).</td></tr>
+      <tr><td><span class="ui">Pos right</span> · <span class="ui">Pos up</span> · <span class="ui">Pos forward</span></td><td>Where its root is, in the parent's frame (from the feet, for a root bone). The arrow after each name says which way it goes on screen: see <a href="#move-arrows">Which way a move goes</a>.</td></tr>
       <tr><td><span class="ui">Rot yaw</span> · <span class="ui">Rot pitch</span> · <span class="ui">Rot roll</span></td><td>Degrees. Yaw turns about the up axis (positive is anticlockwise seen from above). Pitch tilts about the right axis. Roll rotates about the forward axis, which is in the plane of the front view.</td></tr>
       <tr><td><span class="ui">Length</span></td><td>In pixels, at least 1.</td></tr>
     </tbody>
@@ -83,14 +83,39 @@
     </tbody>
   </table>
 
+  <h3 id="move-arrows">Which way a move goes</h3>
+  <p>Right, up and forward are the character's own, not the screen's. So when the character faces you, its right is on <em>your</em> left. To save you working that out, <span class="ui">Pos right</span>, <span class="ui">Pos up</span> and <span class="ui">Pos forward</span> each have an arrow after the name, saying where a bigger number moves the bone on screen in the view on the canvas:</p>
+  <table>
+    <thead><tr><th>View</th><th>Pos right</th><th>Pos up</th><th>Pos forward</th></tr></thead>
+    <tbody>
+      <tr><td>View 1, the front</td><td><span class="ui">Pos right ←</span></td><td><span class="ui">Pos up ↑</span></td><td><span class="ui">Pos forward ⊙</span></td></tr>
+      <tr><td>View 3 of 8, the left side</td><td><span class="ui">Pos right ⊗</span></td><td><span class="ui">Pos up ↑</span></td><td><span class="ui">Pos forward ←</span></td></tr>
+    </tbody>
+  </table>
+  <ul>
+    <li><b>⊙</b> means towards you, out of the screen, and <b>⊗</b> away from you, into it. Other views get the arrow nearest the way it goes, such as ↙.</li>
+    <li>Hover a field for the same in words, for example <em>Its own right: in this view, ← on screen</em>, or <em>Its own forward: in this view, towards you</em>.</li>
+    <li>The arrows follow the view: press <kbd>,</kbd> or <kbd>.</kbd> and they change. In a flipped view (with mirror symmetry) they are flipped too.</li>
+    <li>A child bone's arrows are in its parent's frame, as the parent is posed: turn the torso, and the arm's arrows turn with it.</li>
+    <li>Only positions have arrows. Rotation and scale fields don't.</li>
+  </ul>
+  <p>The Animate tab's <span class="ui">Move right</span>, <span class="ui">Move up</span> and <span class="ui">Move forward</span> have the same arrows (see <a href="04-animate.html#setting-keys">Setting keys</a>).</p>
+
   <h2>The Parts panel</h2>
   <p>The Parts panel lists the parts in painting order: the one at the top is drawn in front. A part made of solids has a <b>⬡</b> after its name.</p>
   <ul>
     <li><b>+</b> <span class="ui">Add part on the selected bone</span>. The new part has a canvas-sized picture in view 1, stands upright in the front view, has its pivot at the bottom centre, and foreshortens. Double-click a part to rename it.</li>
     <li>Under the list: the name, <b>Bring forward</b>, <b>Send backward</b> and <b>Delete part</b>.</li>
   </ul>
-  <h3>Variants</h3>
-  <p>A <b>variant</b> is a second set of pictures for the same part: an open and a closed hand, a mouth shut and shouting. Every part starts with one called <code>default</code>. Under the part's name, the <b>Variant</b> drop-down chooses which one you are drawing. <b>+</b> asks for a name (for example <i>open hand</i>), and <b>×</b> deletes the selected variant (a part keeps at least one). An animation switches between variants with variant keys. See <a href="04-animate.html#parts-in-the-timeline">Animating</a>.</p>
+  <h3 id="variants">Variants</h3>
+  <p>A <b>variant</b> is a second set of pictures for the same part: an open and a closed hand, a mouth shut and shouting. Every part starts with one called <code>default</code>.</p>
+  <ul>
+    <li>Under the part's name, the <b>Variant</b> drop-down chooses which one you are drawing, and the canvas shows it.</li>
+    <li><b>+</b> <span class="ui">Add variant</span> asks for a name (for example <i>open hand</i>). The new variant starts as a <b>copy of the one on the canvas</b>, in every view, so the part never vanishes when you switch to it. Change the copy from there.</li>
+    <li><b>×</b> <span class="ui">Delete variant</span> deletes the selected one, after asking. A part keeps at least one.</li>
+    <li>A variant with no picture in a view offers <span class="ui">Copy “<i>other variant</i>”</span> in the Draw tab's banner (see <a href="02-drawing.html">Drawing</a>).</li>
+  </ul>
+  <p>An animation switches between variants with variant keys, set from the timeline. In the Animate tab the canvas shows the variant the animation has at that frame, not the one picked here. See <a href="04-animate.html#variants-in-the-timeline">Variants in the timeline</a>.</p>
 
   <h3 id="layer-order">Layer order, per view</h3>
   <p>Normally every view stacks its parts the same way. But an arm in front of the body from one side is behind it from the other. The chip in the Parts header sets the <b>layer order scope</b>:</p>
@@ -143,8 +168,8 @@
   </ol>
 
   <h2 id="cinderfall">In Cinderfall: rigs for a shooter</h2>
-  <div class="callout tip"><p>Cinderfall, the first-person shooter example, comes with the studio: on Home, under <span class="ui">◆ examples</span>, press <span class="ui">📂 Cinderfall</span>. The <a href="../examples/02-cinderfall.html">Cinderfall tour</a> walks round it.</p></div>
-  <figure class="shot" data-src="../assets/shots/cinder-sprite-gunner-rig.png" data-alt="ThreeSprite's Rig tab with Cinderfall's GUNNER seen from view 3, the left side: his bones over the soldier, the rifle held forward, hips selected at Pos up 33" data-hotspots='[{"x":12.4,"y":11,"t":"View 3","d":"the left side: the arms and legs overlap, as one 3D skeleton seen side on"},{"x":36,"y":67,"t":"The rifle","d":"a solids part on handR, held forward"},{"x":85,"y":24,"t":"Bones","d":"hips → torso → armR → foreR → handR …"},{"x":88.5,"y":59.5,"t":"Pos up 33","d":"the root, 33 px above the feet"}]'>
+  <div class="callout tip"><p>Cinderfall, the first-person shooter example, comes with the studio: on Home, under <span class="ui">examples</span>, press <span class="ui">Cinderfall</span>. The <a href="../examples/02-cinderfall.html">Cinderfall tour</a> walks round it.</p></div>
+  <figure class="shot" data-src="../assets/shots/cinder-sprite-gunner-rig.png" data-alt="ThreeSprite's Rig tab with Cinderfall's GUNNER seen from view 3, the left side: his bones over the soldier, the rifle held forward, hips selected at Pos up 33" data-hotspots='[{"x":12.4,"y":11,"t":"View 3","d":"the left side: the arms and legs overlap, as one 3D skeleton seen side on"},{"x":36,"y":67,"t":"The rifle","d":"a solids part on handR, held forward"},{"x":85,"y":24,"t":"Bones","d":"hips → torso → armR → foreR → handR …"},{"x":88.5,"y":59.5,"t":"Pos up 33","d":"the root, 33 px above the feet"},{"x":84,"y":56.7,"t":"Pos right ⊗ · Pos forward ←","d":"from the side, his right goes into the screen and forward goes left"}]'>
     <figcaption>Cinderfall's <code>GUNNER</code> in the Rig tab, from view 3: the 13-bone rig, with <code>hips</code> selected.</figcaption>
   </figure>
   <p>Cinderfall's people and most of its monsters share one rig of 13 bones. It is HERO's rig with two more bones, <code>handR</code> and <code>handL</code>, 3 px long, at the end of each forearm. Here is <code>GUNNER</code>:</p>
@@ -219,6 +244,15 @@
       <li>From the root of its parent, <code>armR</code>, in armR's frame</li>
     </ul>
     <p class="why">A child bone's position is in its parent's frame. So −8 puts the elbow 8 px below the shoulder, the length of the upper arm.</p>
+  </div>
+  <div class="quiz" data-answer="0">
+    <p class="q">In view 1, the front, the Inspector reads <span class="ui">Pos right ←</span> for HERO's hips. You raise Pos right by 2. Which way does HERO move on the canvas?</p>
+    <ul>
+      <li>Left: his own right is your left while he faces you</li>
+      <li>Right, as the name says</li>
+      <li>Towards you</li>
+    </ul>
+    <p class="why">Right, up and forward are the character's own. The arrow after the name says where that goes on screen in the view you are looking at, and from the front it is ←.</p>
   </div>
   <div class="quiz" data-answer="1">
     <p class="q">You delete a bone that carries two parts. What happens to them?</p>

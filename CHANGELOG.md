@@ -22,6 +22,15 @@ anything not released yet is under **Unreleased**.
   - **Sync:** the GitHub sync fixes.
 
   Screenshots are retaken from the new editors.
+- **For ThreeSprite 0.2.2 and qPainter 0.2.0** (studio 0.4.1). The Sprites and Textures tracks teach:
+  - the New sprite form's "How is it seen?";
+  - the canvas background, the bones toggle, and move arrows that say the screen's direction;
+  - variants keyed in Animate, and touch strokes and long-press picks;
+  - the Export tab, and saving as you go;
+  - qPainter's flat tool icons, its palette at the top of the panel, and the calmer top bar;
+  - a 2:1 sky strip imported as a still picture.
+
+  Screenshots are retaken.
 - **Written for people who use the apps**, not build them: no terminal, build
   or repository steps. A first lesson, Get the tools, covers downloading,
   installing past each system's first-launch warning, and updating.

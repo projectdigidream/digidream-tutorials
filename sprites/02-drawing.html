@@ -19,18 +19,23 @@
   <h1>Drawing</h1>
   <p class="lede">The Draw tab is a pixel editor that paints one part's picture in one view at a time. This page covers the eight tools, dithering, mirror drawing and colours, and how to step round the views without leaving the keyboard.</p>
   <div class="goal">
-    <b>You'll learn</b><span>every drawing tool and its key, brush sizes, the dither density and offset, the three toggles under the tools, colours, and the view strip</span>
+    <b>You'll learn</b><span>every drawing tool and its key, drawing with a finger, brush sizes, the dither density and offset, the three toggles under the tools, the canvas background, colours, and the view strip</span>
     <b>Time</b><span>20 minutes</span>
     <b>Needs</b><span>a sprite open in ThreeSprite (see <a href="01-first-sprite.html">Your first sprite</a>)</span>
   </div>
 
-  <figure class="shot" data-src="../assets/shots/sprite-draw.png" data-hotspots='[{"x": 3.3, "y": 1.7, "t": "‹ studio", "d": "save into the module and go back; ✕ at the top right throws the changes away"}, {"x": 6, "y": 6, "t": "The project", "d": "name, canvas size, views (and mirrored, when it is) — click for settings"}, {"x": 54, "y": 6, "t": "Mode tabs", "d": "Draw · Rig · Animate · 3D · Export"}, {"x": 17, "y": 11, "t": "View strip", "d": "one button per view; ⇄ marks mirrored views ( , and . step)"}, {"x": 2, "y": 24, "t": "Tools", "d": "pencil, eraser, dither, fill, pick, select, move, pan"}, {"x": 2, "y": 47, "t": "Brush size", "d": "1 to 4 pixels"}, {"x": 2, "y": 60, "t": "Toggles", "d": "mirror drawing, dim other parts, pixel grid"}, {"x": 41, "y": 50, "t": "The canvas", "d": "one square frame; the feet stand on the orange line"}, {"x": 88, "y": 17, "t": "Palette", "d": "primary and secondary colour, swap with X"}, {"x": 88, "y": 40, "t": "Parts", "d": "what is drawn, hung on bones; ⬡ marks a part made of solids"}, {"x": 88, "y": 72, "t": "Solids", "d": "3D shapes drawn in every view; Bake turns them into pixels"}]' data-alt="ThreeSprite's Draw tab with Gem Hollow's HERO open">
-    <figcaption>Gem Hollow's HERO in the Draw tab: tools on the left, the view strip over the canvas, the palette, parts and solids on the right. The <code>head</code> part is selected, so the others are dimmed.</figcaption>
+  <figure class="shot" data-src="../assets/shots/sprite-draw.png" data-hotspots='[{"x": 3.3, "y": 1.8, "t": "studio", "d": "save into the module and go back; ✕ at the top right throws the changes away"}, {"x": 6, "y": 6, "t": "The project", "d": "name, canvas size, views (and mirrored, when it is); click for settings"}, {"x": 54, "y": 6, "t": "Mode tabs", "d": "Draw · Rig · Animate · 3D · Export"}, {"x": 17, "y": 11, "t": "View strip", "d": "one button per view; ⇄ marks mirrored views ( , and . step)"}, {"x": 2, "y": 24, "t": "Tools", "d": "pencil, eraser, dither, fill, pick, select, move, pan"}, {"x": 2, "y": 47, "t": "Brush size", "d": "1 to 4 pixels"}, {"x": 2, "y": 60, "t": "Toggles", "d": "mirror drawing, dim other parts, pixel grid"}, {"x": 41, "y": 50, "t": "The canvas", "d": "one square frame; the feet stand on the orange line"}, {"x": 72, "y": 20.4, "t": "Canvas background", "d": "dark or light checks, grey, white or black; kept on this device"}, {"x": 88, "y": 17, "t": "Palette", "d": "primary and secondary colour, swap with X"}, {"x": 88, "y": 40, "t": "Parts", "d": "what is drawn, hung on bones; ⬡ marks a part made of solids"}, {"x": 88, "y": 72, "t": "Solids", "d": "3D shapes drawn in every view; Bake turns them into pixels"}]' data-alt="ThreeSprite's Draw tab with Gem Hollow's HERO open, and the canvas background choices open">
+    <figcaption>Gem Hollow's HERO in the Draw tab: tools on the left, the view strip over the canvas, the palette, parts and solids on the right. The <code>head</code> part is selected, so the others are dimmed, and the canvas background's choices are open in the corner.</figcaption>
   </figure>
 
   <h2>What you are drawing on</h2>
-  <p>A sprite is made of <b>parts</b>, such as a body, a head or an arm. Each part has its own picture <em>in every view</em>. The Draw tab paints the part selected in the <b>Parts</b> panel, in the view selected in the view strip. You see the whole sprite composed, and by default the other parts are dimmed so you can tell what you are painting.</p>
-  <p>When the selected part has no picture yet in the current view, a banner says <em>"This part has no image for view k. Drawing creates one, or:"</em> with two buttons. <span class="ui">Blank</span> starts an empty picture. <span class="ui">Copy view N</span> starts from the nearest view that already has one, which is usually the quickest way to start a new angle.</p>
+  <p>A sprite is made of <b>parts</b>, such as a body, a head or an arm. Each part has its own picture <em>in every view</em>, and can have several <b>variants</b>, other sets of pictures for the same part (see <a href="03-rig.html#variants">Variants</a>). The Draw tab paints the part selected in the <b>Parts</b> panel, in the view selected in the view strip, in the variant picked under the part's name. The canvas shows that variant while you paint it. You see the whole sprite composed, and by default the other parts are dimmed so you can tell what you are painting.</p>
+  <p>When the selected part has no picture yet in the current view, a banner says <em>"This part has no image for view k. Drawing creates one, or:"</em> with up to three buttons:</p>
+  <ul>
+    <li><span class="ui">Blank</span> starts an empty picture.</li>
+    <li><span class="ui">Copy “<i>variant</i>”</span>, when you are drawing a variant that has no picture in this view but another variant of the part has one, starts from that variant's picture: for example <span class="ui">Copy “default”</span>.</li>
+    <li><span class="ui">Copy view N</span> starts from the nearest view that already has one, which is usually the quickest way to start a new angle.</li>
+  </ul>
 
   <h2>The tools</h2>
   <p>The tool column on the left. The keys work while the Draw tab is open.</p>
@@ -49,7 +54,8 @@
   </table>
   <ul>
     <li>With a selection, <kbd>Delete</kbd> or <kbd>Backspace</kbd> clears its pixels, and <kbd>Esc</kbd> drops it. Clicking outside it with Move drops it too.</li>
-    <li><b>Right-click</b> picks a colour with any tool. On a touch screen, <b>long-press</b> does the same.</li>
+    <li><b>Right-click</b> picks a colour with any tool.</li>
+    <li>On a touch screen, a stroke counts as soon as your finger reaches a second pixel, however slowly it moves. To pick a colour, <b>hold a finger still on one pixel</b> for about half a second.</li>
     <li><kbd>Esc</kbd> during a stroke cancels the stroke.</li>
   </ul>
   <div class="widget trainer" data-tool="sprites"></div>
@@ -77,6 +83,10 @@
     </tbody>
   </table>
   <div class="callout warn"><p><b>Mirror drawing</b> is not <b>mirror symmetry</b>. Mirror drawing makes the left and right halves of <em>one picture</em> match, which is what you want in the front and back views. Mirror symmetry, set when the sprite is made, flips <em>whole views</em> into the ones you don't draw. In a side view, turn mirror drawing off: a character seen from the side isn't symmetrical.</p></div>
+
+  <h2>The canvas background</h2>
+  <p>The swatch in the canvas's top-right corner, <span class="ui">Canvas background</span>, chooses what your art is drawn over: <span class="ui">Dark checks</span>, <span class="ui">Light checks</span>, <span class="ui">Grey</span>, <span class="ui">White</span> or <span class="ui">Black</span>. Checks show where a pixel is transparent; a plain colour shows how the sprite reads against a wall of that brightness. The choice is kept on your device, not in the sprite, and the Rig and Animate tabs use it too.</p>
+  <div class="callout tip"><p>Outlines and shadows in near-black vanish into the dark checks. Switch to <span class="ui">Light checks</span> or <span class="ui">White</span> to see them, and back to dark for the highlights.</p></div>
 
   <h2>Colours</h2>
   <p>The palette panel, top right, holds:</p>
@@ -115,8 +125,8 @@
     <li><b>The pickups and scenery are pictures.</b> Each has one part, <code>picture</code>, drawn in its single view with the <i>Kenney</i> palette. A picture that changes, such as a coin turning, is drawn as several <b>variants</b> of that part. COIN has six: <code>face</code>, <code>w75</code>, <code>w40</code>, <code>edge</code>, <code>b40</code> and <code>b75</code>, the coin at full width, three quarters, 40%, edge on, and back again. TORCH has two flames, <code>a</code> and <code>b</code>.</li>
   </ul>
   <ol class="steps">
-    <li><p>Open Gem Hollow, then <b>🎞 Sprites</b>, click <code>TORCH</code> and press <span class="ui">✎ edit in ThreeSprite</span>.</p></li>
-    <li><p>Under the part's name, open the <b>Variant</b> drop-down and choose <code>b</code>: the other flame. Switch back to <code>a</code> and compare.</p></li>
+    <li><p>Open Gem Hollow, then <b>Sprites</b>, click <code>TORCH</code> and press <span class="ui">edit in ThreeSprite</span>.</p></li>
+    <li><p>Under the part's name, open the <b>Variant</b> drop-down and choose <code>b</code>: the canvas shows the other flame. Switch back to <code>a</code> and compare.</p></li>
     <li><p>Press <kbd>I</kbd> and click the flame's brightest pixel. With the <span class="ui">Pencil</span> (<kbd>B</kbd>) at size 1, add a spark above the flame in variant <code>b</code>.</p></li>
     <li><p>Press <span class="ui">✕</span> to go back without saving, so Gem Hollow keeps its torch.</p></li>
   </ol>
@@ -157,6 +167,15 @@
       <li>The grid only shows in the Rig tab</li>
     </ul>
     <p class="why">The grid only appears from 8× zoom, where a pixel is big enough for the lines to help.</p>
+  </div>
+  <div class="quiz" data-answer="2">
+    <p class="q">On a phone, you hold your finger still on one pixel of the canvas for a moment. What happens?</p>
+    <ul>
+      <li>A one-pixel dot is painted</li>
+      <li>Nothing, until you move</li>
+      <li>That pixel's colour becomes the primary colour</li>
+    </ul>
+    <p class="why">A finger held on one pixel for about half a second picks its colour. A stroke only counts once the finger reaches a second pixel, however slowly it goes.</p>
   </div>
 </article>
 </body>

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Animating · Digidream Studio tutorials</title>
-<meta name="description" content="ThreeSprite's timeline: animations, frames, fps and loop, bone keys with linear, ease and step, part visibility and variant keys, the onion skin, and copying keys.">
+<meta name="description" content="ThreeSprite's timeline: animations, frames, fps and loop, bone keys with linear, ease and step, the bones button, part visibility and variant keys from the timeline, the onion skin, and copying keys.">
 <link rel="stylesheet" href="../assets/site.css">
 <link rel="stylesheet" href="../assets/skins/skins.css">
 <link rel="icon" type="image/png" href="../assets/logo.png">
@@ -19,13 +19,13 @@
   <h1>Animating</h1>
   <p class="lede">You animate the rig, not the pictures. Keys on bones turn, move and scale them; keys on parts show, hide and swap them. Because the bones are 3D, one set of keys animates every view at once.</p>
   <div class="goal">
-    <b>You'll learn</b><span>how to add and set up animations, set and edit keys, choose how keys blend, key a part's visibility and variant, use the onion skin, and copy keys</span>
+    <b>You'll learn</b><span>how to add and set up animations, set and edit keys, show or hide the bones, choose how keys blend, switch a part's variant from the timeline, key its visibility, use the onion skin, and copy keys</span>
     <b>Time</b><span>25 minutes</span>
     <b>Needs</b><span>a rigged sprite (see <a href="03-rig.html">Rig, bones and parts</a>)</span>
   </div>
 
-  <figure class="shot" data-src="../assets/shots/sprite-animate.png" data-alt="ThreeSprite's Animate tab: HERO's walk at frame 5, seen from the left side, with the timeline at the bottom" data-hotspots='[{"x":3,"y":73,"t":"Animation","d":"choose, add, rename, delete"},{"x":15.5,"y":73,"t":"Play and frame","d":"Space plays; [ and ] step"},{"x":26,"y":73,"t":"fps, frames, loop","d":"the chosen animation&#39;s settings"},{"x":10,"y":90,"t":"The timeline","d":"a row per bone, then per part; ◆ is a key"},{"x":88,"y":12,"t":"Keys at frame","d":"type values for the selected bone"},{"x":82,"y":41.5,"t":"Ease, Key all, Delete keys","d":"how this frame&#39;s keys blend to the next"}]'>
-    <figcaption>Gem Hollow's HERO, <code>walk</code> at frame 5 of 8, 10 fps, seen from view 3. Every frame of every bone has a key.</figcaption>
+  <figure class="shot" data-src="../assets/shots/sprite-animate.png" data-alt="ThreeSprite's Animate tab: HERO's walk at frame 5, seen from the left side, with the timeline at the bottom" data-hotspots='[{"x":3,"y":73,"t":"Animation","d":"choose, add, rename, delete"},{"x":15.5,"y":73,"t":"Play and frame","d":"Space plays; [ and ] step"},{"x":28,"y":73,"t":"fps, frames, loop","d":"the chosen animation&#39;s settings"},{"x":10,"y":90,"t":"The timeline","d":"a row per bone, then per part; ◆ is a key"},{"x":75.1,"y":15.9,"t":"Bones","d":"show or hide the bones on the canvas; they hide by themselves while it plays"},{"x":77.6,"y":15.9,"t":"Canvas background","d":"the same swatch as in Draw"},{"x":88,"y":12,"t":"Keys at frame","d":"type values for the selected bone"},{"x":84,"y":27.8,"t":"Move right ⊗ · Move up ↑ · Move forward ←","d":"from the left side, armR&#39;s right goes into the screen and its forward goes left"},{"x":82,"y":41.5,"t":"Ease, Key all, Delete keys","d":"how this frame&#39;s keys blend to the next"}]'>
+    <figcaption>Gem Hollow's HERO, <code>walk</code> at frame 5 of 8, 10 fps, seen from view 3, with <code>armR</code> selected. Every frame of every bone has a key.</figcaption>
   </figure>
 
   <h2>Animations</h2>
@@ -39,7 +39,7 @@
   <table>
     <thead><tr><th>Control</th><th>What it does</th></tr></thead>
     <tbody>
-      <tr><td><b>Play / pause</b></td><td>Plays the animation on the canvas. <kbd>Space</kbd> does the same in the Animate and 3D tabs.</td></tr>
+      <tr><td><b>Play / pause</b></td><td>Plays the animation on the canvas. <kbd>Space</kbd> does the same in the Animate and 3D tabs. The bones hide while it plays.</td></tr>
       <tr><td><code>3 / 8</code></td><td>The current frame and the frame count.</td></tr>
       <tr><td><span class="ui">fps</span></td><td>Frames per second. <b>0</b> holds the first frame.</td></tr>
       <tr><td><span class="ui">frames</span></td><td>How many frames, from 1 to 256.</td></tr>
@@ -66,16 +66,25 @@
     </tbody>
   </table>
 
-  <h2>Setting keys</h2>
+  <h2 id="bones-toggle">The bones on the canvas</h2>
+  <p>In the Animate tab, the canvas's top-right corner has a bones button beside the <span class="ui">Canvas background</span> swatch (see <a href="01-first-sprite.html#canvas-corner">The canvas's corner</a>). Its tooltip says what it does: <em>Hide the bones (they hide while playing anyway)</em> while they show, and <em>Show the bones, to pose by dragging them</em> while they are hidden.</p>
+  <ul>
+    <li>Hide them to see the pose without lines over it. The choice is kept on your device.</li>
+    <li>The bones also hide by themselves while the animation plays, and come back when it stops.</li>
+    <li>Bones you can't see can't be dragged: with the bones hidden, a drag on the canvas pans it instead of posing. Show them again to pose by dragging, or type values in <b>Keys at frame</b>.</li>
+    <li>The Rig tab always shows its bones.</li>
+  </ul>
+
+  <h2 id="setting-keys">Setting keys</h2>
   <p>There are two ways to set a key on the current frame:</p>
   <ol>
-    <li><b>On the canvas</b>: drag a bone, as in the Rig tab. Dragging the tip sets a rotation key, and dragging the root sets a move key. The drag works in the plane of the view you are looking at.</li>
+    <li><b>On the canvas</b>: drag a bone, as in the Rig tab, while the bones show. Dragging the tip sets a rotation key, and dragging the root sets a move key. The drag works in the plane of the view you are looking at.</li>
     <li><b>In the Inspector</b>, now titled <b>Keys at frame</b>: type values for the selected bone. It says <em>Frame f of n</em> at the top.</li>
   </ol>
   <p>For a bone the Inspector shows three groups, each with a <b>◆</b> badge that is lit when there is a key at this frame. Click the badge to set or remove that key.</p>
   <ul>
     <li><span class="ui">Rot yaw</span>, <span class="ui">Rot pitch</span>, <span class="ui">Rot roll</span> (degrees)</li>
-    <li><span class="ui">Move right</span>, <span class="ui">Move up</span>, <span class="ui">Move forward</span> (pixels)</li>
+    <li><span class="ui">Move right</span>, <span class="ui">Move up</span>, <span class="ui">Move forward</span> (pixels). An arrow after each name says where that move goes on screen in the current view: from the front, <span class="ui">Move right ←</span>, <span class="ui">Move up ↑</span> and <span class="ui">Move forward ⊙</span> (⊙ is towards you, ⊗ away). They are the character's own directions, as in the Rig tab: see <a href="03-rig.html#move-arrows">Which way a move goes</a>.</li>
     <li><span class="ui">Scale right</span>, <span class="ui">Scale up</span>, <span class="ui">Scale forward</span></li>
   </ul>
   <p>Under them:</p>
@@ -98,11 +107,25 @@
   <div class="callout tip"><p>Sprites often have only 4 to 8 frames, and blending between so few can look mushy. Try <code>step</code> on every key: each frame is then exactly the pose you set.</p></div>
 
   <h2 id="parts-in-the-timeline">Parts in the timeline</h2>
-  <p>Select a part (in its timeline row or in Parts) and the Inspector shows two more keys for it. Both are always <code>step</code>, since a part can't be half visible or half one variant.</p>
+  <p>Select a part (click its row in the timeline, or pick it in Parts) and the Inspector shows two more keys for it. Both are always <code>step</code>, since a part can't be half visible or half one variant.</p>
   <ul>
     <li><span class="ui">Visible</span>: a tick box. Untick it to hide the part from this frame on. Use it for a muzzle flash, or for a part that only shows in one pose.</li>
     <li><span class="ui">Variant</span>: which of the part's variants is shown. Use it to open a hand, or to open a mouth to shout.</li>
   </ul>
+  <p>A key only changes the frames from its own on. <b>Before a part's first key</b>, it is visible and shows its default variant (the first one, called <code>default</code> in a new part). So a hand switched to <i>open hand</i> at frame 3 is closed on frames 1 and 2; to hide something on frame 1, key it hidden on frame 1.</p>
+
+  <h3 id="variants-in-the-timeline">Variants in the timeline</h3>
+  <figure class="shot" data-src="../assets/shots/sprite-variants.png" data-alt="ThreeSprite's Animate tab with Gem Hollow's COIN: spin at frame 3 of 6, the picture part's row picked, and the timeline's bar showing picture with the variant w40 and a diamond; coloured strips under frames 2 to 6" data-hotspots='[{"x":51.5,"y":86.7,"t":"picture · w40","d":"the part&#39;s variant at this frame; choosing another keys the switch here"},{"x":57.4,"y":86.7,"t":"◆","d":"add or remove the variant key at this frame"},{"x":9,"y":95.1,"t":"The row&#39;s variant","d":"the one showing at the playhead"},{"x":15,"y":96.2,"t":"The coloured strip","d":"the frames where a variant other than the default (face, for COIN) shows, one colour per variant"},{"x":85,"y":58.7,"t":"Variant in Keys at frame","d":"the same key, from the Inspector"},{"x":75.1,"y":15.9,"t":"Bones","d":"show or hide the bones"}]'>
+    <figcaption>Gem Hollow's COIN in Animate: <code>spin</code> at frame 3, with the <code>picture</code> part's row picked. The bar shows its variant at this frame, <code>w40</code>.</figcaption>
+  </figure>
+  <p>A part with two or more variants (and drawn in pixels, not a solids part) can be switched from the timeline itself:</p>
+  <ol>
+    <li>Click the part's row in the timeline. The timeline's bar, after the copy and paste buttons, shows the part's name, a drop-down with its variant at the current frame, and a <b>◆</b>.</li>
+    <li>Go to the frame where the switch should happen and choose another variant in the drop-down. That keys the switch at this frame. The canvas shows the new variant from here on.</li>
+    <li>Press the <b>◆</b> to add a key for the variant showing, or to remove the key at this frame when there is one (the ◆ is lit then).</li>
+  </ol>
+  <p>The part's row names the variant showing at the playhead, and a <b>coloured strip</b> under its frames marks where a variant other than its default shows, one colour per variant. Hover a strip for its variant's name. A part with a single variant has no picker and no strip.</p>
+  <p>In the Animate tab the canvas, the exports and the 3D view all show the variant the animation has at that frame. The <b>Variant</b> drop-down in Parts only chooses what the Draw tab paints.</p>
 
   <h2>The onion skin</h2>
   <p>With the onion skin on, the previous frame is drawn faded under the current one. On frame 1 the "previous" frame is the last one, so the loop point can be checked as well. Try it below: a four-frame bounce, with frame 1 squashed on the ground, then a stretch going up, round at the top, and a stretch coming down.</p>
@@ -154,6 +177,11 @@
   <p>The rule of squash and stretch: when it gets wider, make it shorter, so it seems to keep its volume.</p>
   <h3>How the coin spins</h3>
   <p>COIN has no bones that move. Its one animation, <code>spin</code>, is 6 frames at 6 fps, looping, with one <span class="ui">Variant</span> key on each frame of the <code>picture</code> part: <code>face</code>, <code>w75</code>, <code>w40</code>, <code>edge</code>, <code>b40</code>, <code>b75</code>. Variant keys are always step, so each frame shows exactly one drawing.</p>
+  <ol class="steps">
+    <li><p>Open Gem Hollow's <code>COIN</code> in ThreeSprite and open <span class="ui">Animate</span>. Click the <code>picture</code> row in the timeline. The timeline's bar shows <code>picture</code>, a drop-down reading <code>face</code>, and a lit ◆: frame 1 has a variant key.</p></li>
+    <li><p>Step with <kbd>]</kbd>. The drop-down and the row's label follow the frame: <code>w75</code>, <code>w40</code>, <code>edge</code>… The coloured strip under frames 2 to 6 is where the coin is not showing <code>face</code>.</p></li>
+    <li><p>On frame 4, choose <code>face</code> in the drop-down, and press <kbd>Space</kbd>: halfway round, the coin flashes full width for one frame, since frame 5 has a key of its own. Press <span class="ui">✕</span> to throw the change away.</p></li>
+  </ol>
   <p>The other pickups mix the two ways. GEM and KEY have one picture and bob: a <span class="ui">Move up</span> key on <code>root</code> rises to 9 px on frame 5 of 8 and comes back. STAR also swaps between variants <code>s100</code>, <code>s105</code> and <code>s110</code>, slightly bigger drawings, so it pulses as it bobs. TORCH flickers between two variants at 6 fps. The LEVER has <code>off</code> and <code>on</code>, one frame each, and <code>pull</code>, six frames turning the handle from one side to the other.</p>
   <ol class="steps">
     <li><p>Open Gem Hollow's <code>SLIME</code> in ThreeSprite and open <span class="ui">Animate</span>. Choose <code>walk</code> in the drop-down.</p></li>
@@ -163,7 +191,7 @@
   </ol>
 
   <h2 id="cinderfall">In Cinderfall</h2>
-  <div class="callout tip"><p>Cinderfall, the first-person shooter example, comes with the studio: on Home, under <span class="ui">◆ examples</span>, press <span class="ui">📂 Cinderfall</span>. The <a href="../examples/02-cinderfall.html">Cinderfall tour</a> walks round it.</p></div>
+  <div class="callout tip"><p>Cinderfall, the first-person shooter example, comes with the studio: on Home, under <span class="ui">examples</span>, press <span class="ui">Cinderfall</span>. The <a href="../examples/02-cinderfall.html">Cinderfall tour</a> walks round it.</p></div>
   <p>A shooter needs animations a platformer does not: an <b>aim</b> before the shot, and for the boss, moves of its own. Every one is seen from 8 views, so each pose has to read from the back as well as the front.</p>
   <table>
     <thead><tr><th>Sprite</th><th>Animations (frames @ fps)</th></tr></thead>
@@ -227,7 +255,7 @@
       <li>The flash bone's scale to 0 on the other frames</li>
       <li>A second animation with the flash in it</li>
     </ul>
-    <p class="why">Visibility keys show and hide a part, and are always step. Keying it off at frame 1 matters, because before the first key a part shows its first key's value.</p>
+    <p class="why">Visibility keys show and hide a part, and are always step. Keying it off at frame 1 matters, because before its first key a part is visible.</p>
   </div>
   <div class="quiz" data-answer="0">
     <p class="q">Gem Hollow's COIN turns with no bones moving. What is keyed?</p>
@@ -237,6 +265,24 @@
       <li>Scale right, from 1 down to 0 and back</li>
     </ul>
     <p class="why">A one-view sprite can't be turned by its bones: there is no other view to show. So each angle of the coin is drawn as a variant, and spin keys one variant per frame.</p>
+  </div>
+  <div class="quiz" data-answer="1">
+    <p class="q">In Animate, you drag over the arm to pose it, but the whole canvas slides instead. Why?</p>
+    <ul>
+      <li>The arm's bone has no key on this frame yet</li>
+      <li>The bones are hidden, so a drag pans: show them with the bones button in the canvas's corner</li>
+      <li>Arms can only be posed in the Rig tab</li>
+    </ul>
+    <p class="why">Bones you can't see can't be grabbed. They are hidden by the bones button, and also while the animation plays. Show them, or type the values in Keys at frame.</p>
+  </div>
+  <div class="quiz" data-answer="2">
+    <p class="q">A hand part has the variants <code>default</code> and <code>open</code>. You key <code>open</code> at frame 4 and nothing else. What shows on frames 1 to 3?</p>
+    <ul>
+      <li><code>open</code>, since it is the only key</li>
+      <li>Nothing: the part is hidden until its first key</li>
+      <li><code>default</code></li>
+    </ul>
+    <p class="why">A part key only changes the frames from its own on. Before a part's first key it shows its default variant, and is visible.</p>
   </div>
   <div class="quiz" data-answer="1">
     <p class="q">You copy keys on frames 1 and 3, then paste with the playhead on frame 5. Where do they land?</p>

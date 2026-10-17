@@ -72,7 +72,7 @@
   <h3>A sheet you import or set by hand</h3>
   <p>On a texture's card, a still picture shows <span class="ui">animate…</span>, and an animated one shows <span class="ui">cut &amp; speed…</span>. <span class="ui">+ import texture (PNG)</span> opens the same dialog, with the name editable and <span class="ui">import</span> in place of <span class="ui">save</span>. The dialog has:</p>
   <ul>
-    <li><span class="ui">cut</span>: <span class="ui">a still picture</span>, <span class="ui">frames stacked ↓ (vertical)</span> or <span class="ui">frames side by side → (horizontal)</span>. When the picture's shape suggests a sheet, for example one exactly four squares tall, the dialog proposes it.</li>
+    <li><span class="ui">cut</span>: <span class="ui">a still picture</span>, <span class="ui">frames stacked ↓ (vertical)</span> or <span class="ui">frames side by side → (horizontal)</span>. When the picture's shape suggests a sheet, the dialog proposes it: square frames stacked, from two up (a picture exactly four squares tall is 4 frames), or side by side from <b>three</b> up. A picture twice as wide as tall is proposed as <span class="ui">a still picture</span>: that is the shape of a sky strip or a panorama, which the Sky page asks for, not two frames.</li>
     <li><span class="ui">frames</span>, or <span class="ui">each frame, px</span>: set either one, and the other follows.</li>
     <li><span class="ui">frames a second</span>.</li>
     <li>Two previews: <span class="ui">the picture, cut</span>, with yellow cut lines and the frame being shown outlined, and <span class="ui">a frame, tiled as on a wall</span>, which plays.</li>
@@ -87,7 +87,7 @@
     <li><p>Set <b>frames</b> to 3. The 64 pixels don't divide by 3, so the last pixel row is shaded red and the warning says so. Each "frame" now cuts across two of the real ones, and the tile stutters. Set it back to 4.</p></li>
     <li><p>Try <b>frames side by side → (horizontal)</b>. The frames become 4-pixel strips: the wrong cut for this sheet. Then choose <b>a still picture</b>: there is no line, and the game would show the whole sheet, standing still.</p></li>
   </ol>
-  <div class="callout"><p>The card says what a texture is: <em>a still picture</em>, or for example <em>🎞 animated: 4 frames stacked, 8 a second</em>. Only the map's own textures animate. A picture put up later by a switch or a graph is cut too, but does not move.</p></div>
+  <div class="callout"><p>The card says what a texture is: <em>a still picture</em>, or for example <em>animated: 4 frames stacked, 8 a second</em>. Only the map's own textures animate. A picture put up later by a switch or a graph is cut too, but does not move.</p></div>
 
   <h2 id="skies">Skyboxes</h2>
   <figure class="shot" data-src="../assets/shots/texture-skybox.png" data-alt="qPainter painting Gem Hollow's SKYHILLS strip sky, with the 3D preview inside it" data-hotspots='[{"x": 26, "y": 43, "t": "Compass guides", "d": "where north, east, south and west fall on the strip"}, {"x": 13, "y": 62, "t": "The horizon", "d": "the dashed line the strip&#39;s horizon sits on"}, {"x": 91.5, "y": 54.9, "t": "Skybox", "d": "the kind: Strip — DOOM sky round the horizon"}, {"x": 83, "y": 58.1, "t": "Repeat, Height, Yaw", "d": "the strip&#39;s settings in the preview"}, {"x": 84, "y": 61.3, "t": "Export to engine…", "d": "standalone: write the pictures and the sky line"}, {"x": 90, "y": 84, "t": "The 3D preview", "d": "from inside the sky; drag to look round"}]'>
@@ -109,6 +109,7 @@
     <li><b>In the studio</b>: <span class="ui">+ new texture</span>, then in the <b>New texture</b> dialog pick <span class="ui">Skybox: strip (DOOM sky)</span>, <span class="ui">Skybox: panorama (2:1)</span> or <span class="ui">Skybox: cube (six faces)</span>. You give the width for a strip or panorama (the height is half), or the face size for a cube (the cross is 4×3 faces). The size must be even.</li>
     <li><b>Standalone</b>: <span class="ui">New…</span> → <span class="ui">Strip — DOOM sky…</span>, <span class="ui">Panorama (2:1)…</span> or <span class="ui">Cube (six faces)…</span>.</li>
     <li><b>From a picture you have</b>: open it, then choose the kind in <b>3D preview</b> → <span class="ui">Skybox</span>. A cube must already be a 4×3 cross of square faces.</li>
+    <li><b>A finished strip or panorama, straight into the studio</b>: <span class="ui">+ import texture (PNG)</span> on the Textures page. A picture twice as wide as tall comes in as <span class="ui">a still picture</span>, ready for the Sky page; the import no longer takes it for two frames side by side.</li>
     <li><b>From six face pictures</b>: <span class="ui">Import faces…</span> (shown for cube skies) builds the cross from six PNGs named <code>…_east</code>, <code>_west</code>, <code>_north</code>, <code>_south</code>, <code>_up</code>, <code>_down</code>, or three.js's <code>px nx py ny pz nz</code>.</li>
   </ul>
 
@@ -129,8 +130,8 @@
     <li>Pick <b>any other folder</b>, and only the pictures are written. qPainter shows the line for you to add.</li>
   </ul>
   <p>Only the current frame is exported, since skies don't animate. Settings are written only where they differ from the engine's defaults.</p>
-  <p><b>In the studio</b>, a strip or panorama you paint is an ordinary module texture. Open <b>🌌 Sky</b>, pick the kind, and type the texture's name. See <a href="../studio/08-look-and-feel.html">Sky, screens and weather</a>.</p>
-  <div class="callout warn"><p>The studio's Sky page takes a cube as six separate textures, one per face. qPainter keeps a cube as one cross. For a cube, use standalone qPainter's <span class="ui">Export to engine…</span>, which writes six face pictures, then import them into the module or name them in <b>🌌 Sky</b>.</p></div>
+  <p><b>In the studio</b>, a strip or panorama you paint is an ordinary module texture. Open <b>Sky</b>, pick the kind, and type the texture's name. See <a href="../studio/08-look-and-feel.html">Sky, screens and weather</a>.</p>
+  <div class="callout warn"><p>The studio's Sky page takes a cube as six separate textures, one per face. qPainter keeps a cube as one cross. For a cube, use standalone qPainter's <span class="ui">Export to engine…</span>, which writes six face pictures, then import them into the module or name them in <b>Sky</b>.</p></div>
 
   <h2>The 3D preview</h2>
   <p>The preview at the bottom of the side panel updates as you paint. Drag to orbit; scroll or pinch to zoom.</p>
@@ -154,27 +155,27 @@
   </ul>
 
   <h2 id="gem-hollow">In Gem Hollow</h2>
-  <figure class="shot" data-src="../assets/shots/texture-lava.png" data-alt="qPainter with Gem Hollow's LAVA open: four frames at FPS 4" data-hotspots='[{"x": 41, "y": 50, "t": "Frame 1", "d": "256×256, tiled with Wrap and Tiles on"}, {"x": 85, "y": 58.7, "t": "Four frames", "d": "click one to paint it"}, {"x": 84, "y": 63.3, "t": "1/4 and FPS 4", "d": "the current frame, and the speed the studio writes"}, {"x": 80, "y": 77, "t": "One layer", "d": "Kenney tile: one picture per frame"}]'>
+  <figure class="shot" data-src="../assets/shots/texture-lava.png" data-alt="qPainter with Gem Hollow's LAVA open: four frames at FPS 4" data-hotspots='[{"x": 41, "y": 50, "t": "Frame 1", "d": "256×256, tiled with Wrap and Tiles on"}, {"x": 85, "y": 60.9, "t": "Four frames", "d": "click one to paint it"}, {"x": 84, "y": 65.4, "t": "1/4 and FPS 4", "d": "the current frame, and the speed the studio writes"}, {"x": 82, "y": 79.1, "t": "One layer", "d": "Kenney tile: one picture per frame"}]'>
     <figcaption>Gem Hollow's LAVA in qPainter: one layer, four 256×256 frames, <span class="ui">FPS</span> 4, 33 colours.</figcaption>
   </figure>
   <p>Gem Hollow has two animated textures, both qPainter projects with four frames on one layer. The studio baked each as a vertical sheet, 256 × 1024, and wrote their lines to <code>assets/animations.txt</code>:</p>
 <pre><code>sheet LAVA vertical 4 fps 4
 sheet WATER vertical 4 fps 3</code></pre>
-  <p>The speeds come from each project's <span class="ui">FPS</span>. On the Textures page, LAVA's card reads <em>🎞 animated: 4 frames stacked, 4 a second</em>, and <span class="ui">cut &amp; speed…</span> opens the sheet dialog on it with <span class="ui">frames stacked ↓ (vertical)</span>, 4 <span class="ui">frames</span> (256 <span class="ui">each frame, px</span>) and 4 <span class="ui">frames a second</span>.</p>
-  <p>Its sky is <b>SKYHILLS</b>, a 2048 × 512 strip painted in qPainter on one layer, <b>Sky</b>. The 🌌 Sky page wrote this line to <code>module.txt</code>:</p>
+  <p>The speeds come from each project's <span class="ui">FPS</span>. On the Textures page, LAVA's card reads <em>animated: 4 frames stacked, 4 a second</em>, and <span class="ui">cut &amp; speed…</span> opens the sheet dialog on it with <span class="ui">frames stacked ↓ (vertical)</span>, 4 <span class="ui">frames</span> (256 <span class="ui">each frame, px</span>) and 4 <span class="ui">frames a second</span>.</p>
+  <p>Its sky is <b>SKYHILLS</b>, a 2048 × 512 strip painted in qPainter on one layer, <b>Sky</b>. The Sky page wrote this line to <code>module.txt</code>:</p>
 <pre><code>sky default strip SKYHILLS repeat 2 height 0.7</code></pre>
   <p><code>default</code> makes it the sky of every level without one of its own. The picture goes round the horizon twice, and reaches a little higher than the 0.625 default. The <span class="ui">Repeat</span> and <span class="ui">Height</span> in qPainter's preview only change the preview; the game reads the line.</p>
 
   <h3>Exercise: slow Gem Hollow's water</h3>
   <ol class="steps">
-    <li><p>On <b>Home</b>, under <b>Examples</b>, press <span class="ui">📂 Gem Hollow</span> and open <b>🧱 Textures</b>. Click <b>WATER</b>: <em>🎞 animated: 4 frames stacked, 3 a second</em>.</p></li>
+    <li><p>On <b>Home</b>, under <span class="ui">examples</span>, press <span class="ui">Gem Hollow</span> and open <b>Textures</b>. Click <b>WATER</b>: <em>animated: 4 frames stacked, 3 a second</em>.</p></li>
     <li><p>Press <span class="ui">edit in qPainter</span>. Press <kbd>F</kbd> to play, then <kbd>F</kbd> again to stop. Turn on <span class="ui">Onion skin</span> and step through with <kbd>,</kbd> and <kbd>.</kbd> to see how each wave moves on.</p></li>
-    <li><p>Set <span class="ui">FPS</span> to 2 and press <span class="ui">‹ studio</span>. The card now reads <em>2 a second</em>, and <code>animations.txt</code> gets <code>sheet WATER vertical 4 fps 2</code>.</p></li>
+    <li><p>Set <span class="ui">FPS</span> to 2 and press <span class="ui">studio</span>. The card now reads <em>2 a second</em>, and <code>animations.txt</code> gets <code>sheet WATER vertical 4 fps 2</code>.</p></li>
     <li><p>Press <span class="ui">cut &amp; speed…</span>, set <span class="ui">frames a second</span> back to 3 and press <span class="ui">save</span>. Watch <span class="ui">a frame, tiled as on a wall</span> play as you change it.</p></li>
   </ol>
 
   <h2 id="cinderfall">In Cinderfall</h2>
-  <div class="callout tip"><p>Cinderfall, the first-person shooter example, comes with the studio: on Home, under <span class="ui">◆ examples</span>, press <span class="ui">📂 Cinderfall</span>. The <a href="../examples/02-cinderfall.html">Cinderfall tour</a> walks round it.</p></div>
+  <div class="callout tip"><p>Cinderfall, the first-person shooter example, comes with the studio: on Home, under <span class="ui">examples</span>, press <span class="ui">Cinderfall</span>. The <a href="../examples/02-cinderfall.html">Cinderfall tour</a> walks round it.</p></div>
   <h3>Four animated textures, DOOM's way</h3>
   <p>DOOM animated its liquids by cycling a few flats or wall textures. Cinderfall keeps Freedoom's frames as the frames of one qPainter project each, on one layer named after all of them (<b>Freedoom LAVA1+LAVA2+LAVA3+LAVA4</b>). The studio wrote these lines to <code>assets/animations.txt</code>:</p>
 <pre><code>sheet BLOODFALL vertical 4 fps 6
@@ -184,35 +185,35 @@ sheet WATER vertical 4 fps 4</code></pre>
   <p>The pattern is worth copying: the pools (64 × 64 floors) turn over slowly at 4 a second; the falls (64 × 128 walls, LAVAFALL 128 × 112) run faster at 6, because falling liquid moves faster than a pool's surface.</p>
   <p>The maps use all four: <b>LAVA</b> on the slag channels of the foundry and the boss arena of the Heart; <b>LAVAFALL</b> on the walls round the lava, in both halves of the foundry and both halves of the Heart; <b>WATER</b> in the west mine; and <b>BLOODFALL</b> on the walls of the Heart's east half. In the foundry, turning the third coolant valve runs a graph whose <code>set_floor_texture</code> nodes swap the lava floors (tags 901 and 904) for <b>ASHFLOOR</b> and <b>FLOORPLATE</b>: an animated floor replaced by a still one is the slag cooling.</p>
   <h3>The sky: SKYDUSK</h3>
-  <figure class="shot" data-src="../assets/shots/cinder-texture-skydusk.png" data-alt="qPainter painting Cinderfall's SKYDUSK, a 256 by 128 strip of brown dusk clouds, with its North and horizon guides" data-hotspots='[{"x":16.5,"y":34,"t":"North","d":"the strip&#39;s left edge faces north"},{"x":20,"y":66,"t":"The horizon","d":"100/128 of the way down: drawn 4× round"},{"x":85,"y":49,"t":"21 colours","d":"21 used, 21 in the palette: pixel art, like the walls"},{"x":82,"y":74,"t":"Sky","d":"the one layer"},{"x":91.5,"y":84,"t":"Strip","d":"DOOM sky round the horizon"},{"x":85,"y":87,"t":"Repeat 4, Height 0.625","d":"the defaults, which is what the sky line uses"}]'>
+  <figure class="shot" data-src="../assets/shots/cinder-texture-skydusk.png" data-alt="qPainter painting Cinderfall's SKYDUSK, a 256 by 128 strip of brown dusk clouds, with its North and horizon guides" data-hotspots='[{"x":16.5,"y":34,"t":"North","d":"the strip&#39;s left edge faces north"},{"x":20,"y":67,"t":"The horizon","d":"100/128 of the way down: drawn 4× round"},{"x":85.8,"y":33.4,"t":"21 colours","d":"21 used, 21 in the palette: pixel art, like the walls"},{"x":82,"y":76.2,"t":"Sky","d":"the one layer"},{"x":91.5,"y":85.9,"t":"Strip","d":"DOOM sky round the horizon"},{"x":85,"y":89.1,"t":"Repeat 4, Height 0.625","d":"the defaults, which is what the sky line uses"}]'>
     <figcaption>Cinderfall's SKYDUSK in qPainter: a 256 × 128 strip, 21 colours, one layer <b>Sky</b>.</figcaption>
   </figure>
   <p>SKYDUSK is a DOOM-sized strip, 256 × 128, of brown smoke-lit cloud. <code>module.txt</code> has:</p>
 <pre><code>sky default strip SKYDUSK</code></pre>
   <p>No <code>repeat</code> or <code>height</code>: the line keeps the defaults, 4 copies round the horizon and 0.625 high, exactly as DOOM drew its own skies. The project's preview settings are the same, so qPainter's 3D preview shows what the game shows.</p>
-  <p>The second strip, <b>SKYASH</b>, is the title menu's: blood-red cloud torn open on black, 256 × 128 and 17 colours, on the same one layer <b>Sky</b>. A second line gives the <code>menu</code> map a sky of its own, which in the studio is <b>🌌 Sky</b> → <span class="ui">whose</span> <code>menu</code>:</p>
+  <p>The second strip, <b>SKYASH</b>, is the title menu's: blood-red cloud torn open on black, 256 × 128 and 17 colours, on the same one layer <b>Sky</b>. A second line gives the <code>menu</code> map a sky of its own, which in the studio is <b>Sky</b> → <span class="ui">whose</span> <code>menu</code>:</p>
 <pre><code>sky menu strip SKYASH</code></pre>
   <p>Behind the title screen, the red sky says where the game is going before the first level loads; every level keeps the dusk.</p>
 
   <h3>Exercise: a burning sky over the old town</h3>
   <ol class="steps">
-    <li><p>Open Cinderfall from Home → <span class="ui">◆ examples</span>, open <b>🧱 Textures</b>, click <b>SKYASH</b> and press <span class="ui">edit in qPainter</span>. In the 3D preview, drag to look round: the red clouds repeat four times.</p></li>
-    <li><p>Press <span class="ui">✕</span> and open <b>🌌 Sky</b>. In <span class="ui">whose</span>, choose <code>menu</code>: it already has a sky of its own, a strip of <code>SKYASH</code>. Now choose <code>w_oldtown</code> and turn on <span class="ui">w_oldtown has a sky of its own</span>. Keep the kind at strip and pick <code>SKYASH</code>.</p></li>
-    <li><p>Press <span class="ui">▶ Play</span> and walk into the old town, which has nine rooms open to the sky: they burn red now, like the title menu, and every other district keeps the dusk.</p></li>
+    <li><p>Open Cinderfall from Home → <span class="ui">examples</span>, open <b>Textures</b>, click <b>SKYASH</b> and press <span class="ui">edit in qPainter</span>. In the 3D preview, drag to look round: the red clouds repeat four times.</p></li>
+    <li><p>Press <span class="ui">✕</span> and open <b>Sky</b>. In <span class="ui">whose</span>, choose <code>menu</code>: it already has a sky of its own, a strip of <code>SKYASH</code>. Now choose <code>w_oldtown</code> and turn on <span class="ui">w_oldtown has a sky of its own</span>. Keep the kind at strip and pick <code>SKYASH</code>.</p></li>
+    <li><p>Press <span class="ui">Play</span> and walk into the old town, which has nine rooms open to the sky: they burn red now, like the title menu, and every other district keeps the dusk.</p></li>
   </ol>
   <h3>Exercise: let the lava flow</h3>
   <ol class="steps">
-    <li><p>In <b>🧱 Textures</b>, click <b>LAVAFALL</b>: <em>🎞 animated: 3 frames stacked, 6 a second</em>. Press <span class="ui">edit in qPainter</span>, press <kbd>F</kbd> to play and <kbd>F</kbd> to stop.</p></li>
-    <li><p>Press <span class="ui">‹ studio</span>. In a map, give a wall LAVAFALL and the floor below it LAVA, and press <span class="ui">▶ Play</span>: the fall pours at 6 a second into a pool that turns at 4, as on the foundry's lava walls.</p></li>
+    <li><p>In <b>Textures</b>, click <b>LAVAFALL</b>: <em>animated: 3 frames stacked, 6 a second</em>. Press <span class="ui">edit in qPainter</span>, press <kbd>F</kbd> to play and <kbd>F</kbd> to stop.</p></li>
+    <li><p>Press <span class="ui">studio</span>. In a map, give a wall LAVAFALL and the floor below it LAVA, and press <span class="ui">Play</span>: the fall pours at 6 a second into a pool that turns at 4, as on the foundry's lava walls.</p></li>
   </ol>
 
   <h2>Exercise: an animated lava floor</h2>
   <ol class="steps">
-    <li><p>Make a <b>32 × 32</b> texture called <code>LAVA1</code>, and turn on <span class="ui">Wrap</span>.</p></li>
+    <li><p>Make a <b>32 × 32</b> texture called <code>MYLAVA</code>, and turn on <span class="ui">Wrap</span>.</p></li>
     <li><p>Build a hot ramp with <span class="ui">Hue-shift</span> around an orange. Fill with the middle colour, then add blobs of the lighter colours with <kbd>N</kbd> and the pencil.</p></li>
     <li><p>Press <span class="ui">⧉</span> three times for four frames. On each frame, shift the blobs a little, using the Move tool (<kbd>V</kbd>) with nothing selected to drag the whole layer a pixel or two.</p></li>
     <li><p>Set <span class="ui">FPS</span> to 6, set the 3D shape to <span class="ui">wall</span>, and press <kbd>F</kbd>. Fix any frame that jumps, using <span class="ui">Onion skin</span>.</p></li>
-    <li><p>Press <span class="ui">‹ studio</span>. On <code>LAVA1</code>'s card, check that it says <em>🎞 animated: 4 frames stacked, 6 a second</em>. Put it on a floor and press <span class="ui">▶ Play</span>.</p></li>
+    <li><p>Press <span class="ui">studio</span>. On <code>MYLAVA</code>'s card, check that it says <em>animated: 4 frames stacked, 6 a second</em>. Put it on a floor and press <span class="ui">Play</span>.</p></li>
   </ol>
 
   <h2>Check yourself</h2>
@@ -224,6 +225,15 @@ sheet WATER vertical 4 fps 4</code></pre>
       <li><code>sheet NAME vertical 128 fps 8</code></li>
     </ul>
     <p class="why">The frames are stacked, so the layout is vertical, and the count is the number of frames, not pixels. 8 is the default speed, so <code>fps</code> is left out.</p>
+  </div>
+  <div class="quiz" data-answer="2">
+    <p class="q">You import a 512 × 256 sky strip with <span class="ui">+ import texture (PNG)</span>. What does the dialog propose?</p>
+    <ul>
+      <li>2 frames side by side</li>
+      <li>2 frames stacked</li>
+      <li>A still picture</li>
+    </ul>
+    <p class="why">Twice as wide as tall is the shape of a sky strip or a panorama, so it comes in still. Side by side frames are only guessed from three squares wide up, such as 192 × 64.</p>
   </div>
   <div class="quiz" data-answer="0">
     <p class="q">In a strip sky, where is north?</p>

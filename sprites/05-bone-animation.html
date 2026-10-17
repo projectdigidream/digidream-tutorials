@@ -35,7 +35,7 @@
     <thead><tr><th>Track</th><th>Inspector fields</th><th>What it does</th></tr></thead>
     <tbody>
       <tr><td>rotation</td><td><span class="ui">Rot yaw</span> · <span class="ui">Rot pitch</span> · <span class="ui">Rot roll</span></td><td>Turns the bone about its root, added to its rest angles. This is almost all of animation.</td></tr>
-      <tr><td>move</td><td><span class="ui">Move right</span> · <span class="ui">Move up</span> · <span class="ui">Move forward</span></td><td>Shifts the bone's root. Use it on the root bone, to bob the body or drop it to the floor.</td></tr>
+      <tr><td>move</td><td><span class="ui">Move right</span> · <span class="ui">Move up</span> · <span class="ui">Move forward</span></td><td>Shifts the bone's root. Use it on the root bone, to bob the body or drop it to the floor. The arrow after each name says which way it goes on screen in the current view.</td></tr>
       <tr><td>scale</td><td><span class="ui">Scale right</span> · <span class="ui">Scale up</span> · <span class="ui">Scale forward</span></td><td>Stretches what hangs on the bone, for squash and stretch or a puff of breath.</td></tr>
     </tbody>
   </table>
@@ -68,9 +68,11 @@
   <p>The signs, so typed values do what you expect:</p>
   <ul>
     <li><b>positive pitch</b> swings a hanging bone's tip <b>forward</b> (a leg, an arm) and tips an upright bone <b>back</b> (the torso, the head);</li>
-    <li><b>positive roll</b> turns a bone counter-clockwise on screen in the front view.</li>
+    <li><b>positive roll</b> turns a bone counter-clockwise on screen in the front view;</li>
+    <li><b>a move</b> needs no sum: the arrow after <span class="ui">Move right</span>, <span class="ui">Move up</span> and <span class="ui">Move forward</span> shows where it goes in the view you are in. From the side, view 3, the root reads <span class="ui">Move right ⊗</span> (into the screen), <span class="ui">Move up ↑</span> and <span class="ui">Move forward ←</span>. See <a href="03-rig.html#move-arrows">Which way a move goes</a>.</li>
   </ul>
   <p>Press <kbd>,</kbd> and <kbd>.</kbd> to change view at any time. The pose is the same 3D pose in every view, so a stride you set in the side view is already right in the other seven.</p>
+  <p>Dragging needs the bones on the canvas. If they don't show, or a drag only slides the canvas, turn them on with the bones button in the canvas's corner (see <a href="04-animate.html#bones-toggle">The bones on the canvas</a>). They also hide while the animation plays: pause to pose.</p>
   <div class="callout warn"><p><b>Shift-dragging a tip changes the bone's length, and this is not keyed.</b> The new length belongs to the rig, so it changes every animation and the rest pose too. In Animate, drag without Shift. To stretch something over time, key <span class="ui">Scale</span>.</p></div>
 
   <h2>What happens between keys</h2>
@@ -174,7 +176,7 @@
     <li><b>Look at every view.</b> In the <span class="ui">3D</span> tab, turn up <span class="ui">Spread</span> to see every view at once while the animation plays. A pose that reads from the side can hide a limb from the front.</li>
     <li><b>Check the layer order.</b> When an arm swings in front of the body in one view and behind it in another, set the part's order in that view's own scope. See <a href="03-rig.html#layer-order">Layer order, per view</a>.</li>
     <li><b>Count the frames.</b> Every frame of every animation becomes a frame in the baked atlas, in every authored view. Eight frames are often plenty, and a 4-frame idle is fine.</li>
-    <li>Press <span class="ui">‹ studio</span>. The sprite is baked, and a monster drawn with it matches its idle, walk, attack, pain and death states to your names (the monster editor's <span class="ui">Looks</span>).</li>
+    <li>Press <span class="ui">studio</span>, top left. The sprite is baked, and a monster drawn with it matches its idle, walk, attack, pain and death states to your names (the monster editor's <span class="ui">Looks</span>).</li>
   </ul>
 
   <div class="quiz" data-answer="2">

@@ -31,7 +31,7 @@
   <p>They sit together in the top bar.</p>
   <ul>
     <li><b><span class="ui">Wrap</span></b> (<kbd>W</kbd>) makes every tool wrap round the edges. A stroke that leaves the right edge continues from the left, and one that leaves the bottom continues from the top. This applies to brushes, lines, shapes, fills, dither patterns, moved selections and symmetry copies.</li>
-    <li><b><span class="ui">Tiles</span></b> shows the texture repeated 3×3 around the real one while Wrap is on. The copies are dimmed, so you can tell which is the real one. You see seams as you paint.</li>
+    <li><b><span class="ui">Tiles</span></b> appears in the top bar once Wrap is on, and is ticked to start with. It shows the texture repeated 3×3 around the real one. The copies are dimmed, so you can tell which is the real one. You see seams as you paint.</li>
     <li><b><span class="ui">Offset ½</span></b> shifts the current layer by half its width and half its height. The four edges then meet in the middle of the canvas, where you can paint over them. Press it again to shift back. It can be undone like any edit.</li>
   </ul>
   <p>Two more things help:</p>
@@ -65,7 +65,7 @@
   </table>
   <ul>
     <li>The axes are drawn as dashed pink lines.</li>
-    <li><kbd>⌘</kbd>+click (<kbd>Ctrl</kbd>+click on Windows and Linux) moves the symmetry centre. It snaps to pixel edges and pixel centres. <span class="ui">⊕</span> puts it back in the middle.</li>
+    <li><kbd>⌘</kbd>+click (<kbd>Ctrl</kbd>+click on Windows and Linux) moves the symmetry centre. It snaps to pixel edges and pixel centres. <span class="ui">⊕</span>, which appears after the menu while a symmetry is chosen, puts it back in the middle.</li>
     <li>Symmetry works with every painting tool, fills and shapes included, and together with Wrap. The Dithered gradient ignores it.</li>
   </ul>
   <div class="callout"><p>Symmetry and Wrap work together. With <span class="ui">Mirror X</span> and Wrap on, a mirrored stroke that runs off one edge wraps too. That makes it quick to paint ornaments, grates and floor tiles that are symmetric <em>and</em> seamless.</p></div>
@@ -73,18 +73,18 @@
   <h2>Exercise: a seamless stone tile</h2>
   <p>This is qPainter's own worked example, step by step.</p>
   <ol class="steps">
-    <li><p>Make a <b>32 × 32</b> texture. Turn on <span class="ui">Wrap</span> (<kbd>W</kbd>) and check <span class="ui">Tiles</span> is on. In the <b>3D preview</b>, set the shape to <span class="ui">wall</span>.</p></li>
+    <li><p>Make a <b>32 × 32</b> texture. Turn on <span class="ui">Wrap</span> (<kbd>W</kbd>): <span class="ui">Tiles</span> appears beside it, ticked. In the <b>3D preview</b>, set the shape to <span class="ui">wall</span>.</p></li>
     <li><p>Pick a mid-grey as primary. In the palette panel, press <span class="ui">Hue-shift</span> to build a five-colour ramp around it (2 steps each side), then click the ramp to make it active.</p></li>
     <li><p><kbd>G</kbd>: fill the canvas with the middle colour of the ramp.</p></li>
     <li><p><kbd>N</kbd>: Noise with <span class="ui">Use active ramp</span> on, at about 30% density. Scatter texture over everything.</p></li>
     <li><p><kbd>P</kbd>: pencil the cracks and stone outlines. Paint across the edges freely. The 3×3 tiles and the wall show any seam at once.</p></li>
     <li><p><kbd>H</kbd>: the Shade brush. Drag to light the stone tops, and <kbd>Shift</kbd>-drag to darken the edges below them.</p></li>
     <li><p>Press <span class="ui">Offset ½</span>. Fix anything that looks wrong in the middle, where the edges now meet. Press <span class="ui">Offset ½</span> again.</p></li>
-    <li><p>Standalone, choose <span class="ui">Export…</span> → <span class="ui">PNG 1×</span>. In the studio, press <span class="ui">‹ studio</span>.</p></li>
+    <li><p>Standalone, choose <span class="ui">Export…</span> → <span class="ui">PNG 1×</span>. In the studio, press <span class="ui">studio</span>.</p></li>
   </ol>
 
   <h2>Cut out: holes in a texture</h2>
-  <p>A texture can have transparent pixels: the gaps in a grate, a fence or a window frame. By default the game ignores transparency and draws those pixels solid, not as holes. On the texture's card in the studio's <b>🧱 Textures</b> page, turn on <span class="ui">cut out (see-through where transparent)</span>, and the game lets you see through every pixel that is less than half opaque.</p>
+  <p>A texture can have transparent pixels: the gaps in a grate, a fence or a window frame. By default the game ignores transparency and draws those pixels solid, not as holes. On the texture's card in the studio's <b>Textures</b> page, turn on <span class="ui">cut out (see-through where transparent)</span>, and the game lets you see through every pixel that is less than half opaque.</p>
   <ul>
     <li>Paint the holes with the <b>Eraser</b> (<kbd>E</kbd>) at full hardness. A pixel is either a hole or solid, so a feathered edge only turns ragged.</li>
     <li>Leave <b>cut out</b> off for ordinary solid walls and floors.</li>
@@ -97,16 +97,16 @@
 
   <h2>Exercise: a crack across STONE's edge</h2>
   <ol class="steps">
-    <li><p>On <b>Home</b>, under <b>Examples</b>, press <span class="ui">📂 Gem Hollow</span>. In <b>🧱 Textures</b>, click <b>STONE</b> and press <span class="ui">duplicate</span>, keeping <code>STONE_2</code>, so the stone on the map stays as it is.</p></li>
-    <li><p>Press <span class="ui">edit in qPainter</span>. <span class="ui">Wrap</span> is already ticked; tick <span class="ui">Tiles</span> and set the 3D preview to <span class="ui">wall</span>.</p></li>
+    <li><p>On <b>Home</b>, under <span class="ui">examples</span>, press <span class="ui">Gem Hollow</span>. In <b>Textures</b>, click <b>STONE</b> and press <span class="ui">duplicate</span>, keeping <code>STONE_2</code>, so the stone on the map stays as it is.</p></li>
+    <li><p>Press <span class="ui">edit in qPainter</span>. <span class="ui">Wrap</span> is already ticked, and so is <span class="ui">Tiles</span> beside it. Set the 3D preview to <span class="ui">wall</span>.</p></li>
     <li><p>Press <span class="ui">Offset ½</span>. The tile's edges now cross in the middle of the canvas.</p></li>
     <li><p>With <kbd>P</kbd> and a dark grey from the palette, draw a crack straight through the middle cross. Watch it continue on the dimmed copies.</p></li>
     <li><p>Press <span class="ui">Offset ½</span> again. The crack now runs off one edge and back in on the other, with no seam on the wall.</p></li>
-    <li><p>Press <span class="ui">‹ studio</span>, then <span class="ui">export PNG</span> on STONE_2's card if you want the tile outside the studio.</p></li>
+    <li><p>Press <span class="ui">studio</span>, then <span class="ui">export PNG</span> on STONE_2's card if you want the tile outside the studio.</p></li>
   </ol>
 
   <h2 id="cinderfall">In Cinderfall</h2>
-  <div class="callout tip"><p>Cinderfall, the first-person shooter example, comes with the studio: on Home, under <span class="ui">◆ examples</span>, press <span class="ui">📂 Cinderfall</span>. The <a href="../examples/02-cinderfall.html">Cinderfall tour</a> walks round it.</p></div>
+  <div class="callout tip"><p>Cinderfall, the first-person shooter example, comes with the studio: on Home, under <span class="ui">examples</span>, press <span class="ui">Cinderfall</span>. The <a href="../examples/02-cinderfall.html">Cinderfall tour</a> walks round it.</p></div>
   <p>Cinderfall's walls and floors are Freedoom's, and Freedoom's tiles were made to repeat on DOOM's walls, so every one of them is already seamless. They are a good set to study how a tile hides its edges:</p>
   <table>
     <thead><tr><th>Texture</th><th>Size</th><th>How it tiles</th></tr></thead>
@@ -120,11 +120,11 @@
 
   <h2>Exercise: bars over a window</h2>
   <ol class="steps">
-    <li><p>Open Cinderfall from Home → <span class="ui">◆ examples</span> and open <b>🧱 Textures</b>. Click <b>BARS</b> and press <span class="ui">edit in qPainter</span>. Tick <span class="ui">Tiles</span>: the bars repeat side by side, with the gaps between them transparent.</p></li>
-    <li><p>Press <span class="ui">Offset ½</span>. A bar now sits on the middle line; check it lines up with its copy. Press <span class="ui">Offset ½</span> again and leave with <span class="ui">‹ studio</span>.</p></li>
+    <li><p>Open Cinderfall from Home → <span class="ui">examples</span> and open <b>Textures</b>. Click <b>BARS</b> and press <span class="ui">edit in qPainter</span>. With <span class="ui">Wrap</span> and <span class="ui">Tiles</span> ticked, the bars repeat side by side, with the gaps between them transparent.</p></li>
+    <li><p>Press <span class="ui">Offset ½</span>. A bar now sits on the middle line; check it lines up with its copy. Press <span class="ui">Offset ½</span> again and leave with <span class="ui">studio</span>.</p></li>
     <li><p>On BARS's card, <span class="ui">cut out (see-through where transparent)</span> is already on.</p></li>
-    <li><p>In a map, tap the side two rooms share and set its <span class="ui">middle</span> to BARS. On a shared side, the middle texture hangs across the opening like a grate. Press <span class="ui">▶ Play</span>: you see through the bars to the room beyond.</p></li>
-    <li><p>Back in <b>🧱 Textures</b>, turn <b>cut out</b> off on BARS's card and play again: the gaps are drawn solid, and the window is a wall. Turn it back on.</p></li>
+    <li><p>In a map, tap the side two rooms share and set its <span class="ui">middle</span> to BARS. On a shared side, the middle texture hangs across the opening like a grate. Press <span class="ui">Play</span>: you see through the bars to the room beyond.</p></li>
+    <li><p>Back in <b>Textures</b>, turn <b>cut out</b> off on BARS's card and play again: the gaps are drawn solid, and the window is a wall. Turn it back on.</p></li>
   </ol>
 
   <h2>Check yourself</h2>
