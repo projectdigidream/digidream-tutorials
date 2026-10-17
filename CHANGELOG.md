@@ -32,6 +32,23 @@ anything not released yet is under **Unreleased**.
 
 ### Added
 
+- **Markers** (studio 0.4.0, engine 0.2.1): a Graph scripting lesson on
+  health bars, signs and pointers hung on things in the world. It covers:
+  - designing their looks in Screens → markers;
+  - a monster's "A bar over it";
+  - signs placed on a map;
+  - the `mark`, `set_marker` and `remove_marker` nodes and their template picker;
+  - the four built-in templates, and the debug overlay's health counters.
+
+  The Lua reference gains `dnp.mark`, `dnp.mark_set`, `dnp.unmark` and `dnp.debug_overlay`.
+- **For studio 0.4.0:**
+  - a new module asks what kind of game it is;
+  - each map in the Maps list has its own Play;
+  - a wall's texture can be turned and sized;
+  - missiles get a picture of their own, and shots draw their ray and where they land;
+  - a recipe's weapon gets a placeholder gun;
+  - the Play log counts Lua errors;
+  - Android's Back button and keyboard work as expected.
 - **Advanced · Lua scripting**: seven lessons, and a playground that runs your
   Lua against a toy level answering to the engine's names.
 - **Lua reference**: the environment, every function, method and hook (with

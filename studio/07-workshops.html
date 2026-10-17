@@ -48,7 +48,7 @@
       <tr><td><span class="ui">Boss (3 phases)</span></td><td>three phases at 66% and 33%, summons and a leap</td></tr>
     </tbody>
   </table>
-  <p>Weapons have <span class="ui">Blank</span> (drawn, then waits for a rule), <span class="ui">Pistol</span> (one instant shot each press), <span class="ui">Launcher</span> (one heavy shot and a kick) and <span class="ui">Charge shot</span> (hold fire 1 s to release; let go early and nothing happens). A new monster is drawn with the module's first sprite sheet, its states matched to the sheet's animations by name. A recipe that fires a missile uses the module's first missile, or makes one called <code>bolt</code>.</p>
+  <p>Weapons have <span class="ui">Blank</span> (drawn, then waits for a rule), <span class="ui">Pistol</span> (one instant shot each press), <span class="ui">Launcher</span> (one heavy shot and a kick) and <span class="ui">Charge shot</span> (hold fire 1 s to release; let go early and nothing happens). A new monster is drawn with the module's first sprite sheet, its states matched to the sheet's animations by name. A recipe that fires a missile uses the module's first missile, or makes one called <code>bolt</code>, drawn as a glowing dot the studio paints. A weapon from a recipe is held in first person as a placeholder gun, at rest and firing, until it has pictures of its own (see <a href="../weapons/01-first-weapon.html#placeholder">The placeholder gun</a>).</p>
   <p>The <b>⋯</b> button at the top right has <span class="ui">Rename</span>, <span class="ui">Duplicate</span> and <span class="ui">Delete</span>. A rename may have capitals and spaces: the name is kept for show, and the files use it lower-cased, as the editor tells you (<em>the files call it …</em>). A monster's body, and every brain and missile that names it, follow the rename.</p>
 
   <h3>The tabs</h3>
@@ -105,7 +105,7 @@
     <figcaption>A monster made from <span class="ui">Boss (3 phases)</span>, on <span class="ui">Graph</span>: a lane per phase, the arrows labelled with what they wait for.</figcaption>
   </figure>
   <p><span class="ui">Graph</span> draws the same states as boxes with arrows, each arrow labelled with what it waits for (<em>≤3 m · slam_cd</em>, <em>0.67 s</em>). It pans with one finger or the mouse, zooms with a pinch or the wheel, and has <span class="ui">−</span>, <span class="ui">+</span> and <span class="ui">fit</span>. Tap a box or a label to open that state.</p>
-  <p>A <b>phase</b> is a group of a monster's states, such as a boss's second, angrier half. In the graph each phase is a lane of its own. In the list each phase has a header: its name, how many states it has and what starts it, how fast it <span class="ui">runs at</span>, <span class="ui">duplicate</span> and <span class="ui">remove</span>.</p>
+  <p>A <b>phase</b> is a group of a monster's states, such as a boss's second, angrier half. In the graph each phase is a lane of its own. In the list each phase has a header: its name, how many states it has and what starts it, how fast it <span class="ui">runs at</span>, <span class="ui">duplicate</span> and <span class="ui">remove</span>. With two phases or more, only the phase of the state you are editing is unfolded; the others name their states in a row, and the arrow at a header folds or unfolds it.</p>
   <p><span class="ui">+ phase</span>, beside <span class="ui">+ state</span>, makes the next phase in one go. It copies the last phase's states (<code>chase</code> becomes <code>chase_2</code>), makes it 30% faster, and adds a rule for any state that starts it once, when the monster's health drops below 50% (then half the last threshold, for the next). Then make it angrier: change its states, its speed or what it hits for. The <span class="ui">Boss (3 phases)</span> recipe starts with three.</p>
 
   <h3 id="looks">Looks, and a monster's own body states</h3>
@@ -145,7 +145,7 @@
     <li><b>Looks</b>: what it is <span class="ui">Drawn as</span>, and the states it plays flying and bursting.</li>
     <li><b>Fired by</b>: who fires it, each a link to that monster or weapon, and <span class="ui">delete this missile</span>.</li>
   </ul>
-  <p>To make one, type a name in <em>new missile, named</em> and press <span class="ui">New</span>. A step that fires a missile in a monster or a weapon has an <span class="ui">edit <i>missile</i></span> link that comes here.</p>
+  <p>To make one, type a name in <em>new missile, named</em> and press <span class="ui">New</span>. It gets a prop of its own name in <b>📦 Props</b>, a walk-through glowing dot, so it is seen in the game at once; a missile with nothing to be drawn as is named as a problem before you press Play. A step that fires a missile in a monster or a weapon has an <span class="ui">edit <i>missile</i></span> link that comes here.</p>
 
   <h2 id="player">Player</h2>
   <figure class="shot" data-src="../assets/shots/studio-player.png" data-alt="Gem Hollow's player window on the skin tab: drawn by the hero prop, + a body of its own, and its states with the HERO sheet"

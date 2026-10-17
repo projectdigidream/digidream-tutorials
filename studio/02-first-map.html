@@ -25,13 +25,14 @@
   </div>
 
   <h2>The Maps section</h2>
-  <p>Open <b>🗺 Maps</b> from the rail, or tap the map's name at the top of the map editor. (On Home, a map's thumbnail opens it straight away.) Each map has a row with a thumbnail, its name, and a count of its sectors, things and triggers. The map you are editing is marked <b>▶</b>.</p>
+  <p>Open <b>🗺 Maps</b> from the rail, or tap the map's name at the top of the map editor. (On Home, a map's thumbnail opens it straight away.) Each map has a row with a thumbnail, its name, and a count of its sectors, things and triggers. The map you are editing is marked with a pencil, <b>✎</b>, and its count ends <em>· editing</em>.</p>
   <ul>
     <li><b>Tap a row</b> to open that map in the map editor.</li>
+    <li><span class="ui">▶</span> on a row plays the module from that map (<em>play from <i>map</i></em>), whichever map you are editing.</li>
     <li><span class="ui">+ new map</span> asks for a name (letters, digits, dashes) and makes a map with a single room.</li>
     <li><span class="ui">✕</span> deletes a map after asking. A module always keeps at least one map. Undo on the Maps page brings it back, and the studio takes a snapshot before it deletes.</li>
   </ul>
-  <p>Every map goes into the pack when you export. <span class="ui">▶ Play</span> in the map editor starts the map you are editing; Play on Home starts the module's starting map, which you set in <b>⚙ Settings</b> (see <a href="10-play-and-export.html">Play and export</a>).</p>
+  <p>Every map goes into the pack when you export. <span class="ui">▶ Play</span> in the map editor and on the rail starts the map you are editing, the one with the ✎. When you open a module again, the studio opens the map you edited last, so the rail's Play plays it. Play on Home starts the module's starting map, which you set in <b>⚙ Settings</b> (see <a href="10-play-and-export.html">Play and export</a>).</p>
 
   <h3>The metamap</h3>
   <p>Under the list is <span class="ui">▦ metamap</span>. Turn on <span class="ui">put the maps on a grid</span> to say where each map sits. Tap a map, then a cell, to place it. Tapping an empty cell with nothing picked makes a new map there.</p>
@@ -177,6 +178,8 @@
     <li><span class="ui">flags</span>: chips you turn on and off (below).</li>
     <li><span class="ui">see-through</span> and <span class="ui">opacity</span>, as for floors.</li>
     <li><span class="ui">x offset</span>, <span class="ui">y offset</span>: slide the texture on the wall.</li>
+    <li><span class="ui">turn (°)</span>: turns the texture on the wall, 0 to 360 in steps of 5, as a floor's turns. Use it for diagonal planks, or a picture on its side.</li>
+    <li><span class="ui">size</span>: how many times larger the texture is drawn, from 0.125 to 8. 2 draws bricks twice as big; 0.5 makes them half size. The turn and the size apply to all three of the side's textures (middle, upper and lower).</li>
     <li><span class="ui">unpeg upper</span>, <span class="ui">unpeg lower</span>: anchor the upper or lower texture from the other end, as DOOM's unpegged flags do.</li>
     <li><span class="ui">split wall</span>: adds a corner in the middle, so a switch or a door can sit on half a wall.</li>
     <li><span class="ui">select sector</span>: goes to the room this side belongs to.</li>

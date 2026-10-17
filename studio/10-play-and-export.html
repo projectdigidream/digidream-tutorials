@@ -25,9 +25,10 @@
   </div>
 
   <h2>Play</h2>
-  <p><span class="ui">▶ Play</span> is at the foot of the rail, on Home as <span class="ui">▶ play from <i>map</i></span>, and in the map editor's toolbar. Where the game starts depends on which you press:</p>
+  <p><span class="ui">▶ Play</span> is at the foot of the rail, on Home as <span class="ui">▶ play from <i>map</i></span>, in the map editor's toolbar, and on each map's row in <b>🗺 Maps</b>. Where the game starts depends on which you press:</p>
   <ul>
-    <li><b>Play in the map editor</b> starts on the map you are editing.</li>
+    <li><b>Play in the map editor, or on the rail,</b> starts on the map you are editing (marked ✎ in the Maps list). A module reopens on the map you edited last on this device, so the rail's Play plays that one.</li>
+    <li><b>▶ on a map's row in 🗺 Maps</b> starts on that map, whichever one you are editing.</li>
     <li><b>Play on Home</b> starts on the module's <b>starting map</b>, and its label names it. Set it in <b>⚙ Settings</b> → <span class="ui">starting map</span>. Left at <code>the first by name</code>, it is the first map in alphabetical order, which is also where the game starts for a player.</li>
   </ul>
   <p>In order, Play:</p>
@@ -48,7 +49,7 @@
   </ol>
   <p>If a step fails, the panel stays on screen: the step is marked ✗, the line under the bar says <em>"<i>step</i> failed"</em>, and the error is shown. Two buttons take you on: <span class="ui">play log</span> opens the Play log (below), and <span class="ui">back to the studio</span> closes the panel.</p>
   <h3>Coming back</h3>
-  <p>The game's <b>◀ Studio</b> link returns you to the map you were testing, with the view as you left it. The studio remembers where you were for an hour; after that it opens on Home as usual.</p>
+  <p>The game's <b>◀ Studio</b> link returns you to the map you were testing, with the view as you left it. On Android, the phone's <b>Back</b> does the same. The studio remembers where you were for an hour; after that it opens on Home as usual.</p>
 
   <h3>The Play log</h3>
   <p>On a phone there is no console, so a play-test that does not start says why in the studio. Each Play starts three log files afresh, in the game's <code>logs/</code> folder:</p>
@@ -62,7 +63,7 @@
   </table>
   <p>The <b>Play log</b> page (Home's <span class="ui">📋 play log</span>, or the map editor's <b>⋯ → Play log…</b>) reads them back:</p>
   <ul>
-    <li>First, <span class="ui">✖ what looks wrong</span>: the lines that look like a failure, from all three files, in red. When there are none it says <em>"✔ nothing in the logs looks like a failure"</em>.</li>
+    <li>First, <span class="ui">✖ what looks wrong</span>: the lines that look like a failure, from all three files, in red. A Lua error (a line naming a script and a line number, such as <code>…mobs.lua"]:2951: no prop named 'bolt'</code>) is always one, whatever its words. A line that comes again, such as a monster failing the same way at every shot, is listed once with its count, as in <em>(×12)</em>. When there are none it says <em>"✔ nothing in the logs looks like a failure"</em>.</li>
     <li>Then each file in full.</li>
     <li>At the top: <span class="ui">↻ read again</span>, <span class="ui">share the log</span> (all three as one text file, for a bug report) and <span class="ui">▶ play again</span>.</li>
   </ul>
@@ -117,9 +118,9 @@
     <tbody>
       <tr><td><span class="ui">id</span></td><td>the module's folder name and identity: lowercase letters, digits, <code>_</code> and <code>-</code></td></tr>
       <tr><td><span class="ui">name</span>, <span class="ui">about</span></td><td>its name and a description</td></tr>
-      <tr><td><span class="ui">starting map</span></td><td>the map the game starts on: Play on Home starts there, and so does a packaged game unless the Package page is told otherwise. <code>the first by name</code> means the first map in alphabetical order. Play in the map editor still starts on the map being edited.</td></tr>
-      <tr><td><span class="ui">controls</span></td><td><code>platformer — third person</code> or <code>first person (fps)</code>. First person puts the camera at the eyes and aims where the player looks. The module decides, not the player.</td></tr>
-      <tr><td><span class="ui">show the debug overlay in the game</span></td><td>the engine's numbers in the corner (tick, fps, position, prediction), the controls legend, and the swing and facing drawings. On unless you turn it off, which a shipped game wants.</td></tr>
+      <tr><td><span class="ui">starting map</span></td><td>the map the game starts on: Play on Home starts there, and so does a packaged game unless the Package page is told otherwise. <code>the first by name</code> means the first map in alphabetical order. Play in the map editor and on the rail still starts on the map being edited.</td></tr>
+      <tr><td><span class="ui">controls</span></td><td><code>platformer — third person</code> or <code>first person (fps)</code>. First person puts the camera at the eyes and aims where the player looks; a shot goes to the middle of the screen, where a crosshair can be put on Screens. The module decides, not the player. A new module sets it from the kind of game you said it is.</td></tr>
+      <tr><td><span class="ui">show the debug overlay in the game</span></td><td>the engine's numbers in the corner (tick, fps, position, prediction), the controls legend, and the swing and facing drawings. On unless you turn it off, which a shipped game wants. A new module starts with it off.</td></tr>
       <tr><td><span class="ui">when I press Play</span></td><td>this device's choice for play-tests: <code>as the module says</code>, <code>always show it</code> or <code>never show it</code>. An exported pack always says what the module says.</td></tr>
       <tr><td><span class="ui">levels keep their state</span>, <span class="ui">save and load games</span>, <span class="ui">survive a server restart</span></td><td>which kinds of saving the module wants. Monsters are kept as they were, in the state they were in: a boss stays in its phase after a reload. See <a href="../advanced/05-state-and-bridges.html#switches">What the module keeps on its own</a>.</td></tr>
     </tbody>

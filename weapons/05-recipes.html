@@ -31,10 +31,10 @@
     <li>Then a table with a row per state, in the editor's words: what it <b>shows</b>, how long it <b>lasts</b> and where it <b>then goes to</b>; its <b>rules</b>, numbered in the order they must appear (order matters: the first match wins); and its <b>steps</b>, written <code>at · step</code>. "waits" means an empty <span class="ui">Lasts</span>.</li>
     <li><b>Times</b> are seconds, with the ticks (60 a second) in brackets. DOOM counts 35 a second, so a DOOM time is multiplied by 60/35 and rounded: DOOM's pistol 14 → 24 ticks, 0.4 s.</li>
     <li><b>Distances</b> are metres. DOOM's map units are 48 to one of ours, so its 2048 is <code>42.67</code>. Type them as decimals; the swing's own fields also take fractions such as <code>64/48</code>.</li>
-    <li><b>Effects</b> are your module's own particle kinds, picked by their look (<em>12 · sparks</em>). DOOM II uses sparks 12 at the muzzle.</li>
+    <li><b>Effects</b> are your module's own particle kinds, picked by their look (<em>12 · sparks</em>). DOOM II uses sparks 12 at the muzzle. An instant shot's <em>its ray</em> and <em>where it lands</em> are picked the same way: DOOM II's guns draw tracer 1 along the ray and burst effect 10 where it lands (<a href="03-hitscan-missiles-swings.html#hitscan">Hitscan</a>).</li>
     <li><b>Sounds</b> name sounds in your module's sound packs. The names shown are DOOM II's.</li>
   </ul>
-  <div class="callout soon"><p><b>A few of DOOM's numbers can't be typed in yet.</b> The editor's sentences don't have the engine's <code>count</code> of rays, <code>tracer</code> and <code>hit_vfx</code> on an instant shot, a launch's <code>offset</code>, an effect's <code>attach</code>, or a sound's <code>predicted</code> (<a href="03-hitscan-missiles-swings.html#hitscan">Hitscan</a>). The recipes give them in brackets as <i>engine</i> notes, so you know what DOOM II does; until the editor has them, the weapon works without them.</p></div>
+  <div class="callout soon"><p><b>A few of DOOM's numbers can't be typed in yet.</b> The editor's sentences don't have the engine's <code>count</code> of rays on an instant shot, a launch's <code>offset</code>, an effect's <code>attach</code>, or a sound's <code>predicted</code> (<a href="03-hitscan-missiles-swings.html#hitscan">Hitscan</a>). The recipes give them in brackets as <i>engine</i> notes, so you know what DOOM II does; until the editor has them, the weapon works without them.</p></div>
   <p>Every gun below has the same dry state, and the same rule first in <code>ready</code>:</p>
   <pre><code>ready   1. → dry   when fire is held and it is out of ammo
 dry     shows picture 0, lasts 0.02 s (1), then ready      0 s · switch weapon if it is empty</code></pre>
@@ -47,7 +47,7 @@ dry     shows picture 0, lasts 0.02 s (1), then ready      0 s · switch weapon 
     <thead><tr><th>State</th><th>shows · lasts · then</th><th>Rules</th><th>Steps</th></tr></thead>
     <tbody>
       <tr><td><code>ready</code></td><td>0 · waits</td><td>1. → dry when fire is held and it is out of ammo<br>2. → fire when fire is pressed and it has at least 1 ammo</td><td>—</td></tr>
-      <tr><td><code>fire</code></td><td>2 · 0.4 s (24) · ready</td><td>—</td><td>0 s · play the sound weapon.pistol.fire <i>(engine: predicted)</i><br>0 s · use 1 ammo<br>0 s · fire an instant shot for 10 damage, range 42.67 m, spread 3° <i>(engine: tracer 1, hit_vfx 10)</i><br>0 s · show the effect 12</td></tr>
+      <tr><td><code>fire</code></td><td>2 · 0.4 s (24) · ready</td><td>—</td><td>0 s · play the sound weapon.pistol.fire <i>(engine: predicted)</i><br>0 s · use 1 ammo<br>0 s · fire an instant shot for 10 damage, range 42.67 m, spread 3°, its ray effect 1, where it lands effect 10<br>0 s · show the effect 12</td></tr>
       <tr><td><code>dry</code></td><td>0 · 0.02 s (1) · ready</td><td>—</td><td>0 s · switch weapon if it is empty</td></tr>
     </tbody>
   </table>
@@ -61,7 +61,7 @@ dry     shows picture 0, lasts 0.02 s (1), then ready      0 s · switch weapon 
     <thead><tr><th>State</th><th>shows · lasts · then</th><th>Rules</th><th>Steps</th></tr></thead>
     <tbody>
       <tr><td><code>ready</code></td><td>0 · waits</td><td>1. → dry when fire is held and it is out of ammo<br>2. → fire when fire is pressed and it has at least 1 ammo</td><td>—</td></tr>
-      <tr><td><code>fire</code></td><td>2 · 0.33 s (20) · pump</td><td>—</td><td>0 s · play the sound weapon.shotgun.fire <i>(engine: predicted)</i><br>0 s · use 1 ammo<br>0 s · fire an instant shot for 10 damage, range 42.67 m, spread 14° <i>(engine: count 7, tracer 1, hit_vfx 10)</i><br>0 s · show the effect 12</td></tr>
+      <tr><td><code>fire</code></td><td>2 · 0.33 s (20) · pump</td><td>—</td><td>0 s · play the sound weapon.shotgun.fire <i>(engine: predicted)</i><br>0 s · use 1 ammo<br>0 s · fire an instant shot for 10 damage, range 42.67 m, spread 14°, its ray effect 1, where it lands effect 10 <i>(engine: count 7)</i><br>0 s · show the effect 12</td></tr>
       <tr><td><code>pump</code></td><td>3 · 0.52 s (31) · ready</td><td>—</td><td>0.07 s · play the sound (your pump sound)</td></tr>
       <tr><td><code>dry</code></td><td>0 · 0.02 s (1) · ready</td><td>—</td><td>0 s · switch weapon if it is empty</td></tr>
     </tbody>
@@ -76,7 +76,7 @@ dry     shows picture 0, lasts 0.02 s (1), then ready      0 s · switch weapon 
     <tbody>
       <tr><td><code>ready</code></td><td>0 · waits</td><td>1. → dry when fire is held and it is out of ammo<br>2. → spin when fire is held</td><td>—</td></tr>
       <tr><td><code>spin</code></td><td>0 · waits</td><td>1. → fire when fire has been held for 0.4 s (24)<br>2. → ready when fire is let go</td><td>0 s · play the sound (a spin-up sound)</td></tr>
-      <tr><td><code>fire</code></td><td>2 · 0.15 s (9) · ready</td><td>—</td><td>0 s · play the sound weapon.chaingun.fire <i>(engine: predicted)</i><br>0 s · use 1 ammo<br>0 s · fire an instant shot for 10 damage, range 42.67 m, spread 8° <i>(engine: tracer 1, hit_vfx 10)</i><br>0 s · show the effect 12</td></tr>
+      <tr><td><code>fire</code></td><td>2 · 0.15 s (9) · ready</td><td>—</td><td>0 s · play the sound weapon.chaingun.fire <i>(engine: predicted)</i><br>0 s · use 1 ammo<br>0 s · fire an instant shot for 10 damage, range 42.67 m, spread 8°, its ray effect 1, where it lands effect 10<br>0 s · show the effect 12</td></tr>
       <tr><td><code>dry</code></td><td>0 · 0.02 s (1) · ready</td><td>—</td><td>0 s · switch weapon if it is empty</td></tr>
     </tbody>
   </table>
@@ -95,7 +95,7 @@ dry     shows picture 0, lasts 0.02 s (1), then ready      0 s · switch weapon 
       <tr><td><code>dry</code></td><td>0 · 0.02 s (1) · ready</td><td>—</td><td>0 s · switch weapon if it is empty</td></tr>
     </tbody>
   </table>
-  <p><b>The missile</b>, on <b>☄ Missiles</b>: type <code>rocket</code> and press <span class="ui">New</span> (and give the module a prop to draw it, picked under <span class="ui">Drawn as</span>):</p>
+  <p><b>The missile</b>, on <b>☄ Missiles</b>: type <code>rocket</code> and press <span class="ui">New</span>. It is drawn as a glowing dot the studio paints for it until you pick a prop of your own under <span class="ui">Drawn as</span>:</p>
   <table>
     <thead><tr><th>Field</th><th>Value</th><th>Why</th></tr></thead>
     <tbody>
@@ -117,7 +117,7 @@ dry     shows picture 0, lasts 0.02 s (1), then ready      0 s · switch weapon 
     <thead><tr><th>State</th><th>shows · lasts · then</th><th>Rules</th><th>Steps</th></tr></thead>
     <tbody>
       <tr><td><code>ready</code></td><td>0 · waits</td><td>1. → cut when fire is held</td><td>—</td></tr>
-      <tr><td><code>cut</code></td><td>2 · 0.12 s (7) · ready</td><td>—</td><td>0 s · play the sound weapon.chainsaw.cut <i>(engine: predicted)</i><br>0 s · fire an instant shot for 12 damage, range 1.67 m, spread 0° <i>(engine: hit_vfx 10)</i><br>0 s · show the effect 15 <i>(engine: attach on)</i></td></tr>
+      <tr><td><code>cut</code></td><td>2 · 0.12 s (7) · ready</td><td>—</td><td>0 s · play the sound weapon.chainsaw.cut <i>(engine: predicted)</i><br>0 s · fire an instant shot for 12 damage, range 1.67 m, spread 0°, its ray not drawn, where it lands effect 10<br>0 s · show the effect 15 <i>(engine: attach on)</i></td></tr>
     </tbody>
   </table>
   <p>The engine's <code>attach</code> keeps the sparks on the saw as you move. There is no "stop" event: <code>cut</code> repeats every 7 ticks while you hold, and each repeat keeps the effect alive; let go and it fades.</p>
@@ -149,7 +149,7 @@ dry     shows picture 0, lasts 0.02 s (1), then ready      0 s · switch weapon 
     <tbody>
       <tr><td><code>ready</code></td><td>0 · waits</td><td>1. → dry when fire is held and it is out of ammo<br>2. → charge when fire is pressed and it has at least 1 ammo <i>(the recipe asks for 5)</i></td><td>—</td></tr>
       <tr><td><code>charge</code></td><td>1 · waits</td><td>1. → release when fire has been held for 1 s and it has at least 5 ammo<br>2. → fire_small when fire is let go <i>(the recipe goes to ready)</i></td><td>0.5 s · show the effect 12 (the recipe's glow)</td></tr>
-      <tr><td><code>fire_small</code></td><td>2 · 0.2 s (12) · ready</td><td>—</td><td>0 s · use 1 ammo<br>0 s · fire an instant shot for 15 damage, range 42.67 m, spread 0°</td></tr>
+      <tr><td><code>fire_small</code></td><td>2 · 0.2 s (12) · ready</td><td>—</td><td>0 s · use 1 ammo<br>0 s · fire an instant shot for 15 damage, range 42.67 m, spread 0°, its ray effect 1, where it lands effect 12</td></tr>
       <tr><td><code>release</code></td><td>2 · 0.5 s (30) · spent</td><td>—</td><td>0 s · launch the missile (the recipe's)<br>0 s · use 5 ammo<br>0 s · push the player away at 6 m/s</td></tr>
       <tr><td><code>spent</code></td><td>0 · waits</td><td>1. → ready when fire is let go</td><td>—</td></tr>
       <tr><td><code>dry</code></td><td>0 · 0.02 s (1) · ready</td><td>—</td><td>0 s · switch weapon if it is empty</td></tr>
@@ -199,7 +199,7 @@ dry     shows picture 0, lasts 0.02 s (1), then ready      0 s · switch weapon 
     <tbody>
       <tr><td>★ <code>draw</code></td><td>its resting picture · 0.13 s (8) · ready</td><td>—</td><td>0 s · play the sound wpn.draw</td></tr>
       <tr><td><code>ready</code></td><td>its resting picture · waits</td><td>1. → fire when fire is pressed and it has at least 1 ammo<br>2. → dry when fire is pressed and it is out of ammo</td><td>—</td></tr>
-      <tr><td><code>fire</code></td><td>13 · 0.1 s (6) · cock</td><td>—</td><td>0 s · play the sound wpn.revolver.fire<br>0 s · use 1 ammo<br>0 s · fire an instant shot for 22 damage, range 90 m, spread 1°<br>0 s · add 1 to the number shots</td></tr>
+      <tr><td><code>fire</code></td><td>13 · 0.1 s (6) · cock</td><td>—</td><td>0 s · play the sound wpn.revolver.fire<br>0 s · use 1 ammo<br>0 s · fire an instant shot for 22 damage, range 90 m, spread 1°, its ray not drawn, where it lands nothing<br>0 s · add 1 to the number shots</td></tr>
       <tr><td><code>cock</code></td><td>14 · 0.13 s (8) · ready</td><td>1. → reload when the number shots is at least 6 and this state has run for 0.12 s (7)</td><td>0 s · play the sound wpn.revolver.cock</td></tr>
       <tr><td><code>reload</code></td><td>15 · 0.67 s (40) · ready</td><td>—</td><td>0 s · play the sound wpn.revolver.reload<br>0 s · set the number shots to 0</td></tr>
       <tr><td><code>dry</code></td><td>its resting picture · 0.17 s (10) · ready</td><td>—</td><td>0 s · play the sound wpn.dry<br>0.15 s · switch weapon if it is empty</td></tr>

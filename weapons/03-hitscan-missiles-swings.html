@@ -25,7 +25,7 @@
   </div>
 
   <h2 id="hitscan">Hitscan: an instant ray</h2>
-  <p>The step <b>fire an instant shot for … damage, range … m, spread …°</b> (<a href="../reference/weapon-vocab.html#hitscan"><code>hitscan</code></a>) is in the <b>Attack</b> group when you add a step. On the tick it runs, the engine casts rays from the player and each ray stops at the first wall or body it meets. No travel time. The pistol, the shotgun, the chaingun and even DOOM's chainsaw are hitscans.</p>
+  <p>The step <b>fire an instant shot for … damage, range … m, spread …°, its ray …, where it lands …</b> (<a href="../reference/weapon-vocab.html#hitscan"><code>hitscan</code></a>) is in the <b>Attack</b> group when you add a step. On the tick it runs, the engine casts rays from the player and each ray stops at the first wall or body it meets. No travel time. The pistol, the shotgun, the chaingun and even DOOM's chainsaw are hitscans.</p>
   <table>
     <thead><tr><th>Argument</th><th>In the editor</th><th>What it does</th></tr></thead>
     <tbody>
@@ -33,13 +33,14 @@
       <tr><td><code>range</code></td><td>range … m</td><td>How far the ray reaches, in metres (the world's units). DOOM's guns reach 2048 of its map units; at 48 to a metre, that's about 42.67.</td></tr>
       <tr><td><code>spread</code></td><td>spread …°</td><td>Degrees of random turn, <b>rolled for each ray</b>: each one is turned somewhere between −spread and +spread, sideways.</td></tr>
       <tr><td><code>count</code></td><td>—</td><td>Rays in one shot. Default 1. DOOM's shotgun is 7, its super shotgun 20. Up to 32 are predicted; more, and the weapons run on the server only.</td></tr>
-      <tr><td><code>tracer</code></td><td>—</td><td>A tracer style to draw. No tracer is what makes a hitscan read as a punch.</td></tr>
+      <tr><td><code>tracer</code></td><td>its ray …</td><td>A tracer kind to draw along the ray, picked by its look (<em>1 · tracer</em>), or <em>not drawn</em>. No tracer is what makes a hitscan read as a punch.</td></tr>
       <tr><td><code>knockback</code>, <code>lift</code></td><td>—</td><td>A shove for each ray that hits, away from the muzzle and upward. Seven pellets at point blank shove seven times.</td></tr>
       <tr><td><code>slow</code> with <code>slow_ticks</code></td><td>—</td><td>Multiplies the target's speed (0.5 is half pace) for that many ticks. Needs both.</td></tr>
-      <tr><td><code>hit_vfx</code>, <code>hit_vfx_radius</code></td><td>—</td><td>A particle kind to burst where a ray lands, and how wide. Drawn by the client only.</td></tr>
+      <tr><td><code>hit_vfx</code>, <code>hit_vfx_radius</code></td><td>where it lands …</td><td>A particle kind to burst where a ray lands (<em>12 · sparks</em>), or <em>nothing</em>; and how wide, which has no words in the editor. Drawn by the client only. A monster the ray hits sprays its own blood instead.</td></tr>
     </tbody>
   </table>
-  <div class="callout soon"><p><b>Not every argument is in the editor's words yet.</b> A step's sentence sets the arguments it names: for an instant shot, its damage, range and spread. The engine's other arguments (a shotgun's <code>count</code> of rays, a <code>tracer</code>, <code>knockback</code>, a slow, a burst where it lands; for a missile launch, its <code>count</code>, <code>offset</code> and <code>angle</code>; a push's <code>vertical</code>; a sound's <code>predicted</code>) are kept when a module already has them, as Cinderfall's scattergun fires 8 rays, but the weapon editor can't set them yet. <a href="../reference/weapon-vocab.html">Every weapon word</a> lists them all.</p></div>
+  <div class="callout soon"><p><b>Not every argument is in the editor's words yet.</b> A step's sentence sets the arguments it names: for an instant shot, its damage, range, spread, its ray and where it lands. The engine's other arguments (a shotgun's <code>count</code> of rays, <code>knockback</code>, a slow, how wide the burst where it lands is; for a missile launch, its <code>count</code>, <code>offset</code> and <code>angle</code>; a push's <code>vertical</code>; a sound's <code>predicted</code>) are kept when a module already has them, as Cinderfall's scattergun fires 8 rays, but the weapon editor can't set them yet. <a href="../reference/weapon-vocab.html">Every weapon word</a> lists them all.</p></div>
+  <p><b>Show where it went.</b> A shot that leaves no trace is one the player can't tell landed. <em>its ray</em> and <em>where it lands</em> are two menus in the step: the first lists the tracer and particle kinds and <em>not drawn</em>, the second the same kinds and <em>nothing</em>. A new instant shot starts with <em>its ray effect 1</em> (a tracer) and <em>where it lands effect 12</em> (sparks), and so does the <span class="ui">Pistol</span> recipe's. Pick <em>not drawn</em> and <em>nothing</em> for a shot that reads as a punch.</p>
   <p>The numbers in a sentence take a decimal: <code>42.67</code>, not a fraction. (The swing's own fields, below, also take fractions such as <code>-1/3</code>.)</p>
 
   <h3>Why spread is per ray</h3>
@@ -65,7 +66,7 @@
   <ul>
     <li><b>Flight</b>: <span class="ui">Speed</span> (m/s), <span class="ui">Falls</span> (m/s², empty flies straight), <span class="ui">Homing</span>, <span class="ui">Lasts</span> (then <em>"when it runs out"</em> happens), <span class="ui">Launch height</span>, <span class="ui">Hit size</span>, <span class="ui">Bounces</span> and <span class="ui">At most</span> (missiles from one shot).</li>
     <li><b>When it hits</b>, <b>When it runs out</b>, <b>When it bounces</b> and <b>On its way</b>: what it does, as sentences: <em>"hurt what it hit for 20"</em>, <em>"a blast of 90 damage within 3.2 m, weaker at the edge"</em>, an effect, a sound, a split.</li>
-    <li><b>Looks</b>: <span class="ui">Drawn as</span> (a prop, with its own sprite and scale; a new missile is <em>"(nothing: an unseen shot)"</em> until you pick one) and the states it plays flying and bursting.</li>
+    <li><b>Looks</b>: <span class="ui">Drawn as</span> (a prop, with its own sprite and scale) and the states it plays flying and bursting. A new missile, and one a recipe makes (<code>bolt</code>), gets a prop of its own name, a glowing dot the studio paints, and is drawn as that while <span class="ui">Drawn as</span> says <em>"(nothing: an unseen shot)"</em>. A missile left with nothing to be drawn as is named as a problem before you press Play (<a href="../enemies/03-attacks.html#looks">Attacks, looks</a>).</li>
   </ul>
   <p>The Enemies track walks through the page field by field: <a href="../enemies/03-attacks.html#missiles">Attacks, missiles</a>. What matters most for a weapon:</p>
   <ul>
@@ -171,7 +172,7 @@ When it hits   effects (fireball, smoke)
     </tbody>
   </table>
   <ul>
-    <li><b>No tracers.</b> None sets <code>tracer</code>, so every gun reads as a punch, as DOOM's did. The first-person picture and the sound carry the shot.</li>
+    <li><b>No tracers.</b> Every shot reads <em>its ray not drawn, where it lands nothing</em>, so every gun reads as a punch, as DOOM's did. The first-person picture and the sound carry the shot.</li>
     <li><b>Up and down is the view's.</b> Cinderfall is played first person, so every ray follows your pitch: aim at the spitters overhead.</li>
     <li><b>The double blast is wider and shorter.</b> More rays, more spread and less range than the single shot, plus <em>"push the player away at 6 m/s"</em>, which shoves you back.</li>
   </ul>
@@ -262,7 +263,7 @@ When it hits a blast of 90 damage within 3.2 m, weaker at the edge, knocking bac
   <ol class="steps">
     <li><p>Make a weapon called <code>rifle</code> from the <span class="ui">Pistol</span> recipe. Tap <code>fire</code>, set <span class="ui">Lasts</span> to <code>0.6</code>, and in its instant shot set 25 damage, range <code>42.67</code> and spread <code>0</code>. Play: a slow, exact rifle.</p></li>
     <li><p>On <code>fire</code>, press <span class="ui">+ add a step at 0 s</span>, then <span class="ui">Moving</span> and <em>push the player away at 3 m/s</em>. Set the speed to <code>2</code>. Fire while standing still: you slide back.</p></li>
-    <li><p>On <b>☄ Missiles</b>, type <code>fireball</code> and press <span class="ui">New</span>: 15 m/s, gone after 3 s, <em>"hurt what it hit for 10"</em>. Under <span class="ui">Drawn as</span>, pick one of the module's props, so it can be seen. Back in <b>🔫 Weapons</b>, make a weapon <code>caster</code> from the <span class="ui">Launcher</span> recipe; on its <code>fire</code>, tap the launch step and pick <code>fireball</code>. Play: the shot flies, and only does its 10 damage when it arrives.</p></li>
+    <li><p>On <b>☄ Missiles</b>, type <code>fireball</code> and press <span class="ui">New</span>: 15 m/s, gone after 3 s, <em>"hurt what it hit for 10"</em>, drawn as a glowing dot (its own prop, <code>fireball</code>). Back in <b>🔫 Weapons</b>, make a weapon <code>caster</code> from the <span class="ui">Launcher</span> recipe; on its <code>fire</code>, tap the launch step and pick <code>fireball</code>. Play: the shot flies, and only does its 10 damage when it arrives.</p></li>
     <li><p>Make a weapon <code>blade</code> from the <span class="ui">Blank</span> recipe. On <span class="ui">Advanced</span>, under <b>Its swing, in every state</b>, press <span class="ui">+ swing</span>. Watch its preview: the arc sweeps right to left over 12 ticks. Change <span class="ui">sweep_from?</span> and <span class="ui">sweep_to?</span> both to <code>0</code> and <span class="ui">min_reach?</span> to <code>1</code>: now it's a spear thrust that misses anything right against you.</p></li>
     <li><p>Play with the blade and step back from a monster as it closes. Then swing just as it reaches you. The swing hits on the tick you press; the monster's health drops when the server's answer arrives.</p></li>
   </ol>

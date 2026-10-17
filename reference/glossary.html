@@ -35,6 +35,8 @@
     <dt>Wall</dt><dd>One edge of a room. Its flags say whether it blocks, can be climbed, is a trigger, and so on.</dd>
     <dt>Thing</dt><dd>A spawn, light, monster or prop placed on a map with ✦ Place.</dd>
     <dt>Facing</dt><dd>The direction a placed thing turns to, from 0° to 355°. 0 points along +x, and angles go counter-clockwise. Props honour it; monsters do not yet.</dd>
+    <dt>Marker</dt><dd>A small UI hung on something in the world: a bar over a monster, a sign over a door, a pointer over a goal. Its look is a template made on ▣ Screens → <span class="ui">markers</span>. See <a href="../graphs/07-markers.html">Markers</a>.</dd>
+    <dt>Sign</dt><dd>A marker placed on a map with ✦ Place (<span class="ui">sign: label</span>, <span class="ui">sign: marker</span> or one of your own), showing a text you type. The level hangs it as it loads, with no graph. See <a href="../graphs/07-markers.html#signs">Signs on a map</a>.</dd>
     <dt>Trigger</dt><dd>A card that says WHEN something happens, IF a condition holds, THEN do something. The presets are door, lift, switch, teleport and others.</dd>
     <dt>Graph</dt><dd>A Blueprint-style board of nodes and links that runs logic for the game or for one map.</dd>
     <dt>Monster editor · weapon editor</dt><dd>Where ☠ Monsters and 🔫 Weapons are made: tabs Overview, Behaviour, Attacks, Looks and Advanced (and Arsenal for weapons). Behaviour shows the states as sentences or as a graph, beside a preview that runs the real rules.</dd>

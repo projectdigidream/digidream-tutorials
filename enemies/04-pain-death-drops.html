@@ -51,6 +51,7 @@
   </ul>
   <p>So the chance is out of 256; <span class="ui">Overview</span> shows it as a percentage of hits. Doom's own numbers are good guides: an imp 200 (78%: it flinches most of the time), a baron 50 (20%), a cyberdemon 20 (8%). Half the time is 128. Keep it well under 100% for a monster that matters: one that nearly always flinches can be held in pain forever by a fast weapon.</p>
   <p>The <code>pain</code> state itself is a normal state: it plays the pain animation, stands still, faces where it was, and lasts a moment. Then it goes where its <span class="ui">Then goes to</span> says. Every recipe's <code>pain</code> goes <em>back to what it was doing</em>.</p>
+  <div class="callout warn"><p><b>A flinch must look different.</b> If <code>pain</code> plays the same animation as the state where the monster begins, standing, the player would never see it flinch. Its card then says so: <em>"It plays idle, as it does standing in look: in the game a flinch will not be seen. Pick another animation, or give its sprite one for pain."</em> Choose another animation under <span class="ui">Plays</span>, or draw a pain animation for its sprite.</p></div>
   <h3>Back to what it was doing</h3>
   <p>A <code>pain</code> that <em>then goes back to what it was doing</em> (in the files, <code>next = "@previous"</code>) returns to the state the hit interrupted and <b>resumes</b> it where it was: its time in that state and its place among its steps. So:</p>
   <ul>

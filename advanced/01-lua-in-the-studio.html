@@ -98,13 +98,13 @@ end
   <div class="callout tip"><p>A player has no catalogue name, so the script prints <a href="../luaref/02-every-function.html#entity.index"><code>e:index()</code></a>, the player's slot number in the level. <a href="../luaref/02-every-function.html#entity.name"><code>e:name()</code></a> answers for monsters, and is <code>nil</code> for a player.</p></div>
 
   <h2 id="errors">How errors look</h2>
-  <p>Every line Lua prints, and every error, goes into <code>play-server.log</code>. The Play log page shows lines that look like failures first, in red. The shapes to know:</p>
+  <p>Every line Lua prints, and every error, goes into <code>play-server.log</code>. The Play log page shows lines that look like failures first, in red. Every Lua error is one of them, whatever its words: a line naming a script and a line number, such as <code>…module.lua:47: …</code>, means a script stopped there. The shapes to know:</p>
   <table>
     <thead><tr><th>You see</th><th>It means</th><th>What happens</th></tr></thead>
     <tbody>
       <tr><td><code>[lua:…/module.lua] hello from level 1</code></td><td>your <a href="../luaref/02-every-function.html#lua.print"><code>print</code></a></td><td>nothing; it is just a message</td></tr>
       <tr><td><code>[srv] …/world.dnpm asked for …/module.lua and it failed: …module.lua:41: 'end' expected …</code></td><td>the script could not load: a typo, or an error at its top level</td><td>the <b>level does not load</b>, and the Play log opens by itself</td></tr>
-      <tr><td><code>[lua] on_prop_use error (tick 2210): …module.lua:47: attempt to call method 'nme' (a nil value)</code></td><td>a hook failed while it ran</td><td>that call stops; the level carries on. The line repeats at most every 300 ticks</td></tr>
+      <tr><td><code>[lua] on_prop_use error (tick 2210): …module.lua:47: attempt to call method 'nme' (a nil value)</code></td><td>a hook failed while it ran</td><td>that call stops; the level carries on. The line repeats at most every 300 ticks, and the Play log lists it once, with its count (<em>×4</em>)</td></tr>
       <tr><td><code>instruction budget exceeded in '…'</code></td><td>a hook ran far too long, usually an endless loop</td><td>the call is stopped (see <a href="02-events-and-time.html#budgets">budgets</a>)</td></tr>
     </tbody>
   </table>

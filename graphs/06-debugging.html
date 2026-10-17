@@ -67,7 +67,7 @@
       <tr><td><code>play-game.log</code></td><td>the game page's console: uncaught errors, refused messages, failed downloads</td></tr>
     </tbody>
   </table>
-  <p>After a play-test, Home has a <span class="ui">play log (<i>map</i>)</span> button. The <b>Play log</b> sheet lists first the lines that look like a failure, under <span class="ui">what looks wrong (N)</span>, then each log in full. <span class="ui">↻ read again</span> reloads them, <span class="ui">share the log</span> hands all three over as one text file, and <span class="ui">play again</span> replays. The sheet opens by itself when a launch fails.</p>
+  <p>After a play-test, Home has a <span class="ui">play log (<i>map</i>)</span> button. The <b>Play log</b> sheet lists first the lines that look like a failure, under <span class="ui">what looks wrong (N)</span>, then each log in full. A line that comes again is listed there once, with its count (<em>×12</em>), so one node failing on every pass does not hide the rest. A Lua error, a line that names a script and a line number, is always listed, whatever its words. <span class="ui">↻ read again</span> reloads them, <span class="ui">share the log</span> hands all three over as one text file, and <span class="ui">play again</span> replays. The sheet opens by itself when a launch fails.</p>
   <div class="callout soon"><p>Play, and its log, need the studio app. In a browser, the studio exports a pack instead, and you run it with the engine and read the server's own output.</p></div>
 
   <h3>The engine's graph lines</h3>
@@ -85,7 +85,7 @@
       <tr><td><code>[graphs] records: could not save store 'records': …</code></td><td>A <code>save_vars</code> could not write.</td></tr>
     </tbody>
   </table>
-  <div class="callout warn"><p>The run-time lines (<em>skipped</em>, <em>acted on no player</em>, <em>stopped -- a loop?</em>) are said <b>once</b> per node, so the log is not flooded. They don't look like failures to the Play log sheet, so they may not appear under <span class="ui">what looks wrong</span>. Read the full <code>play-server.log</code>.</p></div>
+  <div class="callout"><p>The run-time lines (<em>skipped</em>, <em>acted on no player</em>, <em>stopped -- a loop?</em>) are said <b>once</b> per node, so the log is not flooded, and the Play log sheet lists each of them under <span class="ui">what looks wrong</span>. The load line (<em>12 nodes, 14 links</em>) is not a failure, so it is only in the full <code>play-server.log</code>.</p></div>
 
   <h3>Your own log lines</h3>
   <p>The trigger action <code>log</code> writes a line of your own to the server log. In the node menu it is <span class="ui">do log</span>. Drop one onto a path to see whether a run gets there:</p>
@@ -166,7 +166,7 @@
       <li>Only under "what looks wrong" in the Play log</li>
       <li>In <code>play-server.log</code>, once per node, starting with <code>[graphs]</code></li>
     </ul>
-    <p class="why">They are run-time messages, so only the running server knows them. The studio can't see them while you draw.</p>
+    <p class="why">They are run-time messages, so only the running server knows them; the Play log sheet also lists them under "what looks wrong", but that is not the only place. The studio can't see them while you draw.</p>
   </div>
 </article>
 </body>
