@@ -34,7 +34,7 @@
       <tr><td><span class="ui">survive a server restart</span></td><td>the levels' states are written to disk and read back when the server starts</td></tr>
     </tbody>
   </table>
-  <p>With any of them on, the engine keeps by itself: rooms that moved, wall pictures changed, room lights, textures and weather, the level's sky, and the props placed when the level loaded (where they are now, and which were taken). The monster runtime keeps living monsters. The graph runtime keeps graph variables.</p>
+  <p>With any of them on, the engine keeps by itself: rooms that moved, wall pictures changed, room lights, textures and weather, the level's sky, and the props placed when the level loaded (where they are now, and which were taken). The monster runtime keeps living monsters, each with the state it was in, how far into it, its numbers and its cooldowns (as the time left), so a boss stays in its phase after a reload and carries on where it was. The graph runtime keeps graph variables.</p>
   <p><b>Your script's own variables are not kept.</b> When the level comes back, your script runs again from its first line. To keep something, hand it to the engine with <a href="../luaref/02-every-function.html#dnp.persist"><code>dnp.persist</code></a>.</p>
 
   <h2 id="persist">dnp.persist: a level's state</h2>

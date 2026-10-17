@@ -20,10 +20,18 @@ import fs from 'node:fs'
 import path from 'node:path'
 import vm from 'node:vm'
 import { fileURLToPath } from 'node:url'
+import { execFileSync } from 'node:child_process'
 
 const here = path.dirname(fileURLToPath(import.meta.url))
 const ENGINE = path.resolve(here, '../../engine')
-const read = (p) => fs.readFileSync(path.join(ENGINE, p), 'utf8')
+// The engine at a commit (HEAD unless --rev <commit>), not its working tree:
+// the reference documents what is committed, not another session's work in
+// progress. --worktree reads the files on disk.
+const worktree = process.argv.includes('--worktree')
+const rev = process.argv.includes('--rev') ? process.argv[process.argv.indexOf('--rev') + 1] : 'HEAD'
+const read = (p) => worktree
+  ? fs.readFileSync(path.join(ENGINE, p), 'utf8')
+  : execFileSync('git', ['-C', ENGINE, 'show', `${rev}:${p}`], { encoding: 'utf8', maxBuffer: 64 << 20 })
 
 function regTable(src, name) {
   const m = new RegExp(`const luaL_Reg ${name}\\[\\]\\s*=\\s*\\{([\\s\\S]*?)\\n\\};`).exec(src)

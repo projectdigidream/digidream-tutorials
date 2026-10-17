@@ -21,7 +21,7 @@
   <div class="goal">
     <b>You'll learn</b><span>how to make a token, choose or create a repository, what syncs and when, what happens when two devices change the same thing, how to bring a module to a new device, and how to stop</span>
     <b>Time</b><span>20 minutes</span>
-    <b>Needs</b><span>the studio 0.3.2 or later (<a href="00-get-the-tools.html">Get the tools</a>), a free GitHub account, and an internet connection</span>
+    <b>Needs</b><span>the studio 0.3.3.1 or later (<a href="00-get-the-tools.html">Get the tools</a>), a free GitHub account, and an internet connection</span>
   </div>
 
   <h2>What it is for</h2>
@@ -92,6 +92,7 @@
   </ul>
   <p>Each sync that has something to send is <b>one commit</b>. Its message names the module and the files, and the device: for example <em>"my-level: maps/first.studio.json"</em> and <em>"From the studio on laptop."</em></p>
   <p>In the repository each module is a folder named after its id, holding the module as the studio keeps it: <code>module.studio.json</code> (the module's settings), <code>maps/</code> (one file per map), <code>assets/</code> (imported pictures, sounds, fonts) and <code>sources/</code> (texture, sprite, music and sound projects). Nothing baked is sent: the studio bakes again on each device. A file is only sent when its content changed.</p>
+  <p>A big module, such as the first push of one with many maps and pictures, is sent in batches GitHub can take, and in smaller ones if GitHub still takes too long. While it goes, the module's row on the Sync page has a bar, such as <em>uploading 3/12</em>, and a bar over the list counts the modules (<em>2 of 5 modules</em>). When GitHub is busy for a moment, or asks the studio to slow down, the row says <em>GitHub busy, 60s</em>: the studio waits and tries again by itself.</p>
   <h3>Where you see how it stands</h3>
   <ul>
     <li><b>On Home</b>, beside the version: a coloured dot and a word, such as <em>synced</em>. Home's <b>other modules</b> list shows each module's word too.</li>
@@ -106,6 +107,7 @@
       <tr><td><em>synced</em>, or <em>synced, 2 files from GitHub</em></td><td>this device and GitHub agree; the second also brought another device's changes in</td></tr>
       <tr><td><em>1 file changed here and on GitHub</em></td><td>a conflict: you choose which to keep (below)</td></tr>
       <tr><td><em>offline; it will sync when GitHub can be reached</em></td><td>no connection; nothing is lost, it tries again later</td></tr>
+      <tr><td><em>open in another tab too: close one to sync it</em></td><td>the module is open in two tabs of the studio in the same browser. Sync leaves it alone, so one tab cannot save over what GitHub just brought into the other. Close one of the two tabs.</td></tr>
       <tr><td><em>gone from GitHub; this device keeps its copy</em></td><td>someone removed the module's folder from the repository</td></tr>
       <tr><td><em>sync failed: …</em></td><td>GitHub said no; the reason follows (see <a href="#trouble">below</a>)</td></tr>
     </tbody>
@@ -120,7 +122,7 @@
   </ul>
   <p>When changes come in from GitHub to the module you have open, the studio first takes a snapshot of the module as it was (<em>before sync from …</em>), then reloads it in place: the same map and the same view. Undo starts afresh; the snapshot is your way back.</p>
   <h3>A conflict</h3>
-  <p>The module's row on the Sync page opens a box: <em>"Changed here and on GitHub since the last sync. Choose which to keep; the other stays in history (GitHub's commits, or the studio's Snapshots for this device's)."</em> Each file is named as you know it (<em>map first</em>, <em>module settings</em>, <em>textures/BRICK.png</em>), with two choices: <span class="ui">this device</span> or <span class="ui">GitHub</span>. <span class="ui">All this device's</span> and <span class="ui">All GitHub's</span> choose for every file at once. <span class="ui">Keep these</span> finishes it.</p>
+  <p>The module's row on the Sync page opens a box: <em>"Changed here and on GitHub since the last sync. Choose which to keep; the other stays in history (GitHub's commits, or the studio's Snapshots for this device's)."</em> Each file is named as you know it (<em>map first</em>, <em>module settings</em>, <em>textures/BRICK.png</em>), with two choices: <span class="ui">this device</span> or <span class="ui">GitHub</span>. <span class="ui">All this device's</span> and <span class="ui">All GitHub's</span> choose for every file at once. <span class="ui">Keep these</span> finishes it. The box then says <em>Applying your choice…</em> until the sync has gone through (<span class="ui">choose again</span> takes you back to the choice). Your choice holds even if GitHub changed again in the meantime: the conflict does not come back.</p>
   <p>The version you don't keep is not lost. If it was GitHub's, it is in the repository's history. If it was this device's, it is in <a href="10-play-and-export.html#snapshots">🕘 snapshots</a>.</p>
   <div class="callout tip"><p>The choice is per file, and a map is one file. Two people (or two devices) working on <b>different maps</b> never conflict. Working on the same map in two places at once always will.</p></div>
 
@@ -170,6 +172,8 @@
       <tr><td><em>… cannot see owner/name: check the name, and that the token is given that repository.</em></td><td>A typo, or a one-repository token for a different repository.</td></tr>
       <tr><td><em>this token may not create repositories …</em></td><td><span class="ui">Create</span> needs <em>All repositories</em> with <em>Administration</em>. Make the repository on GitHub instead, then pick it.</td></tr>
       <tr><td><em>offline; it will sync when GitHub can be reached</em></td><td>Nothing. Keep working; it syncs when you are back online.</td></tr>
+      <tr><td><em>open in another tab too: close one to sync it</em></td><td>Close one of the two tabs the module is open in. It syncs from the one left.</td></tr>
+      <tr><td><em>sync failed: Sorry, your request timed out</em> on a big push, a conflict that comes back after <span class="ui">Keep these</span>, or, on Android, a repository that never loads</td><td>Your studio is older than 0.3.3.1, which fixed all three. <a href="00-get-the-tools.html#updating">Update the studio</a>.</td></tr>
       <tr><td><em>sync failed: …</em> after weeks of working</td><td>Most often the token expired. Press <span class="ui">Disconnect</span>, make a new token, and connect again to the same repository. The first sync compares everything; files that differ ask which to keep.</td></tr>
     </tbody>
   </table>

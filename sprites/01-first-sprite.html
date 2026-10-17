@@ -59,8 +59,8 @@
   </figure>
   <p>Open <b>🎞 Sprites</b> from the rail or from Home. The page shows every sheet in the module as a tile:</p>
   <ul>
-    <li>A tile marked <b>◇</b> is a sheet with no ThreeSprite project behind it: it was imported as a finished atlas, so there is nothing to edit.</li>
-    <li>Click a tile to see its card: how many animations it has, which props draw it, and whether it was baked from a project.</li>
+    <li>A tile marked <b>◇</b> is a sheet with no ThreeSprite project behind it: it was imported as a finished atlas. Its pictures can't be edited, but its animations can, on its card (see <a href="#imported-animations">An imported sheet's animations</a>).</li>
+    <li>Click a tile to see its card: its animations, which props draw it, and whether it was baked from a project. A baked sheet's card also says which of its animations loop (see <a href="06-preview-palettes-bake.html#loops">Which animations loop</a>).</li>
     <li>A sheet with a project has <span class="ui">✎ edit in ThreeSprite</span>. When more than one editor can open it, <span class="ui">open with…</span> lets you choose.</li>
     <li>When a module has more than 12 sheets, a box over the tiles reads <em>find among N sprites…</em>. Type part of a name to narrow the tiles down.</li>
   </ul>
@@ -110,6 +110,7 @@
     <li><b>Props and monsters pick a sheet by name.</b> Re-bake a sheet under the same name and everything drawn with it changes.</li>
   </ul>
   <p>You can also bring in work made elsewhere with <span class="ui">+ import a sprite (.tsprite, or an atlas)</span>. A <code>.tsprite</code> is kept as the source and baked. An atlas (its <code>.json</code>, then its <code>.png</code>) is taken as a finished sheet and gets the ◇ mark.</p>
+  <p>The new sheet takes the sprite's own name. A ThreeSprite project nobody named is still called <code>SPRT</code>, ThreeSprite's default, so the studio names it after its file instead: <code>blob.tsprite</code> becomes <code>BLOB</code>. If the module already has a sheet by that name, the studio never takes it over unasked. It says <em>There is a sheet called <i>NAME</i> already</em> and offers a free name, such as <code>NAME_2</code>. Keep the offer to import it beside the old one. Type the old name instead to replace that sheet, and the studio asks once more, because everything drawn with it changes.</p>
 
   <h3 id="duplicate-export">Duplicate and export</h3>
   <p>A sheet's card has two more kinds of button:</p>
@@ -118,6 +119,17 @@
     <li><span class="ui">⇪ export .tsprite</span> saves the ThreeSprite project out of the studio. <span class="ui">⇪ export sheet</span> saves the baked sheet as a <code>.zip</code> of its <code>.json</code> and <code>.png</code>, which <span class="ui">+ import a sprite</span> can bring back in. In the desktop app these use the system's share or save. In a browser they download.</li>
   </ul>
   <p>A sheet imported as a finished atlas (◇) has no project, so it offers <span class="ui">⇪ export sheet</span> only.</p>
+
+  <h3 id="imported-animations">An imported sheet's animations</h3>
+  <p>The card of a sheet imported as a finished atlas (◇) has an <b>animations</b> section. Its chips name each animation with its frame count, such as <code>walk · 8</code>. Pick one: it plays beside its <span class="ui">name</span>, <span class="ui">fps</span> and <span class="ui">loops</span>, and its frames are laid out in a strip under them.</p>
+  <ul>
+    <li>Under each frame, the arrows move it earlier or later, the copy button repeats it, and the cross takes it out.</li>
+    <li><span class="ui">+ a frame…</span> opens every frame the sheet has, from all its animations. Tap one to add it at the end.</li>
+    <li><span class="ui">+ new animation</span> asks for a name and makes a new animation from the one shown, to change from there.</li>
+    <li><span class="ui">delete it</span> deletes the animation shown. It asks first, and names any prop or weapon that uses it.</li>
+    <li>Renaming an animation in <span class="ui">name</span> renames it in the props and first-person weapon views that name it too.</li>
+  </ul>
+  <p>Only the sheet's <code>.json</code> changes. The pictures stay exactly as they were imported, and each change is one undo step. A sheet baked from a ThreeSprite project has no such section: its animations are the project's, so edit them in ThreeSprite.</p>
 
   <h3>Inside the studio, ThreeSprite is slightly different</h3>
   <ul>
@@ -164,7 +176,7 @@
     <li><p>Press <span class="ui">✕</span>, then open <code>VM_REVOLVER</code> the same way. It has one view: the gun and hand as you hold them.</p></li>
   </ol>
 
-  <div class="callout tip"><p>A sprite can also be a weapon's picture in first person. In the Weapons workshop's <span class="ui">first person</span> tab, choose <span class="ui">a sprite (ThreeSprite project): its animations</span>, then pick one animation for the weapon at rest and one for firing. The studio cuts the front view of each frame from the baked sheet. See the <a href="../weapons/01-first-weapon.html">Weapons</a> track.</p></div>
+  <div class="callout tip"><p>A sprite can also be a weapon's picture in first person. In the weapon editor, on <span class="ui">Looks</span> → <b>Held in first person</b>, choose <span class="ui">a sprite (ThreeSprite project): its animations</span>, then pick one animation for the weapon at rest and one for firing. The studio cuts the front view of each frame from the baked sheet. See the <a href="../weapons/01-first-weapon.html">Weapons</a> track.</p></div>
 
   <h2>Running ThreeSprite on its own</h2>
   <p>ThreeSprite is also a standalone app, for drawing sprites outside the studio. Download it from the <a href="https://github.com/projectdigidream/digidream-threesprite/releases">ThreeSprite releases</a> and install it the same way as the studio: see <a href="../studio/00-get-the-tools.html">Get the tools</a>. It is the same editor, with two differences:</p>

@@ -83,17 +83,24 @@
   </table>
 
   <h2>Baking in the studio</h2>
-  <p>Inside the studio you don't use the Export tab. Pressing <span class="ui">‹ studio</span> saves the project as <code>sources/sprites/NAME.tsprite</code> and bakes it into <code>assets/sprites/NAME.json</code> and <code>NAME.png</code>. Play and Export bake again any sprite whose project changed. ThreeSprite's own runtime composes the sheet, in the same layout as its Atlas + JSON export: every view of every frame, mirrored views included, trimmed and packed, with each frame's feet, every animation's fps and loop, and the world height. To take a sprite out of the studio, its card on the Sprites page has <span class="ui">export .tsprite</span> (the project) and <span class="ui">export sheet</span> (the baked sheet, <code>NAME-sheet.zip</code> of json + png, which imports again), and <span class="ui">duplicate</span> copies all of it under a new name.</p>
+  <p>Inside the studio you don't use the Export tab. Pressing <span class="ui">‹ studio</span> saves the project as <code>sources/sprites/NAME.tsprite</code> and bakes it into <code>assets/sprites/NAME.json</code> and <code>NAME.png</code>. Play and Export bake again any sprite whose project changed. ThreeSprite's own runtime composes the sheet, in the same layout as its Atlas + JSON export: every view of every frame, mirrored views included, trimmed and packed, with each frame's feet, every animation's fps and loop, and the world height. A view with its own layer order (see <a href="03-rig.html#layer-order">Layer order, per view</a>) is baked in that order, so an arm drawn behind the body from the back stays behind it in the game. To take a sprite out of the studio, its card on the Sprites page has <span class="ui">export .tsprite</span> (the project) and <span class="ui">export sheet</span> (the baked sheet, <code>NAME-sheet.zip</code> of json + png, which imports again), and <span class="ui">duplicate</span> copies all of it under a new name.</p>
   <ul>
     <li>The sheet is named after the studio's name for it, whatever the project's sprite id says.</li>
-    <li>Props and monsters choose a sheet by that name. In a monster's body card, <b>sprite sheet</b> picks it, and the five states are matched to its animations.</li>
+    <li>Props and monsters choose a sheet by that name. In the monster editor, <span class="ui">Looks</span> picks it under <span class="ui">sprite</span>, and each state is matched to one of its animations by name (see <a href="../studio/07-workshops.html">Monsters, weapons, player</a>).</li>
   </ul>
+  <h3 id="loops">Which animations loop</h3>
+  <p>A sheet baked from a project has a section on its card in <b>🎞 Sprites</b>, <b>which animations loop</b>: one <span class="ui">loops</span> switch per animation, named with its frames and fps (<em>death · 10 frames at 10 fps</em>). An animation that loops starts again from its first frame. One that does not plays once and holds its last frame, which is what a death or an attack wants.</p>
+  <p>ThreeSprite's own <span class="ui">loop</span> tick is often left at its default, looping, even on a death. So the studio keeps its own choice in the module, and every later bake keeps it: press <span class="ui">‹ studio</span> again and the death still plays once. An animation you never switch keeps what the project says.</p>
+  <ol class="steps">
+    <li><p>In <b>🎞 Sprites</b>, click a sheet you baked from a project. Under <b>which animations loop</b>, switch its <code>death</code> off.</p></li>
+    <li><p>Edit the sprite in ThreeSprite and press <span class="ui">‹ studio</span>. The card still shows <code>death</code> switched off.</p></li>
+  </ol>
   <h3>How tall it stands</h3>
-  <p>The manifest's world height is the one number the game scales every frame of the sheet by. In the studio, a monster's body card shows it as <b>sprite height</b>. Changing it there rewrites the sheet's manifest, and every monster drawn with that sheet grows with it. A body's <b>scale</b> multiplies the size for that body alone.</p>
+  <p>The manifest's world height is the one number the game scales every frame of the sheet by. In the studio, the monster editor shows it on <span class="ui">Advanced</span>, under <b>Its body states</b>, as <span class="ui">sprite height</span>. Changing it there rewrites the sheet's manifest, and every monster drawn with that sheet grows with it. A body's <b>scale</b> multiplies the size for that body alone.</p>
   <div class="callout warn"><p>A bake writes the world height from the ThreeSprite project. If you set <b>sprite height</b> in the studio and later edit the sprite and press <span class="ui">‹ studio</span>, the project's <span class="ui">World height</span> comes back. Set the same number in Project settings to keep it.</p></div>
   <ol class="steps">
     <li><p>In ThreeSprite, open Project settings and set <span class="ui">World height</span> to <code>1.5</code>. Press <span class="ui">Apply</span>, then <span class="ui">‹ studio</span>.</p></li>
-    <li><p>In the studio, open a monster's body card and choose your sheet under <b>sprite sheet</b>. Its <b>sprite height</b> reads 1.5, and the preview stands it against a ruler.</p></li>
+    <li><p>In the studio, open a monster in <b>☠ Monsters</b>, go to <span class="ui">Advanced</span>, and under <b>Its body states</b> choose your sheet under <span class="ui">sprite sheet</span>. Its <span class="ui">sprite height</span> reads 1.5.</p></li>
   </ol>
 
   <h2 id="cinderfall">In Cinderfall</h2>
@@ -117,7 +124,7 @@
   </table>
   <p>The world height sizes the picture only. What a bullet hits is the prop's body in <code>assets/props.txt</code>, so SMELTER's is <code>radius 1.4 height 4.4</code>.</p>
   <h3>Weapons in first person</h3>
-  <p>The five <code>VM_</code> sprites are baked like any other sheet. The Weapons workshop's <span class="ui">first person</span> tab then picks, for each weapon, the sheet, the <span class="ui">at rest (fallback)</span> and <span class="ui">firing (fallback)</span> animations, and one animation per state its phases set. For the revolver it saved:</p>
+  <p>The five <code>VM_</code> sprites are baked like any other sheet. In the weapon editor, <span class="ui">Looks</span> → <b>Held in first person</b> then picks, for each weapon, the sheet, the <span class="ui">at rest (fallback)</span> and <span class="ui">firing (fallback)</span> animations, and one animation per state its phases set. For the revolver it saved:</p>
 <pre><code>sheet    VM_REVOLVER   at rest: ready   firing: fire   scale 1.4   canvas at 96, 40
 state 13 → fire     (set by the fire phase)
 state 14 → cock     (set by the cock phase)

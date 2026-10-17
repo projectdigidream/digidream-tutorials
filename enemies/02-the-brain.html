@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>The brain: states and transitions · Digidream Studio tutorials</title>
-<meta name="description" content="How a monster thinks: states, their fields, transitions and conditions, the order things run in, how it finds and keeps a target, and the patterns for idling, wandering, chasing and giving up.">
+<meta name="description" content="How a monster thinks: states read as sentences, their rules and conditions, the rules for any state, the preview, the order things run in, how it finds and keeps a target, and the patterns for idling, wandering, chasing and giving up.">
 <link rel="stylesheet" href="../assets/site.css">
 <link rel="stylesheet" href="../assets/skins/skins.css">
 <link rel="icon" type="image/png" href="../assets/logo.png">
@@ -17,180 +17,219 @@
 <body>
 <article>
   <h1>The brain: states and transitions</h1>
-  <p class="lede">A monster's brain is a small graph you draw. Each box is a <b>state</b>: what the body does right now. Each arrow is a <b>transition</b>: when to stop doing it and do something else. This lesson explains how the engine walks that graph, then you build a brain that wanders, notices you, hunts you and gives up when you hide.</p>
+  <p class="lede">A monster's brain is a set of <b>states</b>. A state is what the body does right now; its <b>rules</b> (the engine calls them transitions) say when to stop doing it and do something else. This lesson explains how the engine runs them and how the editor writes them as sentences, then you build a brain that wanders, notices you, hunts you and gives up when you get away.</p>
   <div class="goal">
-    <b>You'll learn</b><span>the fields of a state; how transitions and conditions are checked; the order of one decision; how a monster finds a target and why it keeps it; and the patterns for idle, wander, chase, attack and give up</span>
+    <b>You'll learn</b><span>how a state reads and is edited on <span class="ui">Behaviour</span>; how rules and conditions are checked; the rules under <b>Whatever it is doing</b>; what the preview runs; the order of one decision; how a monster finds a target and why it keeps it; and the patterns for idle, wander, chase, attack and give up</span>
     <b>Time</b><span>40 minutes</span>
     <b>Needs</b><span>Gem Hollow open in the studio (<a href="01-first-monster.html#gem-hollow">Your first monster</a>); for the last exercise, the <code>grunt</code> from that lesson and a map with two rooms joined by a door</span>
   </div>
 
   <h2>Try it first</h2>
-  <p>The demo runs the brain a new monster starts with: <code>look</code>, <code>chase</code>, <code>attack</code>, <code>pain</code> and <code>death</code>. Drag the green dot (you) into the dotted circle, then behind the wall. Press <b>hit it</b> a few times. Watch the diagram light the state it is in and the arrow it just took, and read why in the log.</p>
+  <p>The demo runs a brain like the <span class="ui">Melee grunt</span> recipe's: <code>look</code>, <code>chase</code>, <code>attack</code>, <code>pain</code> and <code>death</code>. Drag the green dot (you) into the dotted circle, then behind the wall. Press <b>hit it</b> a few times. Watch the diagram light the state it is in and the arrow it just took, and read why in the log.</p>
   <div class="widget" data-widget="brain-sim" data-title="A monster's brain, running"></div>
-  <p>Three things to notice:</p>
+  <p>Four things to notice:</p>
   <ul>
-    <li>It notices you as soon as you cross the dotted <code>sight</code> circle, even behind the wall. But it only leaves <code>look</code> when it can also <em>see</em> you.</li>
-    <li>Once it has you as a target, it never lets go, however far you run. Only <b>target_none</b> makes it forget.</li>
+    <li>It notices you as soon as you cross the dotted circle (how far it <span class="ui">Sees</span>), even behind the wall. But it only leaves <code>look</code> when it can also <em>see</em> you.</li>
+    <li>Once it has you as a target, it never lets go, however far you run. Only a step that makes it <em>forget its target</em> does.</li>
+    <li>A flinch goes <b>back to what it was doing</b>. Hit it during its attack and, after the flinch, the attack carries on from where it was: a hit does not start it again.</li>
     <li>Changes happen in steps, not smoothly. A monster decides 7.5 times a second.</li>
   </ul>
 
-  <h2>Two levels: the graph and the sequence</h2>
-  <p>A brain has two levels, and the editor shows both:</p>
+  <h2>Two levels: states and steps</h2>
+  <p>A brain has two levels, and <span class="ui">Behaviour</span> shows both:</p>
   <ul>
-    <li>The <b>graph</b> says which state the monster is in, and what moves it to another. These are the boxes and arrows in the graph pane. Six to ten states is a lot. Most monsters need five.</li>
-    <li>The <b>sequence</b> says what one state <em>does</em> while the monster is in it: <em>"at tick 10 after entering, claw"</em>. It is the list under <b>▶ at tick … do …</b> in the state's tab.</li>
+    <li>The <b>states</b> and their <b>rules</b> say which state the monster is in, and what moves it to another. With <span class="ui">List</span>, each state is a card that reads as a sentence; with <span class="ui">Graph</span>, a box with arrows. Six to ten states is a lot. Most monsters need five.</li>
+    <li>The <b>steps</b> say what one state <em>does</em> while the monster is in it: <em>"at 0.17 s, melee hit for 10 damage"</em>. They are the chips on its card, and its <b>Timeline</b> when you open it.</li>
   </ul>
-  <p>The difference matters. A wind-up, a strike and a recovery are not three states. They are one <code>attack</code> state with a duration and two steps in its sequence.</p>
+  <p>The difference matters. A wind-up, a strike and a recovery are not three states. They are one <code>attack</code> state with a length and a few steps.</p>
 
-  <h2>A state's fields</h2>
-  <figure class="shot" data-src="../assets/shots/enemy-state.png" data-alt="The slime's chase state's tab: name, anim, move, face, ticks, ticks_jitter, next, interruptible, solid, then its first transition, to squash" data-hotspots='[{"x":86,"y":26,"t":"name","d":"Rename the state; arrows that point at it follow"},{"x":88,"y":38,"t":"move","d":"How the body is driven: chase follows a route"},{"x":88,"y":44,"t":"face","d":"Where it looks: target"},{"x":88,"y":56,"t":"ticks and next","d":"Empty: chase lasts until a transition fires"},{"x":82,"y":80,"t":"go to … when all of …","d":"The transitions, each with its conditions; the first is to squash"},{"x":93,"y":92,"t":"not","d":"Turns a condition round"}]'>
-    <figcaption>Tap a state in the graph, and its fields fill the <span class="ui">⬡ <i>state</i></span> tab. Here, Gem Hollow's <code>slime</code> in <code>chase</code>.</figcaption>
+  <h2>Reading a state</h2>
+  <figure class="shot" data-src="../assets/shots/enemy-state.png" data-alt="Gem Hollow's slime on Behaviour with its chase state picked: the chase card with its three rules, and beside it the preview and the editor of chase: its name, make it where it begins, the jump buttons, Plays walk, Moves runs at the target, Faces the target, Lasts until a rule fires" data-hotspots='[{"x":39,"y":70,"t":"What it does","d":"plays walk, runs at the target and faces the target, until a rule below sends it on"},{"x":39,"y":90,"t":"A rule","d":"→ attack when the target is within 1.4 m and cooldown ready is over"},{"x":70,"y":50,"t":"Its name","d":"Type to rename it; every rule that goes to it follows"},{"x":69,"y":56,"t":"make it where it begins","d":"Moves the ★ here. Beside it: duplicate and delete"},{"x":70,"y":62,"t":"does · goes to · at the end · steps","d":"Jump to the four parts of the state"},{"x":85,"y":70,"t":"Plays","d":"An animation of its sprite, by name"},{"x":85,"y":78,"t":"Moves","d":"How the body is driven"},{"x":85,"y":84,"t":"Faces","d":"Where it looks"},{"x":77,"y":90,"t":"Lasts","d":"Empty: until a rule fires"},{"x":81,"y":25,"t":"The preview","d":"Runs the rules; the card it is in is marked, and the rule that would fire is outlined"}]'>
+    <figcaption>Gem Hollow's <code>slime</code> with <code>chase</code> picked. Tap the numbered dots for what each part does.</figcaption>
   </figure>
-  <p>Tap a state in the graph. Its tab shows a <span class="ui">name</span> box, then the fields from the vocabulary:</p>
+  <p>Open <b>☠ Monsters</b>, pick <code>slime</code> and open <span class="ui">Behaviour</span> with <span class="ui">List</span>. Each card reads as a sentence:</p>
+  <ul>
+    <li><b>The first line</b> is what the state does: what it <em>plays</em>, how it <em>moves</em> and where it <em>faces</em>, and how long it lasts: <em>"…until a rule below sends it on"</em>, <em>"…for 0.4 s then goes on to chase"</em>, <em>"…then goes back to what it was doing"</em>, or <em>"…and stays here"</em>. The ★ marks where it begins.</li>
+    <li><b>Its rules</b> follow, one a line, in the order they are checked: <em>"→ attack when the target is within 1.4 m and cooldown ready is over"</em>.</li>
+    <li><b>Its steps</b> are chips with their time: <em>"0.17 s · melee hit for 10 damage within 1.2 m knocking back 6 m"</em>.</li>
+  </ul>
+  <p>The cards are in two groups. <b>Flow</b> is <em>"where it begins (the star) and what it does"</em>. <b>Reactions</b> are the states <em>"entered from any state when something happens to it"</em>: <code>pain</code>, <code>death</code>, and any state that goes back to what it was doing. A state nothing goes to says <em>"nothing goes here yet"</em>. Tap a card, or its <span class="ui">edit</span>, to open the state beside the list; tap a word on the card to jump to that part of it.</p>
+
+  <h2>Editing a state</h2>
+  <p>The state you pick opens in the side panel, under the preview. At its top are its name (type a new one to rename it; every rule that went to it follows), <span class="ui">make it where it begins</span> (or <em>where it begins</em>, for the state with the ★), <span class="ui">duplicate</span> and <span class="ui">delete</span>, which says how many rules point at the state before it removes them with it. The buttons <span class="ui">does</span>, <span class="ui">goes to</span>, <span class="ui">at the end</span> and <span class="ui">steps</span> jump to its four parts. ✕ closes it.</p>
+  <h3>What it does</h3>
   <table>
-    <thead><tr><th>Field</th><th>What it does</th></tr></thead>
+    <thead><tr><th>Field</th><th>What it does</th><th>In the files</th></tr></thead>
     <tbody>
-      <tr><td><a href="../reference/monster-vocab.html#state_fields.anim"><code>anim</code></a></td><td>The animation state the body plays, 0–4 (see <a href="01-first-monster.html">Your first monster</a>). Required.</td></tr>
-      <tr><td><a href="../reference/monster-vocab.html#state_fields.move"><code>move</code></a></td><td>How the body is driven: <code>stop</code>, <code>chase</code> (follows a route to the target), <code>flee</code> (walks directly away from where it is aiming), <code>strafe</code> (walks a quarter turn to the left of its aim), <code>wander</code> (walks the heading stored in the var <code>wander</code>), <code>charge</code>, or <code>free</code> (the runtime keeps its hands off, for a leap you drive with actions).</td></tr>
-      <tr><td><a href="../reference/monster-vocab.html#state_fields.face"><code>face</code></a></td><td>Where it looks: <code>target</code> turns towards its target, <code>hold</code> keeps its heading. Left empty, it means <code>target</code>.</td></tr>
-      <tr><td><a href="../reference/monster-vocab.html#state_fields.ticks"><code>ticks</code></a></td><td>How long the state lasts. Empty means "until a transition fires", which is what <code>chase</code> wants.</td></tr>
-      <tr><td><a href="../reference/monster-vocab.html#state_fields.ticks_jitter"><code>ticks_jitter</code></a></td><td>Up to this many extra ticks, rolled each time it enters. Monsters that entered together then leave at different times and stop moving as one animal. Needs <code>ticks</code>.</td></tr>
-      <tr><td><a href="../reference/monster-vocab.html#state_fields.next"><code>next</code></a></td><td>Where it goes when <code>ticks</code> runs out. A state with <code>ticks</code> must have one. A state that ends and stays, like <code>death</code>, names itself.</td></tr>
-      <tr><td><a href="../reference/monster-vocab.html#state_fields.interruptible"><code>interruptible</code></a></td><td>Whether a hit can send it to <code>pain</code>. Left empty, it can, even though the empty switch is drawn off. Death interrupts everything.</td></tr>
-      <tr><td><a href="../reference/monster-vocab.html#state_fields.solid"><code>solid</code></a></td><td>Collision while in this state. Only <code>death</code> normally sets it, to off. Leave it empty elsewhere.</td></tr>
+      <tr><td><span class="ui">Plays</span></td><td>An animation of the monster's sprite, by name (see <a href="01-first-monster.html">Your first monster</a>).</td><td><a href="../reference/monster-vocab.html#state_fields.anim"><code>anim</code></a></td></tr>
+      <tr><td><span class="ui">Moves</span></td><td>How the body is driven: <em>stands still</em>; <em>runs at the target</em> (follows a route round walls to it); <em>backs away</em> (walks straight away from where it aims); <em>circles the target</em> (side-steps, a quarter turn to the left of its aim); <em>wanders</em> (walks the heading kept in its number <code>wander</code>); <em>charges straight ahead</em>; or <em>is moved by its steps</em> (the runtime keeps its hands off, for a leap you drive with steps).</td><td><a href="../reference/monster-vocab.html#state_fields.move"><code>move</code></a>: <code>stop</code>, <code>chase</code>, <code>flee</code>, <code>strafe</code>, <code>wander</code>, <code>charge</code>, <code>free</code></td></tr>
+      <tr><td><span class="ui">Faces</span></td><td>Where it looks: <em>the target</em> turns towards its target, <em>where it was</em> keeps its heading, <em>where it walks</em> (see the callout below).</td><td><a href="../reference/monster-vocab.html#state_fields.face"><code>face</code></a>: <code>target</code>, <code>hold</code>, <code>movement</code></td></tr>
+      <tr><td><span class="ui">Lasts</span></td><td>How long the state lasts, in seconds; under it, the same in ticks. Empty means <em>"it stays until a rule sends it on"</em>, which is what <code>chase</code> wants. Giving a length also sets where it goes next.</td><td><a href="../reference/monster-vocab.html#state_fields.ticks"><code>ticks</code></a></td></tr>
+      <tr><td><span class="ui">Then goes to</span></td><td>Where it goes when its time is up: another state; the state itself (<em>then starts it again</em>; for <code>death</code>, <em>and stays dead</em>); or <em>back to what it was doing (resumed)</em>, for a reaction such as <code>pain</code>. <em>(stays)</em> takes its length away.</td><td><a href="../reference/monster-vocab.html#state_fields.next"><code>next</code></a>; <code>"@previous"</code> for <em>back to what it was doing</em></td></tr>
+      <tr><td><span class="ui">Phase</span></td><td>Which phase of a boss it belongs to. Only shown when the monster has phases (<a href="05-recipes.html#boss">Recipes</a>).</td><td>the editor's own</td></tr>
+      <tr><td><span class="ui">Follows "whatever it is doing"</span></td><td>Whether the rules for any state are checked here too, first. See <a href="#any">Whatever it is doing</a>.</td><td>the editor's own</td></tr>
+      <tr><td><span class="ui">Pain can cut it short</span></td><td>Whether a hit can make it flinch here. Off: <em>"a hit lands but it never flinches here. Dying always interrupts."</em></td><td><a href="../reference/monster-vocab.html#state_fields.interruptible"><code>interruptible</code></a></td></tr>
+      <tr><td><span class="ui">Blocks</span></td><td>Whether shots and walkers stop at it while in this state. <code>death</code> has it off.</td><td><a href="../reference/monster-vocab.html#state_fields.solid"><code>solid</code></a></td></tr>
     </tbody>
   </table>
-  <div class="callout soon"><p><b>Two values do less than their names say.</b> <code>face = "movement"</code> behaves like <code>hold</code> in both of the engine's mob runtimes: nothing turns the body to where it walks. And <code>move = "charge"</code> walks straight at the aim on the Lua path, but the faster C++ loop, which runs most monsters, treats it as <code>stop</code>. Until they are finished, rush in a straight line with <code>wander</code> and a heading stored by <code>set_angle</code> (as the <a href="05-recipes.html#charger">charger recipe</a> does), and turn with an explicit <code>face</code> action.</p></div>
-  <p>Press <span class="ui">+ state</span> to add a state. The studio asks for a <em>"state name"</em> and suggests <code>wander</code>. A new state starts as <code>anim</code> 0, <code>move</code> stop, <code>face</code> hold, <code>ticks</code> 30, with <code>next</code> set to the initial state. Clear <span class="ui">ticks?</span> and <span class="ui">next?</span> if the state should last until a transition fires.</p>
+  <div class="callout soon"><p><b>What the editor does not do yet.</b> <em>Faces where it walks</em> behaves like <em>where it was</em> in both of the engine's mob runtimes: nothing turns the body to where it walks. <em>Charges straight ahead</em> walks straight at the aim on the Lua path, but the faster C++ loop, which runs most monsters, treats it as <em>stands still</em>; a charge that must move uses a leap step, as the <span class="ui">Charger</span> recipe does. And some of the vocabulary has no field in the editor yet: a state's <a href="../reference/monster-vocab.html#state_fields.ticks_jitter"><code>ticks_jitter</code></a> (a random extra length), and a few arguments of steps, such as which way a <em>turn to face</em> step turns, or a melee hit's <code>lift</code>. A monster that has them, such as Cinderfall's, keeps them as written; the sentence just does not show them.</p></div>
+  <p>Press <span class="ui">+ state</span> to add a state. A field, <span class="ui">New state, named</span>, asks for its name (<em>e.g. spit</em>), and says where it will go: <em>placed after</em> the state picked, or <em>at the end</em>. Press <span class="ui">Create</span> or <kbd>Enter</kbd>. A new state plays the idle animation, stands still, faces the target and lasts until a rule fires. Nothing goes to it yet: give another state a rule that goes to it.</p>
 
-  <h2>Transitions and conditions</h2>
-  <p>Under the fields is <b>❓ go to … when all of …</b>. Each card is one transition: a target state at the top, then its conditions, then <span class="ui">add when</span> to add another. Press <span class="ui">+ transition</span> for a new card, or pick the state and press <span class="ui">→ link</span>, then tap the state to go to. In the graph, the arrow is labelled with its conditions, such as <code>has_target &amp; target_visible</code>; a negated one shows a <code>!</code>.</p>
+  <h2>Rules and conditions</h2>
+  <p>Under <b>Goes to</b> are the state's rules, each a card: its number, <em>go to</em> and the state it goes to, then <em>when:</em> and its conditions, each one a sentence with its numbers in boxes. <span class="ui">+ add a condition</span> adds one; ✕ removes one; the arrows check the rule earlier or later; <span class="ui">remove</span> takes the rule away. <span class="ui">+ another rule</span> adds a rule. The <em>go to</em> list offers the states of the same phase first.</p>
   <p>Four rules decide what happens:</p>
   <ol>
-    <li><b>All of them.</b> A transition fires only when <em>every</em> condition on its card holds. It is an AND.</li>
-    <li><b>An OR is two cards.</b> To go to <code>flee</code> when hurt <em>or</em> outnumbered, make two transitions to <code>flee</code>, one per reason.</li>
-    <li><b>First match wins.</b> Cards are tried top to bottom, and the first one that holds is taken. Order is priority. There is no scoring.</li>
-    <li><b>The <span class="ui">not</span> switch</b> beside a condition turns it round. <code>has_target</code> with <span class="ui">not</span> on means "has no target". There is no separate <code>no_target</code>.</li>
+    <li><b>All of them.</b> A rule fires only when <em>every</em> condition on its card holds (<em>"when all of these hold:"</em>). It is an AND.</li>
+    <li><b>An OR is two rules.</b> To go to <code>flee</code> when hurt <em>or</em> outnumbered, make two rules to <code>flee</code>, one per reason.</li>
+    <li><b>First match wins.</b> Rules are tried top to bottom, and the first one that holds is taken. Order is priority. There is no scoring.</li>
+    <li><b>The opposite is its own sentence.</b> <em>"it has no target"</em> beside <em>"it has a target"</em>, <em>"the target is further than"</em> beside <em>"the target is within"</em>, <em>"it is in the air"</em>, <em>"no more than … monsters"</em>, <em>"the number … is not"</em>. The files keep them as the same condition with <code>negate</code>.</li>
   </ol>
-  <div class="callout warn"><p><b>A card with no conditions always fires.</b> <span class="ui">→ link</span> and <span class="ui">+ transition</span> both make an empty card, and the graph labels it <code>always</code>. Add a condition straight away, or the monster leaves the state on its very next decision.</p></div>
-  <p>Conditions stop at the first false one, so <b>put the cheap ones first</b>. <code>target_within</code> is a little arithmetic. <code>target_visible</code> casts a ray. <code>can_reach</code> searches for a route.</p>
+  <div class="callout warn"><p><b>An unfinished rule never fires.</b> A rule with no state to go to, or with no condition yet, says so in red (<em>"incomplete: add a condition (it never fires until then)"</em>) and is left out of the files. Add its condition before you play.</p></div>
+  <p>Conditions stop at the first false one, so <b>put the cheap ones first</b>. <em>The target is within</em> is a little arithmetic. <em>It can see the target</em> casts a ray. <em>It can walk to the target</em> searches for a route.</p>
 
+  <figure class="shot" data-src="../assets/shots/enemy-chooser.png" data-alt="Adding a condition to the slime's first rule in chase: the chooser with group chips The target, Itself, Others nearby, Time and chance, Numbers and timers and Lua, a find box, and the target's conditions" data-hotspots='[{"x":73,"y":53,"t":"go to","d":"The state this rule goes to"},{"x":80,"y":53,"t":"Check it later","d":"The arrows move a rule up or down: first match wins"},{"x":81,"y":83,"t":"The groups","d":"One group at a time; the chooser opens on the one you used last"},{"x":72,"y":91,"t":"find among 28…","d":"Searches every group at once (on a wide screen)"},{"x":81,"y":97,"t":"The conditions","d":"Tap one to add it, with its default numbers"},{"x":96,"y":74,"t":"cancel","d":"Close the chooser"}]'>
+    <figcaption><span class="ui">+ add a condition</span> on the slime's first rule in <code>chase</code>: the chooser.</figcaption>
+  </figure>
+  <p><span class="ui">+ add a condition</span> opens a chooser, <b>Add a condition</b> (<em>every condition must hold</em>). Its conditions are in groups, one group at a time, picked from a row of chips; it opens on the group you used last. On a wide screen a <em>find among …</em> box searches all of them. Tap one, and it is added with its default numbers, ready to change.</p>
   <h3>The conditions</h3>
   <table>
-    <thead><tr><th>About</th><th>Conditions</th></tr></thead>
+    <thead><tr><th>Group</th><th>Conditions, as the editor says them</th></tr></thead>
     <tbody>
-      <tr><td>its target</td><td><a href="../reference/monster-vocab.html#has_target"><code>has_target</code></a> · <a href="../reference/monster-vocab.html#target_within"><code>target_within</code></a> (a distance on the floor plan, so a flyer above you is still near) · <a href="../reference/monster-vocab.html#target_visible"><code>target_visible</code></a> (a clear line, a ray) · <a href="../reference/monster-vocab.html#target_in_front"><code>target_in_front</code></a> (within an <code>arc</code> of its body's facing, default 90° each side) · <a href="../reference/monster-vocab.html#target_above"><code>target_above</code></a> · <a href="../reference/monster-vocab.html#target_below"><code>target_below</code></a> · <a href="../reference/monster-vocab.html#can_reach"><code>can_reach</code></a> (a route exists) · <a href="../reference/monster-vocab.html#target_is"><code>target_is</code></a> (a player, a mob or a prop)</td></tr>
-      <tr><td>itself</td><td><a href="../reference/monster-vocab.html#hp_below"><code>hp_below</code></a> (a percent of its starting hp) · <a href="../reference/monster-vocab.html#was_hurt"><code>was_hurt</code></a> · <a href="../reference/monster-vocab.html#hurt_by_mob"><code>hurt_by_mob</code></a> · <a href="../reference/monster-vocab.html#grounded"><code>grounded</code></a> · <a href="../reference/monster-vocab.html#stuck"><code>stuck</code></a> (trying to move and getting nowhere)</td></tr>
-      <tr><td>time</td><td><a href="../reference/monster-vocab.html#state_elapsed"><code>state_elapsed</code></a> (ticks in this state) · <a href="../reference/monster-vocab.html#cooldown_ready"><code>cooldown_ready</code></a> (a deadline in a var has passed)</td></tr>
-      <tr><td>dice and memory</td><td><a href="../reference/monster-vocab.html#chance"><code>chance</code></a> (a percent, rolled each time it is asked) · <a href="../reference/monster-vocab.html#var_at_least"><code>var_at_least</code></a> · <a href="../reference/monster-vocab.html#var_is"><code>var_is</code></a></td></tr>
-      <tr><td>others nearby</td><td><a href="../reference/monster-vocab.html#mob_within"><code>mob_within</code></a> · <a href="../reference/monster-vocab.html#count_within"><code>count_within</code></a> · <a href="../reference/monster-vocab.html#prop_within"><code>prop_within</code></a> · <a href="../reference/monster-vocab.html#ally_in_front"><code>ally_in_front</code></a></td></tr>
-      <tr><td>anything else</td><td><a href="../reference/monster-vocab.html#lua"><code>lua</code></a>, the escape hatch, for a module that writes its own Lua</td></tr>
+      <tr><td>The target</td><td><em>it has a target</em> / <em>it has no target</em> (<a href="../reference/monster-vocab.html#has_target"><code>has_target</code></a>) · <em>it can see the target</em> (<a href="../reference/monster-vocab.html#target_visible"><code>target_visible</code></a>: a clear line, a ray) · <em>the target is within … m</em> / <em>further than … m</em> (<a href="../reference/monster-vocab.html#target_within"><code>target_within</code></a>: a distance on the floor plan, so a flyer above you is still near) · <em>the target is within …° of where it faces</em> (<a href="../reference/monster-vocab.html#target_in_front"><code>target_in_front</code></a>) · <em>the target is … m or more above it</em> / <em>below it</em> (<a href="../reference/monster-vocab.html#target_above"><code>target_above</code></a>, <a href="../reference/monster-vocab.html#target_below"><code>target_below</code></a>) · <em>it can walk to the target</em> (<a href="../reference/monster-vocab.html#can_reach"><code>can_reach</code></a>) · <em>it is hunting a player / mob / prop</em> (<a href="../reference/monster-vocab.html#target_is"><code>target_is</code></a>)</td></tr>
+      <tr><td>Itself</td><td><em>its health is below …%</em> (<a href="../reference/monster-vocab.html#hp_below"><code>hp_below</code></a>, of its starting health) · <em>it was hurt in the last … s</em> (<a href="../reference/monster-vocab.html#was_hurt"><code>was_hurt</code></a>) · <em>another monster hurt it</em> (<a href="../reference/monster-vocab.html#hurt_by_mob"><code>hurt_by_mob</code></a>) · <em>it is on the ground</em> / <em>in the air</em> (<a href="../reference/monster-vocab.html#grounded"><code>grounded</code></a>) · <em>it has been stuck for … s</em> (<a href="../reference/monster-vocab.html#stuck"><code>stuck</code></a>: trying to move and getting nowhere)</td></tr>
+      <tr><td>Others nearby</td><td><em>a monster (kind) is within … m</em> (<a href="../reference/monster-vocab.html#mob_within"><code>mob_within</code></a>) · <em>at least … monsters (kind) are within … m</em> / <em>no more than …</em> (<a href="../reference/monster-vocab.html#count_within"><code>count_within</code></a>) · <em>a prop (name) is within … m</em> (<a href="../reference/monster-vocab.html#prop_within"><code>prop_within</code></a>) · <em>another monster is in its line of fire</em> (<a href="../reference/monster-vocab.html#ally_in_front"><code>ally_in_front</code></a>)</td></tr>
+      <tr><td>Time and chance</td><td><em>this state has run for … s</em> (<a href="../reference/monster-vocab.html#state_elapsed"><code>state_elapsed</code></a>) · <em>a …% chance</em> (<a href="../reference/monster-vocab.html#chance"><code>chance</code></a>, rolled each time it is asked)</td></tr>
+      <tr><td>Numbers and timers</td><td><em>cooldown … is over</em> (<a href="../reference/monster-vocab.html#cooldown_ready"><code>cooldown_ready</code></a>) · <em>the number … is at least …</em> (<a href="../reference/monster-vocab.html#var_at_least"><code>var_at_least</code></a>) · <em>the number … is …</em> / <em>is not …</em> (<a href="../reference/monster-vocab.html#var_is"><code>var_is</code></a>)</td></tr>
+      <tr><td>Lua</td><td><em>the Lua function … says yes</em> (<a href="../reference/monster-vocab.html#lua"><code>lua</code></a>), the escape hatch, for a module that writes its own Lua</td></tr>
     </tbody>
   </table>
-  <div class="callout tip"><p><b><code>chance</code> is rolled every decision.</b> A transition with <code>chance</code> 10 is asked 7.5 times a second while the monster is in that state, so it fires after about 1.3 seconds on average, not "one time in ten". To roll once and branch several ways, roll into a var with <code>var_random</code> in the sequence and test it with <code>var_at_least</code>.</p></div>
+  <div class="callout tip"><p><b>A chance is rolled every decision.</b> A rule with <em>a 10% chance</em> is asked 7.5 times a second while the monster is in that state, so it fires after about 1.3 seconds on average, not "one time in ten". To roll once and branch several ways, roll a number with the step <em>make … a random number from … to …</em> and test it with <em>the number … is at least …</em>.</p></div>
+  <h3>When its time is up</h3>
+  <p>A state with a length can also branch as it ends. Under <b>When its time is up (optional branches)</b>, <span class="ui">+ a branch</span> adds a rule that is checked only as its time runs out (<em>"as it ends, if:"</em>); with none holding, it goes where <span class="ui">Then goes to</span> says (<em>"otherwise → chase"</em>). The card reads <em>"…for 1.2 s then frenzy if the number phase is at least 3; otherwise then goes on to chase2"</em>. A state with no length has no end to branch at.</p>
+
+  <h2 id="any">Whatever it is doing</h2>
+  <p>Above the states, the panel <b>Whatever it is doing</b> holds the rules that apply in <em>any</em> state. Its first two rows are built in: <em>"when it is hurt (78% of hits) → pain"</em> and <em>"when its health reaches 0 → death"</em>, the engine's own, for states named exactly <code>pain</code> and <code>death</code> (with no such state, the row says <em>"this never happens"</em>). Under them go rules of your own: <span class="ui">+ a rule for any state</span>, <em>for example: flee when its health is below 30%</em>.</p>
+  <ul>
+    <li>They are <b>checked first</b>, before a state's own rules, and the first that holds wins.</li>
+    <li><b>only once</b> makes a rule fire a single time: a boss's change of phase. The monster remembers it fired, saved games too.</li>
+    <li>A state with <span class="ui">Follows "whatever it is doing"</span> off skips them, and so does <code>death</code>. A rule never sends a monster into the state it is already in.</li>
+  </ul>
+  <p>The files have no such list: when the module is written, the studio puts these rules at the head of every state's own rules.</p>
+
+  <h2>The preview</h2>
+  <p>The preview beside the states runs the monster's brain by the engine's own rules: it decides every 8 ticks, tries the rules in order, flinches by the flinch chance, and goes back to what a flinch interrupted. A stand-in for its target stands 8 m away.</p>
+  <ul>
+    <li><span class="ui">Run</span> and <span class="ui">Pause</span> (also ▶ at the top), <span class="ui">Reset</span> to start again where it begins.</li>
+    <li><span class="ui">Hit</span> hurts it for 25, with the flinch roll; <span class="ui">Flinch</span> makes it flinch for sure, with no damage; <span class="ui">Kill</span> kills it.</li>
+    <li><em>the target:</em> <span class="ui">in sight</span> / <span class="ui">hidden</span>, <span class="ui">nearer</span> and <span class="ui">further</span>, a metre at a time; <em>its health</em> as a slider, for a rule on its health.</li>
+    <li>Under them, what it does now and why: <em>"In look: goes to chase (rule 2)."</em>, <em>"Now in attack: no rule holds; after 0.4 s, on to chase."</em>; and its numbers and cooldowns: <em>"cooldown ready: 0.8 s left"</em>.</li>
+  </ul>
+  <p>The card it is in is marked, and the rule that would fire now is outlined. What the preview does not have: walls, sight lines, routes, and other monsters. A rule that leans on them says so (<em>"The preview has no other monsters or props…"</em>); check those in a level. The monsters it summons are the one crowd it has.</p>
 
   <h2>How one decision runs</h2>
   <p>A monster does not think every tick. The game runs at 60 ticks a second, and each monster <b>decides every 8th tick</b>, about 7.5 times a second. Monsters are spread over the 8 ticks, so a room of them does not all think at once. Between decisions the body keeps moving on the last input it was given, so walking stays smooth.</p>
   <p>One decision, in order:</p>
   <ol>
-    <li><b>Find a target</b>, if it has none: the nearest player inside its <code>sight</code>. This is distance only, with no ray.</li>
-    <li><b>Run the sequence entries that are due</b>, in order. A <code>goto</code> leaves the state at once, and the rest does not run.</li>
-    <li><b>Try the transitions</b>, top to bottom. The first that holds is taken, and the decision ends.</li>
-    <li><b>Check <code>ticks</code>.</b> If the state's time is up, go to <code>next</code>. An explicit transition always beats running out of time.</li>
-    <li><b>Drive the body</b> by the state it ended up in: its <code>move</code> and its <code>face</code>.</li>
+    <li><b>Find a target</b>, if it has none: the nearest player inside how far it <span class="ui">Sees</span>. This is distance only, with no ray.</li>
+    <li><b>Run the steps that are due</b>, in their order. A <em>leave now for</em> step leaves the state at once, and the rest does not run.</li>
+    <li><b>Try the rules</b>, top to bottom (the ones for any state first). The first that holds is taken, and the decision ends.</li>
+    <li><b>Check its length.</b> If the state's time is up, take a branch that holds, or go where <span class="ui">Then goes to</span> says. A rule always beats running out of time.</li>
+    <li><b>Drive the body</b> by the state it ended up in: how it moves and where it faces.</li>
   </ol>
-  <p>Hits do not wait for a decision. Damage, death and the pain roll happen the moment a hit lands (see <a href="04-pain-death-drops.html">Pain, death and drops</a>).</p>
-  <div class="callout warn"><p><b>Times land on decisions.</b> A sequence entry <code>at = 10</code> is a deadline, checked when the monster decides. A state is entered during a decision, and the monster next looks at its sequence 8 ticks later, then 16, and so on. So <code>at = 0</code> runs 8 ticks after entering, <code>at = 10</code> runs at 16, and a state with <code>ticks</code> 20 ends at 24. A state's <code>ticks</code> works the same way. Think in steps of 8, and do not expect a 3-tick difference to show.</p></div>
-  <div class="callout warn"><p><b>A step must come before the state ends.</b> A sequence step whose <code>at</code> is equal to or later than the state's <code>ticks</code> would never run, and the server refuses the monster for it: <em>"fires at tick 24 of a state that lasts 24, so it never runs"</em>. The workshop's problem count does not catch this one yet, so check it yourself.</p></div>
+  <p>Hits do not wait for a decision. Damage, death and the flinch roll happen the moment a hit lands (see <a href="04-pain-death-drops.html">Pain, death and drops</a>).</p>
+  <div class="callout warn"><p><b>Times land on decisions.</b> A step's time is a deadline, checked when the monster decides. A state is entered during a decision, and the monster next looks at its steps 8 ticks later, then 16, and so on. So a step at 0 s runs 8 ticks (0.13 s) after entering, a step at 0.17 s (10 ticks) runs at 16 ticks (0.27 s), and a state that lasts 0.33 s (20 ticks) ends at 24 ticks (0.4 s). A state's length works the same way. Think in steps of 0.13 s, and do not expect a difference of 0.05 s to show. The steps are listed in the order the engine runs them, each with the time it really runs: a step listed after a later one waits for it, and says so.</p></div>
+  <div class="callout warn"><p><b>A step must come before the state ends.</b> A step whose time is equal to or later than the state's length would never run, and the server refuses the monster for it: <em>"fires at tick 24 of a state that lasts 24, so it never runs"</em>. The studio's problem count does not catch this one yet, so check it yourself.</p></div>
 
   <h2 id="hunting">Targets: finding, keeping, forgetting</h2>
   <p>A monster hunts one thing at a time, its <b>target</b>. How it gets one, and loses it:</p>
   <ul>
-    <li><b>Noticing.</b> With no target, it takes the nearest player inside <a href="../reference/monster-vocab.html#mob_fields.sight"><code>sight</code></a> (on the <span class="ui">🧠 brain</span> tab). <code>sight</code> is a cheap distance gate. It does not check walls, so a brain should ask <code>target_visible</code> before it acts.</li>
-    <li><b>Keeping.</b> Once it has a target, it keeps it until the target is gone from the map or dead. Running out of <code>sight</code> does not lose it. That is why <code>chase</code>'s first card, <em>"go to look when not has_target"</em>, rarely fires.</li>
-    <li><b>Forgetting.</b> The action <a href="../reference/monster-vocab.html#target_none"><code>target_none</code></a> drops the target. On a later decision it notices again, if anyone is inside <code>sight</code>.</li>
-    <li><b>Choosing.</b> <a href="../reference/monster-vocab.html#target_nearest"><code>target_nearest</code></a> points it at the nearest player, mob or prop that matches. <a href="../reference/monster-vocab.html#target_attacker"><code>target_attacker</code></a> turns it on whatever hurt it last.</li>
-    <li><b>Infighting.</b> With <a href="../reference/monster-vocab.html#mob_fields.infighting"><code>infighting</code></a> on, a monster hurt by another monster makes that one its target. Doom's monsters do this.</li>
-    <li><b>Telling others.</b> <a href="../reference/monster-vocab.html#alert_nearby"><code>alert_nearby</code></a> hands its target to every monster within a radius, and wakes the dormant ones. This is how a room reacts as a room, and the only way, with <a href="../reference/monster-vocab.html#wake"><code>wake</code></a>, to wake a dormant monster.</li>
+    <li><b>Noticing.</b> With no target, it takes the nearest player inside how far it <span class="ui">Sees</span> (<a href="../reference/monster-vocab.html#mob_fields.sight"><code>sight</code></a>, on <span class="ui">Overview</span>). That is a cheap distance gate. It does not check walls, so a brain should ask <em>it can see the target</em> before it acts.</li>
+    <li><b>Keeping.</b> Once it has a target, it keeps it until the target is gone from the map or dead. Running out of sight range does not lose it. That is why a rule such as <em>"→ look when it has no target"</em> rarely fires.</li>
+    <li><b>Forgetting.</b> The step <em>forget its target</em> (<a href="../reference/monster-vocab.html#target_none"><code>target_none</code></a>) drops it. On a later decision it notices again, if anyone is inside its sight range.</li>
+    <li><b>Choosing.</b> <a href="../reference/monster-vocab.html#target_nearest"><code>target_nearest</code></a> (under <b>More</b> in the step chooser) points it at the nearest player, mob or prop that matches. <em>turn on whoever hurt it</em> (<a href="../reference/monster-vocab.html#target_attacker"><code>target_attacker</code></a>) turns it on whatever hurt it last.</li>
+    <li><b>Infighting.</b> With <span class="ui">Fights others</span> on (<a href="../reference/monster-vocab.html#mob_fields.infighting"><code>infighting</code></a>), a monster hurt by another monster makes that one its target. Doom's monsters do this.</li>
+    <li><b>Telling others.</b> <em>alert the monsters within … m</em> (<a href="../reference/monster-vocab.html#alert_nearby"><code>alert_nearby</code></a>) hands its target to every monster within that radius, and wakes the dormant ones. This is how a room reacts as a room, and the only way, with <a href="../reference/monster-vocab.html#wake"><code>wake</code></a> (under <b>More</b>), to wake a dormant monster.</li>
   </ul>
 
   <h2>Patterns</h2>
   <p>Most brains are made of a few shapes.</p>
   <h3>Idle: wait to see</h3>
-  <p><code>move</code> stop, <code>face</code> hold, no <code>ticks</code>. One transition: to <code>chase</code> when <code>has_target</code> and <code>target_visible</code>. This is the new monster's <code>look</code>.</p>
+  <p>Stands still, faces where it was, no length. One rule: <em>→ chase when it has a target and it can see the target</em>. This is the <span class="ui">Melee grunt</span> recipe's <code>look</code>.</p>
   <h3>Wander</h3>
-  <p><code>move = "wander"</code> walks the heading in the var <code>wander</code>, and nothing writes that var for you. So a wander state:</p>
+  <p><em>Wanders</em> walks the heading kept in the number <code>wander</code>, and nothing writes that number for you. So a wander state:</p>
   <ul>
-    <li>declares <code>wander</code> on the <span class="ui"># vars</span> tab;</li>
-    <li>has <code>ticks</code> 90, <code>ticks_jitter</code> 60, and <code>next</code> itself, so it picks a new heading every 1.5–2.5 seconds;</li>
-    <li>runs, at 0, <a href="../reference/monster-vocab.html#set_angle"><code>set_angle</code></a> with <code>var</code> wander and <code>towards</code> random, then <a href="../reference/monster-vocab.html#face"><code>face</code></a> with <code>towards</code> var and <code>var</code> wander, so it looks where it walks.</li>
+    <li>lasts 1.5 to 2.5 seconds and then goes to itself (<em>then starts it again</em>), so it picks a new heading each time;</li>
+    <li>has the step <em>pick a heading random into the number wander</em> at 0 s (<a href="../reference/monster-vocab.html#set_angle"><code>set_angle</code></a>, in the chooser's <b>Moving</b> group). The number appears on <span class="ui">Advanced</span> under <b>Its numbers</b> by itself.</li>
   </ul>
-  <p>Add a transition with <a href="../reference/monster-vocab.html#stuck"><code>stuck</code></a> back to the same state, and it turns away from walls instead of pressing into them.</p>
   <h3>Chase</h3>
-  <p><code>move</code> chase, <code>face</code> target, no <code>ticks</code>. Its feet follow a route around walls while it keeps looking at you. Its transitions are its choices, in priority order: attack if close and ready, otherwise keep running.</p>
+  <p>Runs at the target, faces the target, no length. Its feet follow a route around walls while it keeps looking at you. Its rules are its choices, in priority order: attack if close and ready, otherwise keep running.</p>
   <h3>Attack with a cooldown</h3>
-  <p>The transition into <code>attack</code> asks <code>cooldown_ready</code> on a var (the new monster uses <code>ready</code>). The attack's sequence runs <code>set_cooldown</code> on that var. The state has <code>ticks</code> and <code>next</code> chase. See <a href="03-attacks.html">Attacks</a>.</p>
+  <p>The rule into <code>attack</code> asks <em>cooldown ready is over</em>. The attack's steps <em>start cooldown ready for … s</em>. The state has a length and goes back to <code>chase</code>. See <a href="03-attacks.html">Attacks</a>.</p>
+  <h3>Flinch and carry on</h3>
+  <p><code>pain</code> stands still for a moment and <em>then goes back to what it was doing</em>: it resumes the state the hit interrupted, where it was, so a hit during a summon or a barrage does not start it again, and a boss in its third phase stays in it. Every recipe's <code>pain</code> does this.</p>
   <h3>Give up</h3>
-  <p>Because a target is kept, giving up is something you build: a <code>lost</code> state the monster enters when it cannot see you, which goes back to <code>chase</code> if it sees you again, and otherwise runs out into a state that runs <code>target_none</code>. The exercise builds exactly this.</p>
+  <p>Because a target is kept, giving up is something you build: a <code>lost</code> state the monster enters when you get away, which goes back to <code>chase</code> if you come back, and otherwise runs out into a state that forgets its target. The exercise builds exactly this.</p>
 
   <h2 id="gem-hollow">In Gem Hollow: the slime's brain</h2>
-  <figure class="shot" data-src="../assets/shots/enemy-slime-brain.png" data-alt="The slime's graph laid out in two columns: look, chase, squash, attack, gone, death and pain, with squash picked" data-hotspots='[{"x":46,"y":30,"t":"look ★","d":"The initial state: wanders until it notices you"},{"x":64,"y":30,"t":"chase","d":"Runs at you; three transitions"},{"x":46,"y":44,"t":"squash","d":"You landed on it: it bounces you and goes"},{"x":64,"y":44,"t":"attack","d":"A bump at tick 10, then a 60-tick cooldown"},{"x":46,"y":57,"t":"gone","d":"Runs despawn, once"},{"x":64,"y":57,"t":"death","d":"Hit to 0 hp: a sound, and the body goes"},{"x":64,"y":70,"t":"pain","d":"12 ticks, back to chase"}]'>
-    <figcaption>Gem Hollow's <code>slime</code>, with <code>squash</code> picked. Its states were dragged into two columns so they fit; <span class="ui">⤢</span> at the bottom of the graph fits every state in view.</figcaption>
+  <figure class="shot" data-src="../assets/shots/enemy-slime-brain.png" data-alt="The slime's states on Graph: look, squash, chase, gone and attack in a row, pain and death below, with arrows labelled by what they wait for" data-hotspots='[{"x":93,"y":15,"t":"Graph","d":"Its states as boxes in lanes, every rule an arrow labelled with what it waits for"},{"x":21,"y":48,"t":"look ★","d":"Where it begins: idle, wanders, until a rule"},{"x":32,"y":40,"t":"An arrow&#39;s label","d":"sees target · ≤9 m: tap a label to open its rule"},{"x":32,"y":48,"t":"squash","d":"You landed on it: it bounces you and goes"},{"x":44,"y":48,"t":"chase","d":"Runs at you; three rules"},{"x":55,"y":48,"t":"gone","d":"Vanishes, once"},{"x":66,"y":48,"t":"attack","d":"A bump at 0.17 s, then a 1 s cooldown"},{"x":32,"y":71,"t":"pain","d":"0.2 s, then back to chase"},{"x":55,"y":71,"t":"death","d":"A sound, and the body goes"},{"x":30,"y":28,"t":"Whatever it is doing","d":"Folded here: tap to open it"}]'>
+    <figcaption>Gem Hollow's <code>slime</code> on <span class="ui">Graph</span>. Drag to pan, pinch or use the wheel to zoom; <span class="ui">fit</span> at the bottom right puts every state in view. Dashed arrows are a state running out of time.</figcaption>
   </figure>
-  <p>Open <b>☠ Monsters</b> and pick <code>slime</code>. It has the five states a new monster has, plus two of its own: <code>squash</code> and <code>gone</code>. Read it state by state.</p>
+  <p>Open <b>☠ Monsters</b> and pick <code>slime</code>. It has the five states a melee monster has, plus two of its own: <code>squash</code> and <code>gone</code>. Read it card by card on <span class="ui">List</span>:</p>
   <table>
-    <thead><tr><th>State</th><th>Fields</th><th>Transitions, in order</th></tr></thead>
+    <thead><tr><th>State</th><th>What it does</th><th>Rules, in order, and steps</th></tr></thead>
     <tbody>
-      <tr><td><code>look</code> ★</td><td><code>anim</code> 0, <code>move</code> wander, <code>face</code> movement</td><td>1. to <code>squash</code> when <code>target_above</code> (by 0.6) and <code>target_within</code> 1.3<br>2. to <code>chase</code> when <code>has_target</code>, <code>target_visible</code> and <code>target_within</code> 9</td></tr>
-      <tr><td><code>chase</code></td><td><code>anim</code> 1, <code>move</code> chase, <code>face</code> target, <code>interruptible</code> on</td><td>1. to <code>squash</code>, the same two conditions<br>2. to <code>look</code> when <code>has_target</code> with <span class="ui">not</span> on<br>3. to <code>attack</code> when <code>target_within</code> 1.4 and <code>cooldown_ready</code> on <code>ready</code></td></tr>
-      <tr><td><code>attack</code></td><td><code>anim</code> 2, stop, <code>ticks</code> 24, <code>next</code> chase</td><td>none: at 10, <code>melee</code> (damage 10, range 1.2, knockback 6), a sound, and <code>set_cooldown</code> ready 60</td></tr>
-      <tr><td><code>pain</code></td><td><code>anim</code> 3, <code>ticks</code> 12, <code>next</code> chase</td><td>none: a hurt sound at 0</td></tr>
-      <tr><td><code>squash</code></td><td><code>anim</code> 4, stop, <code>solid</code> off, <code>ticks</code> 40, <code>next</code> gone</td><td>none: at 0, a sound and <code>melee</code> with damage 1, range 2 and <code>lift</code> 14</td></tr>
-      <tr><td><code>gone</code></td><td><code>anim</code> 4, <code>ticks</code> 1, <code>next</code> gone</td><td>none: <a href="../reference/monster-vocab.html#despawn"><code>despawn</code></a> at 0</td></tr>
-      <tr><td><code>death</code></td><td><code>anim</code> 4, <code>solid</code> off, <code>ticks</code> 40, <code>next</code> gone</td><td>none: a sound at 0</td></tr>
+      <tr><td><code>look</code> ★</td><td>plays idle, wanders and faces where it walks, until a rule sends it on</td><td>1. → <code>squash</code> when the target is 0.6 m or more above it and the target is within 1.3 m<br>2. → <code>chase</code> when it has a target and it can see the target and the target is within 9 m</td></tr>
+      <tr><td><code>chase</code></td><td>plays walk, runs at the target and faces the target</td><td>1. → <code>squash</code>, the same two conditions<br>2. → <code>look</code> when it has no target<br>3. → <code>attack</code> when the target is within 1.4 m and cooldown ready is over</td></tr>
+      <tr><td><code>attack</code></td><td>plays attack, stands still and faces the target, for 0.4 s then goes on to chase</td><td>at 0.17 s: melee hit for 10 damage within 1.2 m knocking back 6 m; play the sound <code>monster.attack</code>; start cooldown ready for 1 s</td></tr>
+      <tr><td><code>pain</code></td><td>plays hurt, stands still, for 0.2 s then goes on to chase</td><td>at 0 s: a hurt sound</td></tr>
+      <tr><td><code>squash</code></td><td>plays death, stands still, does not block, for 0.67 s then goes on to gone</td><td>at 0 s: a sound, and a melee hit for 1 damage within 2 m with a <code>lift</code> of 14</td></tr>
+      <tr><td><code>gone</code></td><td>plays death, for 0.02 s then starts it again</td><td>at 0 s: <em>vanish</em> (<a href="../reference/monster-vocab.html#despawn"><code>despawn</code></a>)</td></tr>
+      <tr><td><code>death</code></td><td>plays death, does not block, for 0.67 s then goes on to gone</td><td>at 0 s: a sound</td></tr>
     </tbody>
   </table>
   <p>What to notice:</p>
   <ul>
-    <li><b>The stomp is a transition, not a hit.</b> <code>squash</code> is the <em>first</em> card in both <code>look</code> and <code>chase</code>, so landing on a slime beats everything else it might do. <a href="../reference/monster-vocab.html#target_above"><code>target_above</code></a> with <code>by</code> 0.6 means "you are at least 0.6 above me", and <code>target_within</code> 1.3 means "and nearly on top of me". The <code>melee</code> in <code>squash</code> does 1 damage but lifts the hero by 14: that is the bounce off the slime's head. Then it switches <code>solid</code> off, waits 40 ticks for the death animation, and <code>gone</code> removes it.</li>
-    <li><b>Noticing has a shorter range than <code>sight</code>.</b> <code>sight</code> is 14 on <span class="ui">🧠 brain</span>, so it takes you as its target from 14 away, but <code>look</code> only leaves for <code>chase</code> inside 9. The bee does the same with 16 and 10, the snail with 8 and 6.</li>
-    <li><b>Its wander is a straight walk.</b> <code>move</code> wander walks the heading in the var <code>wander</code>. The slime has no such var, only <code>ready</code>, so it walks along the heading it already has until something stops it. And <code>face</code> movement behaves like hold (see the callout above). The bee and the snail are built the same way. The exercise below gives the snail a real wander.</li>
-    <li><b>The bee and the snail</b> have the same <code>look</code>, <code>chase</code>, <code>attack</code>, <code>pain</code>, <code>gone</code> and <code>death</code>, and no <code>squash</code>: you cannot stomp them. The snail's <code>look</code> uses <code>anim</code> 1, so it crawls with its walk animation even before it has seen you.</li>
+    <li><b>The stomp is a rule, not a hit.</b> <code>squash</code> is the <em>first</em> rule in both <code>look</code> and <code>chase</code>, so landing on a slime beats everything else it might do. <em>The target is 0.6 m or more above it</em> and <em>within 1.3 m</em> mean "nearly on top of me". The hit in <code>squash</code> does 1 damage but lifts the hero by 14: that is the bounce off the slime's head. Then it stops blocking, waits for the death animation, and <code>gone</code> removes it. The lift has no word in the editor's sentence; it is kept as written.</li>
+    <li><b>Its pain goes to <code>chase</code>,</b> not back to what it was doing: the slime was made before pain could resume. A slime hit in <code>look</code> comes for you after its flinch. Set its <span class="ui">Then goes to</span> to <em>back to what it was doing (resumed)</em>, and it would wander on.</li>
+    <li><b>Noticing has a shorter range than sight.</b> It <span class="ui">Sees</span> 14 m, so it takes you as its target from 14 m away, but <code>look</code> only leaves for <code>chase</code> within 9 m. The bee does the same with 16 and 10, the snail with 8 and 6.</li>
+    <li><b>Its wander is a straight walk.</b> It wanders along the heading in its number <code>wander</code>, but no step sets that number (it has only <code>ready</code>), so it walks the way it already faces until something stops it. The bee and the snail are built the same way. The exercise below gives the snail a real wander.</li>
+    <li><b>The bee and the snail</b> have the same <code>look</code>, <code>chase</code>, <code>attack</code>, <code>pain</code>, <code>gone</code> and <code>death</code>, and no <code>squash</code>: you cannot stomp them. The snail's <code>look</code> plays walk, so it crawls even before it has seen you.</li>
   </ul>
 
   <h2 id="cinderfall">In Cinderfall: brains for a shooter</h2>
-  <p>Cinderfall, the first-person shooter example that comes with the studio (Home → <span class="ui">◆ examples</span>; see <a href="../examples/02-cinderfall.html">the tour</a>), has five monsters and a boss. Their brains fight at range, which Gem Hollow's never do. Open <b>☠ Monsters</b> and pick each chip.</p>
+  <p>Cinderfall, the first-person shooter example that comes with the studio (Home → examples → <span class="ui">📂 Cinderfall</span>; see <a href="../examples/02-cinderfall.html">the tour</a>), has five monsters and a boss. Their brains fight at range, which Gem Hollow's never do. Open <b>☠ Monsters</b> and pick each one from the list.</p>
   <table>
-    <thead><tr><th>Monster</th><th>🧠 brain</th><th>States, and what is new in them</th></tr></thead>
+    <thead><tr><th>Monster</th><th>Overview</th><th>States, and what is new in them</th></tr></thead>
     <tbody>
-      <tr><td><code>husk</code></td><td>hp 40, sight 22, turn_speed 6</td><td><code>look</code> (wander) → <code>wake</code> → <code>chase</code> → <code>attack</code> within 1.7: a plain shambler with one claw (<code>melee</code> 9 at 12).</td></tr>
-      <tr><td><code>gunner</code></td><td>hp 30, sight 30, turn_speed 10</td><td><code>look</code> (stop) → <code>wake</code> → <code>move</code>, which <b>strafes</b>: <code>move</code> strafe, <code>face</code> target. From <code>move</code>: to <code>close</code> when <span class="ui">not</span> <code>target_within</code> 20; to <code>aim</code> when visible and ready. <code>close</code> chases until <code>target_within</code> 14, then back to <code>move</code>. <code>aim</code> (18 ticks) → <code>shoot</code>.</td></tr>
-      <tr><td><code>hound</code></td><td>hp 28, sight 26, turn_speed 14</td><td><code>chase</code> has two attacks: <code>leap</code> between 2.5 and 6 away, on a cooldown and a <code>chance</code> of 40; <code>bite</code> within 1.5. <code>leap</code> has <code>move</code> free, so the body flies where its <code>impulse</code> threw it.</td></tr>
-      <tr><td><code>spitter</code></td><td>hp 60, <code>flying</code>, <code>hover_z</code> 2.4</td><td><code>drift</code> (strafe) → <code>spit</code> when visible, ready and within 24. No corpse: <code>death</code> (16 ticks) → <code>gone</code>, which runs <code>despawn</code>.</td></tr>
-      <tr><td><code>brute</code></td><td>hp 300, mass 4, pain_chance 40</td><td><code>chase</code> chooses <code>slam</code> within 3.2 on its own cooldown var <code>slam</code>, else <code>aim</code> → <code>fire</code> on <code>ready</code>. Two cooldowns, so a slam does not delay a shot.</td></tr>
-      <tr><td><code>smelter</code></td><td>hp 2400, sight 60, mass 12</td><td>The boss: <code>roar</code> instead of <code>wake</code>, three attacks and a brood below half health. See <a href="05-recipes.html#smelter">Recipes</a>.</td></tr>
+      <tr><td><code>husk</code></td><td>40 health, sees 22 m, turn speed 6</td><td><code>look</code> (wanders) → <code>wake</code> → <code>chase</code> → <code>attack</code> within 1.7 m: a plain shambler with one claw (a melee hit for 9 at 0.2 s).</td></tr>
+      <tr><td><code>gunner</code></td><td>30 health, sees 30 m, turn speed 10</td><td><code>look</code> (stands) → <code>wake</code> → <code>move</code>, which <b>circles the target</b>. From <code>move</code>: → <code>close</code> when the target is further than 20 m; → <code>aim</code> when it can see the target and ready. <code>close</code> runs at you until the target is within 14 m, then back to <code>move</code>. <code>aim</code> (0.3 s) → <code>shoot</code>.</td></tr>
+      <tr><td><code>hound</code></td><td>28 health, sees 26 m, turn speed 14</td><td><code>chase</code> has two attacks: <code>leap</code> when the target is within 6 m and further than 2.5 m, ready, and a 40% chance; <code>bite</code> within 1.5 m. <code>leap</code> <em>is moved by its steps</em>, so the body flies where its leap step threw it.</td></tr>
+      <tr><td><code>spitter</code></td><td>60 health, flies, hover height 2.4 m</td><td><code>drift</code> (circles the target) → <code>spit</code> when it can see the target, ready, and within 24 m. It leaves no body: <code>death</code> (0.27 s) → <code>gone</code>, which vanishes.</td></tr>
+      <tr><td><code>brute</code></td><td>300 health, flinches 16% of hits</td><td><code>chase</code> chooses <code>slam</code> within 3.2 m on its own cooldown, <code>slam</code>, else <code>aim</code> → <code>fire</code> on <code>ready</code>. Two cooldowns, so a slam does not delay a shot.</td></tr>
+      <tr><td><code>smelter</code></td><td>2400 health, sees 60 m</td><td>The boss: <code>roar</code> instead of <code>wake</code>, three attacks and a brood below half health. See <a href="05-recipes.html#smelter">Recipes</a>.</td></tr>
     </tbody>
   </table>
   <p>What to notice:</p>
   <ul>
-    <li><b>A wake state.</b> Every Cinderfall monster but the Smelter goes from <code>look</code> to <code>wake</code>, not straight to the chase: <code>move</code> stop, <code>face</code> target, a sight sound at 0, 6 to 20 ticks, <code>next</code> the chase. You hear it before it comes, and you get a beat to shoot first. Gem Hollow's monsters have no such pause.</li>
-    <li><b>Strafing, and a range band.</b> The gunner and the spitter use <code>move</code> strafe: they side-step while facing you. The gunner's two numbers, 20 to start closing in and 14 to stop, are a band on purpose: with one number it would flick between the two states at the edge every decision.</li>
-    <li><b>A chance on a transition.</b> The hound's leap card ends with <a href="../reference/monster-vocab.html#chance"><code>chance</code></a> 40, so in the band it does not always leap.</li>
-    <li><b>A real wander.</b> The husk, the hound and the spitter declare a <code>wander</code> var, and their <code>look</code> is the pattern above: <code>anim</code> 1, <code>move</code> wander, <code>ticks</code> 70, <code>ticks_jitter</code> 50, <code>next</code> look, with <code>set_angle</code> (<code>var</code> wander, <code>towards</code> random) at 0. So every few seconds they set off a new way. They have no <code>face</code> step, and <code>face</code> movement behaves like hold, so the body does not turn to where it walks.</li>
-    <li><b>Waiting in place.</b> The gunner and the brute <code>look</code> with <code>move</code> stop: they stand guard where they were put until they see you.</li>
+    <li><b>A wake state.</b> Every Cinderfall monster but the Smelter goes from <code>look</code> to <code>wake</code>, not straight to the chase: stands still, faces the target, a sight sound at 0 s, 0.1 to 0.33 s, then the chase. You hear it before it comes, and you get a beat to shoot first. Gem Hollow's monsters have no such pause.</li>
+    <li><b>Circling, and a range band.</b> The gunner and the spitter <em>circle the target</em>: they side-step while facing you. The gunner's two numbers, further than 20 m to start closing in and within 14 m to stop, are a band on purpose: with one number it would flick between the two states at the edge every decision.</li>
+    <li><b>A chance on a rule.</b> The hound's leap rule ends with <em>a 40% chance</em>, so in the band it does not always leap.</li>
+    <li><b>A real wander.</b> The husk, the hound and the spitter wander: their <code>look</code> wanders, lasts 1.17 s (plus up to 0.83 s more: a <code>ticks_jitter</code> the editor keeps but does not show), then starts again, with <em>pick a heading random into the number wander</em> at 0 s. So every few seconds they set off a new way. Their body does not turn to where it walks.</li>
+    <li><b>Waiting in place.</b> The gunner and the brute <code>look</code> standing still: they guard where they were put until they see you.</li>
   </ul>
 
   <h2>Exercise: a snail that really wanders</h2>
   <ol class="steps">
-    <li><p>Open Gem Hollow, choose <b>☠ Monsters</b> and pick <code>snail</code>. On <span class="ui"># vars</span>, press <span class="ui">+ var</span> and name it <code>wander</code>.</p></li>
-    <li><p>Tap <code>look</code>. Set <code>ticks</code> 120, <code>ticks_jitter</code> 60 and <code>next</code> look, so it picks a new heading every two to three seconds. Set <code>face</code> to hold.</p></li>
-    <li><p>Under <b>▶ at tick … do …</b>, use <span class="ui">add step</span> to add <code>set_angle</code>: <code>at</code> 0, <code>var</code> wander, <code>towards</code> random. Add <code>face</code>: <code>at</code> 0, <code>towards</code> var, <code>var</code> wander.</p></li>
-    <li><p>Check the bar says <em>"loads clean"</em>, then press <span class="ui">▶ Play</span>. Go to the third zone and watch the snails from a distance: they now turn every few seconds instead of crawling into a wall and staying there.</p></li>
+    <li><p>Open Gem Hollow, choose <b>☠ Monsters</b> and pick <code>snail</code>. On <span class="ui">Behaviour</span>, tap its <code>look</code> card.</p></li>
+    <li><p>Set <span class="ui">Lasts</span> to 2. <span class="ui">Then goes to</span> becomes <code>look</code>, the state itself, and the card says <em>"for 2 s then starts it again"</em>: it picks a new heading every two seconds. Set <span class="ui">Faces</span> to <em>where it was</em>.</p></li>
+    <li><p>Press <span class="ui">steps</span> to jump to its <b>Timeline</b>, then <span class="ui">+ add a step at 0 s</span>. In the chooser's <b>Moving</b> group, pick <em>pick a heading random into the number wander</em>. Leave its heading on <em>random</em> and its number on <code>wander</code>.</p></li>
+    <li><p>Open <span class="ui">Advanced</span>: under <b>Its numbers</b>, <code>wander</code> is there, <em>set in look</em>.</p></li>
+    <li><p>Check the rail's <b>☠ Monsters</b> shows no problem count, then press <span class="ui">▶ Play</span>. Go to the third zone and watch the snails from a distance: they now set off a new way every two seconds instead of crawling into a wall and staying there.</p></li>
   </ol>
 
   <h2>Exercise: a watcher that gives up</h2>
   <p>You will turn the grunt's brain into this:</p>
-  <div class="diagram"><svg viewBox="0 0 640 230" role="img" aria-label="wander goes to chase when it sees you; chase goes to attack when close, and to lost when it cannot see you; lost goes back to chase, or after 120 ticks to forget, which goes to wander">
+  <div class="diagram"><svg viewBox="0 0 640 230" role="img" aria-label="wander goes to chase when it sees you; chase goes to attack when close, and to lost when you are further than 12 m; lost goes back to chase when you come back within 9 m, or after 2 s to forget, which forgets its target and goes to wander">
     <defs><marker id="ah2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="dim"/></marker></defs>
     <rect class="box" x="20" y="30" width="120" height="44" rx="8"/><text x="80" y="57" text-anchor="middle">★ wander</text>
     <rect class="box" x="260" y="30" width="120" height="44" rx="8"/><text x="320" y="57" text-anchor="middle">chase</text>
@@ -199,52 +238,61 @@
     <rect class="box" x="20" y="160" width="120" height="44" rx="8"/><text x="80" y="187" text-anchor="middle">forget</text>
     <path class="arrow" d="M140 46 H258" marker-end="url(#ah2)"/><text class="dim" x="199" y="38" text-anchor="middle" font-size="11">sees you</text>
     <path class="arrow" d="M380 46 H498" marker-end="url(#ah2)"/><text class="dim" x="439" y="38" text-anchor="middle" font-size="11">close · ready</text>
-    <path class="arrow" d="M500 64 H382" marker-end="url(#ah2)"/><text class="dim" x="439" y="82" text-anchor="middle" font-size="11">after 20</text>
-    <path class="arrow" d="M305 74 V158" marker-end="url(#ah2)"/><text class="dim" x="298" y="120" text-anchor="end" font-size="11">can't see you</text>
-    <path class="arrow" d="M335 160 V76" marker-end="url(#ah2)"/><text class="dim" x="342" y="120" font-size="11">sees you again</text>
-    <path class="arrow" d="M260 182 H142" marker-end="url(#ah2)"/><text class="dim" x="201" y="174" text-anchor="middle" font-size="11">after 120</text>
-    <path class="arrow" d="M80 160 V76" marker-end="url(#ah2)"/><text class="dim" x="88" y="120" font-size="11">target_none, after 1</text>
+    <path class="arrow" d="M500 64 H382" marker-end="url(#ah2)"/><text class="dim" x="439" y="82" text-anchor="middle" font-size="11">after 0.45 s</text>
+    <path class="arrow" d="M305 74 V158" marker-end="url(#ah2)"/><text class="dim" x="298" y="120" text-anchor="end" font-size="11">further than 12 m</text>
+    <path class="arrow" d="M335 160 V76" marker-end="url(#ah2)"/><text class="dim" x="342" y="120" font-size="11">back within 9 m</text>
+    <path class="arrow" d="M260 182 H142" marker-end="url(#ah2)"/><text class="dim" x="201" y="174" text-anchor="middle" font-size="11">after 2 s</text>
+    <path class="arrow" d="M80 160 V76" marker-end="url(#ah2)"/><text class="dim" x="88" y="120" font-size="11">forgets, after 0.02 s</text>
   </svg></div>
   <ol class="steps">
-    <li><p>Open <b>☠ Monsters</b>, pick <code>grunt</code>, and open <span class="ui"># vars</span>. Press <span class="ui">+ var</span> and name it <code>wander</code>. It shows as the chip <code>wander = 0</code>.</p></li>
-    <li><p>In the graph bar press <span class="ui">+ state</span> and name it <code>wander</code>. In its tab set <code>anim</code> 1, <code>move</code> wander, <code>face</code> hold, <code>ticks</code> 90, <code>ticks_jitter</code> 60, and <code>next</code> wander.</p></li>
-    <li><p>Under <b>▶ at tick … do …</b>, use <span class="ui">add step</span> to add <code>set_angle</code>: <code>at</code> 0, <code>var</code> wander, <code>towards</code> random. Add a second step, <code>face</code>: <code>at</code> 0, <code>towards</code> var, <code>var</code> wander.</p></li>
-    <li><p>Press <span class="ui">+ transition</span>. Set its target to <code>chase</code>, then <span class="ui">add when</span> <code>has_target</code> and <span class="ui">add when</span> <code>target_visible</code>. Add a second transition to <code>wander</code> with <code>stuck</code> (leave its <code>ticks</code> empty for the default 16).</p></li>
-    <li><p>With <code>wander</code> picked, press <span class="ui">★ initial</span>. The ★ moves to it, and <span class="ui">🧠 brain</span>'s <span class="ui">initial state</span> now says <code>wander</code>. Leave <code>look</code> in place for now.</p></li>
-    <li><p>Add a state <code>lost</code>: <code>anim</code> 0, <code>move</code> stop, <code>face</code> target, <code>ticks</code> 120, <code>next</code> forget (you make <code>forget</code> next; pick it once it exists). Give it one transition to <code>chase</code> when <code>target_visible</code>.</p></li>
-    <li><p>Add a state <code>forget</code>: <code>anim</code> 0, <code>move</code> stop, <code>ticks</code> 1, <code>next</code> wander. Add one step: <code>target_none</code> at 0. Now set <code>lost</code>'s <code>next</code> to <code>forget</code>.</p></li>
-    <li><p>Pick <code>chase</code>. Change its first transition (to <code>look</code>, when not <code>has_target</code>) so it goes to <code>wander</code>. Press <span class="ui">+ transition</span>: to <code>lost</code> when <code>target_visible</code> with <span class="ui">not</span> on. Leave it <b>below</b> the transition to <code>attack</code>. Nothing goes to <code>look</code> any more, so you can pick it and press <span class="ui">✕ state</span>.</p></li>
-    <li><p>Check <code>pain</code>'s <code>next</code> is <code>chase</code>, and that the top bar says <em>"loads clean"</em>. Press <span class="ui">auto layout</span> to tidy the graph.</p></li>
-    <li><p>Place the grunt in the far room, press <span class="ui">▶ Play</span>, and let it see you. Then step through the door and out of its line. It stops and stares at where you are for two seconds, then turns away and wanders. Step back into view while it is in <code>lost</code>, and it comes straight for you.</p></li>
+    <li><p>Open <b>☠ Monsters</b> and pick <code>grunt</code>. On <span class="ui">Overview</span>, set <span class="ui">Sees</span> to 12: once it has forgotten you, it should only notice you again close up.</p></li>
+    <li><p>On <span class="ui">Behaviour</span>, press <span class="ui">+ state</span>, type <code>wander</code> and press <span class="ui">Create</span>. Set <span class="ui">Plays</span> to walk, <span class="ui">Moves</span> to <em>wanders</em>, <span class="ui">Faces</span> to <em>where it was</em>, <span class="ui">Lasts</span> to 1.5, and <span class="ui">Then goes to</span> to <code>wander</code>.</p></li>
+    <li><p>Under <b>Timeline</b>, press <span class="ui">+ add a step at 0 s</span> and pick <em>pick a heading random into the number wander</em> (<b>Moving</b>).</p></li>
+    <li><p>Under <b>Goes to</b>, press <span class="ui">+ another rule</span>. Set <em>go to</em> to <code>chase</code>, then <span class="ui">+ add a condition</span> <em>it has a target</em> and <span class="ui">+ add a condition</span> <em>it can see the target</em>.</p></li>
+    <li><p>Press <span class="ui">make it where it begins</span>. The ★ moves to <code>wander</code>, and the preview starts there.</p></li>
+    <li><p>Add a state <code>forget</code>: plays idle, stands still, <span class="ui">Lasts</span> 0.02, <span class="ui">Then goes to</span> <code>wander</code>. Give it one step at 0 s: <em>forget its target</em> (<b>Others</b>).</p></li>
+    <li><p>Add a state <code>lost</code>: plays idle, stands still, faces the target, <span class="ui">Lasts</span> 2, <span class="ui">Then goes to</span> <code>forget</code>. Give it one rule: → <code>chase</code> when <em>it can see the target</em> and <em>the target is within</em> 9 m.</p></li>
+    <li><p>Open <code>chase</code>. In the rule that goes to <code>look</code> when it has no target, set <em>go to</em> to <code>wander</code>. Press <span class="ui">+ another rule</span>: → <code>lost</code> when <em>the target is further than</em> 12 m. Leave it <b>below</b> the rule to <code>attack</code>. Nothing goes to <code>look</code> any more (its card says <em>nothing goes here yet</em>), so open it and press <span class="ui">delete</span>.</p></li>
+    <li><p>Check that <code>pain</code> goes <em>back to what it was doing</em>, and that the rail shows no problem count. Try it in the preview: <span class="ui">Run</span>, then press <span class="ui">further</span> until the target is past 12 m, and read the line under the buttons as it goes to <code>lost</code>, then <code>forget</code>.</p></li>
+    <li><p>Place the grunt in the far room, press <span class="ui">▶ Play</span>, and let it see you. Then run back through the door and on. Past 12 m it stops and stares at you for two seconds, then turns away and wanders. Come back within 9 m while it is in <code>lost</code>, and it comes straight for you.</p></li>
   </ol>
-  <div class="callout tip"><p>Why must <code>lost</code> go <em>below</em> <code>attack</code> in chase's list? It would not matter here, since <code>attack</code> needs <code>target_visible</code> and <code>lost</code> needs its opposite. But when two cards can both hold, the upper one always wins, so put the more urgent one first.</p></div>
+  <div class="callout tip"><p>Why must <code>lost</code> go <em>below</em> <code>attack</code> in chase's list? It would not matter here, since <code>attack</code> needs the target within 1.5 m and <code>lost</code> needs it further than 12. But when two rules can both hold, the upper one always wins, so put the more urgent one first. And why 12 out and 9 back? With one number, a target standing at the edge would flick it between the two states every decision.</p></div>
 
   <div class="quiz" data-answer="1">
-    <p class="q">A monster's <code>sight</code> is 20. You step inside 20 behind a pillar, then run 100 units away. What does its default brain do?</p>
+    <p class="q">A monster <span class="ui">Sees</span> 20 m. You step within 20 m behind a pillar, then run 100 m away. What does a <span class="ui">Melee grunt</span> brain do?</p>
     <ul>
       <li>Nothing: it never had a target, because it could not see you</li>
-      <li>It took you as its target when you came within 20, and keeps you; it leaves <code>look</code> the first time it also sees you</li>
+      <li>It took you as its target when you came within 20 m, and keeps you; it leaves <code>look</code> the first time it also sees you</li>
       <li>It forgets you as soon as you leave its sight range</li>
     </ul>
-    <p class="why">Noticing is distance only, and a target is kept until it is gone. <code>look</code> waits for <code>has_target</code> <em>and</em> <code>target_visible</code>, so the chase starts when you come into its line.</p>
+    <p class="why">Noticing is distance only, and a target is kept until it is gone. <code>look</code> waits for <em>it has a target</em> <b>and</b> <em>it can see the target</em>, so the chase starts when you come into its line.</p>
   </div>
   <div class="quiz" data-answer="2">
-    <p class="q"><code>chase</code> has two transitions: first to <code>attack</code> when <code>target_within 1.5</code>, then to <code>lunge</code> when <code>target_within 4</code>. You stand 1 away. Where does it go?</p>
+    <p class="q"><code>chase</code> has two rules: first → <code>attack</code> when the target is within 1.5 m, then → <code>lunge</code> when the target is within 4 m. You stand 1 m away. Where does it go?</p>
     <ul>
-      <li>To <code>lunge</code>, because 4 is the bigger range</li>
+      <li>To <code>lunge</code>, because 4 m is the bigger range</li>
       <li>It picks one at random</li>
       <li>To <code>attack</code>: both hold, and the first match wins</li>
     </ul>
-    <p class="why">Transitions are tried in order and the first that holds is taken. Put narrower, more urgent cases above wider ones.</p>
+    <p class="why">Rules are tried in order and the first that holds is taken. Put narrower, more urgent cases above wider ones.</p>
   </div>
   <div class="quiz" data-answer="0">
-    <p class="q">An attack state's sequence claws at <code>at = 10</code>. When does the claw actually happen?</p>
+    <p class="q">An attack state has a melee hit at 0.17 s (10 ticks). When does the hit actually happen?</p>
     <ul>
-      <li>At the monster's first decision on or after tick 10, which is 16 ticks after it entered</li>
-      <li>Exactly 10 ticks after it entered</li>
-      <li>On the next tick after the state's <code>ticks</code> run out</li>
+      <li>At the monster's first decision on or after tick 10, which is 16 ticks (0.27 s) after it entered</li>
+      <li>Exactly 0.17 s after it entered</li>
+      <li>On the next tick after the state's length runs out</li>
     </ul>
-    <p class="why"><code>at</code> is a deadline checked when the monster decides, every 8 ticks. Entered on a decision, it decides again at 8 and 16, and 16 is the first that is not before 10. Even <code>at = 0</code> waits for the decision at 8.</p>
+    <p class="why">A step's time is a deadline checked when the monster decides, every 8 ticks. Entered on a decision, it decides again at 8 and 16, and 16 is the first that is not before 10. Even a step at 0 s waits for the decision at 8.</p>
+  </div>
+  <div class="quiz" data-answer="1">
+    <p class="q">A boss is in the middle of a summon (a state 1.5 s long, its summon step at 0.6 s) when your shot makes it flinch. Its <code>pain</code> lasts 0.3 s and goes <em>back to what it was doing</em>. What happens after the flinch?</p>
+    <ul>
+      <li>It starts the summon again, and summons a second time</li>
+      <li>It carries on the summon from where it was, so the summon step runs once</li>
+      <li>It goes to the state where it begins</li>
+    </ul>
+    <p class="why">Going back resumes the interrupted state: its elapsed time and its place among its steps. Steps that already ran do not run again.</p>
   </div>
 </article>
 </body>

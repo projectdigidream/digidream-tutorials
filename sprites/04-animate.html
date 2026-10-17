@@ -197,7 +197,7 @@
   </ol>
 
   <h2>What the studio does with animations</h2>
-  <p>Each animation becomes one animation in the baked sheet, with its frame count, fps and loop. A monster's body card picks one animation for each of its five states. When a sheet is chosen, the studio guesses from the names:</p>
+  <p>Each animation becomes one animation in the baked sheet, with its frame count, fps and loop. Whether it loops can also be set on the sheet's card in the studio, and that choice survives every bake (see <a href="06-preview-palettes-bake.html#loops">Which animations loop</a>). A monster plays one animation per state: in the monster editor, <span class="ui">Looks</span> → <b>Each state plays</b> picks it by name. When a sheet is chosen, the studio guesses the first five body states from the names:</p>
   <table>
     <thead><tr><th>State</th><th>An animation whose name contains</th></tr></thead>
     <tbody>
@@ -208,7 +208,7 @@
       <tr><td>death</td><td><code>death</code> or <code>die</code></td></tr>
     </tbody>
   </table>
-  <p>If nothing matches, the first animation is used. You can change any of them on the card afterwards.</p>
+  <p>If nothing matches, the first animation is used. You can change any of them on <span class="ui">Looks</span> afterwards.</p>
   <div class="callout tip"><p>Name your animations <code>idle</code>, <code>walk</code>, <code>attack</code>, <code>pain</code> and <code>death</code>, and a new monster is wired up the moment you give it the sheet. Gem Hollow's SLIME, BEE and SNAIL use <code>idle</code>, <code>walk</code>, <code>attack</code>, <code>hurt</code> and <code>death</code>: <code>hurt</code> matches the pain state.</p></div>
 
   <div class="quiz" data-answer="2">

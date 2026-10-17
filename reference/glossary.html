@@ -37,7 +37,14 @@
     <dt>Facing</dt><dd>The direction a placed thing turns to, from 0° to 355°. 0 points along +x, and angles go counter-clockwise. Props honour it; monsters do not yet.</dd>
     <dt>Trigger</dt><dd>A card that says WHEN something happens, IF a condition holds, THEN do something. The presets are door, lift, switch, teleport and others.</dd>
     <dt>Graph</dt><dd>A Blueprint-style board of nodes and links that runs logic for the game or for one map.</dd>
-    <dt>Workshop</dt><dd>The window where monsters, weapons and the player are edited, with tabs for brain, swing, body and so on.</dd>
+    <dt>Monster editor · weapon editor</dt><dd>Where ☠ Monsters and 🔫 Weapons are made: tabs Overview, Behaviour, Attacks, Looks and Advanced (and Arsenal for weapons). Behaviour shows the states as sentences or as a graph, beside a preview that runs the real rules.</dd>
+    <dt>Workshop</dt><dd>The older window of tabs (brain, swing, body…). The Player is still edited in one; monsters and weapons have their editors.</dd>
+    <dt>Missiles page</dt><dd>☄ Missiles in the rail: the module's missiles, shared by every monster and weapon, each with a side view of its flight and what it does when it hits, runs out or bounces.</dd>
+    <dt>Phase (of a monster)</dt><dd>A group of a monster's states, such as a boss's second, angrier half. <span class="ui">+ phase</span> copies the last phase, makes it faster, and starts it once the monster's health drops. Not to be confused with a weapon's phases, the states of its phase machine.</dd>
+    <dt>Recipe (editors)</dt><dd>A monster or weapon to start from: Blank, Melee grunt, Shooter, Flyer, Charger, Boss (3 phases); Blank, Pistol, Launcher, Charge shot.</dd>
+    <dt>Whatever it is doing</dt><dd>The monster or weapon editor's rules for any state, checked before a state's own rules. A monster's built-in pain and death are listed there too. "Only once" makes a rule fire a single time, as a boss's phase change does.</dd>
+    <dt>@previous</dt><dd>A state that ends by going back to what it was doing: <code>next = "@previous"</code>, "back to what it was doing (resumed)" in the editor. A hit's pain returns to the interrupted state where it was, without running its steps again.</dd>
+    <dt>Cooldown</dt><dd>A number that counts down to "ready": a step starts it ("start cooldown <i>ready</i> for 1 s"), and a rule waits for it ("cooldown <i>ready</i> is over"), so an attack or a shot comes at most once in a while. Monsters and weapons both have them; a saved game keeps the time left.</dd>
     <dt>Swing</dt><dd>An attack's timing: its phases, from wind-up to hit to recovery.</dd>
     <dt>Slash</dt><dd>How a melee swing is drawn in the game: a fading streak near the tip of the swept arc. Its look (colour, width, fade, texture…) is set per weapon and per monster over a default.</dd>
     <dt>Style</dt><dd>The look the studio itself wears on this device: one of the shipped uikit skins (Claude, Paper, 90s, PS1, Aero) or one imported. It is never part of a module. Not to be confused with the 🎨 Style section, which styles the game's screens.</dd>

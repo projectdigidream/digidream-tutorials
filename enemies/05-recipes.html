@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Recipes: five enemies · Digidream Studio tutorials</title>
-<meta name="description" content="Five complete monster designs with every state, transition and value: a DOOM-style imp, a charger, a turret, a sniper that keeps its distance, and a boss with phases.">
+<meta name="description" content="Five complete monsters built in the Monsters editor from its recipes: an imp, a charger, a turret, a sniper and a three-phase boss; then Gem Hollow's slime and Cinderfall's Smelter, read card by card.">
 <link rel="stylesheet" href="../assets/site.css">
 <link rel="stylesheet" href="../assets/skins/skins.css">
 <link rel="icon" type="image/png" href="../assets/logo.png">
@@ -17,480 +17,225 @@
 <body>
 <article>
   <h1>Recipes: five enemies</h1>
-  <p class="lede">Five complete monsters, each with a different way to fight it. Every state, transition and number is here, written the way the studio stores it, so you can build each one field by field in the workshop and play it straight away.</p>
+  <p class="lede">Five complete monsters, each with a different way to fight it. Each one starts from one of the editor's own recipes and is changed in the editor's words, state by state, so you can build it and play it straight away. Then two to open rather than build: Gem Hollow's slime and Cinderfall's Smelter.</p>
   <div class="goal">
-    <b>You'll learn</b><span>how the pieces of this track combine into real designs: a ranged-and-melee imp, a charger you sidestep, a turret you outflank, a sniper you chase down, and a boss that changes as it is hurt</span>
+    <b>You'll learn</b><span>how the pieces of this track combine into real designs: an imp that claws close and throws far, a charger you sidestep, a turret you outflank, a sniper you chase down, and a boss in three phases</span>
     <b>Time</b><span>60 minutes, or 10 for one recipe</span>
-    <b>Needs</b><span>the whole Enemies track; a sprite sheet for each monster; small props for the missiles; a few sounds in a sound pack</span>
+    <b>Needs</b><span>the whole Enemies track; a sprite sheet for each monster; small props to draw the missiles; a few sounds in a sound pack</span>
   </div>
 
   <h2>Reading a recipe</h2>
-  <p>Each recipe is the monster's table as the studio writes it into <code>maps/module.lua</code>. Every key is a field you can see in the workshop:</p>
+  <p>Each recipe says which of the editor's recipes to start from (<a href="01-first-monster.html">Your first monster</a>), what to set on <span class="ui">Overview</span>, and then every state as its card reads on <span class="ui">Behaviour</span>:</p>
   <ul>
-    <li>the top keys (<code>hp</code>, <code>sight</code>, <code>pain_chance</code> …) are on <span class="ui">🧠 brain</span>; <code>vars</code> is <span class="ui"># vars</span>; <code>swing</code> is <span class="ui">🌀 swing</span>;</li>
-    <li>each entry of <code>states</code> is a box in the graph. Its fields are on its <span class="ui">⬡</span> tab, <code>transitions</code> are the cards under <b>❓ go to … when all of …</b>, and <code>sequence</code> is the list under <b>▶ at tick … do …</b>;</li>
-    <li><code>negate = true</code> is the <span class="ui">not</span> switch beside a condition;</li>
-    <li>numbers in quotes, such as <code>"1.3333"</code>, are exact decimals. Type them as they are.</li>
+    <li>the first line is what it does: <span class="ui">Plays</span>, <span class="ui">Moves</span>, <span class="ui">Faces</span>, how long it <span class="ui">Lasts</span> and where it <span class="ui">Then goes to</span>;</li>
+    <li><b>→ <i>state</i> when …</b> is a rule, in the order they are checked; every condition must hold;</li>
+    <li><b><i>0.27 s</i> · …</b> is a step at its time, in the <b>Timeline</b>.</li>
   </ul>
-  <p>Sound names are from the DOOM II module's bank. Pick your own pack's sounds in their place. Particle kinds (<code>effect</code>, <code>hit_vfx</code>, <code>tracer</code>) are numbers from your module's <b>✨ Particles</b>; the recipes mark them with a comment.</p>
-  <div class="callout tip"><p>Remember the two timing rules from <a href="02-the-brain.html">The brain</a>: a monster decides every 8 ticks, and a state's sequence is first looked at 8 ticks after it was entered. The recipes put their <code>at</code> values on multiples of 8, so what you read is what happens.</p></div>
+  <p>To turn a recipe into a monster: make the monster from the starting recipe, rename the states that are already there (a state's name box; every rule that goes to it follows), add the missing ones with <span class="ui">+ state</span>, and edit each card until it reads as written. Sound names are from the DOOM II module's bank: pick your own pack's sounds in their place. A warning's particle kind (<em>warn the player with effect 12</em>) is one of your module's <b>✨ Particles</b>; pick one that reads as a warning.</p>
+  <div class="callout tip"><p>Remember the two timing rules from <a href="02-the-brain.html">The brain</a>: a monster decides every 8 ticks (0.13 s), and a state's steps are first looked at one decision after it was entered. The recipes put their steps on multiples of 0.13 s (0, 0.13, 0.27, 0.4, 0.53 …), so what you read is what happens. Try each state in the preview as you go: <span class="ui">Run</span>, and move the target with <span class="ui">nearer</span> and <span class="ui">further</span>.</p></div>
 
   <h2 id="imp">1. The imp: claws close, fireballs far</h2>
-  <p>Doom's imp, from the engine's own DOOM monsters, with Doom's map units turned into world units (48 to one). It stands until it sees you, shouts, then walks at you. Close up it claws; at range, once it is lined up, it throws a fireball you can sidestep. The order of <code>chase</code>'s cards is the design: claw first, because when both hold the claw is the right answer.</p>
-  <pre><code>missiles = {
-  fireball = {
-    speed = "7.2917", gravity = 0, life = 300, z_offset = "0.6667",
-    anim_fly = 0, anim_burst = 1, burst_ticks = 20,
-    on_hit = {
-      { action = "damage", amount = 12 },
-      { action = "sound", name = "missile.fireball.burst", from = "impact" },
-    },
-  },
-},
-mobs = {
-  imp = {
-    hp = 60, pain_chance = 200, turn_speed = 12, sight = "42.6667",
-    mass = 100, infighting = true, corpse = true,
-    initial = "look",
-    vars = { ready = 0 },
-    states = {
-      look = { anim = 0, move = "stop", face = "hold",
-        transitions = {
-          { to = "alert", when = { { cond = "has_target" }, { cond = "target_visible" } } },
-        } },
-      alert = { anim = 1, move = "stop", face = "target", ticks = 1, next = "chase",
-        sequence = { { at = 0, action = "sound", name = "monster.imp.sight" } } },
-      chase = { anim = 1, move = "chase", face = "target", interruptible = true,
-        transitions = {
-          { to = "look", when = { { cond = "has_target", negate = true } } },
-          { to = "claw", when = { { cond = "target_within", distance = "1.3333" },
-                                  { cond = "target_visible" },
-                                  { cond = "cooldown_ready", var = "ready" } } },
-          { to = "throw", when = { { cond = "target_within", distance = "42.6667" },
-                                   { cond = "target_visible" },
-                                   { cond = "target_in_front", arc = 12 },
-                                   { cond = "cooldown_ready", var = "ready" } } },
-        } },
-      claw = { anim = 2, move = "stop", face = "target", ticks = 32, next = "chase", interruptible = true,
-        sequence = {
-          { at = 0,  action = "face" },
-          { at = 16, action = "melee", damage = 9, range = "1.3333" },
-          { at = 16, action = "sound", name = "monster.imp.melee" },
-          { at = 16, action = "set_cooldown", var = "ready", ticks = 94 },
-        } },
-      throw = { anim = 2, move = "stop", face = "target", ticks = 32, next = "chase", interruptible = true,
-        sequence = {
-          { at = 0,  action = "face" },
-          { at = 16, action = "missile", kind = "fireball", offset = "0.8333" },
-          { at = 16, action = "sound", name = "missile.fireball.launch" },
-          { at = 16, action = "set_cooldown", var = "ready", ticks = 94 },
-        } },
-      pain = { anim = 3, move = "stop", face = "hold", ticks = 7, next = "chase",
-        sequence = { { at = 0, action = "sound", name = "monster.pain.small" } } },
-      death = { anim = 4, move = "stop", face = "hold", solid = false, ticks = 51, next = "death",
-        sequence = { { at = 0, action = "sound", name = "monster.imp.death" } } },
-    },
-  },
-}</code></pre>
+  <p>Doom's imp, from the engine's own DOOM monsters, with Doom's map units turned into metres (48 to one). It stands until it sees you, shouts, then walks at you. Close up it claws; at range, once it is lined up, it throws a fireball you can sidestep. The order of <code>chase</code>'s rules is the design: claw first, because when both hold the claw is the right answer.</p>
+  <p><b>Start from</b> <span class="ui">Melee grunt</span>, named <code>imp</code>. <b>Overview:</b> <span class="ui">Health</span> 60, <span class="ui">Flinches</span> 78%, <span class="ui">Runs at</span> 5.83, <span class="ui">Sees</span> 42.67, <span class="ui">Turn speed</span> 12. <b>Looks:</b> <span class="ui">Width (radius)</span> 0.42; on <span class="ui">Advanced</span>, <span class="ui">height</span> 1.17.</p>
+  <p><b>The missile</b>, on the Missiles page: <span class="ui">New</span>, named <code>fireball</code>. <span class="ui">Speed</span> 7.29, no fall, <span class="ui">Lasts</span> 5, <span class="ui">Launch height</span> 0.67. <b>When it hits:</b> <em>hurt what it hit for 12</em>; <em>play the sound missile.fireball.burst</em>. <b>Looks:</b> <span class="ui">Drawn as</span> a prop with state 0 flying and state 1 bursting (radius 0.125), <span class="ui">While flying, plays state</span> 0, <span class="ui">When it bursts, plays state</span> 1, <span class="ui">Burst lasts</span> 0.33.</p>
+  <table>
+    <thead><tr><th>State</th><th>What it does</th><th>Rules and steps</th></tr></thead>
+    <tbody>
+      <tr><td><code>look</code> ★</td><td>plays idle, stands still and faces where it was, until a rule</td><td>→ <code>alert</code> when it has a target and it can see the target</td></tr>
+      <tr><td><code>alert</code></td><td>plays walk, stands still and faces the target, for 0.02 s then goes on to chase</td><td>0 s · play the sound monster.imp.sight</td></tr>
+      <tr><td><code>chase</code></td><td>plays walk, runs at the target and faces the target, until a rule</td><td>1. → <code>look</code> when it has no target<br>2. → <code>claw</code> when the target is within 1.33 m and it can see the target and cooldown ready is over<br>3. → <code>throw</code> when the target is within 42.67 m and it can see the target and the target is within 12° of where it faces and cooldown ready is over</td></tr>
+      <tr><td><code>claw</code></td><td>plays attack, stands still and faces the target, for 0.53 s then goes on to chase</td><td>0 s · turn to face the target<br>0.27 s · melee hit for 9 damage within 1.33 m knocking back 4 m<br>0.27 s · play the sound monster.imp.melee<br>0.27 s · start cooldown ready for 1.57 s</td></tr>
+      <tr><td><code>throw</code></td><td>plays attack, stands still and faces the target, for 0.53 s then goes on to chase</td><td>0 s · turn to face the target<br>0.27 s · fire the missile fireball at the target<br>0.27 s · play the sound missile.fireball.launch<br>0.27 s · start cooldown ready for 1.57 s</td></tr>
+      <tr><td><code>pain</code></td><td>plays pain, stands still and faces where it was, for 0.12 s then goes back to what it was doing</td><td>0 s · play the sound monster.pain.small</td></tr>
+      <tr><td><code>death</code></td><td>plays death, stands still, does not block, for 0.85 s and stays dead</td><td>0 s · play the sound monster.imp.death</td></tr>
+    </tbody>
+  </table>
   <ul>
-    <li><b>Body:</b> radius 0.4167, height 1.1667, speed 5.83 (Doom's numbers). The fireball needs a prop called <code>fireball</code>, radius 0.125, with state 0 flying and state 1 bursting.</li>
-    <li><b>Why <code>target_in_front</code> 12:</b> a shot goes where the body points. Without it the imp throws while half turned, into the wall beside you.</li>
+    <li><b>From the recipe:</b> rename <code>attack</code> to <code>claw</code> and change its numbers; <span class="ui">duplicate</span> it, rename the copy <code>throw</code>, and swap its hit for the missile; add <code>alert</code>, and point <code>look</code>'s rule at it.</li>
+    <li><b>Why <em>within 12° of where it faces</em>:</b> a shot goes where the body points. Without it the imp throws while half turned, into the wall beside you.</li>
     <li><b>One cooldown for both attacks:</b> a claw delays the next fireball and the other way round, which keeps the imp from doing both at once.</li>
-    <li><b>Make it yours:</b> set <code>blood</code> to a green particle kind; it bleeds green whatever hits it.</li>
+    <li><b>Make it yours:</b> on <span class="ui">Advanced</span>, set <span class="ui">Blood (particle kind)</span> to a green one; it bleeds green whatever hits it. Or tick <em>aiming ahead of it</em> on the throw, so a fireball leads a running player.</li>
   </ul>
 
-  <h2 id="charger">2. The charger: a wind-up, then a straight dash</h2>
-  <p>It stalks you, stops, glows, then commits to a straight line at three times its speed. If it reaches you it gores you hard. If you step aside, it runs past, or into a wall, and stands there winded: that is your moment.</p>
-  <p>The trick is the straight line. <code>move = "chase"</code> would steer after you. Instead, at the end of the wind-up it stores your direction in the var <code>wander</code> with <code>set_angle</code>, and the dash uses <code>move = "wander"</code>, which walks that stored heading and nothing else. The speed comes from an <code>effect</code> on <code>move_speed</code>.</p>
-  <pre><code>charger = {
-  hp = 120, pain_chance = 60, turn_speed = 8, sight = "30", mass = 400,
-  infighting = true, corpse = true,
-  initial = "look",
-  vars = { charge_ready = 0, wander = 0 },
-  states = {
-    look = { anim = 0, move = "stop", face = "hold",
-      transitions = {
-        { to = "stalk", when = { { cond = "has_target" }, { cond = "target_visible" } } },
-      } },
-    stalk = { anim = 1, move = "chase", face = "target", interruptible = true,
-      transitions = {
-        { to = "gore", when = { { cond = "target_within", distance = "1.4" } } },
-        { to = "windup", when = { { cond = "target_within", distance = "10" },
-                                  { cond = "target_visible" },
-                                  { cond = "target_in_front", arc = 15 },
-                                  { cond = "cooldown_ready", var = "charge_ready" } } },
-      } },
-    windup = { anim = 2, move = "stop", face = "target", ticks = 40, next = "dash", interruptible = false,
-      sequence = {
-        { at = 0,  action = "telegraph", effect = 20, radius = "1", ticks = 32 },  -- effect: your warning particle kind
-        { at = 0,  action = "sound", name = "monster.pinky.sight" },
-        { at = 32, action = "set_angle", var = "wander", towards = "target" },
-        { at = 32, action = "face", towards = "var", var = "wander" },
-        { at = 32, action = "effect", param = "move_speed", mul = "3", ticks = 64, tag = "dash" },
-      } },
-    dash = { anim = 1, move = "wander", face = "hold", ticks = 48, next = "tired", interruptible = false,
-      transitions = {
-        { to = "gore",  when = { { cond = "target_within", distance = "1.6" } } },
-        { to = "tired", when = { { cond = "stuck", ticks = 16 } } },
-      } },
-    gore = { anim = 2, move = "stop", face = "target", ticks = 16, next = "tired", interruptible = false,
-      sequence = {
-        { at = 0, action = "melee", damage = 25, range = "1.8", knockback = "14", lift = "4" },
-        { at = 0, action = "sound", name = "monster.pinky.melee" },
-      } },
-    tired = { anim = 0, move = "stop", face = "hold", ticks = 64, next = "stalk", interruptible = true,
-      sequence = { { at = 0, action = "set_cooldown", var = "charge_ready", ticks = 180, jitter = 60 } } },
-    pain = { anim = 3, move = "stop", face = "hold", ticks = 12, next = "stalk" },
-    death = { anim = 4, move = "stop", face = "hold", solid = false, ticks = 100, next = "death" },
-  },
-}</code></pre>
+  <h2 id="charger">2. The charger: a wind-up, then a rush</h2>
+  <p>It stalks you, stops, glows, then commits: a leap straight at where you were. If it reaches you it hits hard. If you step aside after the glow, it rushes past. This is the editor's <span class="ui">Charger</span> recipe as it comes; make one named <code>charger</code> and read it.</p>
+  <p><b>Overview</b>, as the recipe sets it: <span class="ui">Health</span> 60, <span class="ui">Runs at</span> 7.</p>
+  <table>
+    <thead><tr><th>State</th><th>What it does</th><th>Rules and steps</th></tr></thead>
+    <tbody>
+      <tr><td><code>idle</code> ★</td><td>plays idle, stands still and faces the target, until a rule</td><td>→ <code>chase</code> when it can see the target</td></tr>
+      <tr><td><code>chase</code></td><td>plays walk, runs at the target and faces the target, until a rule</td><td>1. → <code>wind_up</code> when the target is within 10 m and cooldown rush_cd is over<br>2. → <code>idle</code> when it has no target</td></tr>
+      <tr><td><code>wind_up</code></td><td>plays idle, stands still and faces the target, for 0.5 s then goes on to rush</td><td>0 s · warn the player with effect 12 for 0.5 s</td></tr>
+      <tr><td><code>rush</code></td><td>plays its leap (or attack), charges straight ahead and faces where it walks, for 0.7 s then goes on to chase; never flinches here</td><td>0 s · leap target at 14 m/s<br>0.3 s · melee hit for 20 damage within 1.8 m knocking back 8 m<br>0.3 s · start cooldown rush_cd for 3 s</td></tr>
+      <tr><td><code>pain</code></td><td>plays pain, stands still, for 0.25 s then goes back to what it was doing</td><td></td></tr>
+      <tr><td><code>death</code></td><td>plays death, does not block, for 1.67 s and stays dead</td><td></td></tr>
+    </tbody>
+  </table>
   <ul>
-    <li><b>Body:</b> radius 0.5, speed 3.5. The dash runs at 10.5.</li>
-    <li><b>The wind-up cannot be flinched out of</b> (<code>interruptible = false</code>), so the player must dodge, not shoot it off course. <code>tired</code> can, so hits during the opening make it stagger.</li>
-    <li><b>The telegraph's ticks</b> (32) are the time from the warning (8 ticks in) to the dash (40).</li>
-    <li><b><code>stuck</code></b> ends a dash into a wall early, so it does not grind against it for the full 48 ticks.</li>
+    <li><b>The line is the leap.</b> <em>leap target at 14 m/s</em> throws the body once, at where you are on the decision it runs (0.13 s in). It does not steer after you, so stepping sideways after the warning makes it miss. (<em>Charges straight ahead</em> does not move a monster on the engine's fast loop yet; the leap does the moving.)</li>
+    <li><b>The warning's length</b> (0.5 s) is the time from the glow to the rush.</li>
+    <li><b>The hit waits</b> until 0.3 s, so it lands where the leap took it, not where it started.</li>
+    <li><b>Make it yours:</b> give it an opening. Add a state <code>tired</code>: plays idle, stands still, faces where it was, lasts 1 s, then goes to <code>chase</code>; set <code>rush</code>'s <span class="ui">Then goes to</span> to <code>tired</code>. Switch <span class="ui">Pain can cut it short</span> off on <code>wind_up</code>, so the player must dodge rather than shoot it off course; leave it on in <code>tired</code>, so hits during the opening make it stagger.</li>
   </ul>
 
   <h2 id="turret">3. The turret: slow to turn, quick to shoot</h2>
   <p>It never moves. It tracks you slowly, and fires a three-round burst when you are in front of it. You beat it by moving faster than it turns, or by staying out of its line. It has no <code>pain</code> state, so it never flinches.</p>
-  <pre><code>turret = {
-  hp = 150, turn_speed = "0.5", sight = "24", mass = 1000,
-  infighting = false, corpse = true,
-  initial = "scan",
-  vars = { ready = 0 },
-  states = {
-    scan = { anim = 0, move = "stop", face = "hold",
-      transitions = {
-        { to = "track", when = { { cond = "has_target" }, { cond = "target_visible" } } },
-      } },
-    track = { anim = 0, move = "stop", face = "target",
-      transitions = {
-        { to = "fire", when = { { cond = "target_visible" },
-                                { cond = "target_in_front", arc = 6 },
-                                { cond = "cooldown_ready", var = "ready" } } },
-        { to = "scan", when = { { cond = "target_visible", negate = true },
-                                { cond = "state_elapsed", ticks = 32 } } },
-      } },
-    fire = { anim = 2, move = "stop", face = "target", ticks = 32, next = "track",
-      sequence = {
-        { at = 8,  action = "hitscan", damage = 6, range = "24", spread = 3 },
-        { at = 8,  action = "sound", name = "weapon.pistol.fire" },
-        { at = 16, action = "hitscan", damage = 6, range = "24", spread = 3 },
-        { at = 24, action = "hitscan", damage = 6, range = "24", spread = 3 },
-        { at = 24, action = "set_cooldown", var = "ready", ticks = 60, jitter = 12 },
-      } },
-    death = { anim = 4, move = "stop", face = "hold", solid = true, ticks = 100, next = "death",
-      sequence = { { at = 0, action = "sound", name = "missile.rocket.burst" } } },
-  },
-}</code></pre>
+  <p><b>Start from</b> <span class="ui">Blank</span>, named <code>turret</code>. <b>Overview:</b> <span class="ui">Health</span> 150, <span class="ui">Sees</span> 24, <span class="ui">Fights others</span> off. <b>Advanced:</b> <span class="ui">Turns a second</span> 0.5, <span class="ui">Weight</span> 1000; under <b>Its body states</b>, <span class="ui">radius</span> 0.5, <span class="ui">height</span> 1, <span class="ui">speed</span> 0.</p>
+  <table>
+    <thead><tr><th>State</th><th>What it does</th><th>Rules and steps</th></tr></thead>
+    <tbody>
+      <tr><td><code>scan</code> ★</td><td>plays idle, stands still and faces where it was, until a rule</td><td>→ <code>track</code> when it has a target and it can see the target</td></tr>
+      <tr><td><code>track</code></td><td>plays idle, stands still and faces the target, until a rule</td><td>1. → <code>fire</code> when it can see the target and the target is within 6° of where it faces and cooldown ready is over<br>2. → <code>scan</code> when the target is further than 24 m and this state has run for 0.53 s</td></tr>
+      <tr><td><code>fire</code></td><td>plays attack, stands still and faces the target, for 0.53 s then goes on to track</td><td>0.13 s · fire an instant shot for 6 damage, range 24 m, spread 3°<br>0.13 s · play the sound weapon.pistol.fire<br>0.27 s · fire an instant shot for 6 damage, range 24 m, spread 3°<br>0.4 s · fire an instant shot for 6 damage, range 24 m, spread 3°<br>0.4 s · start cooldown ready for 1 s</td></tr>
+      <tr><td><code>death</code></td><td>plays death, does not block, for 1.67 s and stays dead</td><td>0 s · play the sound missile.rocket.burst</td></tr>
+    </tbody>
+  </table>
   <ul>
-    <li><b>Body:</b> radius 0.5, height 1, <span class="ui">speed</span> 0, solid. Its death sets <code>solid = true</code>, so the wreck still blocks.</li>
-    <li><b><code>turn_speed</code> "0.5"</b> is half a turn per second, slow enough to outrun by strafing.</li>
-    <li><b>Why <code>state_elapsed</code> 32 on the way back to <code>scan</code>:</b> without it, the turret drops you the moment a pillar crosses its line, and snaps back the moment it clears. Half a second of patience reads as "watching".</li>
-    <li><b>The three shots</b> are at 8, 16 and 24, the first three decisions in the state. <code>ticks</code> is 32 because a step must come <em>before</em> the state ends: the server refuses a step at or after the state's <code>ticks</code>.</li>
+    <li><b>Turns a second 0.5</b> is half a turn per second, slow enough to outrun by strafing. <span class="ui">Overview</span>'s <span class="ui">Turn speed</span> keeps whole numbers; a fraction goes in on <span class="ui">Advanced</span>.</li>
+    <li><b>Why <em>this state has run for 0.53 s</em> on the way back to <code>scan</code>:</b> without it, the turret drops you the moment you step past its range, and snaps back the moment you return. Half a second of patience reads as "watching".</li>
+    <li><b>The three shots</b> are at 0.13, 0.27 and 0.4 s, the first three decisions in the state. It lasts 0.53 s because a step must come <em>before</em> the state ends: the server refuses a step at or after the state's length.</li>
+    <li><b>No pain state.</b> Delete <code>pain</code>; <b>Whatever it is doing</b> then says <em>no state is named pain, so this never happens</em>.</li>
   </ul>
 
   <h2 id="sniper">4. The sniper: keeps its distance</h2>
-  <p>It wants you at middle range. Too far, it closes in. Too near, it backs away while still facing you. In range and in sight, it aims for most of a second, with a warning, then fires one heavy shot and sidesteps. You beat it by rushing it, or by breaking its line while it aims.</p>
-  <pre><code>sniper = {
-  hp = 40, pain_chance = 180, turn_speed = 8, sight = "40",
-  infighting = true, corpse = true,
-  initial = "look",
-  vars = { ready = 0 },
-  drops = { { item = "ammo_clip" } },
-  states = {
-    look = { anim = 0, move = "stop", face = "hold",
-      transitions = {
-        { to = "approach", when = { { cond = "has_target" }, { cond = "target_visible" } } },
-      } },
-    approach = { anim = 1, move = "chase", face = "target", interruptible = true,
-      transitions = {
-        { to = "backoff", when = { { cond = "target_within", distance = "6" } } },
-        { to = "aim", when = { { cond = "target_within", distance = "30" },
-                               { cond = "target_visible" },
-                               { cond = "cooldown_ready", var = "ready" } } },
-      } },
-    backoff = { anim = 1, move = "flee", face = "target", ticks = 48, next = "approach", interruptible = true,
-      transitions = {
-        { to = "aim", when = { { cond = "target_within", distance = "6", negate = true },
-                               { cond = "target_visible" },
-                               { cond = "cooldown_ready", var = "ready" } } },
-        { to = "aim", when = { { cond = "stuck", ticks = 24 } } },
-      } },
-    aim = { anim = 2, move = "stop", face = "target", ticks = 48, next = "shoot", interruptible = true,
-      sequence = {
-        { at = 0, action = "telegraph", effect = 21, radius = "0.5", ticks = 40 },  -- effect: your warning particle kind
-      },
-      transitions = {
-        { to = "approach", when = { { cond = "target_visible", negate = true } } },
-        { to = "backoff",  when = { { cond = "target_within", distance = "4" } } },
-      } },
-    shoot = { anim = 2, move = "stop", face = "target", ticks = 16, next = "reposition",
-      sequence = {
-        { at = 0, action = "face" },
-        { at = 0, action = "hitscan", damage = 30, range = "40", spread = 0 },
-        { at = 0, action = "sound", name = "weapon.shotgun.fire" },
-        { at = 0, action = "set_cooldown", var = "ready", ticks = 150, jitter = 30 },
-      } },
-    reposition = { anim = 1, move = "strafe", face = "target", ticks = 40, ticks_jitter = 24, next = "approach",
-      interruptible = true },
-    pain = { anim = 3, move = "stop", face = "hold", ticks = 10, next = "backoff" },
-    death = { anim = 4, move = "stop", face = "hold", solid = false, ticks = 100, next = "death" },
-  },
-}</code></pre>
+  <p>It wants you at middle range. Too far, it closes in. Too near, it backs away while still facing you. In range and in sight, it aims for most of a second, with a warning, then fires one heavy shot and sidesteps. You beat it by rushing it, or by hitting it while it aims.</p>
+  <p><b>Start from</b> <span class="ui">Shooter</span>, named <code>sniper</code>; it already keeps its distance, warns and fires. <b>Overview:</b> <span class="ui">Health</span> 40, <span class="ui">Flinches</span> 70%, <span class="ui">Sees</span> 40, <span class="ui">Runs at</span> 4.5: a little slower than the player, so rushing works. <b>Advanced:</b> under <b>drops</b>, <span class="ui">+ drop</span> <code>ammo_clip</code> (or one of yours).</p>
+  <table>
+    <thead><tr><th>State</th><th>What it does</th><th>Rules and steps</th></tr></thead>
+    <tbody>
+      <tr><td><code>idle</code> ★</td><td>plays idle, stands still and faces the target, until a rule</td><td>→ <code>chase</code> when it can see the target</td></tr>
+      <tr><td><code>chase</code></td><td>plays walk, runs at the target and faces the target, until a rule</td><td>1. → <code>back_off</code> when the target is within 6 m<br>2. → <code>aim</code> when the target is within 30 m and it can see the target and cooldown ready is over<br>3. → <code>idle</code> when it has no target</td></tr>
+      <tr><td><code>back_off</code></td><td>plays walk, backs away and faces the target, for 0.8 s then goes on to chase</td><td>1. → <code>aim</code> when the target is further than 6 m and it can see the target and cooldown ready is over<br>2. → <code>aim</code> when it has been stuck for 0.4 s</td></tr>
+      <tr><td><code>aim</code></td><td>plays aim, stands still and faces the target, for 0.8 s then goes on to fire</td><td>→ <code>back_off</code> when the target is within 4 m<br>0 s · warn the player with effect 12 for 0.67 s</td></tr>
+      <tr><td><code>fire</code></td><td>plays fire, stands still and faces the target, for 0.27 s then goes on to reposition</td><td>0 s · turn to face the target<br>0 s · fire an instant shot for 30 damage, range 40 m, spread 0°<br>0 s · play the sound weapon.shotgun.fire<br>0 s · start cooldown ready for 2.5 s</td></tr>
+      <tr><td><code>reposition</code></td><td>plays walk, circles the target and faces the target, for 0.67 s then goes on to chase</td><td></td></tr>
+      <tr><td><code>pain</code></td><td>plays pain, stands still, for 0.17 s then goes on to back_off</td><td></td></tr>
+      <tr><td><code>death</code></td><td>plays death, does not block, for 1.67 s and stays dead</td><td></td></tr>
+    </tbody>
+  </table>
   <ul>
-    <li><b>Body:</b> radius 0.35, speed 4.5: a little slower than the player, so rushing works.</li>
-    <li><b><code>flee</code> with <code>face = "target"</code></b> backs away while still looking at you, as Doom's monsters do. <code>stuck</code> catches it backing into a wall: cornered, it shoots anyway.</li>
-    <li><b>The aim is cancelled</b> if you break its line or rush within 4. That is the counterplay, and the order of <code>aim</code>'s two cards does not matter because they cannot both hold for long.</li>
-    <li><b>Pain goes to <code>backoff</code></b>, so a hit both flinches it and makes it retreat.</li>
-    <li>The drop needs a prop called <code>ammo_clip</code> with a pickup of the same name, or change it to one of yours.</li>
+    <li><b>From the recipe:</b> change the numbers of <code>chase</code>, <code>back_off</code> and <code>aim</code>; in <code>fire</code>, remove <em>fire the missile</em> and add the instant shot; add <code>reposition</code> and point <code>fire</code> at it.</li>
+    <li><b>Backing away while facing you</b> is <em>backs away</em> with <em>faces the target</em>, as Doom's monsters do. Its <em>stuck</em> rule catches it backing into a wall: cornered, it shoots anyway.</li>
+    <li><b>The aim is the counterplay.</b> Rush within 4 m and it breaks off. Hit it, and its <code>pain</code> goes to <code>back_off</code>, not back to the aim: a hit both flinches it and makes it retreat. (The recipe's own <code>pain</code> goes back to what it was doing, which would resume the aim.)</li>
+    <li><b>Make it yours:</b> a sniper that blinks. Give <code>reposition</code> a step at 0 s, <em>teleport near the target, 12 m away, with effect …</em>: it vanishes and reappears somewhere around you that it could walk to you from, facing you, and only where its body fits.</li>
   </ul>
 
-  <h2 id="boss">5. The boss: two phases by health</h2>
-  <p>A big, slow warden. In phase one it stomps if you come close and throws a fan of three blast orbs at range. Below half health it roars once, calls its minions, gets faster and throws heavier volleys. The phase lives in a var, <code>phase</code>, so every way back into the fight (after a stomp, a volley or a flinch) goes through one small state, <code>regroup</code>, that picks the right chase.</p>
-  <pre><code>missiles = {
-  warden_orb = {
-    speed = "9", gravity = 0, life = 240, z_offset = "1.2",
-    anim_fly = 0, anim_burst = 1, burst_ticks = 20,
-    on_hit = {
-      { action = "damage_area", damage = 20, radius = "1.5", falloff = true, hurts_owner = false },
-      { action = "sound", name = "missile.rocket.burst", from = "impact" },
-    },
-  },
-},
-mobs = {
-  warden = {
-    hp = 1500, pain_chance = 30, turn_speed = 6, sight = "50", mass = 1000,
-    pain_time = { per_damage = "0.2", max = 20 },
-    infighting = false, corpse = true,
-    initial = "look",
-    vars = { ready = 0, phase = 1 },
-    swing = { damage = 30, reach = "2.5", half_arc = "0.25", sweep_from = "0", sweep_to = "0",
-              ticks = 6, pitch_from = "0.125", pitch_to = "-0.125", half_pitch = "0.0625",
-              knockback = "16", lift = "6" },
-    states = {
-      look = { anim = 0, move = "stop", face = "hold",
-        transitions = {
-          { to = "chase1", when = { { cond = "has_target" }, { cond = "target_visible" } } },
-        } },
-      chase1 = { anim = 1, move = "chase", face = "target", interruptible = true,
-        transitions = {
-          { to = "enrage", when = { { cond = "hp_below", percent = 50 }, { cond = "var_is", var = "phase", value = 1 } } },
-          { to = "stomp", when = { { cond = "target_within", distance = "2.5" },
-                                   { cond = "target_above", by = "1", negate = true },
-                                   { cond = "cooldown_ready", var = "ready" } } },
-          { to = "volley", when = { { cond = "target_within", distance = "40" },
-                                    { cond = "target_visible" },
-                                    { cond = "target_in_front", arc = 12 },
-                                    { cond = "cooldown_ready", var = "ready" } } },
-        } },
-      chase2 = { anim = 1, move = "chase", face = "target", interruptible = true,
-        transitions = {
-          { to = "stomp", when = { { cond = "target_within", distance = "2.5" },
-                                   { cond = "target_above", by = "1", negate = true },
-                                   { cond = "cooldown_ready", var = "ready" } } },
-          { to = "summon", when = { { cond = "count_within", distance = "20", at_least = 1, mob = "imp", negate = true },
-                                    { cond = "chance", percent = 5 } } },
-          { to = "storm", when = { { cond = "target_visible" },
-                                   { cond = "target_in_front", arc = 12 },
-                                   { cond = "cooldown_ready", var = "ready" } } },
-        } },
-      stomp = { anim = 2, move = "stop", face = "target", ticks = 40, next = "regroup", interruptible = false,
-        sequence = {
-          { at = 0,  action = "telegraph", effect = 20, radius = "2.5", ticks = 16 },  -- effect: your warning particle kind
-          { at = 24, action = "swing" },
-          { at = 24, action = "set_cooldown", var = "ready", ticks = 60 },
-        } },
-      volley = { anim = 2, move = "stop", face = "target", ticks = 32, next = "regroup", interruptible = true,
-        sequence = {
-          { at = 0,  action = "face" },
-          { at = 16, action = "missile", kind = "warden_orb", count = 3, arc = 15, offset = "1.2" },
-          { at = 16, action = "set_cooldown", var = "ready", ticks = 90, jitter = 20 },
-        } },
-      enrage = { anim = 2, move = "stop", face = "target", ticks = 48, next = "regroup", interruptible = false,
-        sequence = {
-          { at = 0,  action = "set_var", var = "phase", value = 2 },
-          { at = 0,  action = "sound", name = "monster.cyberdemon.sight" },
-          { at = 0,  action = "effect", param = "move_speed", mul = "1.5", tag = "enraged" },
-          { at = 0,  action = "alert_nearby", radius = "30" },
-          { at = 24, action = "spawn", mob = "imp", count = 2, limit = 4, offset = "2", jitter = "1" },
-        } },
-      summon = { anim = 2, move = "stop", face = "target", ticks = 40, next = "regroup",
-        sequence = { { at = 16, action = "spawn", mob = "imp", count = 2, limit = 4, offset = "2", jitter = "1" } } },
-      storm = { anim = 2, move = "stop", face = "target", ticks = 48, next = "regroup", interruptible = true,
-        sequence = {
-          { at = 0,  action = "face" },
-          { at = 8,  action = "missile", kind = "warden_orb", count = 5, arc = 12, offset = "1.2" },
-          { at = 24, action = "face" },
-          { at = 24, action = "missile", kind = "warden_orb", count = 5, arc = 12, offset = "1.2" },
-          { at = 40, action = "face" },
-          { at = 40, action = "missile", kind = "warden_orb", count = 3, arc = 20, offset = "1.2" },
-          { at = 40, action = "set_cooldown", var = "ready", ticks = 70, jitter = 20 },
-        } },
-      regroup = { anim = 1, move = "stop", face = "target",
-        transitions = {
-          { to = "chase2", when = { { cond = "var_is", var = "phase", value = 2 } } },
-          { to = "chase1", when = { { cond = "has_target" } } },
-          { to = "look",   when = { { cond = "has_target", negate = true } } },
-        } },
-      pain = { anim = 3, move = "stop", face = "hold", ticks = 16, next = "regroup" },
-      death = { anim = 4, move = "stop", face = "hold", solid = false, ticks = 100, next = "death",
-        sequence = {
-          { at = 0, action = "sound", name = "monster.cyberdemon.death" },
-          { at = 0, action = "alert_nearby", radius = "40" },
-        } },
-    },
-  },
-}</code></pre>
+  <h2 id="boss">5. The boss: three phases by health</h2>
+  <p>A big, slow warden that changes as it is hurt. In phase one it slams if you come close and lobs at range. At two thirds of its health it roars, calls three minions and gets faster, slams harder and fires barrages. At one third it summons again, leaps at you and calls more help on a timer. This is the editor's <span class="ui">Boss (3 phases)</span> recipe as it comes; make one named <code>warden</code>.</p>
+  <figure class="shot" data-src="../assets/shots/enemy-boss-phases.png" data-alt="The Boss (3 phases) recipe on Graph: three lanes, Phase 1: slam and shells, Phase 2: the roar, runs at 5 m/s, Phase 3: frenzy, runs at 6.5 m/s, each with its states, the any-state arrows into roar and enrage, and pain and death below" data-hotspots='[{"x":21,"y":25,"t":"Phase 1: slam and shells","d":"Where it begins: idle, chase, slam, lob"},{"x":21,"y":34,"t":"idle ★","d":"Waits until it sees you"},{"x":23,"y":44,"t":"Phase 2: the roar","d":"Runs at 5 m/s: roar, chase2, slam2, barrage"},{"x":23,"y":46,"t":"any state: hp &lt; 66% (once)","d":"The rule under Whatever it is doing that starts phase 2"},{"x":21,"y":52,"t":"roar","d":"Never flinches: sets phase to 2, summons three, alerts the room"},{"x":54,"y":52,"t":"barrage","d":"Three shots; as it ends, on to frenzy if phase is at least 3"},{"x":43,"y":61,"t":"at the end: phase ≥ 3","d":"A branch taken as its time runs out"},{"x":22,"y":62,"t":"Phase 3: frenzy","d":"Runs at 6.5 m/s: enrage, frenzy, leap, call_adds"},{"x":21,"y":71,"t":"enrage","d":"Sets phase to 3, summons two, starts the adds timer"},{"x":32,"y":89,"t":"pain","d":"A reaction: 0.3 s, then back to what it was doing"},{"x":54,"y":89,"t":"death","d":"Stays dead"},{"x":69,"y":95,"t":"fit","d":"Every state in view"}]'>
+    <figcaption>The <span class="ui">Boss (3 phases)</span> recipe on <span class="ui">Graph</span>: a lane per phase, the reactions below. Tap the numbered dots.</figcaption>
+  </figure>
+  <p><b>Overview</b>, as the recipe sets it: <span class="ui">Health</span> 900, <span class="ui">Flinches</span> 10%, <span class="ui">Runs at</span> 4. Its numbers (<span class="ui">Advanced</span>): <code>phase</code> starts at 1; <code>slam_cd</code>, <code>shot_cd</code>, <code>leap_cd</code> and <code>adds_cd</code> are cooldowns. It fires the module's first missile (or a new <code>bolt</code>), and its minions are the module's first other monster (or a new <code>warden_minion</code>, a melee grunt of 40 health).</p>
+  <h3>Phases</h3>
+  <p>On <span class="ui">List</span>, each phase is a group with a header: its name (type to rename it), how many states it has and when it starts (<em>"4 states · starts when its health is below 66%, once"</em>, or <em>"where it begins"</em>), <em>runs at … m/s</em> (empty: the body's own speed), <span class="ui">duplicate</span> and <span class="ui">remove</span>. Then come <b>Reactions</b>: <code>pain</code> and <code>death</code>. On <span class="ui">Graph</span>, each phase is a lane.</p>
+  <p>A phase is a group of states, nothing more, with one thing of its own: its speed, which its states set as they start. What moves the boss from one phase to the next is two rules under <b>Whatever it is doing</b>:</p>
+  <pre><code>1. go to roar     when its health is below 66%    only once
+2. go to enrage   when its health is below 33%    only once</code></pre>
+  <p>They are checked first, in every state, so crossing two thirds of its health interrupts whatever it is doing. <b>only once</b> makes each fire a single time; the boss remembers it, saved games too. And its <code>pain</code> goes <em>back to what it was doing</em>, so a flinch in phase three resumes phase three's state: nothing ever sends it back to phase one.</p>
+  <table>
+    <thead><tr><th>Phase</th><th>States, and what they do</th></tr></thead>
+    <tbody>
+      <tr><td>Phase 1: slam and shells</td><td><code>idle</code> ★ → <code>chase</code> when it can see the target. <code>chase</code> → <code>slam</code> within 3 m when <code>slam_cd</code> is over; → <code>lob</code> within 16 m when <code>shot_cd</code> is over. <code>slam</code> (1.1 s): a warning at 0 s, <em>a blast of 35 damage within 3 m</em> at 0.55 s. <code>lob</code> (0.7 s): a warning, then the missile at 0.3 s.</td></tr>
+      <tr><td>Phase 2: the roar, runs at 5 m/s</td><td><code>roar</code> (1.5 s, never flinches): <em>set the number phase to 2</em>; at 0.6 s <em>summon 3 (minion) beside it</em> and <em>alert the monsters within 20 m</em>; then <code>chase2</code>, which slams harder (<code>slam2</code>, 45 within 3.5 m) and fires a <code>barrage</code> of three shots at 0.4, 0.6 and 0.8 s.</td></tr>
+      <tr><td>Phase 3: frenzy, runs at 6.5 m/s</td><td><code>enrage</code> (1.2 s, never flinches): <em>set the number phase to 3</em>, summon 2, start <code>adds_cd</code> for 8 s; then <code>frenzy</code>: → <code>leap</code> within 9 m (a leap at 14 m/s at 0.3 s, a hit of 40 within 2.5 m at 0.6 s); → <code>call_adds</code> when <code>adds_cd</code> is over (summon 2 more); → <code>barrage</code> within 18 m.</td></tr>
+    </tbody>
+  </table>
   <ul>
-    <li><b>Body:</b> radius 0.9, height 3, speed 3, solid. <code>mass</code> 1000 takes a tenth of every shove.</li>
-    <li><b>The phase check is first</b> in <code>chase1</code>, so crossing half health interrupts whatever it would have done next. <code>var_is phase 1</code> makes it happen once.</li>
-    <li><b>Every attack ends in <code>regroup</code></b>, never in a chase directly. One place decides which phase it is in, and pain goes there too, so a flinch in phase two never drops it back to phase one.</li>
-    <li><b>The stomp</b> is a swing that does not sweep (<code>sweep_from</code> = <code>sweep_to</code>), wide (a quarter turn each side), coming down from above (<code>pitch_from</code> 0.125 to <code>pitch_to</code> −0.125). <code>target_above</code> with <span class="ui">not</span> keeps it from stomping at someone on a ledge.</li>
-    <li><b>Minions:</b> <code>spawn</code> needs an <code>imp</code> in the module (recipe 1). <code>limit</code> 4 caps how many it has alive at once. <code>count_within</code> with <span class="ui">not</span> means "no imps within 20", and <code>chance</code> 5 makes the summon an occasional choice rather than the first one.</li>
-    <li><b>The effect has no <code>ticks</code></b>, so the speed-up lasts for the rest of its life. The <code>tag</code> means a second enrage would replace it, not stack.</li>
+    <li><b>Two phases share a state.</b> <code>frenzy</code> borrows phase two's <code>barrage</code>. As the barrage ends it branches: <em>"then frenzy if the number phase is at least 3; otherwise then goes on to chase2"</em>. That is a branch under <b>When its time is up</b>, and the reason the boss keeps the number <code>phase</code>.</li>
+    <li><b>The roar and the enrage cannot be flinched out of</b> (<span class="ui">Pain can cut it short</span> off), so the change of phase always plays out.</li>
+    <li><b>A phase of your own:</b> <span class="ui">+ phase</span> copies the last phase, its states renamed with the phase's number (<code>frenzy_4</code> …), 30% faster, and adds a rule under <b>Whatever it is doing</b> that starts it, once, at half the health of the last one: <em>"Phase 4: a copy of Phase 3: frenzy that runs at 8.5 m/s. It starts when its health drops below 17%…"</em>. Then make it angrier: change its states, its speed, or what it hits for. On a monster with no phases yet, <span class="ui">+ phase</span> first puts its states in <em>Phase 1</em>.</li>
+    <li><b>In the preview,</b> drag <em>its health</em> below 66% and watch it roar; its numbers line shows <code>phase = 2</code>, and the rule's card says <em>fired in this run</em>.</li>
   </ul>
-  <div class="callout tip"><p><b>Make the stomp readable.</b> The boss's stomp is a swing, so the game draws it as a slash streak. On the boss's <span class="ui">💨 slash</span> tab, a red <span class="ui">color</span>, <span class="ui">width</span> 1 (the whole wedge) and a longer <span class="ui">fade</span> such as 0.5 make the danger zone stay on screen long enough to read (<a href="03-attacks.html#slash">Attacks</a>).</p></div>
+  <div class="callout tip"><p><b>Make the slam readable.</b> A blast draws nothing but its warning. To show the danger zone, make the slam a swing instead (<span class="ui">Advanced</span> → <b>Its own swing</b>: a wide thrust from above, <code>sweep_from</code> = <code>sweep_to</code> 0, <code>half_arc</code> 0.25, <code>pitch_from</code> 0.125, <code>pitch_to</code> −0.125), and give it a red <span class="ui">color</span>, <span class="ui">width</span> 1 and a longer <span class="ui">fade</span> such as 0.5 (<a href="03-attacks.html#slash">Attacks</a>).</p></div>
 
   <h2 id="slime">6. Gem Hollow's slime: a monster you jump on</h2>
-  <p>Not a recipe to build but one to open: the <code>slime</code> in the example project, as the studio writes it into Gem Hollow's <code>maps/module.lua</code>. It is the platformer's oldest enemy: walk into it and it bumps you; land on it and it bounces you up and is gone. (The <code>pain</code>, <code>death</code> and <code>gone</code> states are shortened here; <a href="02-the-brain.html#gem-hollow">The brain</a> lists them.)</p>
-  <pre><code>slime = {
-  hp = 20, sight = "14", turn_speed = 8, pain_chance = 200,
-  initial = "look", corpse = false,
-  vars = { ready = 0 },
-  states = {
-    look = { anim = 0, move = "wander", face = "movement",
-      transitions = {
-        { to = "squash", when = { { cond = "target_above", by = "0.6" },
-                                  { cond = "target_within", distance = "1.3" } } },
-        { to = "chase",  when = { { cond = "has_target" }, { cond = "target_visible" },
-                                  { cond = "target_within", distance = "9" } } },
-      } },
-    chase = { anim = 1, move = "chase", face = "target", interruptible = true,
-      transitions = {
-        { to = "squash", when = { { cond = "target_above", by = "0.6" },
-                                  { cond = "target_within", distance = "1.3" } } },
-        { to = "look",   when = { { cond = "has_target", negate = true } } },
-        { to = "attack", when = { { cond = "target_within", distance = "1.4" },
-                                  { cond = "cooldown_ready", var = "ready" } } },
-      } },
-    attack = { anim = 2, move = "stop", face = "target", ticks = 24, next = "chase",
-      sequence = {
-        { at = 10, action = "melee", damage = 10, range = "1.2", knockback = "6" },
-        { at = 10, action = "sound", name = "monster.attack" },
-        { at = 10, action = "set_cooldown", var = "ready", ticks = 60 },
-      } },
-    squash = { anim = 4, move = "stop", face = "hold", solid = false, ticks = 40, next = "gone",
-      sequence = {
-        { at = 0, action = "sound", name = "monster.slime.death" },
-        { at = 0, action = "melee", damage = 1, range = "2", lift = "14" },
-      } },
-    -- pain (12 ticks), death (a sound at 0), gone (despawn at 0)
-  },
-  drops = { { item = "coin" } },
-}</code></pre>
+  <p>Not a recipe to build but one to open: the <code>slime</code> in the example project. It is the platformer's oldest enemy: walk into it and it bumps you; land on it and it bounces you up and is gone. Its cards are listed in <a href="02-the-brain.html#gem-hollow">The brain</a>; these are the ones that make it a platformer enemy:</p>
+  <table>
+    <thead><tr><th>State</th><th>What it does</th><th>Rules and steps</th></tr></thead>
+    <tbody>
+      <tr><td><code>look</code> ★</td><td>plays idle, wanders and faces where it walks</td><td>1. → <code>squash</code> when the target is 0.6 m or more above it and the target is within 1.3 m<br>2. → <code>chase</code> when it has a target and it can see the target and the target is within 9 m</td></tr>
+      <tr><td><code>chase</code></td><td>plays walk, runs at the target and faces the target</td><td>1. → <code>squash</code>, the same two conditions<br>2. → <code>look</code> when it has no target<br>3. → <code>attack</code> when the target is within 1.4 m and cooldown ready is over</td></tr>
+      <tr><td><code>squash</code></td><td>plays death, stands still, does not block, for 0.67 s then goes on to gone</td><td>0 s · play the sound monster.slime.death<br>0 s · melee hit for 1 damage within 2 m, with a <code>lift</code> of 14 (kept as written)</td></tr>
+      <tr><td><code>gone</code></td><td>plays death, for 0.02 s then starts it again</td><td>0 s · vanish</td></tr>
+    </tbody>
+  </table>
   <ul>
-    <li><b>Body:</b> radius 0.55, height 1, speed 2.5, drawn with the sheet <code>SLIME</code>.</li>
+    <li><b>Body:</b> <span class="ui">Width (radius)</span> 0.55, <span class="ui">height</span> 1, <span class="ui">Runs at</span> 2.5, drawn with the sheet <code>SLIME</code>.</li>
     <li><b>The stomp comes first</b> in both <code>look</code> and <code>chase</code>, so landing on it wins over anything else.</li>
-    <li><b>The bounce is a 1-point <code>melee</code> with <code>lift</code> 14.</b> The hero loses a point of health and is thrown up, which reads as a bounce.</li>
-    <li><b>Make it yours:</b> give <code>squash</code> a <a href="../reference/monster-vocab.html#vfx"><code>vfx</code></a> step at 0 for a splash. Note that a stomped slime drops nothing: drops are rolled only when hits take its <code>hp</code> to 0, and <code>squash</code> ends in <code>despawn</code> instead (<a href="04-pain-death-drops.html#gem-hollow">Pain, death and drops</a>).</li>
+    <li><b>The bounce is a 1-point melee hit with a lift of 14.</b> The hero loses a point of health and is thrown up, which reads as a bounce. The lift has no word in the editor's sentence yet: change it in the files, or keep it.</li>
+    <li><b>Make it yours:</b> give <code>squash</code> a <em>show the effect …</em> step at 0 s for a splash. Note that a stomped slime drops nothing: drops are rolled only when hits take its health to 0, and <code>squash</code> ends in <em>vanish</em> instead (<a href="04-pain-death-drops.html#gem-hollow">Pain, death and drops</a>).</li>
   </ul>
 
   <h2 id="smelter">7. Cinderfall's Smelter: a boss in one chase</h2>
-  <p>Another one to open rather than build: the boss of Cinderfall, the first-person shooter example that comes with the studio (Home → <span class="ui">◆ examples</span>; see <a href="../examples/02-cinderfall.html">the tour</a>). Recipe 5 changes phase through a var and two chases. The Smelter does it with one chase whose first card only opens below half health. (<code>pain</code> and <code>death</code> are shortened.)</p>
-  <figure class="shot" data-src="../assets/shots/cinder-smelter.png" data-alt="The Smelter's brain in the Monsters workshop at 66%: look, roar, chase, then aim, volley, slam and brood off chase, with pain and death on the right; chase is picked" data-hotspots='[{"x": 31.3, "y": 20.2, "t": "look ★", "d": "Stands still until it sees you."}, {"x": 39.5, "y": 20.2, "t": "roar", "d": "60 ticks of roar instead of a wake: the fight&#39;s opening."}, {"x": 48, "y": 20.2, "t": "chase", "d": "Three cards: brood, slam, aim, in that order."}, {"x": 56.1, "y": 20.2, "t": "aim", "d": "16 ticks still, facing you, then volley."}, {"x": 64.7, "y": 20.2, "t": "volley", "d": "Four fans of shells (3, 2, 3, 2) over 30 ticks, then back to chase."}, {"x": 56.2, "y": 27.5, "t": "slam", "d": "Within 5: a blast of 25 with a big throw."}, {"x": 56.3, "y": 34.8, "t": "brood", "d": "Below half health, every 600 ticks: three husks."}, {"x": 73.2, "y": 20.2, "t": "pain, death", "d": "Reached by hits, not by arrows."}, {"x": 27.4, "y": 8.4, "t": "Six monsters", "d": "husk, gunner, hound, spitter, brute and smelter share the module&#39;s missiles."}, {"x": 81.8, "y": 82.6, "t": "The first card", "d": "go to brood when hp_below 50 and cooldown_ready brood."}]'>
-    <figcaption>The Smelter's brain, fitted with <span class="ui">⤢</span> (66%), with <code>chase</code> picked.</figcaption>
+  <p>Another one to open rather than build: the boss of Cinderfall, the first-person shooter example that comes with the studio (Home → examples → <span class="ui">📂 Cinderfall</span>; see <a href="../examples/02-cinderfall.html">the tour</a>). Recipe 5 changes phase with rules for any state. The Smelter does it with one chase whose first rule only holds below half health.</p>
+  <figure class="shot" data-src="../assets/shots/cinder-smelter.png" data-alt="The Smelter on Graph: look, roar, chase, brood, slam, aim and volley in a row, pain and death below, with arrows labelled by what they wait for" data-hotspots='[{"x":18,"y":50,"t":"look ★","d":"Stands guard until it sees you"},{"x":27,"y":50,"t":"roar","d":"1 s: you hear it before it moves"},{"x":36,"y":50,"t":"chase","d":"Three rules: brood, slam, aim, in that order"},{"x":40,"y":48,"t":"hp &lt; 50% · brood","d":"The first rule: only below half health"},{"x":44,"y":50,"t":"brood","d":"Summons three husks, every 10 s"},{"x":53,"y":50,"t":"slam","d":"A blast of 25 within 5.5 m"},{"x":61,"y":50,"t":"aim","d":"0.27 s of warning"},{"x":70,"y":50,"t":"volley","d":"Four fans of shells"},{"x":27,"y":71,"t":"pain","d":"0.17 s, then back to chase"},{"x":44,"y":71,"t":"death","d":"Stays"}]'>
+    <figcaption>The Smelter on <span class="ui">Graph</span>, every state in view.</figcaption>
   </figure>
-  <pre><code>smelter = {
-  hp = 2400, sight = "60", turn_speed = 4, pain_chance = 12, mass = 12,
-  initial = "look", corpse = true,
-  vars = { ready = 0, slam = 0, brood = 0 },
-  states = {
-    look  = { anim = 0, move = "stop", face = "hold",
-      transitions = { { to = "roar", when = { { cond = "has_target" }, { cond = "target_visible" } } } } },
-    roar  = { anim = 7, move = "stop", face = "target", ticks = 60, next = "chase",
-      sequence = { { at = 0, action = "sound", name = "smelter.roar" } } },
-    chase = { anim = 1, move = "chase", face = "target", interruptible = true,
-      transitions = {
-        { to = "brood", when = { { cond = "hp_below", percent = 50 }, { cond = "cooldown_ready", var = "brood" } } },
-        { to = "slam",  when = { { cond = "target_within", distance = "5" }, { cond = "cooldown_ready", var = "slam" } } },
-        { to = "aim",   when = { { cond = "target_visible" }, { cond = "cooldown_ready", var = "ready" } } },
-      } },
-    aim    = { anim = 2, move = "stop", face = "target", ticks = 16, next = "volley" },
-    volley = { anim = 5, move = "stop", face = "target", ticks = 44, next = "chase",
-      sequence = {
-        { at = 0,  action = "missile", kind = "cinder_shell", offset = "2", count = 3, arc = 8 },
-        { at = 10, action = "missile", kind = "cinder_shell", offset = "2", count = 2, arc = 8 },
-        { at = 20, action = "missile", kind = "cinder_shell", offset = "2", count = 3, arc = 8 },
-        { at = 30, action = "missile", kind = "cinder_shell", offset = "2", count = 2, arc = 8 },
-        { at = 0,  action = "set_cooldown", var = "ready", ticks = 70, jitter = 30 },
-        -- and a brute.fire sound with each shell
-      } },
-    slam  = { anim = 6, move = "stop", face = "target", ticks = 36, next = "chase",
-      sequence = {
-        { at = 16, action = "sound", name = "brute.slam" },
-        { at = 16, action = "damage_area", damage = 25, radius = "5.5", knockback = "14", lift = "6" },
-        { at = 0,  action = "set_cooldown", var = "slam", ticks = 80 },
-      } },
-    brood = { anim = 7, move = "stop", face = "target", ticks = 50, next = "chase",
-      sequence = {
-        { at = 0,  action = "sound", name = "smelter.roar" },
-        { at = 20, action = "spawn", mob = "husk", count = 3, limit = 9, offset = "4", jitter = "2" },
-        { at = 0,  action = "set_cooldown", var = "brood", ticks = 600 },
-      } },
-    -- pain: anim 3, 10 ticks, back to chase · death: anim 4, solid off, a sound
-  },
-}</code></pre>
+  <p><b>Overview:</b> <span class="ui">Health</span> 2400, <span class="ui">Flinches</span> 5%, <span class="ui">Sees</span> 60, <span class="ui">Turn speed</span> 4. Its sprite, <code>SMELTER</code>, has animations of its own: <i>roar</i>, <i>aim</i>, <i>fire</i> and <i>slam</i>.</p>
+  <table>
+    <thead><tr><th>State</th><th>What it does</th><th>Rules and steps</th></tr></thead>
+    <tbody>
+      <tr><td><code>look</code> ★</td><td>plays idle, stands still and faces where it was</td><td>→ <code>roar</code> when it has a target and it can see the target</td></tr>
+      <tr><td><code>roar</code></td><td>plays roar, stands still and faces the target, for 1 s then goes on to chase</td><td>0 s · play the sound smelter.roar</td></tr>
+      <tr><td><code>chase</code></td><td>plays walk, runs at the target and faces the target</td><td>1. → <code>brood</code> when its health is below 50% and cooldown brood is over<br>2. → <code>slam</code> when the target is within 5 m and cooldown slam is over<br>3. → <code>aim</code> when it can see the target and cooldown ready is over</td></tr>
+      <tr><td><code>aim</code></td><td>plays aim, stands still and faces the target, for 0.27 s then goes on to volley</td><td></td></tr>
+      <tr><td><code>volley</code></td><td>plays fire, stands still and faces the target, for 0.73 s then goes on to chase</td><td>0, 0.17, 0.33 and 0.5 s · fire the missile cinder_shell at the target, each with a <code>brute.fire</code> sound<br>0 s · start cooldown ready for 1.17 s, listed last, so it runs at 0.5 s</td></tr>
+      <tr><td><code>slam</code></td><td>plays slam, stands still and faces the target, for 0.6 s then goes on to chase</td><td>0.27 s · play the sound brute.slam<br>0.27 s · a blast of 25 damage within 5.5 m (knocking back 14 and lifting 6)<br>0 s · start cooldown slam for 1.33 s, listed last</td></tr>
+      <tr><td><code>brood</code></td><td>plays roar, stands still and faces the target, for 0.83 s then goes on to chase</td><td>0 s · play the sound smelter.roar<br>0.33 s · summon 3 (husk) beside it<br>0 s · start cooldown brood for 10 s, listed last</td></tr>
+      <tr><td><code>pain</code></td><td>plays pain, stands still, for 0.17 s then goes on to chase</td><td>0 s · play the sound smelter.pain</td></tr>
+      <tr><td><code>death</code></td><td>plays death, does not block, and stays here</td><td>0 s · play the sound smelter.death</td></tr>
+    </tbody>
+  </table>
   <ul>
-    <li><b>Body:</b> radius 1.4, height 4.4, speed 2, drawn with the sheet <code>SMELTER</code>, which has states up to 7 (<code>roar</code>). Placed once, in <code>w_heart_w</code>.</li>
-    <li><b>The second phase is a card, not a var.</b> <a href="../reference/monster-vocab.html#hp_below"><code>hp_below</code></a> 50 is the first card in <code>chase</code>. Above half health it never matches, and the Smelter only slams and shoots. Below, every 600 ticks (10 seconds) it stops, roars and brings three husks, never more than 9 of its own alive at once (<code>limit</code>). Nothing else changes, so there is no <code>regroup</code> to write.</li>
-    <li><b>Three cooldown vars</b>, <code>ready</code>, <code>slam</code> and <code>brood</code>, so no attack waits on another's timer.</li>
-    <li><b>Heavy and hard to stagger.</b> <code>pain_chance</code> 12 (out of 255) flinches about one hit in twenty; and <code>mass</code> 12 makes it heavy to shove, so your scattergun's knockback hardly moves it.</li>
-    <li><b>The volley is four fans.</b> Each <code>missile</code> step fires a fan, <code>count</code> 3, then 2, 3 and 2, all with <code>arc</code> 8, the degrees between two shells: ten shells in 30 ticks. A fan of 3 goes at −8, 0 and 8 degrees, a fan of 2 at −4 and 4, so each fan fills the gaps of the one before. <code>offset</code> "2" is a distance, not an angle: every shell starts 2 units in front, just clear of the Smelter's radius of 1.4 (<a href="03-attacks.html#cinderfall">Attacks</a>).</li>
+    <li><b>Body:</b> radius 1.4, height 4.4, <span class="ui">Runs at</span> 2. Placed once, in <code>w_heart_w</code>.</li>
+    <li><b>The second phase is a rule, not a phase.</b> <em>Its health is below 50%</em> is the first rule in <code>chase</code>. Above half health it never holds, and the Smelter only slams and shoots. Below, every 10 seconds it stops, roars and brings three husks, never more than 9 of its own alive at once (the summon's <code>limit</code>, kept as written). Nothing else changes, so it needs no phases.</li>
+    <li><b>Three cooldowns</b>, <code>ready</code>, <code>slam</code> and <code>brood</code>, so no attack waits on another's timer.</li>
+    <li><b>Hard to stagger.</b> It flinches 5% of hits (12 of 256), about one hit in twenty. Its pain goes to <code>chase</code>, so a flinch in the middle of a volley ends the volley. Set its <span class="ui">Then goes to</span> to <em>back to what it was doing</em>, and the volley would carry on after the flinch.</li>
+    <li><b>Its Weight is 12.</b> On the engine's scale 100 is a person's weight, and a shove is divided by weight ÷ 100, so 12 is a light body. A boss your scattergun should hardly move needs 1000 or more, as the turret above has.</li>
+    <li><b>The volley is four fans.</b> Each <em>fire the missile</em> step fires a fan: <code>count</code> 3, then 2, 3 and 2, all with an <code>arc</code> of 8°, the angle between two shells: ten shells in half a second. A fan of 3 goes at −8, 0 and 8 degrees, a fan of 2 at −4 and 4, so each fan fills the gaps of the one before. Every shell starts 2 m in front (<code>offset</code>), just clear of the Smelter's radius. The sentences show none of these; they are kept as written (<a href="03-attacks.html#cinderfall">Attacks</a>).</li>
     <li><b>The bar on the HUD</b> is not the brain's: the map's graph writes it from <code>when_hurt</code> (<a href="../graphs/04-the-world.html#cinderfall">Talking to the world</a>).</li>
   </ul>
 
-  <div class="callout warn"><p><b>A <code>lua</code> condition or action moves a monster to the slower runtime.</b> None of these recipes needs one. The server prints at load how many monster kinds run on the fast C++ loop and how many fall back, with the reason. Keep the escape hatch for what the vocabulary truly cannot say.</p></div>
+  <div class="callout warn"><p><b>A Lua condition or step moves a monster to the slower runtime.</b> None of these recipes needs one. The server prints at load how many monster kinds run on the fast C++ loop and how many fall back, with the reason. Keep <em>the Lua function … says yes</em> and <em>run the Lua function …</em> for what the vocabulary truly cannot say.</p></div>
 
   <h2>Exercise: build the turret</h2>
-  <p>The turret is the smallest recipe. Building it once teaches you how a recipe maps onto the workshop.</p>
+  <p>The turret is the smallest recipe. Building it once teaches you how a recipe maps onto the editor.</p>
   <ol class="steps">
-    <li><p>Make a prop-like sheet for it, or reuse any sheet with an idle, a fire and a death animation. Open <b>☠ Monsters</b>, press <span class="ui">+ new monster</span> and name it <code>turret</code>.</p></li>
-    <li><p>On <span class="ui">👤 body</span>: pick the sheet, set <span class="ui">radius</span> 0.5, <span class="ui">height</span> 1, <span class="ui">speed</span> 0, <span class="ui">solid</span> on.</p></li>
-    <li><p>On <span class="ui">🧠 brain</span>: <code>hp</code> 150, <code>turn_speed</code> 0.5, <code>sight</code> 24, <code>mass</code> 1000. Clear <code>pain_chance</code> and switch <code>infighting</code> off.</p></li>
-    <li><p>In the graph, pick <code>pain</code> and press <span class="ui">✕ state</span>. Rename <code>look</code> to <code>scan</code>, <code>chase</code> to <code>track</code> and <code>attack</code> to <code>fire</code> with each state's <span class="ui">name</span> box; arrows follow the new names.</p></li>
-    <li><p>Set <code>track</code>'s <code>move</code> to stop and its <code>anim</code> to 0. Replace its transitions with the two in the recipe: to <code>fire</code> first, then to <code>scan</code>, with <code>target_visible</code> negated and <code>state_elapsed</code> 32.</p></li>
-    <li><p>Set <code>fire</code>'s <code>ticks</code> to 32 and <code>next</code> to track. Delete its old steps. Add three <code>hitscan</code> steps at 8, 16 and 24 (<code>damage</code> 6, <code>range</code> 24, <code>spread</code> 3), a <code>sound</code> at 8, and <code>set_cooldown</code> at 24 on <code>ready</code>, <code>ticks</code> 60, <code>jitter</code> 12.</p></li>
-    <li><p>On <code>death</code>, switch <code>solid</code> on so the wreck keeps blocking, and add a <code>sound</code> at 0. Check <em>"loads clean"</em>.</p></li>
-    <li><p>Place two turrets covering one corridor, press <span class="ui">▶ Play</span>, and cross it. Strafe across one's front and watch it fail to keep up. Then compare with <code>turn_speed</code> 4.</p></li>
+    <li><p>Make a sheet for it, or reuse any sheet with an idle, an attack and a death animation. Open <b>☠ Monsters</b>, tap the name at the top left, type <code>turret</code> under <b>New monster</b> and press <span class="ui">Blank</span>. On <span class="ui">Looks</span>, pick its <span class="ui">sprite</span>.</p></li>
+    <li><p>On <span class="ui">Overview</span>: <span class="ui">Health</span> 150, <span class="ui">Sees</span> 24, <span class="ui">Fights others</span> off. On <span class="ui">Advanced</span>: <span class="ui">Turns a second</span> 0.5, <span class="ui">Weight</span> 1000; under <b>Its body states</b>, <span class="ui">radius</span> 0.5, <span class="ui">height</span> 1, <span class="ui">speed</span> 0.</p></li>
+    <li><p>On <span class="ui">Behaviour</span>, open <code>pain</code> and press <span class="ui">delete</span>. Open <code>idle</code> and rename it <code>scan</code> in its name box; set <span class="ui">Faces</span> to <em>where it was</em>.</p></li>
+    <li><p>Add the states <code>track</code> and <code>fire</code> with <span class="ui">+ state</span>, and make each read as in the recipe: <code>track</code> faces the target and has its two rules, <code>fire</code> lasts 0.53 s, goes to <code>track</code>, plays attack, and has its five steps. Use the preview's playhead: with the preview running in <code>fire</code>, <span class="ui">+ add a step at …</span> adds the step at the moment it is at.</p></li>
+    <li><p>Give <code>scan</code> its rule: → <code>track</code> when <em>it has a target</em> and <em>it can see the target</em>. On <code>death</code>, add <em>play the sound</em> at 0 s.</p></li>
+    <li><p>Run the preview, and press <span class="ui">further</span> until the target is past 24 m: after half a second in <code>track</code>, it goes back to <code>scan</code>. Check the rail shows no problem count.</p></li>
+    <li><p>Place two turrets covering one corridor, press <span class="ui">▶ Play</span>, and cross it. Strafe across one's front and watch it fail to keep up. Then compare with <span class="ui">Turns a second</span> 4.</p></li>
   </ol>
 
   <div class="quiz" data-answer="1">
-    <p class="q">The charger dashes with <code>move = "wander"</code>. Why not <code>move = "chase"</code>?</p>
+    <p class="q">The charger's <code>rush</code> starts with <em>leap target at 14 m/s</em>. Why can you sidestep it?</p>
     <ul>
-      <li><code>chase</code> cannot go faster than the body's speed</li>
-      <li><code>chase</code> keeps steering after the target, so you could not sidestep it; <code>wander</code> walks the heading stored at the end of the wind-up</li>
-      <li><code>wander</code> ignores walls, so it can break through them</li>
+      <li>A leap cannot go faster than the body's own speed</li>
+      <li>The leap throws the body once, at where you were when it ran; it does not steer after you</li>
+      <li>A leap ignores walls, so it flies past you</li>
     </ul>
-    <p class="why">A charge you can dodge must commit to a line. <code>set_angle</code> stores the line once, and <code>wander</code> walks it. Walls still stop it, and <code>stuck</code> notices.</p>
+    <p class="why">A charge you can dodge must commit to a line. The leap sets the line once, and the warning before it tells you when. Walls still stop it.</p>
   </div>
   <div class="quiz" data-answer="0">
-    <p class="q">In the boss, why does <code>pain</code> go to <code>regroup</code> rather than to <code>chase1</code>?</p>
+    <p class="q">In the three-phase boss, why does <code>pain</code> go <em>back to what it was doing</em> rather than to <code>chase</code>?</p>
     <ul>
-      <li>So a flinch in phase two does not send it back to phase one's chase</li>
+      <li>So a flinch in phase two or three does not send it back to phase one's chase</li>
       <li>Because <code>pain</code> may not name a chase state</li>
       <li>So it cannot be hurt during the flinch</li>
     </ul>
-    <p class="why"><code>regroup</code> reads the <code>phase</code> var and picks the right chase. Anything that returns to the fight goes through it.</p>
+    <p class="why">Going back resumes the state the hit interrupted, in whatever phase it is. A <code>pain</code> that went to <code>chase</code> would drop it into phase one's chase, and its phase-one rules.</p>
   </div>
   <div class="quiz" data-answer="2">
-    <p class="q">The turret has no <code>pain</code> state, but <code>pain_chance</code> is 128. What happens when you shoot it?</p>
+    <p class="q">The turret has no <code>pain</code> state, but you set <span class="ui">Flinches</span> to 50%. What happens when you shoot it?</p>
     <ul>
       <li>It flinches half the time, into its idle animation</li>
-      <li>The workshop refuses it</li>
+      <li>The editor refuses it</li>
       <li>It never flinches: there is no <code>pain</code> state to enter, so nothing is rolled</li>
     </ul>
-    <p class="why">The pain roll needs a state called <code>pain</code>. Clearing <code>pain_chance</code> as well just says so plainly.</p>
+    <p class="why">The flinch roll needs a state called <code>pain</code>. <b>Whatever it is doing</b> says so plainly: <em>no state is named pain, so this never happens</em>.</p>
   </div>
 </article>
 </body>

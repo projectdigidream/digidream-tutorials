@@ -1355,3 +1355,38 @@ DNP_LUA_API.internal.push(
   'dnp.weapons_compile', 'dnp.weapon_sync', 'dnp.weapon_step', 'dnp.weapon_state', 'dnp.weapon_reset', 'dnp.weapon_autoaim'
 );
 DNP_LUA_API.extra.push('fx.operators', 'vec3.fields');
+
+// ---- Engine 0.2.0 ----
+// Where saves resume a monster (state, elapsed, sequence position): mobs.lua's.
+DNP_LUA_API.internal.push('dnp.mob_resume_point');
+(function () {
+  var g = function (id) { return DNP_LUA_API.groups.filter(function (x) { return x.id === id; })[0]; };
+  g('dnp-geometry').entries.push({
+    id: 'dnp.place', sig: 'dnp.place(pos, radius, height[, ignore]) → vec3, sector | nil', where: 'both',
+    doc: 'Where a body of this size could stand at `pos`: on the floor under it, with the headroom it needs, no wall within its radius and no other solid body overlapping it. Returns that spot, on the floor, and its room number; or `nil` when it does not fit.\n\n`pos.z` picks the floor where two overlap (a bridge over a path). Use it before you `teleport` something, so nothing lands inside a wall, under a low ceiling or inside a player.',
+    args: [
+      { name: 'pos', type: 'vec3', doc: 'where you would like it to stand' },
+      { name: 'radius', type: 'fx', doc: 'the body\'s radius' },
+      { name: 'height', type: 'fx', doc: 'the body\'s height' },
+      { name: 'ignore', type: 'entity', optional: true, doc: 'a body not to count, usually the one being moved' }
+    ],
+    returns: 'the spot (a vec3 on the floor) and its room number, or nil',
+    notes: ['It says whether a body fits, not whether it can walk anywhere from there: ask `dnp.find_path` for that.'],
+    example: 'local spot = dnp.place(vec3.new(12, 4, 0), fx.frac(1, 2), 2, e)\nif spot then e:teleport(spot) end',
+    see: ['entity.teleport', 'dnp.find_path', 'dnp.sweep']
+  });
+  g('entity').entries.push({
+    id: 'entity.input_tick', sig: 'e:input_tick() → integer | nil', where: 'both',
+    doc: 'Which of this player\'s inputs the step about to run uses, or `nil` for a body nobody plays. It is the player\'s own clock: on a tick the server runs without fresh input from them, it stays where it was.\n\nTime something a player\'s own client predicts by it (their rocket\'s shove, say), not by `dnp.tick()`, so the server and their client agree on when it happens.',
+    returns: 'integer, or nil for a body nobody plays',
+    see: ['dnp.tick', 'entity.player']
+  });
+  g('fx').entries.push({
+    id: 'fx.sqrt', sig: 'fx.sqrt(x) → fx', where: 'both',
+    doc: 'The square root of `x`, computed the same on every device. A negative `x` gives 0.\n\nUse it instead of `math.sqrt` for anything that changes the game, such as a distance or an aim, so every player\'s device gets the same answer.',
+    args: [{ name: 'x', type: 'fx' }],
+    returns: 'fx',
+    example: 'local d = e:pos() - target:pos()\nlocal dist = fx.sqrt(d.x * d.x + d.y * d.y)',
+    see: ['dnp.length', 'fx.operators']
+  });
+})();

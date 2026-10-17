@@ -82,6 +82,9 @@ node tutorials/tools/check-lua-ref.mjs   # exits 1 and names what is missing or 
 node tutorials/tools/build-skins.mjs     # assets/skins/, from uikit/skins
 ```
 
+- Both engine tools read the engine **at a commit** (`HEAD` by default, or
+  `--rev <commit>`), not its working tree, so the tutorials never pick up work
+  in progress. `--worktree` reads the files on disk.
 - `assets/data/vocab-*.js` hold the engine's graph, monster and weapon
   vocabularies, behind the generated reference pages. Don't edit them; run
   `build-vocab.mjs` after the engine's vocabulary changes.

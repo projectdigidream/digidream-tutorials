@@ -39,6 +39,7 @@
     <li>Without a pitch, the grid only says which maps are near which, so the next map is in memory before a player reaches it.</li>
     <li>With <span class="ui">one shared world (walk from map to map)</span>, the maps are one world. Each one is drawn in its own cell, and two maps join where both have an open side along the same line. You open a side in the wall form (see <a href="#wall-form">The wall form</a>).</li>
   </ul>
+  <p>In one shared world, a map that has a cell shows that cell's limits in the map editor as a thick, bright band, as thick at every zoom. Where the band runs is where this map ends and its neighbour begins, so you can see at a glance how much room is left before a side.</p>
   <div class="callout tip"><p>You do not need the metamap for a first map. Leave it off until you have two maps that should join.</p></div>
 
   <h2>The map editor</h2>
@@ -238,7 +239,7 @@
     <li><span class="ui">put the maps on a grid</span> and <span class="ui">one shared world (walk from map to map)</span> are both on. The cells are 112 × 112, and <span class="ui">kept around a player</span> is 3 cells each way, so every district stays in memory.</li>
     <li>The hub, <code>w_hub</code>, is in the middle cell. Old Town is west of it, the Railhead east, the Mine and the Foundry north (two maps each), and the Heart south (two maps).</li>
     <li>Neighbouring maps join where both have an open side on the same line. The player walks across, with no load and no <code>change_map</code>.</li>
-    <li>Open <code>w_hub</code> in the map editor: the neighbours are drawn round it, with their names on them, such as <code>w_railhead</code> to the east.</li>
+    <li>Open <code>w_hub</code> in the map editor: its cell's limits are the thick, bright band round it, and the neighbours are drawn beyond the band, with their names on them, such as <code>w_railhead</code> to the east.</li>
   </ul>
   <p>Its other three maps, <code>menu</code>, <code>n_arrival</code> and <code>n_epilogue</code>, are not on the grid. Graphs move the player into and out of them with <code>change_map</code>.</p>
 

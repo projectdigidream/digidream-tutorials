@@ -47,6 +47,9 @@
   <p>An effect is how you change a rule for a while. This doubles a player's speed for five seconds, then lets it lapse by itself:</p>
   <pre><code>e:add_effect("move_speed", "mul", 2, 300)   -- 300 ticks = 5 seconds</code></pre>
   <p>Without <code>ticks</code>, an effect lasts until you remove it with the id it returned. Keep the id if you will want to undo it.</p>
+  <p><code>e:teleport</code> puts the body where you say, even inside a wall. Before you move something, ask <a href="../luaref/02-every-function.html#dnp.place"><code>dnp.place(pos, radius, height[, ignore])</code></a> whether a body that size fits there: it gives back the spot on the floor, or <code>nil</code> when a wall, a low ceiling or another body is in the way. Pass the body you are moving as <code>ignore</code>, so it does not count against itself.</p>
+  <pre><code>local spot = dnp.place(vec3.new(12, 4, 0), fx.frac(1, 2), 2, e)
+if spot then e:teleport(spot) end</code></pre>
 
   <h2 id="props">Props</h2>
   <p>A prop is a body without a brain: a lever, a coin, a crate. <a href="../luaref/02-every-function.html#dnp.props"><code>dnp.props()</code></a> lists them and <a href="../luaref/02-every-function.html#dnp.prop"><code>dnp.prop(i)</code></a> gets one. A prop's <a href="../luaref/02-every-function.html#prop.name"><code>p:name()</code></a> is the name it has in <b>📦 Props</b>. Finding by name is the robust way:</p>

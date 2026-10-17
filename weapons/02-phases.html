@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>The phase machine · Digidream Studio tutorials</title>
-<meta name="description" content="How a weapon's phases, sequences and transitions run tick by tick: ready, fire, refire and cooldown, tapping versus holding, automatic fire and the dry click.">
+<meta name="description" content="How a weapon's states, rules and steps run tick by tick: every condition in the editor's words, events and states, tapping and holding, refire, cooldowns, the dry click, and states in first person.">
 <link rel="stylesheet" href="../assets/site.css">
 <link rel="stylesheet" href="../assets/skins/skins.css">
 <link rel="icon" type="image/png" href="../assets/logo.png">
@@ -17,297 +17,355 @@
 <body>
 <article>
   <h1>The phase machine</h1>
-  <p class="lede">Every weapon, from a fist to a rocket launcher, is the same machine: phases, a sequence of actions in each, and transitions between them. There is no "automatic" box to tick and no "cooldown" number. You get those by drawing the graph. This lesson explains how the machine runs, tick by tick, and then you build a weapon with it.</p>
+  <p class="lede">Every weapon, from a fist to a rocket launcher, is the same machine: states, the steps each one runs, and rules that move it between them. There is no "automatic" box to tick: you get automatic fire, a pump, a charge or a cooldown from the words you put in the rules. This lesson explains how the machine runs, tick by tick, and then you build a weapon with it.</p>
   <div class="goal">
-    <b>You'll learn</b><span>the six phase fields; the order the engine checks things in each tick; every condition, and which are events and which are states; how a shot flows from ready to fire and back; tapping versus holding; refire and cooldown; and the dry click</span>
+    <b>You'll learn</b><span>what a state holds; the order the engine checks things in each tick; every condition, and which are events and which are states; how a shot flows from ready to fire and back; tapping versus holding; refire and cooldowns; the dry click; and states in first person</span>
     <b>Time</b><span>35 minutes</span>
     <b>Needs</b><span>the pistol from <a href="01-first-weapon.html">Your first weapon</a></span>
   </div>
+  <div class="callout tip"><p><b>States and phases.</b> The editor calls each step of the machine a <b>state</b>. The engine's files and the vocabulary call a weapon's states <b>phases</b> (<code>phases</code>, <code>phase_elapsed</code>), which is where this page's title comes from. They are the same thing.</p></div>
 
   <h2>Try it first</h2>
-  <p>The demo runs three weapons on the engine's rules, at the engine's 60 ticks a second. Hold the button (or click the demo and hold <kbd>Space</kbd>). Watch the phase light up in the diagram, and the timeline record each tick. Set the speed to ¼× to see single ticks.</p>
+  <p>The demo runs four weapons on the engine's rules, at the engine's 60 ticks a second. Hold the button (or click the demo and hold <kbd>Space</kbd>). Watch the state light up in the diagram, and the timeline record each tick. Set the speed to ¼× to see single ticks.</p>
   <div class="widget" data-widget="phase-machine" data-title="A weapon, tick by tick" data-preset="pistol"></div>
   <p>Things to try:</p>
   <ul>
     <li><b>pistol</b>: hold the button down. It fires once. Tap fast: no more than one shot every 24 ticks, however fast you tap, because a press during <code>fire</code> has nowhere to go.</li>
     <li><b>chaingun</b>: hold. It spins for 24 ticks, then fires every 9 for as long as you hold. Let go during the spin and it goes back to <code>ready</code> without firing.</li>
     <li><b>pump shotgun</b>: seven rays per shot. Move the target further away and watch fewer rays land.</li>
+    <li><b>bfg (cooldown)</b>: tap. One shot, then 96 ticks before the next, although <code>fire</code> itself lasts 30: the line under the button counts the cooldown down.</li>
     <li>Press <span class="ui">empty the pool</span> and fire: the weapon goes to <code>dry</code> instead of <code>fire</code>.</li>
   </ul>
+  <p>The editor's own preview (on <span class="ui">Behaviour</span>) runs your weapon by the same rules, so everything here can be tried there too.</p>
 
   <h2>Two levels</h2>
   <table>
-    <thead><tr><th>Level</th><th>What it says</th><th>In the studio</th></tr></thead>
+    <thead><tr><th>Level</th><th>What it says</th><th>In the editor</th></tr></thead>
     <tbody>
-      <tr><td>the <b>phases</b></td><td>Which phase the weapon is in, and what moves it to another. Usually four to eight of them.</td><td>the boxes in <span class="ui">⬡ graph</span></td></tr>
-      <tr><td>the <b>sequence</b></td><td>What one phase <em>does</em> while it is in it: a list of steps, each <em>at</em> a tick after the phase began.</td><td><b>▶ at tick … do …</b> in the phase's tab</td></tr>
+      <tr><td>the <b>states</b></td><td>Which state the weapon is in, and what moves it to another. Usually four to eight of them.</td><td>the cards on <span class="ui">Behaviour</span>, or the boxes in <span class="ui">Graph</span></td></tr>
+      <tr><td>the <b>steps</b></td><td>What one state <em>does</em> while the weapon is in it: a list of steps, each <em>at</em> a moment after the state began.</td><td>the state's <b>Timeline</b>, and the chips at the bottom of its card</td></tr>
     </tbody>
   </table>
-  <p>DOOM's whole pistol is two sequence steps (take a bullet, fire a ray) and a phase that lasts 24 ticks.</p>
+  <p>DOOM's whole pistol is two steps (take a bullet, fire a ray) and a state that lasts 24 ticks.</p>
 
-  <h2>The six phase fields</h2>
-  <figure class="shot" data-src="../assets/shots/weapon-phase-ready.png" data-alt="The ready phase of Gem Hollow's startoss: anim 0, no ticks, no next, and one transition to throw when button_pressed and has_ammo" data-hotspots='[{"x":88,"y":32,"t":"anim?","d":"the player&#39;s animation state in this phase: 0"},{"x":88,"y":38,"t":"ticks?","d":"empty: the phase waits"},{"x":88,"y":44,"t":"next?","d":"where to go when the ticks run out"},{"x":84,"y":56,"t":"A transition","d":"to throw; its conditions all must hold"},{"x":92,"y":62,"t":"not","d":"leave this off for weapons: the server refuses negate"},{"x":89,"y":85,"t":"add when","d":"adds a condition to this transition"},{"x":76,"y":92,"t":"+ transition","d":"adds another card; a new one has no conditions yet"}]'>
-    <figcaption>The <code>ready</code> phase of Gem Hollow's <code>startoss</code>: no ticks, so it waits, and one transition with two conditions.</figcaption>
+  <h2 id="state">What a state holds</h2>
+  <p>Tap a state's name (or <span class="ui">edit</span> on its card) and its editor opens on the right, under the preview. Its buttons <span class="ui">does</span>, <span class="ui">goes to</span>, <span class="ui">at the end</span> and <span class="ui">steps</span> jump to its four parts.</p>
+  <figure class="shot" data-src="../assets/shots/weapon-editor-state.png" data-alt="Gem Hollow's startoss with ready picked: on the right, the name ready, where it begins, duplicate and delete, the four jump buttons, then What it does with Shows picture 0, Lasts empty and Follows whatever it is doing" data-hotspots='[{"x":38.3,"y":49,"t":"The card","d":"ready, lit while it is picked."},{"x":69.3,"y":49.7,"t":"Its name","d":"Type to rename it: every rule that went to it follows."},{"x":65,"y":55.7,"t":"★ where it begins","d":"On another state: make it where it begins."},{"x":75,"y":55.7,"t":"duplicate, delete","d":"delete says how many rules point at it first."},{"x":72,"y":61.8,"t":"Jump buttons","d":"does, goes to, at the end, steps."},{"x":76.4,"y":70.6,"t":"Shows picture","d":"0: a picture of its first-person view."},{"x":76.4,"y":78.8,"t":"Lasts","d":"Empty: it stays until a rule fires."},{"x":68.5,"y":86.8,"t":"Follows whatever it is doing","d":"The rules for any state are checked here too, first."},{"x":80.7,"y":93.9,"t":"Goes to","d":"Its own rules, below."}]'>
+    <figcaption><code>ready</code> of Gem Hollow's <code>startoss</code>, picked: it lasts nothing, so it waits for a rule.</figcaption>
   </figure>
   <table>
-    <thead><tr><th>Field</th><th>What it does</th></tr></thead>
+    <thead><tr><th>In the editor</th><th>The engine's word</th><th>What it does</th></tr></thead>
     <tbody>
-      <tr><td><a href="../reference/weapon-vocab.html#phase_fields.anim"><span class="ui">anim?</span></a></td><td>The animation state the player is put in for this phase, by number. In the default five, 0 is idle and 2 is attack. It is set on the tick the phase is entered, before its steps; empty leaves the state as it was. The same number picks the weapon's first-person animation (<a href="#first-person">below</a>). The client times the frames.</td></tr>
-      <tr><td><a href="../reference/weapon-vocab.html#phase_fields.ticks"><span class="ui">ticks?</span></a></td><td>How long the phase lasts. <b>Empty means it waits</b> until a transition fires. When set, it is also a <b>window</b>: the phase's transitions can only fire while it is running.</td></tr>
-      <tr><td><a href="../reference/weapon-vocab.html#phase_fields.next"><span class="ui">next?</span></a></td><td>Where to go when the ticks run out and no transition matched. Empty goes back to the weapon's initial phase.</td></tr>
-      <tr><td><a href="../reference/weapon-vocab.html#phase_fields.sequence">sequence</a></td><td><b>▶ at tick … do …</b>: the steps. <span class="ui">at</span> is a <b>deadline from entering the phase</b>, not a delay after the step before it.</td></tr>
-      <tr><td><a href="../reference/weapon-vocab.html#phase_fields.transitions">transitions</a></td><td><b>❓ go to … when all of …</b>: checked in order, every tick. The first that matches wins.</td></tr>
-      <tr><td><a href="../reference/weapon-vocab.html#phase_fields.swing">swing</a></td><td>A melee swing for this phase only, in place of the weapon's. This is what makes a combo's last blow bigger (<a href="03-hitscan-missiles-swings.html#swings">Swings</a>).</td></tr>
+      <tr><td><span class="ui">Shows picture</span></td><td><a href="../reference/weapon-vocab.html#phase_fields.anim"><code>anim</code></a></td><td>The animation state the player is put in for this state, by number. In the default five, 0 is idle and 2 is attack. It is set on the tick the state is entered, before its steps. The same number picks the weapon's first-person animation (<a href="#first-person">below</a>), and the card says <em>picture 2</em>, or <em>its resting picture</em> when none is set.</td></tr>
+      <tr><td><span class="ui">Lasts</span></td><td><a href="../reference/weapon-vocab.html#phase_fields.ticks"><code>ticks</code></a></td><td>How long the state lasts, in seconds. <b>Empty means it waits</b> (<em>until a rule fires</em>). When set, it is also a <b>window</b>: the state's rules can only fire while it runs.</td></tr>
+      <tr><td><span class="ui">Then goes to</span></td><td><a href="../reference/weapon-vocab.html#phase_fields.next"><code>next</code></a></td><td>Where it goes when its time is up and no rule fired. Shown once it has a length. <code>(stays)</code> clears both, and the state waits again.</td></tr>
+      <tr><td><b>Goes to</b></td><td><a href="../reference/weapon-vocab.html#phase_fields.transitions"><code>transitions</code></a></td><td>Its rules: checked in order, every tick. The first whose conditions all hold wins.</td></tr>
+      <tr><td><b>When its time is up (optional branches)</b></td><td>more transitions</td><td>Rules checked only on the tick its time runs out, before <span class="ui">Then goes to</span>: <em>"as it ends, if …"</em>. The editor writes each one as a rule with "this state has run for" its length.</td></tr>
+      <tr><td><b>Timeline</b></td><td><a href="../reference/weapon-vocab.html#phase_fields.sequence"><code>sequence</code></a></td><td>The steps. Each one's <span class="ui">at</span> is a <b>deadline from entering the state</b>, not a delay after the step before it.</td></tr>
+      <tr><td><b>Its own swing</b></td><td><a href="../reference/weapon-vocab.html#phase_fields.swing"><code>swing</code></a></td><td>A melee swing for this state only, in place of the weapon's. This is what makes a combo's last blow bigger (<a href="03-hitscan-missiles-swings.html#swings">Swings</a>).</td></tr>
+      <tr><td><span class="ui">Follows "whatever it is doing"</span></td><td></td><td>On: the rules under <b>Whatever it is doing</b> are checked here too, before its own. Off for a state they must not interrupt.</td></tr>
     </tbody>
   </table>
-  <p>The graph box sums up each phase: <code>anim 2 · stop · 12t → ready</code> and <code>0 out · 1 steps</code>. An arrow labelled <code>after 12 ticks</code> is the <span class="ui">next?</span>; the others are transitions, labelled with their conditions. Tap an arrow's label to open its phase.</p>
+  <ul>
+    <li><b>Seconds and ticks.</b> The game runs at 60 ticks a second. Times are typed in seconds and kept in ticks, rounded to the nearest one, and the hint under <span class="ui">Lasts</span> says how many: <em>"8 ticks; the game runs 60 a second"</em>. One tick is about 0.017 s, so <code>0.02</code> gives a state one tick.</li>
+    <li><b>A length needs somewhere to go.</b> Give a waiting state a <span class="ui">Lasts</span>, and <span class="ui">Then goes to</span> starts as the state the weapon begins in (★). For most states you want <code>ready</code>: pick it.</li>
+    <li><b>A new state</b>: <span class="ui">+ state</span> asks for its name (<span class="ui">New state, named</span>), and <span class="ui">Create</span> places it after the state picked. It shows picture 0, lasts 0.3 s, then goes back to <code>ready</code>, the resting state. Nothing goes to it yet, and its card says <em>"nothing goes here yet"</em> until another state has a rule that does.</li>
+    <li><b>A state's card</b> reads all of it as one sentence: <em>"shows picture 2, for 0.23 s then goes on to ready"</em>, then its rules (<em>→ throw when fire is pressed and it has at least 1 ammo</em>), then its steps as chips (<em>0 s · use 1 ammo</em>). Tap any part to edit it.</li>
+  </ul>
+
+  <h3 id="graph">The graph</h3>
+  <p><span class="ui">Graph</span>, at the top right, draws the same states as boxes, in the order the arrows read. Each box has its name, its picture and its length. A dashed arrow is <span class="ui">Then goes to</span>, labelled with the time; a solid one is a rule, labelled with its conditions in short (<em>fire · ammo</em>). Tap a box or a label to open that state. Drag to move around; the wheel or two fingers zoom, and <span class="ui">fit</span> brings every state into view.</p>
+  <figure class="shot" data-src="../assets/shots/weapon-editor-graph.png" data-alt="Cinderfall's wrench in Graph view: draw, ready, swing, recover and swing2 in a row, with fire arrows from ready and recover and dashed timed arrows back to ready" data-hotspots='[{"x":21.3,"y":47.9,"t":"★ draw","d":"Where it begins: its resting picture, 0.13 s."},{"x":26.8,"y":47,"t":"A timed arrow","d":"Then goes to, after 0.13 s: dashed."},{"x":37.8,"y":47,"t":"A rule","d":"ready → swing when fire is pressed: solid, labelled fire."},{"x":43.3,"y":49.5,"t":"swing","d":"Picture 10, 0.27 s, then recover."},{"x":59.8,"y":47,"t":"The combo","d":"recover → swing2 on a second press."},{"x":48.8,"y":54.8,"t":"Back to ready","d":"swing2 after 0.3 s."},{"x":85.7,"y":33.9,"t":"The wrench, held","d":"The preview, as on the list."}]'>
+    <figcaption>Cinderfall's <code>wrench</code> as a graph: a two-blow combo.</figcaption>
+  </figure>
 
   <h2>One tick, in order</h2>
   <p>Sixty times a second, for each player, the engine does this with the weapon in their hands:</p>
   <ol>
-    <li><b>Run the sequence.</b> Every step whose <span class="ui">at</span> has been reached, and that hasn't run yet in this visit to the phase, runs now, in list order. A <a href="../reference/weapon-vocab.html#goto"><code>goto</code></a> step leaves at once, and the rest of the list is skipped.</li>
-    <li><b>Try the transitions</b>, top to bottom. The first whose conditions all hold wins.</li>
-    <li><b>Check the clock.</b> If no transition fired and the phase has run its <span class="ui">ticks?</span>, go to <span class="ui">next?</span> (or the initial phase).</li>
-    <li><b>If the phase changed, go round again</b> in the same tick: the new phase's tick-0 steps run, its transitions are tried, and so on.</li>
+    <li><b>Run the steps.</b> Every step whose <span class="ui">at</span> has been reached, and that hasn't run yet in this visit to the state, runs now, in list order. A "leave now for" step (<a href="../reference/weapon-vocab.html#goto"><code>goto</code></a>) leaves at once, and the rest of the list is skipped.</li>
+    <li><b>Try the rules</b>, top to bottom: the rules for any state first, then the state's own, then its branches as it ends. The first whose conditions all hold wins.</li>
+    <li><b>Check the clock.</b> If no rule fired and the state has run its <span class="ui">Lasts</span>, go to <span class="ui">Then goes to</span>.</li>
+    <li><b>If the state changed, go round again</b> in the same tick: the new state's 0 s steps run, its rules are tried, and so on.</li>
   </ol>
-  <p>Step 4 is why a chaingun can fire on the very tick its last shot ends: <code>fire</code> runs out, goes to <code>ready</code>, <code>ready</code> sees the button still held and goes to <code>fire</code>, and <code>fire</code>'s tick-0 shot goes off. All in one tick.</p>
-  <div class="callout warn"><p><b>At most five changes a tick.</b> More than that is a loop, such as two phases that go to each other on <code>always</code>. The engine stops for that tick and complains: <em>weapon 'x' changed phase 6 times in one tick … a transition loop</em>. The weapon is stuck until you fix the graph.</p></div>
-  <p>Because <span class="ui">at</span> is a deadline, a step at 10 runs on the first tick the phase has been running for at least 10 ticks. If a tick is ever skipped, the step is late, never lost.</p>
+  <p>Step 4 is why a chaingun can fire on the very tick its last shot ends: <code>fire</code> runs out, goes to <code>ready</code>, <code>ready</code> sees the button still held and goes to <code>fire</code>, and <code>fire</code>'s shot at 0 s goes off. All in one tick.</p>
+  <div class="callout warn"><p><b>At most five changes a tick.</b> More than that is a loop, such as two states that go to each other on "always". The engine stops for that tick and complains: <em>weapon 'x' changed phase 6 times in one tick … a transition loop</em>. The weapon is stuck until you fix its rules.</p></div>
+  <p>Because <span class="ui">at</span> is a deadline, a step at 0.17 s runs on the first tick the state has been running for at least that long. If a tick is ever skipped, the step is late, never lost.</p>
+  <ul>
+    <li><b>The Timeline lists the steps in the order the engine runs them</b>, each with its time, and a mark per step on the line above them. A new step, or one whose time you change, goes in by its time; the others keep their order.</li>
+    <li><b>A step runs only once the steps above it have run.</b> So a step at 0 s listed after one at 0.2 s waits for it, and the list says so: <em>"(runs at 0.2 s, after the step before it)"</em>, with <span class="ui">put them in time order</span> to sort them.</li>
+    <li><span class="ui">+ add a step at 0 s</span> adds a step at the start. While the preview runs in this state, the button offers the moment the preview is at instead.</li>
+  </ul>
 
-  <h2>Conditions</h2>
-  <p>A condition is a question about this tick. The studio writes every transition as a list, <b>when all of …</b>: add conditions with <span class="ui">add when</span>, and all of them must hold.</p>
+  <h2 id="rules">Rules and conditions</h2>
+  <p>A state's rules are under <b>Goes to</b>, one card each: its number, <span class="ui">go to</span> and the state it goes to, then <em>"when all of these hold:"</em> and its conditions, each with a <span class="ui">✕</span>. <span class="ui">+ add a condition</span> adds one, <span class="ui">+ another rule</span> adds a card, and the arrows beside the number (<em>Check this rule earlier</em>, <em>later</em>) change the order. Order matters: the first rule that holds wins.</p>
+  <figure class="shot" data-src="../assets/shots/weapon-phase-ready.png" data-alt="The Goes to part of ready in Gem Hollow's startoss: rule 1, go to throw, when all of these hold: fire is pressed, it has at least 1 ammo; + add a condition, + another rule, then When its time is up and Timeline" data-hotspots='[{"x":63.6,"y":52.5,"t":"Rule 1","d":"The first that holds wins; arrows appear here when there are more."},{"x":72.7,"y":52.5,"t":"go to","d":"the state it goes to: throw"},{"x":96.6,"y":52.5,"t":"remove","d":"takes the rule away"},{"x":68,"y":61.2,"t":"fire is pressed","d":"an event: true on the tick the button goes down"},{"x":70,"y":67.5,"t":"it has at least 1 ammo","d":"a state: the number is a field"},{"x":97.3,"y":61.2,"t":"✕","d":"removes that condition"},{"x":80.7,"y":73.5,"t":"+ add a condition","d":"opens the chooser"},{"x":80.7,"y":80.6,"t":"+ another rule","d":"a new card, at the bottom"},{"x":80.7,"y":85.7,"t":"When its time is up","d":"branches; this state has no length, so none"}]'>
+    <figcaption>The rule of <code>ready</code> in Gem Hollow's <code>startoss</code>: go to <code>throw</code> when both conditions hold.</figcaption>
+  </figure>
+  <p><span class="ui">+ add a condition</span> opens a chooser, <b>Add a condition</b>: <em>every condition must hold</em>. Its groups are chips, one group shown at a time, and it opens on the group you used last. On a computer, a <em>find among 19…</em> box searches them all. A condition's numbers and names are fields in its sentence.</p>
+  <figure class="shot" data-src="../assets/shots/weapon-editor-chooser.png" data-alt="The Add a condition chooser in the rule of startoss's ready: the group chips Fire button, Ammo, The body, Time and chance, Numbers and timers and Lua, a find box, and the Fire button group: fire is pressed, fire is let go, fire is held, fire is not held, fire has been held for 0.5 s" data-hotspots='[{"x":67,"y":49.7,"t":"Add a condition","d":"every condition must hold"},{"x":96,"y":49.8,"t":"cancel","d":"closes the chooser"},{"x":66.9,"y":55.7,"t":"Fire button","d":"the group shown"},{"x":77.6,"y":55.7,"t":"Other groups","d":"Ammo, The body, Time and chance, Numbers and timers, Lua"},{"x":71.6,"y":67.5,"t":"find among 19…","d":"searches every group"},{"x":70,"y":76.5,"t":"The conditions","d":"tap one to add it to the rule"}]'>
+    <figcaption>The chooser of conditions, open on <b>Fire button</b>.</figcaption>
+  </figure>
   <table>
-    <thead><tr><th>Condition</th><th>Arguments</th><th>True when</th><th>Kind</th></tr></thead>
+    <thead><tr><th>Group</th><th>The editor says</th><th>The engine's word</th><th>True when</th><th>Kind</th></tr></thead>
     <tbody>
-      <tr><td><a href="../reference/weapon-vocab.html#always"><code>always</code></a></td><td>—</td><td>always. Use it last in a list, or to leave a waiting phase at once.</td><td>—</td></tr>
-      <tr><td><a href="../reference/weapon-vocab.html#button_pressed"><code>button_pressed</code></a></td><td><span class="ui">button?</span> primary / secondary</td><td>the button went down <b>this tick</b></td><td>event</td></tr>
-      <tr><td><a href="../reference/weapon-vocab.html#button_released"><code>button_released</code></a></td><td><span class="ui">button?</span></td><td>the button came up this tick. What ends a charge.</td><td>event</td></tr>
-      <tr><td><a href="../reference/weapon-vocab.html#button_held"><code>button_held</code></a></td><td><span class="ui">button?</span></td><td>the button is down, edge or not. <b>This is automatic fire.</b></td><td>state</td></tr>
-      <tr><td><a href="../reference/weapon-vocab.html#held_for"><code>held_for</code></a></td><td><span class="ui">ticks</span>, <span class="ui">button?</span></td><td>the button has been down for at least this many ticks, counted from when it went down</td><td>state</td></tr>
-      <tr><td><a href="../reference/weapon-vocab.html#has_ammo"><code>has_ammo</code></a></td><td><span class="ui">n?</span></td><td>the weapon's pool holds at least <code>n</code> (default its <span class="ui">per?</span>). Always true with no pool.</td><td>state</td></tr>
-      <tr><td><a href="../reference/weapon-vocab.html#no_ammo"><code>no_ammo</code></a></td><td>—</td><td>the opposite</td><td>state</td></tr>
-      <tr><td><a href="../reference/weapon-vocab.html#phase_elapsed"><code>phase_elapsed</code></a></td><td><span class="ui">ticks</span></td><td>this phase has run at least this long</td><td>state</td></tr>
-      <tr><td><a href="../reference/weapon-vocab.html#chance"><code>chance</code></a></td><td><span class="ui">percent</span></td><td>a roll of 0–99 is below it. Reproducible: the client rolls the same.</td><td>—</td></tr>
-      <tr><td><a href="../reference/weapon-vocab.html#var_at_least"><code>var_at_least</code></a></td><td><span class="ui">var</span>, <span class="ui">value</span></td><td>a weapon counter reached a number (a combo step, an overheat)</td><td>state</td></tr>
-      <tr><td><a href="../reference/weapon-vocab.html#var_is"><code>var_is</code></a></td><td><span class="ui">var</span>, <span class="ui">value</span></td><td>a counter is exactly a number</td><td>state</td></tr>
-      <tr><td><a href="../reference/weapon-vocab.html#grounded"><code>grounded</code></a></td><td><span class="ui">value?</span></td><td>standing on something; <code>value</code> off means airborne</td><td>state</td></tr>
-      <tr><td><a href="../reference/weapon-vocab.html#moving"><code>moving</code></a></td><td><span class="ui">speed?</span></td><td>moving sideways faster than <code>speed</code> (default half a unit a second)</td><td>state</td></tr>
-      <tr><td><a href="../reference/weapon-vocab.html#falling"><code>falling</code></a></td><td><span class="ui">speed?</span></td><td>going down faster than <code>speed</code>. The top of a jump is airborne but not falling.</td><td>state</td></tr>
-      <tr><td><a href="../reference/weapon-vocab.html#lua"><code>lua</code></a></td><td><span class="ui">fn</span></td><td>a Lua function says so. A weapon that uses it is not predicted (see <a href="03-hitscan-missiles-swings.html#prediction">prediction</a>).</td><td>—</td></tr>
+      <tr><td rowspan="5">Fire button</td><td>fire is pressed</td><td><a href="../reference/weapon-vocab.html#button_pressed"><code>button_pressed</code></a></td><td>the button went down <b>this tick</b></td><td>event</td></tr>
+      <tr><td>fire is let go</td><td><a href="../reference/weapon-vocab.html#button_released"><code>button_released</code></a></td><td>the button came up this tick. What ends a charge.</td><td>event</td></tr>
+      <tr><td>fire is held</td><td><a href="../reference/weapon-vocab.html#button_held"><code>button_held</code></a></td><td>the button is down, edge or not. <b>This is automatic fire.</b></td><td>state</td></tr>
+      <tr><td>fire is not held</td><td><code>button_held</code>, negated</td><td>the button is up</td><td>state</td></tr>
+      <tr><td>fire has been held for … s</td><td><a href="../reference/weapon-vocab.html#held_for"><code>held_for</code></a></td><td>the button has been down at least this long, counted from when it went down</td><td>state</td></tr>
+      <tr><td rowspan="2">Ammo</td><td>it has at least … ammo</td><td><a href="../reference/weapon-vocab.html#has_ammo"><code>has_ammo</code></a></td><td>the weapon's pool holds at least that many. Always true with no pool.</td><td>state</td></tr>
+      <tr><td>it is out of ammo</td><td><a href="../reference/weapon-vocab.html#no_ammo"><code>no_ammo</code></a></td><td>it has less than a shot (<span class="ui">A shot counts as</span>)</td><td>state</td></tr>
+      <tr><td rowspan="4">The body</td><td>on the ground</td><td><a href="../reference/weapon-vocab.html#grounded"><code>grounded</code></a></td><td>standing on something</td><td>state</td></tr>
+      <tr><td>in the air</td><td><code>grounded</code>, negated</td><td>not standing on anything</td><td>state</td></tr>
+      <tr><td>moving faster than … m/s</td><td><a href="../reference/weapon-vocab.html#moving"><code>moving</code></a></td><td>moving sideways faster than that</td><td>state</td></tr>
+      <tr><td>falling faster than … m/s</td><td><a href="../reference/weapon-vocab.html#falling"><code>falling</code></a></td><td>going down faster than that. The top of a jump is in the air but not falling.</td><td>state</td></tr>
+      <tr><td rowspan="3">Time and chance</td><td>this state has run for … s</td><td><a href="../reference/weapon-vocab.html#phase_elapsed"><code>phase_elapsed</code></a></td><td>this state has run at least this long</td><td>state</td></tr>
+      <tr><td>a …% chance</td><td><a href="../reference/weapon-vocab.html#chance"><code>chance</code></a></td><td>a roll of 0–99 is below it. Reproducible: your client rolls the same.</td><td>—</td></tr>
+      <tr><td>always</td><td><a href="../reference/weapon-vocab.html#always"><code>always</code></a></td><td>always. Use it last in a list, or to leave a waiting state at once.</td><td>—</td></tr>
+      <tr><td rowspan="4">Numbers and timers</td><td>cooldown … is over</td><td><a href="../reference/weapon-vocab.html#cooldown_ready"><code>cooldown_ready</code></a></td><td>the cooldown of that name has run out (<a href="#cooldown">Cooldowns</a>)</td><td>state</td></tr>
+      <tr><td>the number … is at least …</td><td><a href="../reference/weapon-vocab.html#var_at_least"><code>var_at_least</code></a></td><td>a number the weapon keeps reached a value (a combo step, an overheat)</td><td>state</td></tr>
+      <tr><td>the number … is …</td><td><a href="../reference/weapon-vocab.html#var_is"><code>var_is</code></a></td><td>a number is exactly a value</td><td>state</td></tr>
+      <tr><td>the number … is not …</td><td><code>var_is</code>, negated</td><td>a number is anything but that value</td><td>state</td></tr>
+      <tr><td>Lua</td><td>the Lua function … says yes</td><td><a href="../reference/weapon-vocab.html#cond.lua"><code>lua</code></a></td><td>a Lua function says so. A weapon that uses it is not predicted (see <a href="03-hitscan-missiles-swings.html#prediction">prediction</a>).</td><td>—</td></tr>
     </tbody>
   </table>
-  <div class="callout tip"><p><b>Switches that mean "default".</b> An optional on/off argument, such as <span class="ui">value?</span> on <code>grounded</code>, shows <span class="ui">off</span> while it is unset, but unset means the default, which for <code>grounded</code> is <em>on</em>. To ask for "airborne", switch it on and then off again, so <code>false</code> is really written.</p></div>
-  <p>The <b>primary</b> button is attack: the left mouse button, <kbd>F</kbd>, or <b>ATK</b> on touch. The <b>secondary</b> is alt-attack: the right mouse button, or <b>ALT</b> on touch.</p>
+  <p>The "not" forms (<em>fire is not held</em>, <em>in the air</em>, <em>the number … is not</em>) are the engine's <code>negate</code> on a condition, which weapons take since engine 0.2.0, as monsters always have.</p>
+  <p>The <b>fire button</b> is the primary one: attack, the left mouse button, <kbd>F</kbd>, or <b>ATK</b> on touch.</p>
+  <div class="callout soon"><p><b>The secondary button isn't in the editor's words yet.</b> The engine's button conditions can ask for the secondary button (alt-attack: the right mouse button, or <b>ALT</b> on touch). A rule that does keeps working, as the first rule of Cinderfall's scattergun does, but the editor reads it as <em>fire is pressed</em> and can't set it.</p></div>
 
   <h3>Events and states</h3>
-  <p>This is the rule that matters most. <b>An event</b> (<code>button_pressed</code>, <code>button_released</code>) is true on one tick. <b>A state</b> (<code>no_ammo</code>, <code>has_ammo</code>, <code>var_is</code> …) is true for as long as it is true.</p>
-  <p>So <b>a transition on a state needs an event beside it</b>, or a reason to only be checked at the right moment. The engine's own example: send an empty weapon to a phase that switches weapons, on <code>no_ammo</code> alone. That transition fires on <em>every</em> tick the weapon is empty, so the moment a player chooses an empty shotgun, it is taken out of their hands. The weapon can't be carried at all, and it looks as if weapon switching is broken.</p>
-  <div class="callout warn"><p><b>Two things the studio lets you write that the server refuses.</b></p>
-  <ul>
-    <li><b>The <span class="ui">not</span> switch</b> on a condition. Monsters' conditions take <code>negate</code>; weapons' do not, and the server rejects the arsenal with <em>unknown field `negate`</em>. The studio doesn't flag it. Use the opposite condition instead: <code>no_ammo</code> for "not has_ammo", <code>grounded</code> with <span class="ui">value?</span> off for "not grounded".</li>
-    <li><b>A transition with no conditions.</b> <span class="ui">+ transition</span> adds one with an empty list, and the server refuses it: <em>`when` is an empty list, which would fire every tick</em>. Always add at least one condition. If you mean "at once", add <code>always</code>.</li>
-  </ul></div>
+  <p>This is the rule that matters most. <b>An event</b> (<em>fire is pressed</em>, <em>fire is let go</em>) is true on one tick. <b>A state</b> (<em>it is out of ammo</em>, <em>it has at least 1 ammo</em>, <em>the number … is</em> …) is true for as long as it is true.</p>
+  <p>So <b>a rule on a state needs an event beside it</b>, or a reason to only be checked at the right moment. The engine's own example: send an empty weapon to a state that switches weapons, on <em>it is out of ammo</em> alone. That rule fires on <em>every</em> tick the weapon is empty, so the moment a player chooses an empty shotgun, it is taken out of their hands. The weapon can't be carried at all, and it looks as if weapon switching is broken.</p>
+  <div class="callout warn"><p><b>Careful with rules for any state.</b> A rule under <b>Whatever it is doing</b> is checked first in every state that follows it, so a state on its own there fires the moment it holds, mid-shot or mid-draw. The editor's own example, <em>"when it is out of ammo, go to a reload state"</em>, needs <em>fire is pressed</em> beside it, or an empty weapon reloads for ever. A rule there can also be <span class="ui">only once</span>, which fires a single time.</p></div>
 
   <h2>How a shot flows</h2>
   <div class="diagram">
-    <svg viewBox="0 0 640 230" role="img" aria-label="ready goes to fire on a press; fire goes to recover after its ticks; recover goes back to ready; ready goes to dry when held with no ammunition">
+    <svg viewBox="0 0 640 230" role="img" aria-label="ready goes to fire on a press; fire goes to recover after its time; recover goes back to ready; ready goes to dry when held with no ammunition">
       <defs><marker id="pm-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="dim"/></marker></defs>
       <rect class="acc" x="20" y="80" width="120" height="56" rx="10"/>
       <text x="80" y="104" text-anchor="middle" font-weight="700">★ ready</text>
       <text x="80" y="123" text-anchor="middle" class="dim" font-size="12">waits</text>
       <rect class="box" x="260" y="20" width="120" height="56" rx="10"/>
       <text x="320" y="44" text-anchor="middle" font-weight="700">fire</text>
-      <text x="320" y="63" text-anchor="middle" class="dim" font-size="12">shot at 0 · 24t</text>
+      <text x="320" y="63" text-anchor="middle" class="dim" font-size="12">shot at 0 · 0.4 s</text>
       <rect class="box" x="500" y="80" width="120" height="56" rx="10"/>
       <text x="560" y="104" text-anchor="middle" font-weight="700">recover</text>
-      <text x="560" y="123" text-anchor="middle" class="dim" font-size="12">cooldown · 12t</text>
+      <text x="560" y="123" text-anchor="middle" class="dim" font-size="12">0.2 s</text>
       <rect class="box" x="260" y="160" width="120" height="56" rx="10"/>
       <text x="320" y="184" text-anchor="middle" font-weight="700">dry</text>
-      <text x="320" y="203" text-anchor="middle" class="dim" font-size="12">click · 1t</text>
+      <text x="320" y="203" text-anchor="middle" class="dim" font-size="12">click · a tick</text>
       <path class="arrow" d="M140,92 C190,60 210,50 258,48" marker-end="url(#pm-a)"/>
       <text x="150" y="52" font-size="12">pressed (or held)</text>
       <path class="arrow" d="M380,48 C440,50 470,70 506,82" marker-end="url(#pm-a)" stroke-dasharray="5 4"/>
-      <text x="430" y="44" font-size="12" class="dim">after 24 ticks</text>
+      <text x="430" y="44" font-size="12" class="dim">after 0.4 s</text>
       <path class="arrow" d="M500,120 C400,140 220,140 142,120" marker-end="url(#pm-a)" stroke-dasharray="5 4"/>
-      <text x="320" y="150" text-anchor="middle" font-size="12" class="dim">after 12 ticks</text>
+      <text x="320" y="150" text-anchor="middle" font-size="12" class="dim">after 0.2 s</text>
       <path class="arrow" d="M100,136 C130,180 200,190 258,190" marker-end="url(#pm-a)"/>
-      <text x="80" y="170" font-size="12">held ∧ no_ammo</text>
+      <text x="80" y="170" font-size="12">held · out of ammo</text>
       <path class="arrow" d="M260,200 C190,215 70,190 70,140" marker-end="url(#pm-a)" stroke-dasharray="5 4"/>
     </svg>
   </div>
-  <p>Most guns are four phases, and three of them are just waiting:</p>
+  <p>Most guns are four states, and three of them are just waiting:</p>
   <table>
-    <thead><tr><th>Phase</th><th>Role</th><th>Shape</th></tr></thead>
+    <thead><tr><th>State</th><th>Role</th><th>Shape</th></tr></thead>
     <tbody>
-      <tr><td><b>ready</b></td><td>Resting. Nothing happens until the trigger says so.</td><td>no <span class="ui">ticks?</span>; transitions on the button</td></tr>
-      <tr><td><b>fire</b></td><td>The shot. Its sequence takes the ammunition and fires at tick 0. Its <span class="ui">ticks?</span> are the fire rate.</td><td><span class="ui">ticks?</span> and <span class="ui">next?</span>; usually no transitions, so presses during it are ignored</td></tr>
-      <tr><td><b>refire</b> (optional)</td><td>Decides, the moment a shot ends, whether to fire again at once.</td><td>no <span class="ui">ticks?</span>; <code>held ∧ has_ammo</code> → fire, then <code>always</code> → ready</td></tr>
-      <tr><td><b>cooldown</b> (optional)</td><td>A pump, a reload, a recovery: time the weapon can't fire. With transitions, it is also a window, for a combo.</td><td><span class="ui">ticks?</span>, <span class="ui">next?</span> ready</td></tr>
+      <tr><td><b>ready</b></td><td>Resting. Nothing happens until the trigger says so.</td><td>no <span class="ui">Lasts</span>; rules on the button</td></tr>
+      <tr><td><b>fire</b></td><td>The shot. Its steps take the ammunition and fire at 0 s. Its <span class="ui">Lasts</span> is the fire rate.</td><td><span class="ui">Lasts</span> and <span class="ui">Then goes to</span>; usually no rules, so presses during it are ignored</td></tr>
+      <tr><td><b>refire</b> (optional)</td><td>Decides, the moment a shot ends, whether to fire again at once.</td><td>no <span class="ui">Lasts</span>; <em>fire is held and it has at least 1 ammo</em> → fire, then <em>always</em> → ready</td></tr>
+      <tr><td><b>recover</b> (optional)</td><td>A pump, a reload, a recovery: time the weapon can't fire. With rules, it is also a window, for a combo.</td><td><span class="ui">Lasts</span>, <span class="ui">Then goes to</span> ready</td></tr>
     </tbody>
   </table>
-  <p>Why a separate cooldown, when <code>fire</code>'s ticks could just be longer? Because a phase has its own animation and its own window. DOOM II's super shotgun fires in a 24-tick <code>fire</code>, then plays a 62-tick <code>reload</code> with a different animation (<span class="ui">anim?</span> 3) and its own sound. As one number, that reload would be invisible.</p>
+  <p>Why a separate recovery, when <code>fire</code> could just last longer? Because a state has its own animation and its own window. DOOM II's super shotgun fires in a 24-tick <code>fire</code>, then plays a 62-tick <code>reload</code> with a different picture (3) and its own sound. As one number, that reload would be invisible. (A wait that should outlast the weapon being put away is a <a href="#cooldown">cooldown</a> instead.)</p>
 
   <h2>Tapping and holding</h2>
-  <p>The one word in <code>ready</code>'s transition decides what kind of gun it is:</p>
+  <p>The one condition in <code>ready</code>'s rule decides what kind of gun it is:</p>
   <table>
-    <thead><tr><th><code>ready</code> → <code>fire</code> on</th><th>Holding the button</th><th>Tapping fast</th></tr></thead>
+    <thead><tr><th><code>ready</code> → <code>fire</code> when</th><th>Holding the button</th><th>Tapping fast</th></tr></thead>
     <tbody>
-      <tr><td><code>button_pressed</code></td><td>one shot. Semi-automatic, like the pistol.</td><td>one shot per tap, but only taps that land while the weapon is in <code>ready</code> count</td></tr>
-      <tr><td><code>button_held</code></td><td>a shot every time <code>ready</code> is reached: fully automatic, like the chaingun</td><td>the same as holding, at most one shot per <code>fire</code></td></tr>
+      <tr><td>fire is pressed</td><td>one shot. Semi-automatic, like the pistol.</td><td>one shot per tap, but only taps that land while the weapon is in <code>ready</code> count</td></tr>
+      <tr><td>fire is held</td><td>a shot every time <code>ready</code> is reached: fully automatic, like the chaingun</td><td>the same as holding, at most one shot per <code>fire</code></td></tr>
     </tbody>
   </table>
-  <p>There is no "auto" flag anywhere. DOOM II's chaingun and pistol differ by that one word (and their ticks).</p>
-  <div class="callout tip"><p><b>Taps are not remembered.</b> A press that lands while the weapon is in <code>fire</code> is gone: <code>fire</code> has no transition, and on the next tick the button is no longer "pressed", only held. If a fast tapper should be rewarded, give <code>fire</code> or <code>recover</code> its own <code>button_pressed</code> transition. That is exactly how a combo window works (<a href="05-recipes.html">Recipes</a>).</p></div>
+  <p>There is no "auto" flag anywhere. DOOM II's chaingun and pistol differ by that one condition (and their length).</p>
+  <div class="callout tip"><p><b>Taps are not remembered.</b> A press that lands while the weapon is in <code>fire</code> is gone: <code>fire</code> has no rule, and on the next tick the button is no longer "pressed", only held. If a fast tapper should be rewarded, give <code>fire</code> or <code>recover</code> its own rule on <em>fire is pressed</em>. That is exactly how a combo window works (<a href="05-recipes.html">Recipes</a>).</p></div>
 
   <h3>Refire, the explicit way</h3>
-  <p>With <code>button_held</code> on <code>ready</code>, you don't need a refire phase: <code>fire</code> → <code>ready</code> → <code>fire</code> happens in one tick. A refire phase earns its place when the repeat should be different from the first shot. For example, a burst that only continues while there is ammunition, and does something else when it stops:</p>
-  <pre><code>fire    ticks 6, next refire        sequence: consume, hitscan
-refire  (no ticks)                   transitions:
-          1. button_held ∧ has_ammo  → fire
-          2. always                  → spindown
-spindown ticks 30, next ready        sequence: a wind-down sound of your own</code></pre>
+  <p>With <em>fire is held</em> on <code>ready</code>, you don't need a refire state: <code>fire</code> → <code>ready</code> → <code>fire</code> happens in one tick. A refire state earns its place when the repeat should be different from the first shot. For example, a burst that only continues while there is ammunition, and does something else when it stops:</p>
+  <pre><code>fire      lasts 0.1 s, then goes on to refire     steps: use 1 ammo, an instant shot
+refire    waits                                   rules:
+            1. → fire       when fire is held and it has at least 1 ammo
+            2. → spindown   when always
+spindown  lasts 0.5 s, then goes on to ready      steps: a wind-down sound of your own</code></pre>
 
-  <h2>The dry click</h2>
-  <p>A <code>consume</code> step only takes ammunition. It doesn't stop the shot: with an empty pool, a weapon whose <code>fire</code> starts with <code>consume</code> still fires, for free. Gate the shot in <code>ready</code>. DOOM II does it like this, for every gun:</p>
-  <pre><code>ready  transitions:
-         1. button_held ∧ no_ammo  → dry
-         2. button_pressed         → fire      (button_held for the chaingun)
-dry    ticks 1, next ready
-         sequence: at 0  switch_if_empty</code></pre>
+  <h2 id="cooldown">Cooldowns</h2>
+  <p>A cooldown is a wait that belongs to the weapon rather than to a state. Two words make it:</p>
   <ul>
-    <li><b>Why <code>button_held</code> and not <code>button_pressed</code></b> in the first transition: a chaingun can run dry in the middle of a burst. The press was long ago; the finger is still down. Asking for the press would leave the player holding an empty gun, pressing nothing.</li>
-    <li><b>Why the pair</b>: with <code>no_ammo</code> alone, choosing an empty weapon would switch it away on the same tick. With the button beside it, the player can carry an empty weapon, and it only switches when they try to fire it.</li>
-    <li><b>Why first</b>: transitions are tried in order. Put <code>dry</code> below <code>fire</code> and the press fires first.</li>
+    <li>the step <b>start cooldown … for … s</b> (<a href="../reference/weapon-vocab.html#set_cooldown"><code>set_cooldown</code></a>), in <b>Numbers and timers</b> when you add a step. It notes the moment the wait is over, under a name of your choice.</li>
+    <li>the condition <b>cooldown … is over</b> (<a href="../reference/weapon-vocab.html#cooldown_ready"><code>cooldown_ready</code></a>), in <b>Numbers and timers</b> when you add a condition, beside the press that fires.</li>
   </ul>
-  <p>Instead of switching, <code>dry</code> could play a click: a <code>sound</code> step and no <code>switch_if_empty</code>. Either way it's a phase you can see in the graph, not a branch hidden in code.</p>
-
-  <h2 id="first-person">Phases in first person</h2>
-  <p>A phase's <span class="ui">anim?</span> (and any <a href="../reference/weapon-vocab.html#set_anim"><code>set_anim</code></a> step) puts the player in an animation state. The third-person body animates by that number, and so does the weapon in first person: on the weapon's <span class="ui">first person</span> tab, under <b>per phase</b>, each state the weapon's phases set gets an animation of its own.</p>
-  <figure class="shot" data-src="../assets/shots/weapon-per-phase.png" data-alt="The per phase part of the first person tab for Gem Hollow's startoss: state 0 set by ready, looping, and state 2 set by throw, played once" data-hotspots='[{"x":89,"y":22,"t":"at rest / firing (fallback)","d":"played in any state with no animation of its own"},{"x":83,"y":38,"t":"canvas at","d":"where the sprite&#39;s canvas sits on the 320 x 200 screen"},{"x":76,"y":52,"t":"per phase","d":"one card per animation state the phases set"},{"x":86,"y":71,"t":"state 0 · ready","d":"the state, and the phases that set it"},{"x":82,"y":76,"t":"loops","d":"state 0 loops by default"},{"x":82,"y":94,"t":"plays once","d":"every other state plays once and holds its last frame"}]'>
-    <figcaption><b>per phase</b> for Gem Hollow's <code>startoss</code>: <code>ready</code> sets state 0, <code>throw</code> sets state 2.</figcaption>
+  <p>Both start with the name <code>shot_cd</code>, so they match as soon as you add them. A BFG that may fire once every 96 ticks (1.6 s) doesn't need a 1.6-second <code>fire</code>: <code>fire</code> can last 0.6 s, and the player can switch weapons right after the shot. That is the difference from a long state.</p>
+  <figure class="shot" data-src="../assets/shots/weapon-editor-cooldown.png" data-alt="A bfg made from the Launcher recipe in Gem Hollow: ready goes to fire when fire is pressed and it has at least 1 ammo and cooldown shot_cd is over; fire starts cooldown shot_cd for 1.6 s; the preview says cooldown shot_cd: 0.93 s left" data-hotspots='[{"x":38.3,"y":68.6,"t":"The rule","d":"→ fire when fire is pressed and it has at least 1 ammo and cooldown shot_cd is over"},{"x":40,"y":95.2,"t":"The step","d":"0 s · start cooldown shot_cd for 1.6 s: 96 ticks"},{"x":72,"y":73.8,"t":"cooldown … is over","d":"the name is a field; it matches the step&#39;s"},{"x":65.9,"y":38,"t":"Hold to fire","d":"pressed once, a moment ago"},{"x":72,"y":41.9,"t":"In words","d":"Now in ready: no rule holds, so it stays"},{"x":80,"y":44.3,"t":"The cooldown","d":"cooldown shot_cd: 0.93 s left"}]'>
+    <figcaption>A <code>bfg</code> made from the Launcher recipe, with a cooldown: the preview says how long is left.</figcaption>
   </figure>
   <ul>
-    <li>Each card is titled <b>state <i>n</i> · <i>phases</i></b>: the number, and every phase that sets it. Several phases can share one state; renaming a phase changes nothing here.</li>
+    <li><b>It outlives putting the weapon away.</b> Switch away and back, and the cooldown is still running. A respawn clears it.</li>
+    <li><b>It is predicted</b> on your client like the rest of the weapon, so the next shot is allowed on your screen at the same tick as on the server.</li>
+    <li><b>It is one of the weapon's numbers.</b> <span class="ui">Advanced</span> lists it under <b>Its numbers</b> (<em>"checked in ready; a cooldown started in fire"</em>). A weapon may have 4 numbers, cooldowns included.</li>
+    <li><b>The preview counts it down</b>: <em>"cooldown shot_cd: 0.93 s left"</em>, then <em>"over"</em>.</li>
+  </ul>
+  <p>The demo at the top has a <b>bfg (cooldown)</b> preset to try it. A full recipe is in <a href="05-recipes.html#bfg">Recipes</a>.</p>
+
+  <h2>The dry click</h2>
+  <p>A "use 1 ammo" step (<a href="../reference/weapon-vocab.html#consume"><code>consume</code></a>) only takes ammunition. It doesn't stop the shot: with an empty pool, a weapon whose <code>fire</code> starts with "use 1 ammo" still fires, for free. Gate the shot in <code>ready</code>. DOOM II does it like this, for every gun:</p>
+  <pre><code>ready  rules:
+         1. → dry    when fire is held and it is out of ammo
+         2. → fire   when fire is pressed            (fire is held for the chaingun)
+dry    lasts one tick, then goes on to ready
+         steps: 0 s · switch weapon if it is empty</code></pre>
+  <ul>
+    <li><b>Why <em>fire is held</em> and not <em>fire is pressed</em></b> in the first rule: a chaingun can run dry in the middle of a burst. The press was long ago; the finger is still down. Asking for the press would leave the player holding an empty gun, pressing nothing.</li>
+    <li><b>Why the pair</b>: with <em>it is out of ammo</em> alone, choosing an empty weapon would switch it away on the same tick. With the button beside it, the player can carry an empty weapon, and it only switches when they try to fire it.</li>
+    <li><b>Why first</b>: rules are tried in order. Put <code>dry</code> below <code>fire</code> and the press fires first.</li>
+  </ul>
+  <p>The editor's recipes gate the shot another way: their rule asks for <em>fire is pressed and it has at least 1 ammo</em>, so an empty weapon does nothing at all. Instead of switching, <code>dry</code> could play a click: a "play the sound" step and no switch. Either way it's a state you can see, not a branch hidden in code.</p>
+
+  <h2 id="first-person">States in first person</h2>
+  <p>A state's <span class="ui">Shows picture</span> (and any "show the picture of state" step, <a href="../reference/weapon-vocab.html#set_anim"><code>set_anim</code></a>) puts the player in an animation state. The third-person body animates by that number, and so does the weapon in first person: on the weapon's <span class="ui">Looks</span> tab, under <b>per phase</b> in <b>Held in first person</b>, each number the weapon's states show gets an animation of its own. <b>Each state shows</b>, beside it, lists every state's number.</p>
+  <figure class="shot" data-src="../assets/shots/weapon-per-phase.png" data-alt="The per phase part of the Looks tab for Cinderfall's revolver: state 13 · fire plays fire, state 14 · cock plays cock, state 15 · reload plays reload, each played once and holding its last frame" data-hotspots='[{"x":29,"y":18,"t":"at rest / firing (fallback)","d":"played in any state with no animation of its own"},{"x":20,"y":29,"t":"per phase","d":"one card per picture number the states show"},{"x":22,"y":42.4,"t":"state 13 · fire","d":"the number, and the states that show it"},{"x":33,"y":47,"t":"animation","d":"one of the sprite&#39;s animations: fire"},{"x":25.6,"y":53.5,"t":"loops","d":"off: plays once, holds its last frame"},{"x":22,"y":60.7,"t":"state 14 · cock","d":"each number has its own card"},{"x":20,"y":97.7,"t":"icon","d":"the weapon&#39;s Icon on the panel"}]'>
+    <figcaption><b>per phase</b> for Cinderfall's <code>revolver</code>: <code>fire</code>, <code>cock</code> and <code>reload</code> each play an animation of their own.</figcaption>
+  </figure>
+  <ul>
+    <li>Each card is titled <b>state <i>n</i> · <i>states</i></b>: the number, and every state that shows it. Several states can share one number; renaming a state changes nothing here.</li>
     <li>Drawn from pictures, a card has a frame list like <b>at rest</b>. Drawn from a sprite, it has an <span class="ui">animation</span> list: one of the sprite's animations, or <code>(none: at rest / firing)</code>.</li>
     <li>The switch under it says <span class="ui">loops</span> or <span class="ui">plays once, holds its last frame</span>. State 0 loops by default and the rest hold.</li>
-    <li>The game plays a state's animation while the player is in it, from the start each time the state is entered again, so a second swing of the same phase restarts it. It follows your own predicted state, so it changes on the tick you press, not a round trip later.</li>
-    <li>A state with nothing of its own falls back to <b>at rest</b> and <b>firing</b>, which is also what engines that do not play per phase use. If at rest and firing are empty, the studio writes them from state 0 and the next state.</li>
-    <li>With no phase setting a state, the section says so: give the phases an <span class="ui">anim?</span> in the graph first.</li>
+    <li>The game plays a number's animation while the player is in it, from the start each time a state shows it again, so a second swing of the same state restarts it. It follows your own predicted state, so it changes on the tick you press, not a round trip later.</li>
+    <li>A number with nothing of its own falls back to <b>at rest</b> and <b>firing</b>, which is also what engines that do not play per phase use. If at rest and firing are empty, the studio writes them from state 0 and the next number.</li>
+    <li>With no state showing a number, the section says so: give the states a <span class="ui">Shows picture</span> first.</li>
   </ul>
-  <p>The preview's <span class="ui">▶ state <i>n</i></span> buttons play each state as the game would; a dimmed one has nothing of its own yet.</p>
+  <p>The panel's <span class="ui">▶ state <i>n</i></span> buttons play each number as the game would; a dimmed one has nothing of its own yet. On <span class="ui">Behaviour</span>, the preview plays them as the weapon moves through its states.</p>
 
   <h2 id="gem-hollow">In Gem Hollow: two small machines</h2>
-  <p>Both of Gem Hollow's weapons are two phases, the smallest useful machine:</p>
-  <pre><code>fists     ready ★  anim 0, waits      1. button_pressed            → swing
-          swing    anim 2, 18 ticks → ready    at 0: sound player.swing (predicted)
-                                                its own swing: damage 10, 8 ticks
+  <p>Both of Gem Hollow's weapons are two states, the smallest useful machine. On their cards:</p>
+  <pre><code>fists     ★ ready   shows picture 0, until a rule below sends it on
+                      → swing   when fire is pressed
+            swing   shows picture 2, for 0.3 s then goes on to ready
+                      0 s · play the sound player.swing          its own swing: 10 damage
 
-startoss  ready ★  anim 0, waits      1. button_pressed ∧ has_ammo (n 1) → throw
-          throw    anim 2, 14 ticks → ready    at 0: consume 1, launch star_shot,
-                                                     sound player.swing (predicted)
-                                                at 10: switch_if_empty</code></pre>
+startoss  ★ ready   shows picture 0, until a rule below sends it on
+                      → throw   when fire is pressed and it has at least 1 ammo
+            throw   shows picture 2, for 0.23 s then goes on to ready
+                      0 s · use 1 ammo   0 s · launch the missile star_shot
+                      0 s · play the sound player.swing   0.17 s · switch weapon if it is empty</code></pre>
   <ul>
-    <li><b>Both are semi-automatic.</b> <code>button_pressed</code> is an event, so holding the button gives one punch or one throw. A punch every 18 ticks is at most 3⅓ a second; a throw every 14, just over 4.</li>
-    <li><b>The dry check is a condition, not a phase.</b> Instead of DOOM's <code>dry</code> phase, <code>startoss</code> puts <code>has_ammo</code> beside the press. With no stars, pressing does nothing at all: no click.</li>
-    <li><b>The switch happens after the last throw.</b> <code>switch_if_empty</code> at 10 of <code>throw</code> swaps to the highest-order weapon with ammunition, the fists, right after the throw that used the last star. A throw with stars left does nothing at that step.</li>
-    <li><b>Each phase sets an animation state</b>: 0 at rest, 2 (the hero's attack) while punching or throwing. That is what the third-person hero plays, and what <b>per phase</b> above offers in first person.</li>
+    <li><b>Both are semi-automatic.</b> <em>fire is pressed</em> is an event, so holding the button gives one punch or one throw. A punch every 0.3 s (18 ticks) is at most 3⅓ a second; a throw every 0.23 s (14 ticks), just over 4.</li>
+    <li><b>The dry check is a condition, not a state.</b> Instead of DOOM's <code>dry</code> state, <code>startoss</code> puts <em>it has at least 1 ammo</em> beside the press. With no stars, pressing does nothing at all: no click.</li>
+    <li><b>The switch happens after the last throw.</b> "switch weapon if it is empty" at 0.17 s of <code>throw</code> swaps to the highest-slot weapon with ammunition, the fists, right after the throw that used the last star. A throw with stars left does nothing at that step.</li>
+    <li><b>Each state shows a picture</b>: 0 at rest, 2 (the hero's attack) while punching or throwing. That is what the third-person hero plays.</li>
   </ul>
 
   <h2 id="cinderfall">In Cinderfall: five machines for a shooter</h2>
-  <p>Cinderfall, the first-person shooter example that comes with the studio (Home → <span class="ui">◆ examples</span>; see <a href="../examples/02-cinderfall.html">the tour</a>), has five weapons, and each shows a shape Gem Hollow's two do not. Open <b>🔫 Weapons</b> and tap the phases as you read.</p>
-  <pre><code>wrench    draw ★   8 ticks → ready              at 0: sound wpn.draw
-          ready    waits                       button_pressed → swing
-          swing    anim 10, 16 ticks → recover   its own swing: damage 25, sweeping right to left
-          recover  anim 12, 10 ticks → ready     button_pressed → swing2
-          swing2   anim 11, 18 ticks → ready     its own swing: damage 35, sweeping left to right
+  <p>Cinderfall, the first-person shooter example that comes with the studio (Home → <span class="ui">◆ examples</span>; see <a href="../examples/02-cinderfall.html">the tour</a>), has five weapons, and each shows a shape Gem Hollow's two do not. Open <b>🔫 Weapons</b> and read the cards as you go. Times are shown in seconds; the ticks are in brackets.</p>
+  <pre><code>wrench    ★ draw    0.13 s (8) → ready          0 s · play the sound wpn.draw
+            ready   → swing     when fire is pressed
+            swing   picture 10, 0.27 s (16) → recover      its own swing: 25 damage, right to left
+            recover picture 12, 0.17 s (10) → ready        → swing2 when fire is pressed
+            swing2  picture 11, 0.3 s (18) → ready         its own swing: 35 damage, left to right
 
-revolver  draw ★   8 ticks → ready              at 0: sound wpn.draw
-          ready    waits                       button_pressed ∧ has_ammo 1 → fire;  button_pressed ∧ no_ammo → dry
-          fire     anim 13, 6 ticks → cock       at 0: sound (predicted), consume, hitscan 22, add_var shots +1
-          cock     anim 14, 8 ticks → ready      var_at_least shots 6 ∧ phase_elapsed 7 → reload
-          reload   anim 15, 40 ticks → ready     at 0: sound, set_var shots 0
-          dry      10 ticks → ready              at 0: sound wpn.dry;  at 9: switch_if_empty
+revolver  ★ draw    0.13 s → ready              0 s · play the sound wpn.draw
+            ready   → fire  when fire is pressed and it has at least 1 ammo
+                    → dry   when fire is pressed and it is out of ammo
+            fire    picture 13, 0.1 s (6) → cock   0 s · the sound, use 1 ammo, an instant shot for 22,
+                                                          add 1 to the number shots
+            cock    picture 14, 0.13 s (8) → ready  → reload when the number shots is at least 6
+                                                          and this state has run for 0.12 s (7)
+            reload  picture 15, 0.67 s (40) → ready 0 s · the sound, set the number shots to 0
+            dry     0.17 s (10) → ready         0 s · play the sound wpn.dry   0.15 s · switch weapon if it is empty
 
-scatter   draw ★   8 ticks → ready              at 0: sound wpn.draw
-          ready    waits                       button_pressed (secondary) ∧ has_ammo 2 → double
-                                                button_pressed ∧ has_ammo 1 → fire;  button_pressed ∧ no_ammo → dry
-          fire     anim 16, 10 ticks → pump      consume 1, hitscan 8 rays
-          double   anim 17, 14 ticks → pump      consume 2, hitscan 18 rays, impulse 6 away
-          pump     anim 18, 18 ticks → ready     at 2: sound
-          dry      10 ticks → ready              as the revolver's
+scatter   ★ draw    0.13 s → ready              0 s · play the sound wpn.draw
+            ready   → double when fire is pressed and it has at least 2 ammo   (the secondary button)
+                    → fire   when fire is pressed and it has at least 1 ammo
+                    → dry    when fire is pressed and it is out of ammo
+            fire    picture 16, 0.17 s (10) → pump   use 1 ammo, an instant shot (8 rays)
+            double  picture 17, 0.23 s (14) → pump   use 2 ammo, an instant shot (18 rays),
+                                                      push the player away at 6 m/s
+            pump    picture 18, 0.3 s (18) → ready   0.03 s · the sound
+            dry     as the revolver's
 
-riveter   draw ★   8 ticks → ready              at 0: sound wpn.draw
-          ready    waits                       button_pressed ∧ has_ammo 1 → spinup;  button_pressed ∧ no_ammo → dry
-          spinup   anim 19, 8 ticks → fire       button_released → spindown
-          fire     anim 20, 4 ticks → fire       consume, hitscan 11;  button_released → spindown;
-                                                no_ammo ∧ phase_elapsed 3 → spindown
-          spindown anim 21, 12 ticks → ready     at 11: switch_if_empty
-          dry      10 ticks → ready              as the revolver's
+riveter   ★ draw    0.13 s → ready              0 s · play the sound wpn.draw
+            ready   → spinup when fire is pressed and it has at least 1 ammo;  → dry as the revolver's
+            spinup  picture 19, 0.13 s (8) → fire    → spindown when fire is let go
+            fire    picture 20, 0.07 s (4) → fire    use 1 ammo, an instant shot for 11
+                                                      → spindown when fire is let go
+                                                      → spindown when it is out of ammo and this state has run for 0.05 s
+            spindown picture 21, 0.2 s (12) → ready  0.18 s · switch weapon if it is empty
+            dry     as the revolver's
 
-flare     draw ★   8 ticks → ready              at 0: sound wpn.draw
-          ready    waits                       button_pressed ∧ has_ammo 1 → fire;  button_pressed ∧ no_ammo → dry
-          fire     anim 22, 12 ticks → reload    consume, launch flare_shot, impulse 3 away
-          reload   anim 23, 28 ticks → ready     at 4: sound;  at 27: switch_if_empty
-          dry      10 ticks → ready              as the revolver's</code></pre>
+flare     ★ draw    0.13 s → ready              0 s · play the sound wpn.draw
+            ready   → fire when fire is pressed and it has at least 1 ammo;  → dry as the revolver's
+            fire    picture 22, 0.2 s (12) → reload  use 1 ammo, launch the missile flare_shot,
+                                                      push the player away at 3 m/s
+            reload  picture 23, 0.47 s (28) → ready  0.07 s · the sound   0.45 s · switch weapon if it is empty
+            dry     as the revolver's</code></pre>
   <ul>
-    <li><b>A combo in two phases.</b> The wrench's <code>recover</code> listens for a second press. Press during those 10 ticks and you get <code>swing2</code>, which hits harder (35) and sweeps back the other way; wait, and the next press starts over at <code>swing</code>. Each phase brings its own swing (<a href="03-hitscan-missiles-swings.html#swings">Swings</a>).</li>
-    <li><b>A counter the weapon keeps.</b> The revolver declares a weapon var, <code>shots</code>, starting at 0. Every <code>fire</code> runs <a href="../reference/weapon-vocab.html#add_var"><code>add_var</code></a>; after the sixth, <code>cock</code> sees <a href="../reference/weapon-vocab.html#var_at_least"><code>var_at_least</code></a> 6 and goes to <code>reload</code>, which <a href="../reference/weapon-vocab.html#set_var"><code>set_var</code></a>s it back to 0. That is a six-round cylinder over a pool of bullets. <a href="../reference/weapon-vocab.html#phase_elapsed"><code>phase_elapsed</code></a> 7 lets the cock play out first.</li>
-    <li><b>Two triggers on one gun.</b> The scattergun's first card asks for the <b>secondary</b> button (right mouse) and two shells. It is first so that a right click never falls through to the single shot.</li>
-    <li><b>A phase that loops into itself.</b> The riveter's <code>fire</code> has <span class="ui">next?</span> <code>fire</code>: every 4 ticks, a rivet, for as long as you hold. Letting go is a <a href="../reference/weapon-vocab.html#button_released"><code>button_released</code></a> card, in <code>spinup</code> as well, so a tap spins up and down without firing.</li>
-    <li><b>The dry click is a phase.</b> All four guns have DOOM's <code>dry</code> phase: a click, then <code>switch_if_empty</code>. The riveter and the flare launcher also switch at the end of <code>spindown</code> and <code>reload</code>, so the last shot hands you the next weapon without a click.</li>
-    <li><b>A draw before ready.</b> Every weapon's <span class="ui">initial?</span> is <code>draw</code>, not <code>ready</code>: 8 ticks with the <code>wpn.draw</code> sound at 0, then <code>ready</code>. A weapon starts in its initial phase each time it is brought up, so every switch, by key, wheel or swap, makes the sound and costs a beat before you can fire.</li>
+    <li><b>A combo in two states.</b> The wrench's <code>recover</code> listens for a second press. Press during those 0.17 s and you get <code>swing2</code>, which hits harder (35) and sweeps back the other way; wait, and the next press starts over at <code>swing</code>. Each state brings its own swing (<a href="03-hitscan-missiles-swings.html#swings">Swings</a>).</li>
+    <li><b>A number the weapon keeps.</b> The revolver keeps a number, <code>shots</code>, starting at 0 (<span class="ui">Advanced</span> → <b>Its numbers</b>). Every <code>fire</code> adds 1 to it (<a href="../reference/weapon-vocab.html#add_var"><code>add_var</code></a>); after the sixth, <code>cock</code> sees <em>the number shots is at least 6</em> (<a href="../reference/weapon-vocab.html#var_at_least"><code>var_at_least</code></a>) and goes to <code>reload</code>, which sets it back to 0 (<a href="../reference/weapon-vocab.html#set_var"><code>set_var</code></a>). That is a six-round cylinder over a pool of bullets. <em>this state has run for 0.12 s</em> (<a href="../reference/weapon-vocab.html#phase_elapsed"><code>phase_elapsed</code></a> 7) lets the cock play out first.</li>
+    <li><b>Two triggers on one gun.</b> The scattergun's first rule asks for the <b>secondary</b> button (right mouse) and two shells; the editor shows it as <em>fire is pressed</em> (see the callout above). It is first so that a right click never falls through to the single shot.</li>
+    <li><b>A state that goes on to itself.</b> The riveter's <code>fire</code> goes on to <code>fire</code>: every 4 ticks, a rivet, for as long as you hold. Letting go is a <em>fire is let go</em> rule (<a href="../reference/weapon-vocab.html#button_released"><code>button_released</code></a>), in <code>spinup</code> as well, so a tap spins up and down without firing.</li>
+    <li><b>The dry click is a state.</b> All four guns have DOOM's <code>dry</code> state: a click, then a switch. The riveter and the flare launcher also switch at the end of <code>spindown</code> and <code>reload</code>, so the last shot hands you the next weapon without a click.</li>
+    <li><b>A draw before ready.</b> Every weapon begins in <code>draw</code> (★): 8 ticks with the <code>wpn.draw</code> sound at 0, then <code>ready</code>. A weapon starts where it begins each time it is brought up, so every switch, by key, wheel or swap, makes the sound and costs a beat before you can fire. The editor's recipes do the same.</li>
   </ul>
-  <p>Every phase but <code>draw</code>, <code>ready</code> and <code>dry</code> sets its own <span class="ui">anim?</span> (10 to 23), so in first person each one plays an animation of its own. Each weapon is drawn from a ThreeSprite sheet (<code>VM_WRENCH</code>, <code>VM_REVOLVER</code> …) at <span class="ui">scale</span> 1.4, and its <b>per phase</b> cards name the sheet's animations: the riveter's state 20 plays <code>fire</code> with <span class="ui">loops</span> on, so the animation keeps going while <code>fire</code> repeats.</p>
+  <p>Every state but <code>draw</code>, <code>ready</code> and <code>dry</code> shows a picture of its own (10 to 23), so in first person each one plays an animation of its own. Each weapon is drawn from a ThreeSprite sheet (<code>VM_WRENCH</code>, <code>VM_REVOLVER</code> …) at <span class="ui">scale</span> 1.4, and its <b>per phase</b> cards name the sheet's animations: the riveter's state 20 plays <code>fire</code> with <span class="ui">loops</span> on, so the animation keeps going while <code>fire</code> repeats.</p>
 
   <h2>Exercise: a Star Toss you can hold</h2>
   <ol class="steps">
-    <li><p>Open Gem Hollow, choose <b>🔫 Weapons</b> and pick <code>startoss</code>. Tap <code>ready</code>.</p></li>
-    <li><p>In its transition card, remove <code>button_pressed</code> with its <span class="ui">✕</span>, then <span class="ui">add when</span> <code>button_held</code>. Leave <code>has_ammo</code> where it is.</p></li>
-    <li><p>Tap <code>throw</code> and set <span class="ui">ticks?</span> to <code>20</code>, so a held button throws three stars a second. Check the bar says <em>loads clean</em>.</p></li>
+    <li><p>Open Gem Hollow and choose <b>🔫 Weapons</b>. Tap the name at the top left and pick <code>startoss</code>, then tap <code>ready</code>.</p></li>
+    <li><p>In its rule, remove <em>fire is pressed</em> with its <span class="ui">✕</span>. Press <span class="ui">+ add a condition</span>, then <span class="ui">Fire button</span> and <em>fire is held</em>. Leave <em>it has at least 1 ammo</em> where it is.</p></li>
+    <li><p>Tap <code>throw</code> and set <span class="ui">Lasts</span> to <code>0.33</code> (20 ticks), so a held button throws three stars a second.</p></li>
+    <li><p>In the preview, press <span class="ui">▶</span> and hold <span class="ui">Hold to fire</span>: a throw every 0.33 s, and the ammo line counting down.</p></li>
     <li><p>Press <span class="ui">▶ Play</span>, pick up the star pouch in the level (or give yourself stars in the kit, as in <a href="01-first-weapon.html#gem-hollow">Your first weapon</a>), and hold the button: a stream of stars, until the last one switches you to the fists.</p></li>
   </ol>
 
   <h2>Exercise: a carbine, step by step</h2>
-  <p>You'll turn the pistol from lesson 1 into a carbine: semi-automatic, then automatic, with a recovery, and a dry phase. Keep the demo above open in another tab to compare.</p>
+  <p>You'll turn the pistol from lesson 1 into a carbine: semi-automatic, then automatic, with a recovery and a dry state. Keep the demo above open in another tab to compare.</p>
   <ol class="steps">
-    <li><p>In <b>🔫 Weapons</b>, pick <code>pistol</code>. On <span class="ui">⬡ fire</span>, set <span class="ui">ticks?</span> to <code>8</code> and leave <span class="ui">next?</span> on <code>ready</code>. Make sure the sequence has <code>consume</code> and <code>hitscan</code>, both at 0.</p></li>
-    <li><p>Press <span class="ui">+ phase</span> and call it <code>recover</code>. A new phase gets <span class="ui">anim?</span> 0, <span class="ui">ticks?</span> 20 and <span class="ui">next?</span> <code>ready</code>. Set its <span class="ui">ticks?</span> to <code>10</code>.</p></li>
-    <li><p>Tap <code>fire</code> and change its <span class="ui">next?</span> to <code>recover</code>. The graph now shows <code>fire</code> → <code>recover</code> → <code>ready</code>, two arrows labelled <code>after … ticks</code>. One shot now takes 8 + 10 = 18 ticks: just over three shots a second.</p></li>
-    <li><p>Press <span class="ui">+ phase</span> again, call it <code>dry</code>. Set <span class="ui">ticks?</span> to <code>1</code>. Under <span class="ui">add step</span>, choose <code>switch_if_empty</code>.</p></li>
-    <li><p>Tap <code>ready</code>. Press <span class="ui">+ transition</span>. A new card appears at the bottom. Choose <code>dry</code> in its target list. With <span class="ui">add when</span>, add <code>button_held</code>, then <code>no_ammo</code>. The card reads: go to <code>dry</code> when all of <code>button_held</code>, <code>no_ammo</code>.</p></li>
-    <li><p>The new transition is <em>below</em> the old one, so a press would fire before the dry check. Delete the old <code>fire</code> card with its <span class="ui">✕</span>, then <span class="ui">+ transition</span> again: target <code>fire</code>, condition <code>button_pressed</code>. Now <code>dry</code> is checked first.</p></li>
-    <li><p>Check the bar says <em>loads clean</em>. Play, and empty the 50 bullets. Each press gives one shot; the empty pistol stays in your hands until you press fire, then switches if you have anything better.</p></li>
-    <li><p>Make it automatic: on <code>ready</code>, in the <code>fire</code> card, delete <code>button_pressed</code> with its <span class="ui">✕</span> and add <code>button_held</code>. Play again and hold the button: a steady stream, one shot every 18 ticks.</p></li>
-    <li><p>Last, give fast tappers a reward. Tap <code>recover</code>, press <span class="ui">+ transition</span>, target <code>fire</code>, conditions <code>button_pressed</code> and <code>has_ammo</code>. A fresh press during the recovery now skips the rest of it. (A held button still waits: <code>button_pressed</code> is an event.)</p></li>
+    <li><p>In <b>🔫 Weapons</b>, pick <code>pistol</code>. Tap <code>fire</code>, set <span class="ui">Lasts</span> to <code>0.13</code> (8 ticks) and leave <span class="ui">Then goes to</span> on <code>ready</code>. Its Timeline has the instant shot, "use 1 ammo" and the sparks, all at 0 s.</p></li>
+    <li><p>Press <span class="ui">+ state</span>, type <code>recover</code> and press <span class="ui">Create</span>. It goes in after <code>fire</code>, lasts 0.3 s and goes back to <code>ready</code>. Set its <span class="ui">Lasts</span> to <code>0.17</code> (10 ticks).</p></li>
+    <li><p>Tap <code>fire</code> and change its <span class="ui">Then goes to</span> to <code>recover</code>. In <span class="ui">Graph</span>, <code>fire</code> → <code>recover</code> → <code>ready</code> are now two dashed arrows. One shot takes 8 + 10 = 18 ticks: just over three shots a second.</p></li>
+    <li><p>Press <span class="ui">+ state</span> again, call it <code>dry</code>, and set its <span class="ui">Lasts</span> to <code>0.02</code> (one tick). Press <span class="ui">+ add a step at 0 s</span>, then <span class="ui">Ammo</span> and <em>switch weapon if it is empty</em>.</p></li>
+    <li><p>Tap <code>ready</code>. Its rule from the recipe goes to <code>fire</code> when fire is pressed and it has at least 1 ammo. Press <span class="ui">+ another rule</span>, choose <code>dry</code> in its <span class="ui">go to</span> list, and add two conditions: <em>fire is held</em> (Fire button) and <em>it is out of ammo</em> (Ammo).</p></li>
+    <li><p>The two rules can't both hold, since one needs ammo and the other none, so their order doesn't matter here. Move the new one up anyway with its arrow (<em>Check this rule earlier</em>), as DOOM does: with a rule on <em>fire is pressed</em> alone, the dry check must come first.</p></li>
+    <li><p>Play, and empty the 50 bullets. Each press gives one shot; the empty pistol stays in your hands until you press fire, then switches if you have anything better.</p></li>
+    <li><p>Make it automatic: in <code>ready</code>'s <code>fire</code> rule, remove <em>fire is pressed</em> with its <span class="ui">✕</span> and add <em>fire is held</em>. In the preview, hold the button: a steady stream, one shot every 18 ticks.</p></li>
+    <li><p>Last, give fast tappers a reward. Tap <code>recover</code>, press <span class="ui">+ another rule</span>, choose <code>fire</code>, and add <em>fire is pressed</em> and <em>it has at least 1 ammo</em>. A fresh press during the recovery now skips the rest of it. (A held button still waits: <em>fire is pressed</em> is an event.)</p></li>
   </ol>
-  <div class="callout tip"><p><b>Why <code>has_ammo</code> in the last step?</b> The <code>recover</code> → <code>fire</code> transition skips <code>ready</code>, and with it the dry check. Without <code>has_ammo</code>, an empty carbine would fire free shots as fast as you tap. Any transition into <code>fire</code> needs the same guard.</p></div>
+  <div class="callout tip"><p><b>Why <em>it has at least 1 ammo</em> in the last step?</b> The <code>recover</code> → <code>fire</code> rule skips <code>ready</code>, and with it the ammo check. Without it, an empty carbine would fire free shots as fast as you tap. Any rule into <code>fire</code> needs the same guard.</p></div>
 
   <div class="quiz" data-answer="1">
-    <p class="q">A phase has <span class="ui">ticks?</span> empty and a single transition: <code>button_released</code> → <code>fire</code>. You press and hold the button. What happens?</p>
+    <p class="q">A state has an empty <span class="ui">Lasts</span> and a single rule: → <code>fire</code> when fire is let go. You press and hold the button. What happens?</p>
     <ul>
-      <li>It goes to the initial phase after one tick</li>
-      <li>It waits in that phase until you let go, then fires</li>
+      <li>It goes where the weapon begins after one tick</li>
+      <li>It waits in that state until you let go, then fires</li>
       <li>It fires every tick while you hold</li>
     </ul>
-    <p class="why">No ticks means the phase waits. <code>button_released</code> is an event, true only on the tick the button comes up. That is the shape of a charge.</p>
+    <p class="why">No length means the state waits. <em>fire is let go</em> is an event, true only on the tick the button comes up. That is the shape of a charge.</p>
   </div>
   <div class="quiz" data-answer="2">
-    <p class="q"><code>ready</code> has two transitions: first <code>button_pressed</code> → <code>fire</code>, then <code>button_held</code> ∧ <code>no_ammo</code> → <code>dry</code>. The pool is empty and you press fire. Where does it go?</p>
+    <p class="q"><code>ready</code> has two rules: first → <code>fire</code> when fire is pressed, then → <code>dry</code> when fire is held and it is out of ammo. The pool is empty and you press fire. Where does it go?</p>
     <ul>
       <li><code>dry</code>, because the weapon is empty</li>
-      <li>Nowhere: two transitions match, so neither fires</li>
+      <li>Nowhere: two rules match, so neither fires</li>
       <li><code>fire</code>: both match, and the first one in the list wins</li>
     </ul>
-    <p class="why">Transitions are tried in order, and the first match wins. The dry check must come first. Since <code>consume</code> doesn't stop a shot, this weapon fires for free.</p>
+    <p class="why">Rules are tried in order, and the first match wins. The dry check must come first. Since "use 1 ammo" doesn't stop a shot, this weapon fires for free.</p>
   </div>
   <div class="quiz" data-answer="0">
-    <p class="q">Why does DOOM II's dry transition ask for <code>button_held</code> rather than just <code>no_ammo</code>?</p>
+    <p class="q">A BFG's <code>fire</code> lasts 0.6 s and starts a 1.6 s cooldown, which <code>ready</code>'s rule waits for. You fire, switch to another weapon at once, and switch back after half a second. Can you fire?</p>
     <ul>
-      <li>With <code>no_ammo</code> alone it fires on every tick the weapon is empty, so an empty weapon is switched away the moment it is chosen</li>
-      <li>Because <code>no_ammo</code> only works on the secondary button</li>
-      <li>So the click sound plays twice</li>
+      <li>No: the cooldown outlives putting the weapon away, and has about a second left</li>
+      <li>Yes: switching weapons clears the cooldown</li>
+      <li>Yes, but only after the 0.3 s draw</li>
     </ul>
-    <p class="why"><code>no_ammo</code> is a state: true for as long as the pool is empty. A state on its own fires every tick. The button beside it makes it happen only when the player tries to shoot.</p>
+    <p class="why">A cooldown belongs to the weapon, not to the state, and keeps running while the weapon is away. Only a respawn clears it.</p>
   </div>
 </article>
 </body>

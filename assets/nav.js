@@ -12,7 +12,7 @@ window.DNP_NAV = [
       { file: 'studio/04-triggers.html', title: 'Triggers', kw: 'door lift switch teleport ambush exit crusher when if then' },
       { file: 'studio/05-camera.html', title: 'Camera and cinematics', kw: 'camera path waypoint follow track flythrough lock' },
       { file: 'studio/06-graphs.html', title: 'Graphs', kw: 'blueprint node variable pin link scene' },
-      { file: 'studio/07-workshops.html', title: 'Monsters, weapons, player', kw: 'brain swing body missiles arsenal kit moves skin size controls keys' },
+      { file: 'studio/07-workshops.html', title: 'Monsters, weapons, player', kw: 'monster editor weapon editor behaviour states sentences graph phase recipe preview whatever it is doing missiles arsenal swing looks body player skin size moves kit controls keys' },
       { file: 'studio/08-look-and-feel.html', title: 'Sky, screens and weather', kw: 'sky strip panorama cube screens hud panels style fog rain snow dust embers' },
       { file: 'studio/09-plugins.html', title: 'Plugins', kw: 'plugin dnpplugin back to studio discard draft baker sources assets open with' },
       { file: 'studio/10-play-and-export.html', title: 'Play, export, snapshots', kw: 'play export import pack snapshots play log app android' },
@@ -78,11 +78,11 @@ window.DNP_NAV = [
   {
     id: 'weapons', title: 'Weapons', icon: '🔫', blurb: 'Guns and blades: phases, hitscan, missiles, swings, ammo, pickups and the arsenal.',
     pages: [
-      { file: 'weapons/01-first-weapon.html', title: 'Your first weapon', kw: 'weapon workshop arsenal kit slot select view model' },
-      { file: 'weapons/02-phases.html', title: 'The phase machine', kw: 'phase ticks ready fire refire cooldown condition always held released' },
-      { file: 'weapons/03-hitscan-missiles-swings.html', title: 'Hitscan, missiles and swings', kw: 'hitscan rays count spread missile rocket swing melee chainsaw damage range' },
-      { file: 'weapons/04-ammo-and-pickups.html', title: 'Ammo, pickups and the arsenal', kw: 'ammo pool max pickup grant health armor arsenal order' },
-      { file: 'weapons/05-recipes.html', title: 'Recipes: five weapons', kw: 'pistol shotgun chaingun rocket launcher chainsaw charge recipe prediction' },
+      { file: 'weapons/01-first-weapon.html', title: 'Your first weapon', kw: 'weapon editor recipe preview overview behaviour looks advanced arsenal kit slot select view model first person' },
+      { file: 'weapons/02-phases.html', title: 'The phase machine', kw: 'phase state rule condition step timeline graph ticks ready fire refire cooldown set_cooldown cooldown_ready negate always held released' },
+      { file: 'weapons/03-hitscan-missiles-swings.html', title: 'Hitscan, missiles and swings', kw: 'hitscan instant shot rays count spread missile missiles page arc bounce split homing rocket swing slash melee chainsaw damage range prediction' },
+      { file: 'weapons/04-ammo-and-pickups.html', title: 'Ammo, pickups and the arsenal', kw: 'ammo pool use ammo pickup grant health armor arsenal order place on the panel' },
+      { file: 'weapons/05-recipes.html', title: 'Recipes: five weapons', kw: 'pistol shotgun chaingun rocket launcher chainsaw charge bfg cooldown recipe revolver limits' },
     ],
   },
   {

@@ -14,7 +14,7 @@
 //   - `consume` only debits the pool: it never stops a shot by itself;
 //   - hitscan: `count` rays, each turned by its own roll in -spread..+spread
 //     degrees, horizontally; each ray does `damage` to the first body it meets.
-// The three presets are written in the vocabulary's own shape.
+// The presets are written in the vocabulary's own shape.
 //
 // <div class="widget" data-widget="phase-machine" data-title="…" data-preset="pistol"></div>
 (function () {
@@ -71,10 +71,27 @@
         dry: { ticks: 1, next: 'ready', sequence: [{ at: 0, action: 'switch_if_empty' }] }
       },
       pos: { ready: [0.1, 0.42], spin: [0.5, 0.15], fire: [0.9, 0.42], dry: [0.5, 0.86] }
+    },
+    // a BFG: one big shot, then 96 ticks before the next, while fire itself
+    // lasts only 30 (so the player could switch weapons at once)
+    bfg: {
+      title: 'bfg (cooldown)', pool: 'cells', max: 300, start: 40, per: 1, pickup: 40,
+      initial: 'ready',
+      phases: {
+        ready: { transitions: [
+          { when: [held, { cond: 'no_ammo' }], to: 'dry' },
+          { when: [{ cond: 'button_pressed' }, { cond: 'cooldown_ready', var: 'shot_cd' }], to: 'fire' }] },
+        fire: { ticks: 30, next: 'ready', sequence: [
+          { at: 0, action: 'consume' },
+          { at: 0, action: 'hitscan', damage: 80, count: 1, spread: 0 },
+          { at: 0, action: 'set_cooldown', var: 'shot_cd', ticks: 96 }] },
+        dry: { ticks: 1, next: 'ready', sequence: [{ at: 0, action: 'switch_if_empty' }] }
+      },
+      pos: { ready: [0.12, 0.5], fire: [0.7, 0.2], dry: [0.7, 0.82] }
     }
   };
 
-  const condText = (c) => c.cond === 'held_for' ? `held_for ${c.ticks}` : c.cond;
+  const condText = (c) => c.cond === 'held_for' ? `held_for ${c.ticks}` : c.cond === 'cooldown_ready' ? `cooldown_ready ${c.var}` : c.cond;
   const whenText = (w) => w.map(condText).join(' ∧ ');
 
   window.DNPW['phase-machine'] = function mount(el, opts) {
@@ -95,6 +112,7 @@
     let tally = { shots: 0, rays: 0, hits: 0, damage: 0 };
     let lastShot = null;
     let speed = 1, soundOn = false;
+    let cools = {};                // cooldown var -> the tick it is over
 
     // ------------------------------------------------------------ DOM
     const presetRow = h('div', { class: 'wrow' });
@@ -169,6 +187,7 @@
       P = PRESETS[k];
       for (const [n, b] of Object.entries(presetBtns)) b.classList.toggle('on', n === k);
       ammo = P.start;
+      cools = {};
       phase = P.initial; entered = now; done = new Set();
       history = []; lastEdge = null; downSince = null;
       const hs = fireStep();
@@ -189,13 +208,15 @@
       button_held: () => input,
       held_for: (c) => input && downSince !== null && now - downSince >= c.ticks,
       has_ammo: (c) => hasAmmo(c.n),
-      no_ammo: () => !hasAmmo()
+      no_ammo: () => !hasAmmo(),
+      cooldown_ready: (c) => now >= (cools[c.var] ?? 0)
     };
 
     let tickShot = false, tickDry = false;
     const ACTS = {
       consume: () => { ammo = Math.max(0, ammo - P.per) },
       hitscan: (a) => { fire(a); tickShot = true },
+      set_cooldown: (a) => { cools[a.var] = now + a.ticks },
       switch_if_empty: () => {
         tickDry = true;
         if (!hasAmmo()) say(`dry: switch_if_empty would put the best weapon that still has ammunition in your hands. (Here there is no other weapon, so you keep the ${P.title}.)`);
@@ -435,7 +456,7 @@
     function readout () {
       const ph = P.phases[phase];
       const since = now - entered;
-      out.textContent = `tick ${now} · ${phase} ${ph.ticks === undefined ? `(waits, ${since}t)` : `${Math.min(since, ph.ticks)}/${ph.ticks}t`} · ${P.pool} ${ammo}/${P.max}`;
+      out.textContent = `tick ${now} · ${phase} ${ph.ticks === undefined ? `(waits, ${since}t)` : `${Math.min(since, ph.ticks)}/${ph.ticks}t`} · ${P.pool} ${ammo}/${P.max}${Object.keys(cools).map((k) => ` · cooldown ${k}: ${now >= cools[k] ? 'over' : `${cools[k] - now}t left`}`).join('')}`;
       tallyOut.textContent = `last shot: ${lastShot ? `${lastShot.hits} of ${lastShot.n} rays hit, ${lastShot.dmg} damage` : '—'}  ·  total: ${tally.shots} shots, ${tally.hits}/${tally.rays} rays hit, ${tally.damage} damage`;
     }
 

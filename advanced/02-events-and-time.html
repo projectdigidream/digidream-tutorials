@@ -180,7 +180,7 @@ end</code></pre>
   <p>The server runs the world, and each player's game predicts parts of it. Moving rooms are worked out on each client from the tick. So anything that changes the world must come out the same every time:</p>
   <ul>
     <li><b>Random numbers:</b> use <a href="../luaref/02-every-function.html#dnp.random"><code>dnp.random(lo, hi)</code></a>. It gives a whole number from <code>lo</code> to <code>hi</code>, both included. It is seeded from the map, so a level replays the same way.</li>
-    <li><b>Maths that moves things:</b> use fx and whole numbers. <code>math.sin</code> and other floating-point maths can differ in the last digit from one machine to another. They are fine for numbers that only go to a screen: a camera, a light level, a HUD.</li>
+    <li><b>Maths that moves things:</b> use fx and whole numbers. <code>math.sin</code> and other floating-point maths can differ in the last digit from one machine to another. They are fine for numbers that only go to a screen: a camera, a light level, a HUD. For a square root that changes the game, such as a distance or an aim, use <a href="../luaref/02-every-function.html#fx.sqrt"><code>fx.sqrt(x)</code></a>, not <code>math.sqrt</code>: it is worked out the same on every device. For the length of a vector, <a href="../luaref/02-every-function.html#dnp.length"><code>dnp.length(v)</code></a> does it in one call.</li>
     <li><b>Order:</b> <code>pairs</code> visits keys in no set order. When the order changes the world (who gets the item first), loop with <code>ipairs</code> over a list instead.</li>
   </ul>
   <pre><code>local rolls = {}

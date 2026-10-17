@@ -9,8 +9,11 @@
 //     wins), then a state whose `ticks` ran out goes to its `next`;
 //   - a hit takes hp at once; at 0 it enters `death`; otherwise, if the
 //     current state is not `interruptible = false` and a pain state exists,
-//     it rolls random(0,255) < pain_chance and enters `pain`.
-// The brain is the one "+ new monster" starts with (studio/src/brain.js).
+//     it rolls random(0,255) < pain_chance and enters `pain`;
+//   - pain's `next` is "@previous" (engine 0.2.0): when it runs out, the
+//     monster goes BACK to the state the hit interrupted and resumes it
+//     where it was (its time and its place in its sequence), not from the start.
+// The brain is close to the studio's "Melee grunt" recipe (studio/src/editors/recipes.js).
 //
 // <div class="widget" data-widget="brain-sim" data-title="…"></div>
 (function () {
@@ -25,7 +28,7 @@
     look:   { anim: 0, move: 'stop' },
     chase:  { anim: 1, move: 'chase', interruptible: true },
     attack: { anim: 2, move: 'stop', ticks: 20, next: 'chase', interruptible: true },
-    pain:   { anim: 3, move: 'stop', ticks: 10, next: 'chase' },
+    pain:   { anim: 3, move: 'stop', ticks: 10, next: '@previous' },
     death:  { anim: 4, move: 'stop', ticks: 100, next: 'death' }
   };
   // Diagram positions (0..1 of the diagram box) and arrows.
@@ -35,7 +38,9 @@
     { id: 'chase>look', from: 'chase', to: 'look', label: 'not has_target' },
     { id: 'chase>attack', from: 'chase', to: 'attack', label: 'target_within ∧ visible ∧ cooldown_ready' },
     { id: 'attack>chase', from: 'attack', to: 'chase', label: 'ticks 20 → next' },
-    { id: 'pain>chase', from: 'pain', to: 'chase', label: 'ticks 10 → next' },
+    { id: 'pain>chase', from: 'pain', to: 'chase', label: 'ticks 10 → back to chase (resumed)' },
+    { id: 'pain>attack', from: 'pain', to: 'attack', label: 'ticks 10 → back to attack (resumed)' },
+    { id: 'pain>look', from: 'pain', to: 'look', label: 'ticks 10 → back to look (resumed)' },
     { id: 'hurt>pain', from: 'hit', to: 'pain', label: 'hurt: pain_chance' },
     { id: 'hurt>death', from: 'hit', to: 'death', label: 'hp ≤ 0' }
   ];
@@ -62,7 +67,7 @@
     let m, player, tick, running = true, log = [], lastArrow = null, lastArrowAt = -999, playerHp = 100, flash = 0;
 
     function reset() {
-      m = { x: 3, y: 5, aim: 0, hp: 30, state: 'look', entered: 0, seqI: 0, target: false, ready: 0, phase: 3, swingAt: -99 };
+      m = { x: 3, y: 5, aim: 0, hp: 30, state: 'look', entered: 0, seqI: 0, target: false, ready: 0, phase: 3, swingAt: -99, prev: null };
       player = { x: 12.5, y: 7.5 };
       tick = 0; log = []; lastArrow = null; playerHp = 100;
       say('spawned in look ★ (the initial state)');
@@ -71,6 +76,8 @@
 
     function enter(name, arrow, why) {
       say(m.state + ' → ' + name + (why ? '   (' + why + ')' : ''));
+      // pain remembers what it interrupted, to resume it ("@previous")
+      if (name === 'pain' && m.state !== 'pain' && m.state !== 'death') m.prev = { state: m.state, age: tick - m.entered, seqI: m.seqI };
       m.state = name; m.entered = tick; m.seqI = 0;
       lastArrow = arrow; lastArrowAt = tick;
     }
@@ -116,6 +123,13 @@
         if (C.target_within(P.reach) && C.target_visible() && C.cooldown_ready()) return enter('attack', 'chase>attack', 'target_within ' + P.reach + ', target_visible, cooldown_ready ready');
       }
       if (st.ticks !== undefined && tick - m.entered >= st.ticks) {
+        if (st.next === '@previous' && m.prev) {
+          const p = m.prev; m.prev = null;
+          say('pain → ' + p.state + '   (ticks ' + st.ticks + ' ran out: back to what it was doing, resumed ' + p.age + ' ticks in)');
+          m.state = p.state; m.entered = tick - p.age; m.seqI = p.seqI;
+          lastArrow = 'pain>' + p.state; lastArrowAt = tick;
+          return;
+        }
         const id = m.state === 'attack' ? 'attack>chase' : m.state === 'pain' ? 'pain>chase' : null;
         enter(st.next, id, 'ticks ' + st.ticks + ' ran out → next');
       }
@@ -186,7 +200,7 @@
         slider('speed', 'speed', 0.5, 6, 0.5, v => v.toFixed(1) + '/s'),
         slider('pain_chance', 'pain', 0, 255, 1, v => String(v))),
       logEl,
-      h('p', { class: 'wnote' }, 'A model of the idea, not the engine: it runs the default brain a new monster gets, with the engine\'s rules for thinking every 8 ticks, first-match transitions and the pain roll. It walks straight at you and slides along the wall, where the real one follows a route. Drag the green dot; put the wall between you to break target_visible.'));
+      h('p', { class: 'wnote' }, 'A model of the idea, not the engine: it runs a brain like the Melee grunt recipe\'s, with the engine\'s rules for thinking every 8 ticks, first-match transitions, the pain roll, and pain going back to what it interrupted. It walks straight at you and slides along the wall, where the real one follows a route. Drag the green dot; put the wall between you to break target_visible.'));
 
     let aw = 400, ah = 250, dw = 300, dh = 250, dpr = 1;
     function resize() {

@@ -120,7 +120,7 @@
     <li><b>🧍 Player</b>: drawn by the <code>warden</code> prop. Its moves: <code>move_speed</code> 10, <code>jump_impulse</code> 7, one jump and no dash. It starts with the <code>wrench</code>.</li>
     <li><b>🔫 Weapons</b>: <em>Wrench</em>, <em>Revolver</em>, <em>Scattergun</em>, <em>Riveter</em> and <em>Flare Launcher</em>, with four ammunition pools (bullets, shells, rivets, flares). Each has a first-person sprite (<code>VM_WRENCH</code>, <code>VM_REVOLVER</code>…) with an animation for each phase: the revolver cocks and reloads, the scattergun pumps, the riveter spins up and down. Each starts in a short <code>draw</code> phase (8 ticks, the <code>wpn.draw</code> sound) before it is <code>ready</code>, and the flare's blast throws you without hurting you.</li>
   </ul>
-  <p>Taught in <a href="../studio/07-workshops.html#controls">Workshops: Controls</a> and <a href="../weapons/02-phases.html#first-person">Phases in first person</a>.</p>
+  <p>Taught in <a href="../studio/07-workshops.html#controls">Monsters, weapons, player: Controls</a> and <a href="../weapons/02-phases.html#first-person">Phases in first person</a>.</p>
 
   <h2>Saving</h2>
   <p>In <b>⚙ Settings</b>, <span class="ui">levels keep their state</span> is on (<code>persist levels</code> in <code>module.txt</code>). A district that unloads keeps what happened in it, such as doors opened and things taken, and gets it back when it loads again. <span class="ui">save and load games</span> and <span class="ui">survive a server restart</span> are off. What the player has found across the whole game lives in the <code>progress</code> graph's variables.</p>
