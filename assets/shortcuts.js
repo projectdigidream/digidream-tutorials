@@ -8,12 +8,12 @@ window.DNP_SHORTCUTS = {
   studio: {
     name: 'Studio · map editor',
     rows: [
-      { keys: '1', does: 'Select tool (⌖)', match: ['1'] },
-      { keys: '2', does: 'Room tool (▭)', match: ['2'] },
-      { keys: '3', does: 'Place tool (✦)', match: ['3'] },
-      { keys: '4', does: 'Triggers (⚡)', match: ['4'] },
-      { keys: '5', does: 'Graph (◇)', match: ['5'] },
-      { keys: '6', does: 'Camera (🎥)', match: ['6'] },
+      { keys: '1', does: 'Select tool', match: ['1'] },
+      { keys: '2', does: 'Room tool', match: ['2'] },
+      { keys: '3', does: 'Place tool', match: ['3'] },
+      { keys: '4', does: 'Triggers', match: ['4'] },
+      { keys: '5', does: 'Graph', match: ['5'] },
+      { keys: '6', does: 'Camera', match: ['6'] },
       { keys: 'Enter', does: 'Close the room being drawn', match: ['enter'] },
       { keys: 'Esc', does: 'Cancel the room, leave path editing, or deselect', match: ['escape'] },
       { keys: 'Delete / Backspace', does: 'Delete the selection', match: ['delete', 'backspace'] },

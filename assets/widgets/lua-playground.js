@@ -1320,7 +1320,7 @@ reset(1)
     const status = h('span', { class: 'wout lpg-status' }, 't=0');
     const evBtns = {};
     for (const k of events) evBtns[k] = h('button', { class: 'wbtn' }, EVENT_DEFS[k]);
-    const bSave = h('button', { class: 'wbtn', title: 'Call every dnp.persist save, rebuild the level, run the code with dnp.restoring() true, then call the loads', style: 'display:none' }, '💾 save & reload');
+    const bSave = h('button', { class: 'wbtn', title: 'Call every dnp.persist save, rebuild the level, run the code with dnp.restoring() true, then call the loads', style: 'display:none' }, 'save & reload');
 
     const canvas = h('canvas', { width: 400, height: 400, 'aria-label': 'The arena: four sectors, props and players' });
     const fadeEl = h('div', { class: 'lpg-fade' });
@@ -1651,7 +1651,7 @@ reset(1)
       usedTick = 0;
       const r = call('persist_save', [], true);
       if (r.err) { out('err', null, '[lua] persist save error: ' + r.err); return; }
-      out('note', tick, '💾 saved; rebuilding the level with dnp.restoring() == true');
+      out('note', tick, 'saved; rebuilding the level with dnp.restoring() == true');
       if (!newState(players)) return;
       if (!runChunk(ta.value, true)) { render(); return; }
       const l = call('persist_load', [r.value], true);
@@ -1672,7 +1672,7 @@ reset(1)
         panels: [], hud: [], screen: { fade: 0, fade_ms: 0, letterbox: 0, letterbox_ms: 0 }, persist: 0,
       };
     }
-    const FX_GLYPH = { rain: '☂ rain', snow: '❄ snow', dust: '· dust', embers: '✦ embers', fog: '≋ fog' };
+    const FX_GLYPH = { rain: '⁞ rain', snow: '∗ snow', dust: '· dust', embers: '✦ embers', fog: '≋ fog' };
     function draw() {
       const w = worldState();
       const box = canvas.parentElement.getBoundingClientRect();

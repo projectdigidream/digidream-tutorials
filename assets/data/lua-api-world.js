@@ -1429,7 +1429,7 @@ DNP_LUA_API.groups.push({
     },
     {
       id: 'dnp.debug_overlay', sig: 'dnp.debug_overlay() → boolean', where: 'both',
-      doc: 'Whether the module launches with the debug overlay (⚙ Settings, "show the debug overlay in the game"). Only then are markers made with `debug = true` sent; with it off they cost nothing.',
+      doc: 'Whether the module launches with the debug overlay (Settings, "show the debug overlay in the game"). Only then are markers made with `debug = true` sent; with it off they cost nothing.',
       returns: 'boolean',
       see: ['dnp.mark']
     }
