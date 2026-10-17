@@ -25,57 +25,66 @@
   </div>
 
   <h2>The Triggers sheet</h2>
-  <figure class="shot" data-src="../assets/shots/studio-triggers.png" data-alt="The Triggers sheet over Gem Hollow's world map: preset chips, panels, and no triggers yet">
-    <figcaption>The Triggers sheet on Gem Hollow's <code>world</code>: preset chips along the top, then panels (2 in the module), then one row per trigger. Gem Hollow has none: its levers are graphs.</figcaption>
+  <figure class="shot" data-src="../assets/shots/studio-triggers.png" data-alt="The Triggers sheet after the door preset: preset chips, panels, and the door's three triggers">
+    <figcaption>The Triggers sheet just after the <span class="ui">door</span> preset, on a small map with a door between two rooms: preset chips along the top, then panels, then one row per trigger. The door wrote three: <em>door: shut</em> and an <em>open from …</em> for each side. The status line at the top names them.</figcaption>
   </figure>
-  <p>Choose <span class="ui">⚡ Triggers</span> (key <kbd>4</kbd>). A sheet titled <b>Triggers</b> opens. From top to bottom it has:</p>
+  <p>Choose <span class="ui">Triggers</span> (key <kbd>4</kbd>). A sheet titled <b>Triggers</b> opens. From top to bottom it has:</p>
   <ol>
     <li>The hint <em>"Presets write the usual sentences. Select a room or a wall first, or tap it when asked."</em></li>
     <li>The <b>preset chips</b>.</li>
     <li>Any <b>problems</b> with the map's triggers, in red.</li>
-    <li><b>▢ panels</b> (see <a href="#panels">Panels</a>).</li>
+    <li><b>panels</b> (see <a href="#panels">Panels</a>).</li>
     <li>One <b>row per trigger</b>, or <em>"No triggers yet."</em></li>
   </ol>
-  <p>Each row shows the trigger's event icon, its name, and a summary such as <code>on_interact · 3 if · 2 then · once</code>. A trigger with a problem is marked. Tap a row to open that trigger's card.</p>
+  <p>Each row shows the trigger's event icon, its name, and a summary such as <code>on_interact · 3 if · 2 then · once</code>, or <code>run by another trigger · 1 if · 1 then</code> for one with no event. A trigger with a problem is marked. Tap a row to open that trigger's card.</p>
   <p>While the Triggers tool is on, tapping the map selects a wall or a room. That is how you choose what a preset applies to before you tap its chip.</p>
 
   <h2>Presets</h2>
   <table>
     <thead><tr><th>Chip</th><th>You tap</th><th>What it makes</th></tr></thead>
     <tbody>
-      <tr><td><span class="ui">🚪 door</span></td><td>the door room</td><td>Its ceiling closes down onto its floor. Pressing use on it from a neighbouring room opens it; it shuts again 90 ticks after it finishes opening.</td></tr>
-      <tr><td><span class="ui">⇕ lift</span></td><td>the lift room</td><td>Walking onto it lowers its floor to the lowest neighbouring floor; it rises again 60 ticks after it settles.</td></tr>
-      <tr><td><span class="ui">⏻ switch</span></td><td>the switch wall, then the room it moves</td><td>Pressing the wall lowers that room's floor to the lowest neighbouring floor.</td></tr>
-      <tr><td><span class="ui">✧ teleport</span></td><td>the wall to cross, then where to arrive</td><td>Crossing the wall moves you to the middle of the arrival room. Both directions, if a room is on each side.</td></tr>
-      <tr><td><span class="ui">☠ ambush</span></td><td>the wall to cross, then where the monster appears</td><td>Crossing the wall spawns a monster, once. With more than one monster in the module, the studio asks which.</td></tr>
-      <tr><td><span class="ui">⇥ exit</span></td><td>the wall with the exit switch</td><td>Pressing it sends that player to the next map.</td></tr>
-      <tr><td><span class="ui">▼ crusher</span></td><td>the switch wall, then the room whose ceiling crushes</td><td>The ceiling goes down to just above the floor and back up, over and over.</td></tr>
-      <tr><td><span class="ui">⇄ slider</span></td><td>the switch wall, then the platform</td><td>The platform slides sideways, waits, and slides back.</td></tr>
-      <tr><td><span class="ui">⟳ turntable</span></td><td>the switch wall, then the room that turns</td><td>Each press turns the room a quarter turn.</td></tr>
-      <tr><td><span class="ui">+ blank</span></td><td>nothing</td><td>An empty card, opened at once, to write yourself.</td></tr>
+      <tr><td><span class="ui">door</span></td><td>the door room</td><td>Its ceiling closes down onto its floor. Pressing use on it from a neighbouring room opens it, and it shuts by itself 4 seconds (240 ticks) after it finishes opening. Pressing it while it is open does nothing. See <a href="#door">The door's three cards</a>.</td></tr>
+      <tr><td><span class="ui">lift</span></td><td>the lift room</td><td>Walking onto it lowers its floor to the lowest neighbouring floor; it rises again 60 ticks after it settles.</td></tr>
+      <tr><td><span class="ui">switch</span></td><td>the switch wall, then the room it moves</td><td>Pressing the wall lowers that room's floor to the lowest neighbouring floor.</td></tr>
+      <tr><td><span class="ui">teleport</span></td><td>the wall to cross, then where to arrive</td><td>Crossing the wall moves you to the middle of the arrival room. Both directions, if a room is on each side.</td></tr>
+      <tr><td><span class="ui">ambush</span></td><td>the wall to cross, then where the monster appears</td><td>Crossing the wall spawns a monster, once. With more than one monster in the module, the studio asks which.</td></tr>
+      <tr><td><span class="ui">exit</span></td><td>the wall with the exit switch</td><td>Pressing it sends that player to the next map.</td></tr>
+      <tr><td><span class="ui">crusher</span></td><td>the switch wall, then the room whose ceiling crushes</td><td>The ceiling goes down to just above the floor and back up, over and over.</td></tr>
+      <tr><td><span class="ui">slider</span></td><td>the switch wall, then the platform</td><td>The platform slides sideways, waits, and slides back.</td></tr>
+      <tr><td><span class="ui">turntable</span></td><td>the switch wall, then the room that turns</td><td>Each press turns the room a quarter turn.</td></tr>
+      <tr><td><span class="ui">blank</span></td><td>nothing</td><td>An empty card, opened at once, to write yourself.</td></tr>
     </tbody>
   </table>
-  <p>If you selected the right room or wall first, the preset uses it. Otherwise the status line asks you to tap it, for example <em>"tap the door sector (it will close up)"</em>. When it is done, the status says how many triggers it wrote, such as <em>"door: 3 trigger(s) written"</em>.</p>
+  <p>Each chip has the preset's icon before its name. If you selected the right room or wall first, the preset uses it. Otherwise the status line asks you to tap it, for example <em>"tap the door sector (it will close up)"</em>. When it is done, the status line names every trigger it added, and stays long enough to read, such as <em>"Added the door: door: shut, door: open from s20, door: open from s1."</em> (the rooms are named by their ids).</p>
   <p>A preset also sets the wall flags it needs. Walls you press get <span class="ui">usable</span>; walls you cross get <span class="ui">trigger</span>. A preset that cannot work says why — for example, a door needs a room on at least one side to be opened from.</p>
-  <div class="callout warn"><p><span class="ui">☠ ambush</span> needs a monster. With none in the module the studio says <em>"define a monster first"</em>. Make one in the rail's <b>☠ Monsters</b> section.</p></div>
+  <div class="callout warn"><p><span class="ui">ambush</span> needs a monster. With none in the module the studio says <em>"define a monster first (Monsters tab)"</em>. Make one in the rail's <b>Monsters</b> section.</p></div>
 
   <p>Pick a chip to see what each preset writes. Rooms and walls are shown as placeholders here, and speeds are left out.</p>
   <div class="widget" data-widget="trigger-builder" data-title="What a preset writes"></div>
 
+  <h3 id="door">The door's three cards</h3>
+  <p>A door between two rooms gets three triggers. Read them as sentences:</p>
+  <ul>
+    <li><b>door: shut</b> has no event: it runs only when another trigger runs it. <b>IF</b> the door room is at rest, <b>THEN</b> its ceiling comes back down to where it was drawn (<code>base_ceiling</code>).</li>
+    <li><b>door: open from …</b>, one for each room beside the door, named after that room. <b>WHEN</b> someone presses use (<code>on_interact</code>), <b>IF</b> it happened at that room's wall facing the door, the door is at rest, and it is <b>not</b> already open (its ceiling is not raised 0.25 or more), <b>THEN</b> the ceiling rises to the lowest ceiling beside it, and <code>run_after</code> runs <em>door: shut</em> 240 ticks after the door stops moving.</li>
+  </ul>
+  <p>So pressing an open door does nothing, and it shuts by itself 4 seconds after it finishes opening: time to get through, even fumbling. A door with a room on one side only has a single <b>door: open</b>.</p>
+  <div class="callout"><p><b>Deleting a room takes its triggers with it.</b> Delete the door room and the triggers that worked it go too, with any trigger that ran them: the status line says which, such as <em>"Deleted room s11, and the 3 triggers that worked it (door: shut, door: open from s20, door: open from s1). Undo brings it back."</em> Undo brings the room and all of them back. A graph that still names the room is not changed; the message names it, so you can fix it.</p></div>
+
   <h2>A trigger's card</h2>
-  <p>Tap a row to open its card. At the top are <span class="ui">‹ all triggers</span> (back to the list), <span class="ui">delete</span> and the trigger's <span class="ui">name</span>. Other triggers refer to it by name, so names are unique.</p>
+  <p>Tap a row to open its card. At the top are <span class="ui">all triggers</span> (back to the list), <span class="ui">delete</span> and the trigger's <span class="ui">name</span>. Other triggers refer to it by name, so names are unique.</p>
   <p>While a card is open, the map lights up every room, wall and point the trigger names, coloured by whether an IF or a THEN names it.</p>
 
   <h3>WHEN</h3>
-  <p>The <span class="ui">event</span> menu chooses what starts the trigger. The common ones:</p>
+  <p>The <span class="ui">event</span> menu chooses what starts the trigger. It lists each event by its name first, then what the event hands over, such as <em>on_interact (entity, side, sector)</em>, so typing the first letters finds one. The common ones:</p>
   <ul>
-    <li><code>on_interact</code> ✋: someone pressed use while facing a wall flagged <span class="ui">usable</span>.</li>
-    <li><code>on_cross</code> 🚶: someone crossed a wall flagged <span class="ui">trigger</span>.</li>
-    <li><code>on_touch</code> ☝: someone is standing inside a prop.</li>
-    <li><code>on_prop_use</code> 🔘: someone pressed use on a usable prop.</li>
-    <li><code>on_attack</code> ⚔, <code>on_crush</code> ⬇, <code>on_tick</code> and <code>on_post_tick</code> ⏱, <code>on_ui_event</code> 🎛.</li>
+    <li><code>on_interact</code>: someone pressed use while facing a wall flagged <span class="ui">usable</span>.</li>
+    <li><code>on_cross</code>: someone crossed a wall flagged <span class="ui">trigger</span>.</li>
+    <li><code>on_touch</code>: someone is standing inside a prop.</li>
+    <li><code>on_prop_use</code>: someone pressed use on a usable prop.</li>
+    <li><code>on_attack</code>, <code>on_crush</code>, <code>on_tick</code> and <code>on_post_tick</code>, <code>on_ui_event</code>.</li>
   </ul>
-  <p>The first choice, <b>↪ only when another trigger runs it</b>, means no event: the trigger runs only when another trigger runs it, with <code>run</code> or <code>run_after</code>. A door's <em>shut</em> trigger is one of these.</p>
+  <p>The first choice, <b>only when another trigger runs it</b>, means no event: the trigger runs only when another trigger runs it, with <code>run</code> or <code>run_after</code>. A door's <em>shut</em> trigger is one of these. The WHEN section's icon shows which event it is.</p>
   <p>Under the menu are two switches:</p>
   <ul>
     <li><b>once: spent after it first does something</b>.</li>
@@ -89,7 +98,7 @@
 
   <h3>THEN, in order</h3>
   <p>The actions run top to bottom, numbered. <span class="ui">↑</span> moves an action up; <span class="ui">✕</span> removes it; <span class="ui">+ action…</span> adds one. A trigger needs at least one action, and the card says so in red when it has none.</p>
-  <p>Each action shows its arguments as fields named as in the vocabulary. An optional one ends in <code>?</code>. A room argument has a button to tap the room on the map, and a menu for <em>the event's sector</em> or <em>behind the side</em>. An action that takes a place (<code>x</code>, <code>y</code>, <code>z</code>) has <b>📍 where</b> with <span class="ui">pick a point on the map</span>.</p>
+  <p>Each action shows its arguments as fields named as in the vocabulary. An optional one ends in <code>?</code>. A room argument has a button to tap the room on the map, and a menu for <em>the event's sector</em> or <em>behind the side</em>. An action that takes a place (<code>x</code>, <code>y</code>, <code>z</code>) has a <b>where</b> row with <span class="ui">pick a point on the map</span>.</p>
   <p>Some actions you will use often:</p>
   <ul>
     <li><code>sector_move</code>: move a room's floor, ceiling or both, to a height or sideways.</li>
@@ -111,10 +120,10 @@
       <tr><td><code>everyone?</code></td><td>Every player in the level, not just the player who caused the event.</td></tr>
     </tbody>
   </table>
-  <p>Cues cut from one track crossfade on the bar or loop you asked for; unrelated tracks swap. The change is not remembered: a player who joins later starts on <code>default</code>. You name a map's cues in the <b>♪ Music</b> section (or <span class="ui">⋯ More</span> → <span class="ui">Map settings…</span> → <span class="ui">♪ music cues…</span>). See <a href="../music/05-loops-and-cues.html">Loops, cuts and cues</a>.</p>
+  <p>Cues cut from one track crossfade on the bar or loop you asked for; unrelated tracks swap. The change is not remembered: a player who joins later starts on <code>default</code>. You name a map's cues in the <b>Music</b> section (or <span class="ui">More</span> → <span class="ui">Map settings…</span> → <span class="ui">music cues…</span>). See <a href="../music/05-loops-and-cues.html">Loops, cuts and cues</a>.</p>
 
   <h2 id="panels">Panels</h2>
-  <p>The <b>▢ panels</b> part of the sheet counts the module's panels and names the ones this map's cards open. <span class="ui">design panels…</span> goes to the Panels section. A card opens a panel with <code>ui_open</code> and the panel's name. A press on it arrives as the event <code>on_ui_event</code>, and the condition <code>widget_is</code> says which widget was pressed. Panels are covered in <a href="08-look-and-feel.html">Sky, screens and weather</a>.</p>
+  <p>The <b>panels</b> part of the sheet counts the module's panels and names the ones this map's cards open. <span class="ui">design panels…</span> goes to the Panels section. A card opens a panel with <code>ui_open</code> and the panel's name. A press on it arrives as the event <code>on_ui_event</code>, and the condition <code>widget_is</code> says which widget was pressed. Panels are covered in <a href="08-look-and-feel.html">Sky, screens and weather</a>.</p>
 
   <h2 id="gem-hollow">In Gem Hollow: a lever and a gate, without triggers</h2>
   <p>Gem Hollow's <code>world</code> has no trigger cards at all. Its three levers and gates are written as a graph, <code>levers</code>, in the same words (see <a href="06-graphs.html#gem-hollow">Graphs</a>). The red one reads:</p>
@@ -124,36 +133,45 @@
     <li><b>THEN</b> flip the lever's picture, play <code>world.lever</code>, show the gate on camera path 2, <b>open the door tagged 11</b> (the red gate room), shake the camera, and say <em>"The red gate grinds open to the east."</em></li>
   </ul>
   <p>As a trigger card, the heart of it is an <code>on_prop_use</code> event, the condition <code>target_name_is</code> with <code>lever_red</code>, <b>once</b> switched on, and a <code>sector_move</code> raising the ceiling of the room tagged 11. A graph was chosen because the cutscene around it (bars, a camera flight, subtitles in turn) is easier to draw as a chain of nodes.</p>
-  <div class="callout tip"><p>The gate itself is a plain room whose ceiling sits on its floor, the shape the <span class="ui">🚪 door</span> preset makes. Tap it in <code>world</code> to see its tag, 11.</p></div>
+  <div class="callout tip"><p>The gate itself is a plain room whose ceiling sits on its floor, the shape the <span class="ui">door</span> preset makes. Tap it in <code>world</code> to see its tag, 11.</p></div>
 
   <h2>Exercise: a door and a switch</h2>
   <ol class="steps">
     <li><p>In your copy of Gem Hollow, open the <code>first</code> map you made (or any map with two joined rooms). Draw a narrow room between two rooms, so it shares a wall with each. This is the door.</p></li>
-    <li><p>Choose <span class="ui">⚡ Triggers</span>, tap the narrow room to select it, then tap <span class="ui">🚪 door</span>. The status says how many triggers were written, and the door's ceiling drops to its floor.</p></li>
-    <li><p>Tap a <b>door: open</b> row (with a room on each side there is one per side, named <em>open from …</em>). Read its WHEN, IF and THEN. Find the <code>run_after</code> that shuts it, and change its <code>ticks</code> from 90 to 150.</p></li>
-    <li><p>Press <span class="ui">‹ all triggers</span>. Tap a wall of one of the rooms, then <span class="ui">⏻ switch</span>, then tap the room it should move.</p></li>
+    <li><p>Choose <span class="ui">Triggers</span>, tap the narrow room to select it, then tap <span class="ui">door</span>. The status line names the three triggers it added, and the door's ceiling drops to its floor.</p></li>
+    <li><p>Tap one of the two <b>door: open from …</b> rows. Read its WHEN, IF and THEN. Find the <code>run_after</code> that shuts it, and change its <code>ticks</code> from 240 to 360, so the door stays open 6 seconds. Do the same on the other side's row.</p></li>
+    <li><p>Press <span class="ui">all triggers</span>. Tap a wall of one of the rooms, then <span class="ui">switch</span>, then tap the room it should move.</p></li>
     <li><p>Open the switch's card and turn on <b>once</b>, so it works one time only.</p></li>
     <li><p>Add an action: <span class="ui">+ action…</span> → <code>music</code>. Set <code>cue</code> to <code>default</code> and <code>at?</code> to <code>loop_end</code>. Then remove it again with <span class="ui">✕</span>.</p></li>
-    <li><p>If you are in the app, press <span class="ui">▶ Play</span> and open the door.</p></li>
+    <li><p>If you are in the app, press <span class="ui">Play</span> and open the door with <kbd>E</kbd>. Press <kbd>E</kbd> again while it is open: nothing happens. Walk through; it shuts by itself.</p></li>
   </ol>
 
   <div class="quiz" data-answer="1">
     <p class="q">You want crossing a doorway in either direction to spawn a monster once. What do you need?</p>
     <ul>
       <li>One trigger with two side_is conditions, one per side</li>
-      <li>Two on_cross triggers, one per side — which the ☠ ambush preset makes for you</li>
+      <li>Two on_cross triggers, one per side — which the ambush preset makes for you</li>
       <li>One on_interact trigger on the doorway</li>
     </ul>
     <p class="why">Conditions are ANDed, and a crossing reports only the side you left. One trigger per side; the ambush preset also makes each one disable the other.</p>
   </div>
   <div class="quiz" data-answer="2">
-    <p class="q">A trigger's event is set to "↪ only when another trigger runs it". When does it run?</p>
+    <p class="q">A trigger's event is set to "only when another trigger runs it". When does it run?</p>
     <ul>
       <li>Every tick</li>
       <li>When the player presses use anywhere</li>
       <li>Only when another trigger runs it, with run or run_after</li>
     </ul>
     <p class="why">No event means it never starts on its own. A door's shut trigger works this way.</p>
+  </div>
+  <div class="quiz" data-answer="1">
+    <p class="q">You made a door with the door preset. A player opens it with E, then presses E again at once. What happens?</p>
+    <ul>
+      <li>It shuts at once</li>
+      <li>Nothing: an open door ignores the press, and shuts by itself 4 seconds after it finished opening</li>
+      <li>It opens further</li>
+    </ul>
+    <p class="why">Each <em>door: open from …</em> card holds only when the door is not already open, and its <code>run_after</code> runs <em>door: shut</em> 240 ticks after the door comes to rest.</p>
   </div>
   <div class="quiz" data-answer="0">
     <p class="q">A music action has cue "boss" and nothing else set. When and how does it change?</p>

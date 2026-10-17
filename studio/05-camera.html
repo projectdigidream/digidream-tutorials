@@ -28,7 +28,7 @@
   <figure class="shot" data-src="../assets/shots/studio-camera.png" data-alt="The Camera sheet on Gem Hollow's world map: angle, distance and how it moves">
     <figcaption>The Camera sheet on Gem Hollow's <code>world</code>: its own angle (45° around, 36° down) and distance (15), then <b>how it moves</b>.</figcaption>
   </figure>
-  <p>Choose <span class="ui">🎥 Camera</span> (key <kbd>6</kbd>), or <span class="ui">⋯ More</span> → <span class="ui">Camera…</span>. A sheet titled <b>Camera</b> opens. Its first line says how the game looks at this map when nothing is set: the engine's own camera, 45° around, 51° down, free to turn and zoom.</p>
+  <p>Choose <span class="ui">Camera</span> (key <kbd>6</kbd>), or <span class="ui">More</span> → <span class="ui">Camera…</span>. A sheet titled <b>Camera</b> opens. Its first line says how the game looks at this map when nothing is set: the engine's own camera, 45° around, 51° down, free to turn and zoom.</p>
 
   <h3>Angle and distance</h3>
   <ul>
@@ -45,7 +45,7 @@
   <div class="callout tip"><p>Sprites stand upright in the world. So the steeper the camera looks down, the shorter they look — in the studio and in the game. Check your monsters after you change <b>down</b>.</p></div>
 
   <h2 id="moves">How it moves</h2>
-  <p>Under the angle is <b>🎥 how it moves</b>: how the camera chases the player while it follows them. Each slider shows the engine's own value until the map sets one; a value the map sets is marked <em>(own)</em>. Every slider has an <b>ⓘ</b> with its description.</p>
+  <p>Under the angle is <b>how it moves</b>: how the camera chases the player while it follows them. Each slider shows the engine's own value until the map sets one; a value the map sets is marked <em>(own)</em>. Every slider has a help button with its description, and its number can be typed as well as dragged.</p>
   <table>
     <thead><tr><th>Slider</th><th>Engine's value</th><th>What it does</th></tr></thead>
     <tbody>
@@ -57,7 +57,7 @@
       <tr><td><span class="ui">dead zone across</span>, <span class="ui">dead zone up and down</span></td><td>2.5, 1.5</td><td>How far the player may move sideways, or up and down, before the camera follows at all.</td></tr>
     </tbody>
   </table>
-  <p><span class="ui">↺ back to the engine's movement</span> clears every one the map set. A graph's <code>camera_follow</code> node can change <code>lead</code> and <code>lead_velocity</code> later, for one scene.</p>
+  <p><span class="ui">back to the engine's movement</span> clears every one the map set. A graph's <code>camera_follow</code> node can change <code>lead</code> and <code>lead_velocity</code> later, for one scene.</p>
   <div class="callout tip"><p>For a fast runner, a little <b>look ahead with speed</b> (0.2 to 0.4) shows more of what is coming without moving the camera when the player stands still.</p></div>
 
   <h2>Camera paths</h2>
@@ -76,28 +76,28 @@
   <p>The sheet shows the picked waypoint as <b>waypoint N of M</b>, with:</p>
   <ul>
     <li><span class="ui">height</span>, <span class="ui">x</span> and <span class="ui">y</span>.</li>
-    <li><span class="ui">‹ previous</span> and <span class="ui">› next</span>: pick the waypoint before or after.</li>
+    <li><span class="ui">previous</span> and <span class="ui">next</span>: pick the waypoint before or after.</li>
     <li><span class="ui">remove</span>: delete this waypoint.</li>
-    <li><span class="ui">← earlier</span> and <span class="ui">→ later</span>: move it one place along the path. The camera runs through the points in order, so the same points in another order are another path.</li>
+    <li><span class="ui">earlier</span> and <span class="ui">later</span>: move it one place along the path. The camera runs through the points in order, so the same points in another order are another path.</li>
     <li><span class="ui">+ after this</span>: a new waypoint halfway to the next one. Use it to add a bend; adding at the end would change where the shot finishes instead.</li>
   </ul>
   <figure class="shot" data-src="../assets/shots/studio-camera-path.png" data-alt="Editing Gem Hollow's intro path: numbered waypoints over the game view, and the order list in the sheet">
     <figcaption>Editing path tag 1 in Gem Hollow's <code>world</code>, the intro's flight over the whole level: 16 waypoints, numbered on the map and listed in order in the sheet.</figcaption>
   </figure>
-  <p>Under the waypoint is <b>the order</b>: every waypoint in the order the camera runs through them, each with its position and height. Tap a row (or its number) to pick that waypoint; its <span class="ui">↑</span> and <span class="ui">↓</span> move it one place along the curve. <span class="ui">⇄ reverse the order</span> turns the whole path round, so the shot runs the other way.</p>
+  <p>Under the waypoint is <b>the order</b>: every waypoint in the order the camera runs through them, each with its position and height. Tap a row (or its number) to pick that waypoint; its <span class="ui">↑</span> and <span class="ui">↓</span> move it one place along the curve. <span class="ui">reverse the order</span> turns the whole path round, so the shot runs the other way.</p>
   <p>Below the order:</p>
   <ul>
     <li><span class="ui">height for every waypoint</span>: sets all of them to one height at once.</li>
     <li><span class="ui">tag</span>: the number scripts and the camera use to name the path. Tags are not unique; the first path with a tag wins.</li>
     <li><span class="ui">loop</span>: the path joins its end to its start.</li>
     <li><span class="ui">rides the sectors under it</span> (on by default): each point moves with the room it sits over, so a path over a lift moves with the lift. Turn it off to pin every point to the world.</li>
-    <li><span class="ui">‹ all cameras</span>: back to the Camera sheet.</li>
+    <li><span class="ui">all cameras</span>: back to the Camera sheet.</li>
   </ul>
   <div class="callout warn"><p>Do not let a path ride a room that a script moves in steps. Its position arrives over the network, and the camera judders.</p></div>
   <p><kbd>Esc</kbd> also stops editing the path.</p>
 
-  <h2>🎬 How it follows</h2>
-  <p>The <span class="ui">mode</span> menu under <b>🎬 how it follows</b> says what the camera does with a path:</p>
+  <h2>How it follows</h2>
+  <p>The <span class="ui">mode</span> menu under <b>how it follows</b> says what the camera does with a path:</p>
   <table>
     <thead><tr><th>Mode</th><th>What the camera does</th><th>Extra fields</th></tr></thead>
     <tbody>
@@ -119,21 +119,21 @@
   <h2 id="gem-hollow">In Gem Hollow: its cameras</h2>
   <ul>
     <li><b><code>world</code></b> sets its own angle: 45° around, 36° down (flatter than the engine's 51°, so the platforms read as a side-on course) and a distance of 15 (closer than the engine's). Turning and zoom stay free, and it leaves <b>how it moves</b> at the engine's values. Its <b>how it follows</b> is the engine's: follow the player.</li>
-    <li><b>Six paths in <code>world</code>.</b> Tag 1 is the intro's flight over the whole level, 16 waypoints, about 513 units of curve. Tags 2, 3 and 4 are short three-point shots of the red, blue and gold gates opening. Tag 5 is a loop round the vault for the ending, and tag 6 the vault door opening. None is used by the map's camera settings: the graphs fly them with <code>camera_flythrough</code> and <code>camera_track</code>.</li>
+    <li><b>Six paths in <code>world</code>.</b> Tag 1 is the intro's flight over the whole level, 16 waypoints, about 497 units of curve. Tags 2, 3 and 4 are short three-point shots of the red, blue and gold gates opening. Tag 5 is a loop round the vault for the ending, and tag 6 the vault door opening. None is used by the map's camera settings: the graphs fly them with <code>camera_flythrough</code> and <code>camera_track</code>.</li>
     <li><b><code>menu</code></b>, the title map, sets <b>how it follows</b> to <b>flythrough</b> on path 1, a looping ring of eight waypoints round the island, at 1.6 units a second. So the title screen circles slowly behind the menu, with no graph needed.</li>
   </ul>
 
   <h2>Exercise: a tracking shot</h2>
   <ol class="steps">
-    <li><p>In your copy of Gem Hollow, open <code>menu</code>, choose <span class="ui">🎥 Camera</span> and press <span class="ui">✎</span> on path tag 1. Tap a waypoint's number to pick it, move it one place down <b>the order</b> with <span class="ui">↓</span>, and watch the ring kink. Undo with <kbd>⌘Z</kbd>.</p></li>
-    <li><p>Open your own map and choose <span class="ui">🎥 Camera</span>. Turn on <span class="ui">set the angle</span> and drag <b>around</b> until the main room faces you. Turn on <span class="ui">lock turning</span>.</p></li>
+    <li><p>In your copy of Gem Hollow, open <code>menu</code>, choose <span class="ui">Camera</span> and press <span class="ui">✎</span> on path tag 1. Tap a waypoint's number to pick it, move it one place down <b>the order</b> with <span class="ui">↓</span>, and watch the ring kink. Undo with <kbd>⌘Z</kbd>.</p></li>
+    <li><p>Open your own map and choose <span class="ui">Camera</span>. Turn on <span class="ui">set the angle</span> and drag <b>around</b> until the main room faces you. Turn on <span class="ui">lock turning</span>.</p></li>
     <li><p>Press <span class="ui">+ new path</span>. Tap the floor four times along one side of the room, at about head height and above.</p></li>
     <li><p>Pick the second waypoint and press <span class="ui">+ after this</span>. Drag the new waypoint out to make a bend.</p></li>
-    <li><p>Set <span class="ui">height for every waypoint</span> to 6. Then press <span class="ui">⇄ reverse the order</span> and see the numbers run the other way.</p></li>
-    <li><p>Press <span class="ui">‹ all cameras</span>. Set <span class="ui">mode</span> to <b>track: stay on the path, nearest the player</b> and choose your path's tag in <span class="ui">path</span>.</p></li>
+    <li><p>Set <span class="ui">height for every waypoint</span> to 6. Then press <span class="ui">reverse the order</span> and see the numbers run the other way.</p></li>
+    <li><p>Press <span class="ui">all cameras</span>. Set <span class="ui">mode</span> to <b>track: stay on the path, nearest the player</b> and choose your path's tag in <span class="ui">path</span>.</p></li>
     <li><p>Change <span class="ui">mode</span> to <b>flythrough: ride the path at a speed</b> and read how long the shot lasts. Set <span class="ui">speed (units/s)</span> to 3 and read it again.</p></li>
     <li><p>Set <span class="ui">mode</span> back to <b>follow the player</b>. Under <b>how it moves</b>, set <span class="ui">look ahead with speed</span> to 0.3. Its label now ends in <em>(own)</em>.</p></li>
-    <li><p>If you are in the app, press <span class="ui">▶ Play</span>, run, and watch the camera lead you.</p></li>
+    <li><p>If you are in the app, press <span class="ui">Play</span>, run, and watch the camera lead you.</p></li>
   </ol>
 
   <div class="quiz" data-answer="1">

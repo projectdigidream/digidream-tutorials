@@ -25,17 +25,17 @@
   </div>
 
   <h2>The Maps section</h2>
-  <p>Open <b>🗺 Maps</b> from the rail, or tap the map's name at the top of the map editor. (On Home, a map's thumbnail opens it straight away.) Each map has a row with a thumbnail, its name, and a count of its sectors, things and triggers. The map you are editing is marked with a pencil, <b>✎</b>, and its count ends <em>· editing</em>.</p>
+  <p>Open <b>Maps</b> from the rail, or tap the map's name at the top of the map editor. (On Home, a map's thumbnail opens it straight away.) Each map has a row with a thumbnail, its name, and a count of its sectors, things and triggers. The map you are editing is marked with a pencil before its name, and its count ends <em>· editing</em>.</p>
   <ul>
     <li><b>Tap a row</b> to open that map in the map editor.</li>
     <li><span class="ui">▶</span> on a row plays the module from that map (<em>play from <i>map</i></em>), whichever map you are editing.</li>
     <li><span class="ui">+ new map</span> asks for a name (letters, digits, dashes) and makes a map with a single room.</li>
     <li><span class="ui">✕</span> deletes a map after asking. A module always keeps at least one map. Undo on the Maps page brings it back, and the studio takes a snapshot before it deletes.</li>
   </ul>
-  <p>Every map goes into the pack when you export. <span class="ui">▶ Play</span> in the map editor and on the rail starts the map you are editing, the one with the ✎. When you open a module again, the studio opens the map you edited last, so the rail's Play plays it. Play on Home starts the module's starting map, which you set in <b>⚙ Settings</b> (see <a href="10-play-and-export.html">Play and export</a>).</p>
+  <p>Every map goes into the pack when you export. <span class="ui">Play</span> in the map editor and on the rail starts the map you are editing, the one with the pencil. When you open a module again, the studio opens the map you edited last, so the rail's Play plays it. Play on Home starts the module's starting map, which you set in <b>Settings</b> (see <a href="10-play-and-export.html">Play and export</a>).</p>
 
   <h3>The metamap</h3>
-  <p>Under the list is <span class="ui">▦ metamap</span>. Turn on <span class="ui">put the maps on a grid</span> to say where each map sits. Tap a map, then a cell, to place it. Tapping an empty cell with nothing picked makes a new map there.</p>
+  <p>Under the list is <span class="ui">metamap</span>. Turn on <span class="ui">put the maps on a grid</span> to say where each map sits. Tap a map, then a cell, to place it. Tapping an empty cell with nothing picked makes a new map there.</p>
   <ul>
     <li>Without a pitch, the grid only says which maps are near which, so the next map is in memory before a player reaches it.</li>
     <li>With <span class="ui">one shared world (walk from map to map)</span>, the maps are one world. Each one is drawn in its own cell, and two maps join where both have an open side along the same line. You open a side in the wall form (see <a href="#wall-form">The wall form</a>).</li>
@@ -44,7 +44,7 @@
   <div class="callout tip"><p>You do not need the metamap for a first map. Leave it off until you have two maps that should join.</p></div>
 
   <h2>The map editor</h2>
-  <figure class="shot" data-src="../assets/shots/studio-map-select.png" data-hotspots='[{"x":37,"y":2.3,"t":"Where you are","d":"module / map, and how many rooms (sectors) it has: gemhollow / world, 81 sectors"},{"x":27.2,"y":50.3,"t":"A spawn","d":"cp1, the Isles checkpoint; the level starts at the spawn tagged start"},{"x":35.2,"y":29.7,"t":"Corner handles","d":"the selected room’s corners: drag to move one; long-press a wall to add one"},{"x":62.4,"y":3.3,"t":"Undo / redo","d":"in the map editor they undo the map"},{"x":68.1,"y":3.3,"t":"PLAN","d":"plan view ⇄ game view (V)"},{"x":85.4,"y":33,"t":"The inspector","d":"the form for what is selected: here the Isles’ lake, its floor at −3 in WATER, open to the sky"},{"x":42.6,"y":89.4,"t":"The toolbar","d":"Select, Room, Place, Triggers, Camera, Graph, Play (keys 1–6)"},{"x":42.8,"y":96.1,"t":"⋯ More","d":"Map settings, Play log, Camera, Import texture, Fit view, Help"}]' data-alt="The map editor on Gem Hollow's world map, with the Isles' lake selected">
+  <figure class="shot" data-src="../assets/shots/studio-map-select.png" data-hotspots='[{"x":37,"y":2.3,"t":"Where you are","d":"module / map, and how many rooms (sectors) it has: gemhollow / world, 81 sectors"},{"x":27.2,"y":50.3,"t":"A spawn","d":"cp1, the Isles checkpoint; the level starts at the spawn tagged start"},{"x":35.2,"y":29.7,"t":"Corner handles","d":"the selected room’s corners: drag to move one; long-press a wall to add one"},{"x":62.4,"y":3.3,"t":"Undo / redo","d":"in the map editor they undo the map"},{"x":68.1,"y":3.3,"t":"PLAN","d":"plan view ⇄ game view (V)"},{"x":85.4,"y":33,"t":"The inspector","d":"the form for what is selected: here the Isles’ lake, its floor at −3 in WATER, open to the sky; all middles shows its walls’ texture"},{"x":42.6,"y":89.4,"t":"The toolbar","d":"Select, Room, Place, Triggers, Camera, Graph, Play (keys 1–6)"},{"x":42.8,"y":96.1,"t":"More","d":"Map settings, Play log, Camera, Import texture, Fit view, Help"}]' data-alt="The map editor on Gem Hollow's world map, with the Isles' lake selected">
     <figcaption>The map editor on Gem Hollow's <code>world</code>: the viewport, the tool bar along the bottom, and the form of what is selected (the Isles' lake).</figcaption>
   </figure>
   <p>The map editor has three parts: the <b>viewport</b> where you draw, the <b>tool bar</b>, and a <b>sheet</b> that shows the form of whatever you selected.</p>
@@ -53,17 +53,17 @@
   <table>
     <thead><tr><th>Button</th><th>Key</th><th>What it does</th></tr></thead>
     <tbody>
-      <tr><td><span class="ui">⌖ Select</span></td><td><kbd>1</kbd></td><td>Tap a room, a wall or a corner to select it. Drag corners to reshape, drag a selected room to move it.</td></tr>
-      <tr><td><span class="ui">▭ Room</span></td><td><kbd>2</kbd></td><td>Draw a new room.</td></tr>
-      <tr><td><span class="ui">✦ Place</span></td><td><kbd>3</kbd></td><td>Opens the <b>Place</b> palette: monsters, props, spawns and lights. See <a href="03-placing-things.html">Placing things</a>.</td></tr>
-      <tr><td><span class="ui">⚡ Triggers</span></td><td><kbd>4</kbd></td><td>Doors, lifts, switches and more. See <a href="04-triggers.html">Triggers</a>.</td></tr>
-      <tr><td><span class="ui">🎥 Camera</span></td><td><kbd>6</kbd></td><td>How the game looks at this map, and its camera paths. See <a href="05-camera.html">Camera</a>.</td></tr>
-      <tr><td><span class="ui">◇ Graph</span></td><td><kbd>5</kbd></td><td>Opens this map's graph. See <a href="06-graphs.html">Graphs</a>.</td></tr>
-      <tr><td><span class="ui">▶ Play</span></td><td></td><td>Play-tests this map (in the app only).</td></tr>
-      <tr><td><span class="ui">⋯ More</span></td><td></td><td>The map's menu (see <a href="#more">⋯ More</a>).</td></tr>
+      <tr><td><span class="ui">Select</span></td><td><kbd>1</kbd></td><td>Tap a room, a wall or a corner to select it. Drag corners to reshape, drag a selected room to move it.</td></tr>
+      <tr><td><span class="ui">Room</span></td><td><kbd>2</kbd></td><td>Draw a new room.</td></tr>
+      <tr><td><span class="ui">Place</span></td><td><kbd>3</kbd></td><td>Opens the <b>Place</b> palette: monsters, props, spawns and lights. See <a href="03-placing-things.html">Placing things</a>.</td></tr>
+      <tr><td><span class="ui">Triggers</span></td><td><kbd>4</kbd></td><td>Doors, lifts, switches and more. See <a href="04-triggers.html">Triggers</a>.</td></tr>
+      <tr><td><span class="ui">Camera</span></td><td><kbd>6</kbd></td><td>How the game looks at this map, and its camera paths. See <a href="05-camera.html">Camera</a>.</td></tr>
+      <tr><td><span class="ui">Graph</span></td><td><kbd>5</kbd></td><td>Opens this map's graph. See <a href="06-graphs.html">Graphs</a>.</td></tr>
+      <tr><td><span class="ui">Play</span></td><td></td><td>Play-tests this map (in the app only).</td></tr>
+      <tr><td><span class="ui">More</span></td><td></td><td>The map's menu (see <a href="#more">More</a>).</td></tr>
     </tbody>
   </table>
-  <p>Note that <kbd>5</kbd> is Graph and <kbd>6</kbd> is Camera, the other way round from the bar's order.</p>
+  <p>Note that <kbd>5</kbd> is Graph and <kbd>6</kbd> is Camera, the other way round from the bar's order. A key pressed with <kbd>⌘</kbd>, <kbd>Ctrl</kbd> or <kbd>Alt</kbd> is never taken as a tool's key: <kbd>⌘V</kbd> pastes, it does not switch the view.</p>
   <p>At the top, beside the status line, are the view buttons:</p>
   <ul>
     <li><span class="ui">↶</span> and <span class="ui">↷</span>: undo and redo for this map.</li>
@@ -90,24 +90,25 @@
   <figure class="shot" data-src="../assets/shots/studio-map-room.png" data-alt="The Room tool drawing a new room corner by corner">
     <figcaption>The Room tool below Gem Hollow's Cliffs: three corners tapped so far, waiting for the first one to be tapped again. The status line says what to do.</figcaption>
   </figure>
-  <p>Choose <span class="ui">▭ Room</span>. The status line says <em>"tap corners, tap the first one again to close -- or drag a rectangle"</em>. There are two ways to draw:</p>
+  <p>Choose <span class="ui">Room</span>. The status line says <em>"tap corners, tap the first one again to close -- or drag a rectangle"</em>. There are two ways to draw:</p>
   <ul>
     <li><b>Corner by corner.</b> Tap each corner. Tap the first corner again to close the room, or press <kbd>Enter</kbd>. A room needs at least three corners.</li>
     <li><b>A rectangle.</b> Press and drag. When you let go, the rectangle is a room.</li>
   </ul>
-  <p>Press <kbd>Esc</kbd> to throw away the corners you have tapped so far. Corners snap to the grid, and to the corners and walls of rooms already there, so rooms meet cleanly. When a room closes, it is selected and its form opens.</p>
+  <p>Press <kbd>Esc</kbd> to throw away the corners you have tapped so far. Corners snap to the grid, and to the corners and walls of rooms already there, so rooms meet cleanly. Snapping reaches half a unit at most, however far out you zoom, so a corner meant to leave a gap is not pulled onto a wall metres away.</p>
+  <p>When a room closes, it is selected. Its form opens only if a form was already open, so drawing rectangle after rectangle is not covered up; otherwise the status line says what was drawn, such as <em>"Room s12 drawn. Tap it for its heights and textures."</em>. Tap it to open its form.</p>
   <h3>The textures a new room takes</h3>
-  <p>A new room is drawn with the textures you used last. When there are none yet, so that your first room is never an empty outline, the studio picks some:</p>
+  <p>A new room is drawn with the textures and heights you used last. A room drawn <b>inside</b> another room starts as that room is instead: the same floor, ceiling, light and textures, so a platform drawn in a courtyard is not born with the last pit's floor or a ceiling under no sky. The status line then says <em>"… drawn inside s4, as high as it"</em>. When there are no textures yet, so that your first room is never an empty outline, the studio picks some:</p>
   <ol>
     <li>the module's own textures: one whose name has <code>FLOOR</code> (or <code>FLAT</code>, <code>GROUND</code>) for the floor and ceiling, and one whose name has <code>WALL</code> for the walls;</li>
     <li>if the module has none, the textures that come with the app;</li>
-    <li>if there are none of those either, it adds two plain grey tiles with a faint grid to the module, <code>PLAIN_FLOOR</code> and <code>PLAIN_WALL</code>. The status line says so, and you can change them on <b>🧱 Textures</b>.</li>
+    <li>if there are none of those either, it adds two plain grey tiles with a faint grid to the module, <code>PLAIN_FLOOR</code> and <code>PLAIN_WALL</code>. The status line says so, and you can change them on <b>Textures</b>.</li>
   </ol>
   <p>A texture you picked yourself is never replaced.</p>
   <div class="callout tip"><p>Name your textures with <code>FLOOR</code> and <code>WALL</code> in them, such as <code>STONE_FLOOR</code> and <code>BRICK_WALL</code>, and new rooms start in them.</p></div>
   <p>How rooms fit together:</p>
   <ul>
-    <li><b>Rooms that touch share a wall.</b> You can walk across it, unless you force it to a wall.</li>
+    <li><b>Rooms that touch share a wall.</b> You can walk across it, unless you force it to a wall. A wall that becomes an opening this way loses its middle texture, on both sides, so the doorway is not bricked up in the game.</li>
     <li><b>A room inside a room</b> is a <b>platform</b> when its floor is higher, and a <b>pit</b> when its floor is lower.</li>
   </ul>
 
@@ -121,13 +122,13 @@
   </ol>
 
   <h2>Reshaping</h2>
-  <p>With <span class="ui">⌖ Select</span>:</p>
+  <p>With <span class="ui">Select</span>:</p>
   <ul>
     <li><b>Drag a corner</b> to move it.</li>
     <li><b>Drag a selected room</b> to move the whole room.</li>
     <li><b>Long-press a wall</b> to add a corner in its middle. The new corner is selected, ready to drag.</li>
     <li><b>Long-press a corner</b> to remove it. A room keeps at least three corners.</li>
-    <li><kbd>Delete</kbd> or <kbd>Backspace</kbd> deletes what is selected.</li>
+    <li><kbd>Delete</kbd> or <kbd>Backspace</kbd> deletes what is selected. Deleting a room also takes the triggers that worked it (a door's, say), and the status line names them; undo brings them all back (see <a href="04-triggers.html#door">Triggers</a>).</li>
   </ul>
   <p>A selected corner has its own small form: <span class="ui">x</span>, <span class="ui">y</span>, <span class="ui">remove corner</span> and <span class="ui">select sector</span>.</p>
 
@@ -141,14 +142,15 @@
       <tr><td><span class="ui">thickness</span></td><td>How thick a platform's slab is drawn, 0 to 16.</td></tr>
       <tr><td><span class="ui">floor tex</span>, <span class="ui">ceiling tex</span></td><td>Tap to pick a texture. <span class="ui">(none)</span> clears it.</td></tr>
       <tr><td><span class="ui">ceiling open to the sky</span></td><td>Replaces the ceiling with a window onto the map's sky. Turning it off brings back the texture it replaced.</td></tr>
-      <tr><td><span class="ui">all middles</span>, <span class="ui">all uppers</span>, <span class="ui">all lowers</span></td><td>Set one texture on every wall of the room at once.</td></tr>
+      <tr><td><span class="ui">all middles</span>, <span class="ui">all uppers</span>, <span class="ui">all lowers</span></td><td>Set one texture on every wall of the room at once. Each button shows the texture its walls have, or <span class="ui">(mixed)</span> when they differ. <span class="ui">all middles</span> textures the room's solid walls only: an opening into another room keeps no middle, so it stays open.</td></tr>
       <tr><td><span class="ui">edges</span></td><td>What the room's edges are (see below).</td></tr>
       <tr><td><span class="ui">tag</span></td><td>A number that triggers and scripts use to name rooms.</td></tr>
       <tr><td><span class="ui">duplicate</span></td><td>A copy of the room, shifted by 2, with the same heights, light, textures and walls.</td></tr>
-      <tr><td><span class="ui">delete</span></td><td>Removes the room.</td></tr>
+      <tr><td><span class="ui">delete</span></td><td>Removes the room, with the triggers that worked it. The status line names them, and undo brings them all back.</td></tr>
     </tbody>
   </table>
   <p>Upper and lower are the bands a wall shows only where another room is behind it: above that room's ceiling, and below its floor.</p>
+  <div class="callout tip"><p><b>Type a slider's number.</b> The number at the end of every slider is a field too: tap it, type <code>2.5</code> and press <kbd>Enter</kbd> (or tap elsewhere). The value lands on the slider's own steps and range. A decimal comma counts as a point, so <code>2,5</code> works as well. On a phone, a swipe up or down over a slider scrolls the form instead of moving the slider.</p></div>
 
   <h3>Edges</h3>
   <p>The <span class="ui">edges</span> menu has three choices:</p>
@@ -159,7 +161,7 @@
   </ul>
 
   <h3>The floor and ceiling patterns</h3>
-  <p>The form has a <b>▦ floor pattern</b> and a <b>▦ ceiling pattern</b> section, with the same fields each:</p>
+  <p>The form has a <b>floor pattern</b> and a <b>ceiling pattern</b> section, with the same fields each:</p>
   <ul>
     <li><span class="ui">turn (°)</span>: turns the texture, 0 to 360 in steps of 5.</li>
     <li><span class="ui">shift x</span>, <span class="ui">shift y</span>: slide it, in world units.</li>
@@ -167,7 +169,7 @@
     <li><span class="ui">painted in</span>: <em>the world</em> (patterns line up across rooms) or <em>the sector</em> (the pattern rides the room when it moves, for a lift or a door).</li>
     <li><span class="ui">see-through</span>: makes the surface transparent. When it is on, <span class="ui">opacity</span> appears. 254 shows the picture's own holes, for a grate or a fence. Lower values are glass. A see-through surface is still solid to walk on.</li>
   </ul>
-  <p>Below the patterns is <b>🌦 weather and fog</b>, where you add rain, snow, dust, embers or fog to the room. That is covered in <a href="08-look-and-feel.html">Sky, screens and weather</a>.</p>
+  <p>Below the patterns is <b>weather and fog</b>, where you add rain, snow, dust, embers or fog to the room. That is covered in <a href="08-look-and-feel.html">Sky, screens and weather</a>.</p>
 
   <h2 id="wall-form">The wall form</h2>
   <p>Tap a wall to select it. The form says whose side it is. A wall between two rooms has two sides, one for each room. Tap the wall again, or press <span class="ui">select the other side (sector …)</span>, to get the other room's side.</p>
@@ -196,29 +198,29 @@
       <tr><td><span class="ui">grapple</span></td><td>The grapple can attach to it.</td></tr>
     </tbody>
   </table>
-  <div class="callout tip"><p>You rarely set <span class="ui">trigger</span> and <span class="ui">usable</span> by hand. The presets in <span class="ui">⚡ Triggers</span> set them on the right sides for you.</p></div>
+  <div class="callout tip"><p>You rarely set <span class="ui">trigger</span> and <span class="ui">usable</span> by hand. The presets in <span class="ui">Triggers</span> set them on the right sides for you.</p></div>
 
-  <h2 id="more">⋯ More and Map settings</h2>
-  <p><span class="ui">⋯ More</span> holds what is about this map, not one room:</p>
+  <h2 id="more">More and Map settings</h2>
+  <p><span class="ui">More</span> holds what is about this map, not one room:</p>
   <ul>
     <li><span class="ui">Map settings…</span></li>
     <li><span class="ui">Play log…</span>: why the last play-test did or did not start.</li>
-    <li><span class="ui">Camera…</span>: the same sheet as <span class="ui">🎥 Camera</span>.</li>
+    <li><span class="ui">Camera…</span>: the same sheet as <span class="ui">Camera</span>.</li>
     <li><span class="ui">Import texture (PNG)</span></li>
-    <li><span class="ui">Fit view</span>: frames the whole map.</li>
+    <li><span class="ui">Fit view</span>: frames the whole map in the part of the view you can see, clear of the rail and the bars.</li>
     <li><span class="ui">Help</span>: a short summary of the tools and keys.</li>
   </ul>
   <p><b>Map settings</b> holds the map's own things:</p>
   <ul>
     <li><span class="ui">extra Lua</span>: hand-written Lua, kept as you typed it.</li>
-    <li><span class="ui">🎥 camera…</span>, <span class="ui">◇ graph…</span>, <span class="ui">♪ music cues…</span>.</li>
-    <li><span class="ui">🌌 sky…</span>: it says whether the map has its own sky or uses the module's.</li>
-    <li><span class="ui">🧍 player…</span> and <span class="ui">▣ screens…</span>: this map's own player rules and screens, if it has any.</li>
+    <li><span class="ui">camera…</span>, <span class="ui">graph…</span>, <span class="ui">music cues…</span>.</li>
+    <li><span class="ui">sky…</span>: it says whether the map has its own sky or uses the module's, as <em>sky (own)…</em> or <em>sky (the module's)…</em>.</li>
+    <li><span class="ui">player…</span> and <span class="ui">screens…</span>: this map's own player rules and screens, if it has any.</li>
     <li>A line saying how many of the map's script slots are used, and on what.</li>
   </ul>
 
   <h2 id="gem-hollow">In Gem Hollow: the world map</h2>
-  <p>Open Gem Hollow (Home → <span class="ui">◆ examples</span> → <span class="ui">📂 Gem Hollow</span>), then its <code>world</code> map. It has 81 rooms. The whole level does not fit on screen at first: use <span class="ui">⋯ More</span> → <span class="ui">Fit view</span>, then pan with the right button or two fingers.</p>
+  <p>Open Gem Hollow (Home → <span class="ui">examples</span> → <span class="ui">Gem Hollow</span>), then its <code>world</code> map. It has 81 rooms. The whole level does not fit on screen at first: use <span class="ui">More</span> → <span class="ui">Fit view</span>, then pan with the right button or two fingers.</p>
   <ul>
     <li><b>Four zones, left to right</b>: the grassy <b>Meadow</b>, the <b>Isles</b> in their lake, the stone <b>Cliffs</b> with their ring terraces, and the <b>Keep</b> in its lava. Short corridors join them, and each holds a gate.</li>
     <li><b>The gates are rooms</b> whose ceiling is down on their floor, like a closed door: <code>GATERED</code> with tag 11, <code>GATEBLUE</code> with tag 12, <code>GATEGOLD</code> with tag 13, and the vault door (<code>VAULTDOOR</code>) with tag 14. A graph opens each one by its tag (see <a href="06-graphs.html#gem-hollow">Graphs</a>).</li>
@@ -227,15 +229,15 @@
     <li>Every outdoor room has <span class="ui">ceiling open to the sky</span> on, so the hills of the module's sky show above.</li>
   </ul>
   <ol class="steps">
-    <li><p>In <code>world</code>, choose <span class="ui">⌖ Select</span> and tap the Isles' lake. Its form says floor −3, <code>WATER</code>, tag 900.</p></li>
+    <li><p>In <code>world</code>, choose <span class="ui">Select</span> and tap the Isles' lake. Its form says floor −3, <code>WATER</code>, tag 900.</p></li>
     <li><p>Tap the red gate between the Meadow and the Isles (zoom in on the corridor). Its floor and ceiling are both 0, and its tag is 11.</p></li>
     <li><p>Press <kbd>V</kbd> to see the zones in the game view, and <kbd>Q</kbd> / <kbd>E</kbd> to turn round them.</p></li>
   </ol>
 
   <h2 id="cinderfall">In Cinderfall: districts joined without a load</h2>
-  <div class="callout"><p>Cinderfall is under <span class="ui">◆ examples</span> on Home. If yours doesn't show it, <a href="00-get-the-tools.html#updating">update the studio</a>.</p></div>
+  <div class="callout"><p>Cinderfall is under <span class="ui">examples</span> on Home. If yours doesn't show it, <a href="00-get-the-tools.html#updating">update the studio</a>.</p></div>
   <figure class="shot" data-src="../assets/shots/cinder-metamap.png" data-alt="Cinderfall's metamap: nine maps on a grid, drawn as one world">
-    <figcaption>Cinderfall's <span class="ui">▦ metamap</span>: nine maps, one world.</figcaption>
+    <figcaption>Cinderfall's <span class="ui">metamap</span>: nine maps, one world.</figcaption>
   </figure>
   <p>Gem Hollow puts its whole level in one map. Cinderfall splits its world into nine maps, the ones named <code>w_…</code>, and joins them with the metamap:</p>
   <ul>
@@ -248,10 +250,10 @@
 
   <h2>Exercise: two joined rooms</h2>
   <ol class="steps">
-    <li><p>In your copy of Gem Hollow (or any module), on <b>🗺 Maps</b>, press <span class="ui">+ new map</span> and call it <code>first</code>. The map editor opens with one room.</p></li>
-    <li><p>Choose <span class="ui">▭ Room</span> and drag a rectangle that touches one side of the first room. They now share a wall.</p></li>
-    <li><p>In the new room's form, raise <span class="ui">floor</span> to 1 and set <span class="ui">light</span> to about 160.</p></li>
-    <li><p>Choose <span class="ui">⌖ Select</span>, then long-press the outer wall of the new room. A corner appears in its middle. Drag it outwards.</p></li>
+    <li><p>In your copy of Gem Hollow (or any module), on <b>Maps</b>, press <span class="ui">+ new map</span> and call it <code>first</code>. The map editor opens with one room.</p></li>
+    <li><p>Choose <span class="ui">Room</span> and drag a rectangle that touches one side of the first room. They now share a wall.</p></li>
+    <li><p>The status line says the room was drawn. Choose <span class="ui">Select</span> and tap the new room to open its form. Tap the number at the end of <span class="ui">floor</span>, type <code>1</code> and press <kbd>Enter</kbd>, then drag <span class="ui">light</span> to about 160.</p></li>
+    <li><p>Choose <span class="ui">Select</span>, then long-press the outer wall of the new room. A corner appears in its middle. Drag it outwards.</p></li>
     <li><p>Tap the shared wall. Read which room's side it is, then press <span class="ui">select the other side</span>.</p></li>
     <li><p>Turn on <span class="ui">force wall</span>, then undo with <kbd>⌘Z</kbd>.</p></li>
     <li><p>Press <kbd>V</kbd> to see the game view, and <kbd>Q</kbd> / <kbd>E</kbd> to turn round it. Press <kbd>V</kbd> again to go back to the plan.</p></li>

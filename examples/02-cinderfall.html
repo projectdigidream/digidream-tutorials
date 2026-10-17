@@ -28,8 +28,8 @@
 
   <h2>Get it</h2>
   <ol class="steps">
-    <li><p>On Home, under <span class="ui">◆ examples</span>, press <span class="ui">📂 Cinderfall</span>. The first time, the studio makes a module of your own from the example and opens it. Pressing it again opens the same copy, with your changes; <span class="ui">a fresh copy</span> makes another, untouched one.</p></li>
-    <li><p>Check Home: 12 maps, and <em>"✔ nothing wrong that the studio can see"</em>. Under <b>other modules</b> there is now a Cinderfall chip, to come back to it later.</p></li>
+    <li><p>On Home, under <span class="ui">examples</span>, press <span class="ui">Cinderfall</span>. The first time, the studio makes a module of your own from the example and opens it. Pressing it again opens the same copy, with your changes; <span class="ui">a fresh copy</span> makes another, untouched one.</p></li>
+    <li><p>Check Home: 12 maps, and <em>"nothing wrong that the studio can see"</em>. Under <b>other modules</b> there is now a Cinderfall chip, to come back to it later.</p></li>
   </ol>
   <figure class="shot" data-src="../assets/shots/cinder-home.png" data-alt="Home with Cinderfall open: its about text and the first twelve map thumbnails">
     <figcaption>Home with Cinderfall open: 12 maps, from <code>menu</code> to <code>w_railhead</code>.</figcaption>
@@ -37,10 +37,10 @@
 
   <h2>One world: five districts and a hub</h2>
   <figure class="shot" data-src="../assets/shots/cinder-metamap.png" data-alt="Cinderfall's metamap: nine w_ maps on a grid, drawn as one world"
-    data-hotspots='[{"x":28.5,"y":18.3,"t":"one shared world","d":"on: the maps are one world you walk across"},{"x":29.7,"y":24.4,"t":"cell width / depth","d":"112 × 112: each map sits in a 112-unit cell"},{"x":55.6,"y":30.4,"t":"kept around a player","d":"3 cells each way: all nine maps stay in memory"},{"x":45,"y":73,"t":"w_hub","d":"the town square, in the middle"},{"x":53.5,"y":73,"t":"w_railhead","d":"where the game starts, off the last train"},{"x":34,"y":59,"t":"w_heart_w","d":"the boss arena, under the seal"}]'>
-    <figcaption>🗺 Maps → <span class="ui">▦ metamap</span>: nine <code>w_</code> maps on a grid, drawn as one world.</figcaption>
+    data-hotspots='[{"x":28.5,"y":18.9,"t":"one shared world","d":"on: the maps are one world you walk across"},{"x":29.7,"y":24.9,"t":"cell width / depth","d":"112 × 112: each map sits in a 112-unit cell"},{"x":55.6,"y":30.9,"t":"kept around a player","d":"3 cells each way: all nine maps stay in memory"},{"x":45.1,"y":67.8,"t":"w_hub","d":"the town square, in the middle"},{"x":53.4,"y":67.8,"t":"w_railhead","d":"where the game starts, off the last train"},{"x":36.7,"y":54.4,"t":"w_heart_w","d":"the boss arena, under the seal"}]'>
+    <figcaption>Maps → <span class="ui">metamap</span>: nine <code>w_</code> maps on a grid, drawn as one world.</figcaption>
   </figure>
-  <p>Cinderfall has 12 maps. Nine of them, the ones named <code>w_…</code>, are the world. On <b>🗺 Maps</b>, the <span class="ui">▦ metamap</span> has <span class="ui">put the maps on a grid</span> and <span class="ui">one shared world (walk from map to map)</span> both on, with cells 112 × 112:</p>
+  <p>Cinderfall has 12 maps. Nine of them, the ones named <code>w_…</code>, are the world. On <b>Maps</b>, the <span class="ui">metamap</span> has <span class="ui">put the maps on a grid</span> and <span class="ui">one shared world (walk from map to map)</span> both on, with cells 112 × 112:</p>
   <table>
     <thead><tr><th>Row</th><th>Cells, west to east</th></tr></thead>
     <tbody>
@@ -52,7 +52,7 @@
   <p>So the five districts are the <b>Railhead</b>, <b>Old Town</b>, the <b>Mine</b>, the <b>Foundry</b> and the <b>Heart</b>. The Mine, the Foundry and the Heart are two maps each, an east and a west half. The <b>hub</b>, <code>w_hub</code>, is the town square in the middle. Its doors lead into every district, and the seal to the Heart is south of it. Each district has its own music track, and the hub has two cues: <code>default</code> (<code>hub</code>) and <code>seal</code> (<code>heart</code>). When the seal opens, the hub's <code>story</code> graph switches the square to <code>seal</code> (for the player who opened it: <code>everyone</code> is off), and Mags says over the radio: <em>"Warden, I felt that up here. Whatever was holding its breath down there just let it out."</em></p>
   <p>Where two maps share an open side along the same line, they join, and the player walks across with no load. In the map editor, the neighbours are drawn around the map you are editing, with their names on them.</p>
   <figure class="shot" data-src="../assets/shots/cinder-hub.png" data-alt="The hub map in the map editor, with the Railhead drawn beside it">
-    <figcaption><code>w_hub</code> in the map editor: the square, its doors, the start spawn, and <code>w_railhead</code> drawn to the east.</figcaption>
+    <figcaption><code>w_hub</code> in the map editor after <span class="ui">Fit view</span>: the square, its doors and the start spawn inside the band of its cell, with <code>w_oldtown</code> drawn to the west and <code>w_railhead</code> to the east.</figcaption>
   </figure>
   <p>The other three maps are not in the world:</p>
   <ul>
@@ -64,7 +64,7 @@
 
   <h2>Story graphs and world graphs</h2>
   <figure class="shot" data-src="../assets/shots/cinder-graphs.png" data-alt="Cinderfall's Graphs section: the game's graphs arms and progress, then each map's graphs">
-    <figcaption>◇ Graphs: two graphs for the game, then each map's. A row lists the calls a graph makes and answers.</figcaption>
+    <figcaption>Graphs: two graphs for the game, then each map's. A row lists the calls a graph makes and answers.</figcaption>
   </figure>
   <p>Cinderfall has no triggers: every map says <em>0 triggers</em>. Each world map has <b>two graphs</b>, split by job:</p>
   <ul>
@@ -97,12 +97,12 @@
     <li><code>subtitle</code> nodes, one per line, with <code>speaker</code> set (<em>Rusk</em>), <code>mode</code> <code>typed</code>, and a <code>sound</code> for the voice (<code>voice.rusk</code>).</li>
     <li><code>set_animation</code> state 0 again, and <code>add_var</code> to remember the talk.</li>
   </ol>
-  <p>Some people do more. Doc Imre heals you to full each time you bring a Core she has not seen. Pip gives one more hint each time you ask: four secrets, one per district, then <em>"That's all I know. Honest."</em> The subtitle line's look (font, colours, speaker colour) is set in <b>🎨 Style</b> under <span class="ui">💬 subtitles</span>.</p>
+  <p>Some people do more. Doc Imre heals you to full each time you bring a Core she has not seen. Pip gives one more hint each time you ask: four secrets, one per district, then <em>"That's all I know. Honest."</em> The subtitle line's look (font, colours, speaker colour) is set in <b>Style</b> under <span class="ui">subtitles</span>.</p>
   <p>The game's three panels are for the screens around the play: <code>title</code>, <code>theend</code>, and the <code>arms</code> wheel.</p>
   <p>Taught in <a href="../graphs/04-the-world.html">Talking to the world</a> (typed subtitles).</p>
 
   <h2>The boss</h2>
-  <p>The <b>Smelter</b> waits in <code>w_heart_w</code>, on an island in the lava. It is a monster like any other, in <b>☠ Monsters</b>, with 2400 health and nine states: <code>look</code>, <code>roar</code>, <code>chase</code>, <code>aim</code>, <code>volley</code>, <code>slam</code>, <code>brood</code>, <code>pain</code> and <code>death</code>.</p>
+  <p>The <b>Smelter</b> waits in <code>w_heart_w</code>, on an island in the lava. It is a monster like any other, in <b>Monsters</b>, with 2400 health and nine states: <code>look</code>, <code>roar</code>, <code>chase</code>, <code>aim</code>, <code>volley</code>, <code>slam</code>, <code>brood</code>, <code>pain</code> and <code>death</code>.</p>
   <ul>
     <li><code>volley</code> fires <code>cinder_shell</code> missiles, one every 10 ticks, each aimed a little differently. <code>slam</code> hits everything within 5.5 and throws it back, when the target is close.</li>
     <li>Below half health (<code>hp_below</code> 50), <code>brood</code> spawns three husks, at most nine, every 600 ticks.</li>
@@ -115,15 +115,15 @@
 
   <h2>First person, and keys of its own</h2>
   <ul>
-    <li><b>🎮 Controls</b>: <span class="ui">how it is played</span> is <code>first person (fps)</code>, so the camera is at the eyes and aims where the player looks.</li>
+    <li><b>Controls</b>: <span class="ui">how it is played</span> is <code>first person (fps)</code>, so the camera is at the eyes and aims where the player looks.</li>
     <li>Two keys of its own: <code>arms</code> on <kbd>Tab</kbd> (touch button <code>ARMS</code>) opens the weapon wheel, and <code>swap</code> on <kbd>X</kbd> (touch button <code>SWAP</code>) goes back to the weapon held before. The <code>arms</code> game graph answers both.</li>
-    <li><b>🧍 Player</b>: drawn by the <code>warden</code> prop. Its moves: <code>move_speed</code> 10, <code>jump_impulse</code> 7, one jump and no dash. It starts with the <code>wrench</code>.</li>
-    <li><b>🔫 Weapons</b>: <em>Wrench</em>, <em>Revolver</em>, <em>Scattergun</em>, <em>Riveter</em> and <em>Flare Launcher</em>, with four ammunition pools (bullets, shells, rivets, flares). Each has a first-person sprite (<code>VM_WRENCH</code>, <code>VM_REVOLVER</code>…) with an animation for each phase: the revolver cocks and reloads, the scattergun pumps, the riveter spins up and down. Each starts in a short <code>draw</code> phase (8 ticks, the <code>wpn.draw</code> sound) before it is <code>ready</code>, and the flare's blast throws you without hurting you.</li>
+    <li><b>Player</b>: drawn by the <code>warden</code> prop. Its moves: <code>move_speed</code> 10, <code>jump_impulse</code> 7, one jump and no dash. It starts with the <code>wrench</code>.</li>
+    <li><b>Weapons</b>: <em>Wrench</em>, <em>Revolver</em>, <em>Scattergun</em>, <em>Riveter</em> and <em>Flare Launcher</em>, with four ammunition pools (bullets, shells, rivets, flares). Each has a first-person sprite (<code>VM_WRENCH</code>, <code>VM_REVOLVER</code>…) with an animation for each phase: the revolver cocks and reloads, the scattergun pumps, the riveter spins up and down. Each starts in a short <code>draw</code> phase (8 ticks, the <code>wpn.draw</code> sound) before it is <code>ready</code>, and the flare's blast throws you without hurting you.</li>
   </ul>
   <p>Taught in <a href="../studio/07-workshops.html#controls">Monsters, weapons, player: Controls</a> and <a href="../weapons/02-phases.html#first-person">Phases in first person</a>.</p>
 
   <h2>Saving</h2>
-  <p>In <b>⚙ Settings</b>, <span class="ui">levels keep their state</span> is on (<code>persist levels</code> in <code>module.txt</code>). A district that unloads keeps what happened in it, such as doors opened and things taken, and gets it back when it loads again. <span class="ui">save and load games</span> and <span class="ui">survive a server restart</span> are off. What the player has found across the whole game lives in the <code>progress</code> graph's variables.</p>
+  <p>In <b>Settings</b>, <span class="ui">levels keep their state</span> is on (<code>persist levels</code> in <code>module.txt</code>). A district that unloads keeps what happened in it, such as doors opened and things taken, and gets it back when it loads again. <span class="ui">save and load games</span> and <span class="ui">survive a server restart</span> are off. What the player has found across the whole game lives in the <code>progress</code> graph's variables.</p>
   <p>Taught in <a href="../studio/10-play-and-export.html">Play and export</a> and <a href="../graphs/02-variables-and-numbers.html">Variables, numbers and saving</a>.</p>
 
   <h2>Fonts and panel skins</h2>
@@ -132,7 +132,7 @@
   </figure>
   <ul>
     <li><b>Two fonts</b> in <code>assets/ui/fonts/</code>: <em>Special Elite</em> (typewriter, for the whole UI, subtitles and the objective) and <em>Bebas Neue</em> (for the HUD numbers, panels and buttons).</li>
-    <li><b>Two panel styles</b> in <b>🎨 Style</b>. <code>rust</code> uses four pictures from <code>assets/ui/skins/</code>, cut from Freedoom textures: <code>panel.png</code>, <code>title.png</code>, <code>button.png</code> and <code>button_down.png</code> (for a pressed button). <code>wheel</code> is a round, see-through box for the weapon wheel.</li>
+    <li><b>Two panel styles</b> in <b>Style</b>. <code>rust</code> uses four pictures from <code>assets/ui/skins/</code>, cut from Freedoom textures: <code>panel.png</code>, <code>title.png</code>, <code>button.png</code> and <code>button_down.png</code> (for a pressed button). <code>wheel</code> is a round, see-through box for the weapon wheel.</li>
     <li><b>The HUD</b>: a crosshair, health, the three keycards once found, the weapon and its ammunition, the Cores (<code>{hud.cores}/3</code>), the objective, and the boss bar, shown only during the fight.</li>
     <li><b>The skies</b>: a strip, <code>SKYDUSK</code>, four times round the horizon, for every map but the title screen, which has its own, <code>SKYASH</code> (<code>sky menu strip SKYASH</code> in <code>module.txt</code>).</li>
   </ul>
@@ -142,12 +142,12 @@
   <table>
     <thead><tr><th>Section</th><th>Count</th><th>Made with</th></tr></thead>
     <tbody>
-      <tr><td>🎞 Sprites</td><td>57</td><td>ThreeSprite: monsters, people, weapons in hand and on the floor, props</td></tr>
-      <tr><td>🧱 Textures</td><td>119</td><td>qPainter projects, from Freedoom's walls, flats and skies, renamed</td></tr>
-      <tr><td>♪ Music</td><td>9 tracks</td><td>Freedoom's MIDI, imported into DigidreamSynth: <code>title</code>, one per district, <code>boss</code> and <code>victory</code></td></tr>
-      <tr><td>🔊 Sounds</td><td>68</td><td>one DigidreamSound pack: weapons, monsters, doors, pickups, voices (<code>voice.mags</code>…)</td></tr>
-      <tr><td>☠ Monsters</td><td>6</td><td><code>husk</code>, <code>gunner</code>, <code>hound</code>, <code>spitter</code>, <code>brute</code>, <code>smelter</code></td></tr>
-      <tr><td>📦 Props</td><td>54</td><td>the people, pickups, keycards, Cores, valves, scenery</td></tr>
+      <tr><td>Sprites</td><td>57</td><td>ThreeSprite: monsters, people, weapons in hand and on the floor, props</td></tr>
+      <tr><td>Textures</td><td>119</td><td>qPainter projects, from Freedoom's walls, flats and skies, renamed</td></tr>
+      <tr><td>Music</td><td>9 tracks</td><td>Freedoom's MIDI, imported into DigidreamSynth: <code>title</code>, one per district, <code>boss</code> and <code>victory</code></td></tr>
+      <tr><td>Sounds</td><td>68</td><td>one DigidreamSound pack: weapons, monsters, doors, pickups, voices (<code>voice.mags</code>…)</td></tr>
+      <tr><td>Monsters</td><td>6</td><td><code>husk</code>, <code>gunner</code>, <code>hound</code>, <code>spitter</code>, <code>brute</code>, <code>smelter</code></td></tr>
+      <tr><td>Props</td><td>54</td><td>the people, pickups, keycards, Cores, valves, scenery</td></tr>
     </tbody>
   </table>
   <p>The textures and music are Freedoom's, under its BSD licence; the fonts are under the Apache and OFL licences. The module's <code>LICENSE</code> lists each one. Everything else was made for the module and is CC0.</p>
@@ -168,12 +168,12 @@
 
   <h2>Exercise: follow a keycard</h2>
   <ol class="steps">
-    <li><p>Open <b>🗺 Maps</b> and scroll to <span class="ui">▦ metamap</span>. Find <code>w_oldtown</code>, west of the hub.</p></li>
-    <li><p>Open <b>◇ Graphs</b> and tap <code>world</code> under <code>w_oldtown</code>. Find the note <em>The red keycard</em>: picking it up calls <code>got_red</code>.</p></li>
+    <li><p>Open <b>Maps</b> and scroll to <span class="ui">metamap</span>. Find <code>w_oldtown</code>, west of the hub.</p></li>
+    <li><p>Open <b>Graphs</b> and tap <code>world</code> under <code>w_oldtown</code>. Find the note <em>The red keycard</em>: picking it up calls <code>got_red</code>.</p></li>
     <li><p>Go back and tap <code>progress</code> under <span class="ui">the game's graphs</span>. Find the <code>on_call</code> for <code>got_red</code>: it sets <code>key_red</code> and shows it on the HUD.</p></li>
     <li><p>Back in the list, open <code>world</code> under <code>w_foundry_w</code>. Find <em>The red door</em>: using it calls <code>try_red</code>, and <code>on_call</code> nodes for <code>open_red</code> and <code>need_red</code> answer.</p></li>
     <li><p>Open <code>story</code> under <code>w_mine_e</code>. Tap the first <code>subtitle</code> and read its <code>speaker</code>, <code>mode</code> and <code>sound</code> in the side panel.</p></li>
-    <li><p>Open <b>🎮 Controls</b> and read the two keys. Then open <b>▢ Panels</b> and pick <code>arms</code> to see the wheel the <code>arms</code> key opens.</p></li>
+    <li><p>Open <b>Controls</b> and read the two keys. Then open <b>Panels</b> and pick <code>arms</code> to see the wheel the <code>arms</code> key opens.</p></li>
   </ol>
 
   <div class="quiz" data-answer="1">

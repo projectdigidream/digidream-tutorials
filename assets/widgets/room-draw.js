@@ -1,4 +1,4 @@
-// room-draw: draw a room the way the studio's ▭ Room tool does, then place
+// room-draw: draw a room the way the studio's Room tool does, then place
 // a thing in it and turn its facing.
 //
 //   <div class="widget" data-widget="room-draw" data-title="…"></div>
@@ -48,8 +48,8 @@
     var canvas = h('canvas', { tabindex: '0', 'aria-label': 'A grid to draw a room on' });
     canvas.style.width = '100%';
     canvas.style.outline = 'none';
-    var roomBtn = h('button', { class: 'wbtn', type: 'button' }, '▭ Room');
-    var placeBtn = h('button', { class: 'wbtn', type: 'button' }, '✦ Place');
+    var roomBtn = h('button', { class: 'wbtn', type: 'button' }, 'Room');
+    var placeBtn = h('button', { class: 'wbtn', type: 'button' }, 'Place');
     var closeBtn = h('button', { class: 'wbtn', type: 'button' }, 'close (Enter)');
     var clearBtn = h('button', { class: 'wbtn', type: 'button' }, 'clear');
     var slider = h('input', { type: 'range', min: '0', max: '355', step: '5', value: '0' });
@@ -113,7 +113,7 @@
       if (corners.length < 3) { say('a room needs at least three corners'); return; }
       rooms.push(corners);
       corners = [];
-      say('closed: a room of ' + rooms[rooms.length - 1].length + ' corners. Draw another, or switch to ✦ Place.');
+      say('closed: a room of ' + rooms[rooms.length - 1].length + ' corners. Draw another, or switch to Place.');
       draw();
     }
     function cancel() {

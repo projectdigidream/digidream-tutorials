@@ -43,6 +43,16 @@ anything not released yet is under **Unreleased**.
   - a first-person gun shows its shot.
 
   Screenshots are retaken without colour emoji.
+- **The Studio track and the examples, for studio 0.4.1:**
+  - The door preset writes three cards. E on an open door does nothing, and the door shuts by itself after 4 s.
+  - Trigger events are listed name first.
+  - What a new module holds: the death screen and key hints as game graphs, the door, and particle kinds 20 to 22.
+  - A Particles section: "drawn as" and "on a body".
+  - Deleting a room takes its triggers. Slider numbers can be typed.
+  - Moving a module by its id, and "delete a module…".
+  - A plugin editor's bar says when its changes are kept.
+
+  The playtest fixes are covered where their features are taught, and screenshots are retaken.
 - **Flat glyphs**: no colour emoji as icons in the sidebar, the landing page or
   the studio's labels quoted in the pages, as the studio dropped them (0.4.1).
 - **Written for people who use the apps**, not build them: no terminal, build

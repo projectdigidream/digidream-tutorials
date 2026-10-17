@@ -17,7 +17,7 @@
 <body>
 <article>
   <h1>Placing things</h1>
-  <p class="lede">Rooms are empty until you put something in them. The <span class="ui">✦ Place</span> tool drops spawn points, lights, monsters and props on the floor you tap. Each placed thing then has a small form: its height, whether a monster sleeps, and which way it faces.</p>
+  <p class="lede">Rooms are empty until you put something in them. The <span class="ui">Place</span> tool drops spawn points, lights, monsters and props on the floor you tap. Each placed thing then has a small form: its height, whether a monster sleeps, and which way it faces.</p>
   <div class="goal">
     <b>You'll learn</b><span>how to use the Place palette, set a spawn's tag, shape a light, and set a thing's facing</span>
     <b>Time</b><span>15 minutes</span>
@@ -26,21 +26,22 @@
 
   <h2>The Place palette</h2>
   <figure class="shot" data-src="../assets/shots/studio-map-place.png" data-alt="The Place palette open beside Gem Hollow's world map, with its find field">
-    <figcaption>The Place palette in Gem Hollow: one chip for each thing you can put down, and a find field because there are 33 of them.</figcaption>
+    <figcaption>The Place palette in Gem Hollow: one chip for each thing you can put down, and a find field because there are 89 of them, the props the app ships included.</figcaption>
   </figure>
-  <p>Choose <span class="ui">✦ Place</span> (key <kbd>3</kbd>). A sheet titled <b>Place</b> opens. It says: <em>"Tap one, then tap the floor to place it. Tap it again to stop placing."</em></p>
+  <p>Choose <span class="ui">Place</span> (key <kbd>3</kbd>). A sheet titled <b>Place</b> opens. It says: <em>"Tap one, then tap the floor to place it. Tap it again to stop placing."</em></p>
   <p>The chips are, in order:</p>
   <ul>
     <li><span class="ui">spawn: start</span>: where players appear.</li>
     <li><span class="ui">light</span>: a coloured point light.</li>
-    <li><b>Each monster</b> the module defines, by name. You make monsters in the rail's <b>☠ Monsters</b> section.</li>
+    <li><span class="ui">sign: label</span>, <span class="ui">sign: marker</span> and the like: a sign, one chip for each marker the map's screens have (see <a href="../graphs/07-markers.html">Markers</a>).</li>
+    <li><b>Each monster</b> the module defines, by name. You make monsters in the rail's <b>Monsters</b> section.</li>
     <li><b>Each prop</b>: the module's own props first, then the ones the app ships.</li>
   </ul>
-  <p>When there are more than 12 chips, a <b>find</b> field sits above them (<em>"find among 33…"</em> in Gem Hollow) and the chips scroll in a box of their own. Type part of a name to narrow them. The armed chip always stays in view.</p>
-  <p>Below the chips, <span class="ui">✎ props…</span> opens the <b>📦 Props</b> section.</p>
+  <p>When there are more than 12 chips, a <b>find</b> field sits above them (<em>"find among 89…"</em> in Gem Hollow) and the chips scroll in a box of their own. Type part of a name to narrow them. The armed chip always stays in view.</p>
+  <p>Below the chips, <span class="ui">props…</span> opens the <b>Props</b> section.</p>
   <p>Tap a chip to <em>arm</em> it. The status line says <em>"tap the floor to place …"</em>. Every tap on the floor now places one, at the height of the floor you tapped. It stays armed, so you can place several. Tap the chip again to stop.</p>
   <div class="callout"><p>If you tap the floor with nothing armed, the studio says <em>"pick something to place first"</em> and opens the palette.</p></div>
-  <p>A thing you have placed is selected straight away, and its form opens. Later, tap it with <span class="ui">⌖ Select</span> to open its form again, or drag it to move it. <kbd>Delete</kbd> removes it, as does the <span class="ui">delete</span> button in its form.</p>
+  <p>A thing you have placed is selected straight away, and its form opens. Later, tap it with <span class="ui">Select</span> to open its form again, or drag it to move it. <kbd>Delete</kbd> removes it, as does the <span class="ui">delete</span> button in its form.</p>
 
   <h2>Spawns</h2>
   <p>A spawn's form has two fields:</p>
@@ -48,12 +49,13 @@
     <li><span class="ui">tag</span>: the server spawns players at the tag <code>start</code>. Other tags are for teleports and scripts. An empty tag goes back to <code>start</code>.</li>
     <li><span class="ui">height</span>: −32 to 64.</li>
   </ul>
-  <div class="callout warn"><p>A map with no <code>start</code> spawn has nowhere to put the player. Place one before you press <span class="ui">▶ Play</span>.</p></div>
+  <p>A map has one spawn of each tag. Placing <span class="ui">spawn: start</span> where the map already has one <b>moves</b> it to the floor you tapped, and the status line says <em>"Moved the spawn "start" here: a map has one of each name."</em></p>
+  <div class="callout warn"><p>A map with no <code>start</code> spawn has nowhere to put the player. Place one before you press <span class="ui">Play</span>.</p></div>
 
   <h2>Lights</h2>
   <p>A light is placed 2 units above the floor you tap. Its form has:</p>
   <ul>
-    <li><span class="ui">colour</span>: a colour picker.</li>
+    <li><span class="ui">colour</span>: a colour picker. The form scrolls the field up first, so the picker has room below it. While the picker is open, and for a moment after, the light's <span class="ui">delete</span> does nothing, so a drag across the picker never deletes the light.</li>
     <li><span class="ui">radius</span>: how far it reaches, 1 to 48.</li>
     <li><span class="ui">intensity</span>: how bright it is, 0 to 4.</li>
     <li><span class="ui">height</span>: −32 to 64.</li>
@@ -105,9 +107,9 @@
   </ol>
 
   <h2 id="gem-hollow">In Gem Hollow: what is placed</h2>
-  <p>Gem Hollow's <code>world</code> holds 246 things. Tap a few with <span class="ui">⌖ Select</span> to read their forms:</p>
+  <p>Gem Hollow's <code>world</code> holds 245 things (Home counts them under the map), besides its spawns and lights. Tap a few with <span class="ui">Select</span> to read their forms:</p>
   <ul>
-    <li><b>Four spawns.</b> <code>start</code> at the Meadow's west end, where the level begins, and <code>cp1</code>, <code>cp2</code> and <code>cp3</code> at the start of the Isles, the Cliffs and the Keep. The map shows each as a ⚑ badge with its tag. The checkpoint tags are for the graphs; the server only spawns players at <code>start</code>.</li>
+    <li><b>Four spawns.</b> <code>start</code> at the Meadow's west end, where the level begins, and <code>cp1</code>, <code>cp2</code> and <code>cp3</code> at the start of the Isles, the Cliffs and the Keep. The map shows each as a flag badge with its tag. The checkpoint tags are for the graphs; the server only spawns players at <code>start</code>.</li>
     <li><b>Props for everything you touch.</b> Rows of <code>coin</code>, five hidden <code>gem</code>s, three <code>key</code>s in the Keep, the levers <code>lever_red</code>, <code>lever_blue</code> and <code>lever_gold</code>, the checkpoint flags <code>flag1</code>–<code>flag3</code>, <code>spring</code>s and <code>spikes</code>, and the <code>star</code> in the vault. The props themselves do nothing: graphs answer when a player touches or uses them.</li>
     <li><b>Scenery props</b>: <code>bush</code>, <code>mushroom</code>, <code>rock</code>, <code>tuft</code>, <code>sign</code>, <code>torch</code>, <code>fence</code>, <code>chest</code>.</li>
     <li><b>Monsters</b>: <code>slime</code>, <code>bee</code> and <code>snail</code>, placed through every zone.</li>
@@ -116,19 +118,30 @@
 
   <h2>Exercise: a start, a light and a guard</h2>
   <ol class="steps">
-    <li><p>Open your map (the <code>first</code> map from <a href="02-first-map.html">Your first map</a>, in your copy of Gem Hollow, works well) and choose <span class="ui">✦ Place</span>. Tap <span class="ui">spawn: start</span>, then tap the floor of the first room. Tap the chip again to stop.</p></li>
+    <li><p>Open your map (the <code>first</code> map from <a href="02-first-map.html">Your first map</a>, in your copy of Gem Hollow, works well) and choose <span class="ui">Place</span>. Tap <span class="ui">spawn: start</span>, then tap the floor of the first room. The map already had a start, so it moves there. Tap the chip again to stop.</p></li>
     <li><p>Tap <span class="ui">light</span> and place it in the second room. Set its <span class="ui">radius</span> to 10 and pick a warm colour.</p></li>
     <li><p>Type <code>sl</code> in the find field, tap the <code>slime</code> chip and place it in the second room. In its form, turn on <span class="ui">dormant</span> and set <span class="ui">facing (°)</span> to 180, so its arrow points back at the door.</p></li>
     <li><p>Place a prop beside it and set its facing too. A prop takes its facing in the game now.</p></li>
-    <li><p>Choose <span class="ui">⌖ Select</span> and drag the monster somewhere else. Then press <kbd>⌘Z</kbd> to put it back.</p></li>
+    <li><p>Choose <span class="ui">Select</span> and drag the monster somewhere else. Then press <kbd>⌘Z</kbd> to put it back.</p></li>
   </ol>
 
   <h2>Props and particles, in short</h2>
   <p>Monsters, props and particles are defined for the whole module, in the rail. A map only places them.</p>
   <ul>
-    <li><b>📦 Props</b> are bodies without a brain: a barrel, a torch, a tree. <span class="ui">+ new prop</span> makes one. A prop has a <span class="ui">name</span>, a <span class="ui">radius</span> and <span class="ui">height</span> (the body it collides as), a <span class="ui">scale</span>, and <span class="ui">solid</span> and <span class="ui">usable</span> toggles. Its form says how many times it is placed across the module, and has <span class="ui">place it</span> to start placing it.</li>
-    <li><b>✨ Particles</b> are bursts and tracers: <span class="ui">+ particles</span> and <span class="ui">+ tracer</span> make a kind of your own. A kind is a number that anything can name: a swing's hit, a monster's blood, a missile on impact. They are drawn by the game client only. You do not place them on a map.</li>
+    <li><b>Props</b> are bodies without a brain: a barrel, a torch, a tree. <span class="ui">+ new prop</span> makes one. A prop has a <span class="ui">name</span>, a <span class="ui">radius</span> and <span class="ui">height</span> (the body it collides as), a <span class="ui">scale</span>, <span class="ui">solid</span> and <span class="ui">usable</span> toggles, and a <span class="ui">picture</span>. Its form says how many times it is placed across the module, and has <span class="ui">place it</span> to start placing it.</li>
+    <li><b>Renaming a prop</b> renames everything that uses it: its placements on every map, a monster's or a missile's body, what a monster drops, a step or condition about the nearest one, the player's body, and a trigger's <code>spawn_prop</code>. Nothing loses its look.</li>
+    <li>Tapping <b>Props</b> in the rail while a prop is open goes back to the list of props. Every section of the rail does the same.</li>
   </ul>
+  <h3 id="particles">Particles</h3>
+  <p><b>Particles</b> are bursts and tracers. <span class="ui">+ particles</span> and <span class="ui">+ tracer</span> make a kind of your own. A kind is a number that anything can name: a swing's hit, a hitscan's, a monster's blood, a missile on impact or its trail. They are drawn by the game client only, and you do not place them on a map. A new module has three of its own: <b>20</b> a muzzle flash, <b>21</b> a tracer and <b>22</b> sparks.</p>
+  <p>Tap a kind to edit it beside its preview, which the game's own code draws. Besides its count, life, speed, size and colour ramp (<code>colour</code> to <code>colour_end</code>), a particles kind has:</p>
+  <ul>
+    <li><span class="ui">emits</span>: <em>a burst, where the event happened</em>, or <em>attached: follows the body it came from</em>.</li>
+    <li><span class="ui">on a body</span>: when it follows a body (attached, or as a missile's trail), whether each speck is <em>left behind where they came out (smoke, a trail)</em> or <em>carried with it (a flame, an aura)</em>.</li>
+    <li><span class="ui">rate</span>: specks a second while it follows a body. Every kind keeps one (40 to begin with), because a missile's trail emits at its kind's rate.</li>
+    <li><span class="ui">drawn as</span>: <em>a soft dot</em> (the default), <em>a hard disc</em>, <em>a hard square</em>, <em>a hard hexagon</em>, <em>a hard star</em>, or <em>the picture …</em>, one of the module's own single pictures or textures. Each particle is coloured by the kind's ramp, so one white picture makes a burst of any colour.</li>
+  </ul>
+  <p>A missile picks a kind to trail it on its <span class="ui">Looks</span> (see <a href="07-workshops.html#missiles">Missiles</a>).</p>
   <p>Monsters are covered in <a href="07-workshops.html">Monsters, weapons, player</a>.</p>
 
   <div class="quiz" data-answer="2">

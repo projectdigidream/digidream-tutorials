@@ -29,32 +29,32 @@
   <table>
     <thead><tr><th>Plugin</th><th>Edits</th><th>Opened from</th></tr></thead>
     <tbody>
-      <tr><td>ThreeSprite</td><td>sprite projects (<code>.tsprite</code>)</td><td>🎞 Sprites: <span class="ui">+ new sprite</span>, or a sheet's <span class="ui">✎ edit in ThreeSprite</span></td></tr>
-      <tr><td>qPainter</td><td>textures</td><td>🧱 Textures: <span class="ui">+ new texture</span>, or <span class="ui">✎ edit in qPainter</span></td></tr>
-      <tr><td>DigidreamSound</td><td>sound packs (<code>.sfxproj</code>)</td><td>🔊 Sounds: <span class="ui">+ new sound pack</span>, or a pack's <span class="ui">✎ edit in DigidreamSound</span></td></tr>
-      <tr><td>DigidreamSynth</td><td>music projects (<code>.msproj</code>); it also brings a <b>baker</b> that turns them into tracks</td><td>♪ Music: <span class="ui">+ new track</span>, <span class="ui">✎ edit in DigidreamSynth</span>, <span class="ui">bake now</span></td></tr>
-      <tr><td>Code</td><td>the module's Lua scripts</td><td>📜 Scripts: <span class="ui">open with…</span></td></tr>
-      <tr><td>Packager</td><td>nothing: it is a page of the rail, <span class="ui">📦 Package</span></td><td>the rail (see <a href="10-play-and-export.html#package">Play, export, snapshots</a>)</td></tr>
-      <tr><td>GitHub sync</td><td>nothing by hand: it is a page of the rail, <span class="ui">🔄 Sync</span>, and a background service that keeps your modules in a GitHub repository</td><td>the rail (see <a href="11-sync-with-github.html">Sync with GitHub</a>)</td></tr>
+      <tr><td>ThreeSprite</td><td>sprite projects (<code>.tsprite</code>)</td><td>Sprites: <span class="ui">+ new sprite</span>, or a sheet's <span class="ui">edit in ThreeSprite</span></td></tr>
+      <tr><td>qPainter</td><td>textures</td><td>Textures: <span class="ui">+ new texture</span>, or <span class="ui">edit in qPainter</span></td></tr>
+      <tr><td>DigidreamSound</td><td>sound packs (<code>.sfxproj</code>)</td><td>Sounds: <span class="ui">+ new sound pack</span> (a new pack starts empty, under its own name), or a pack's <span class="ui">edit in DigidreamSound</span></td></tr>
+      <tr><td>DigidreamSynth</td><td>music projects (<code>.msproj</code>); it also brings a <b>baker</b> that turns them into tracks</td><td>Music: <span class="ui">+ new track</span>, <span class="ui">edit in DigidreamSynth</span>, <span class="ui">bake now</span></td></tr>
+      <tr><td>Code</td><td>the module's Lua scripts</td><td>Scripts: <span class="ui">open with…</span></td></tr>
+      <tr><td>Packager</td><td>nothing: it is a page of the rail, <span class="ui">Package</span></td><td>the rail (see <a href="10-play-and-export.html#package">Play, export, snapshots</a>)</td></tr>
+      <tr><td>GitHub sync</td><td>nothing by hand: it is a page of the rail, <span class="ui">Sync</span>, and a background service that keeps your modules in a GitHub repository</td><td>the rail (see <a href="11-sync-with-github.html">Sync with GitHub</a>)</td></tr>
     </tbody>
   </table>
   <p>The studio's own pages that edit a kind of file count as editors too: the Scripts page, the Textures page, the Sounds page and the Monsters workshop. A plugin is offered beside them and never replaces them. Code, for example, has the lowest priority, so the Scripts page stays the default for a script until you choose Code.</p>
-  <h3>✎ edit in, and open with…</h3>
+  <h3>edit in, and open with…</h3>
   <ul>
-    <li><span class="ui">✎ edit in <i>plugin</i></span> opens the file in the first plugin that edits it.</li>
+    <li><span class="ui">edit in <i>plugin</i></span> (with a pencil before it) opens the file in the first plugin that edits it.</li>
     <li><span class="ui">open with…</span> appears when more than one editor can open the file. It asks <em>"Open <i>name</i> with…"</em>, lists the editors (the studio's own marked <code>(the studio)</code>), and remembers your choice on this device.</li>
   </ul>
 
-  <h2>Inside a plugin: ‹ studio and ✕</h2>
+  <h2>Inside a plugin: studio and ✕</h2>
   <p>A plugin opens over the whole studio. The studio draws one slim bar above it, the same for every plugin:</p>
   <table>
     <thead><tr><th>Button</th><th>What it does</th></tr></thead>
     <tbody>
-      <tr><td><span class="ui">‹ studio</span></td><td>Back to the studio, <b>saving</b>. The studio asks the plugin for its document. If nothing changed, nothing happens. Otherwise it checks the document and puts it in the module as <b>one undo step</b>. If the document is refused, the plugin stays open and the bar says why.</td></tr>
-      <tr><td><span class="ui">✕</span></td><td>Back <b>without saving</b>. If there are changes, it asks first: <span class="ui">keep editing</span> or <span class="ui">throw them away</span>.</td></tr>
+      <tr><td><span class="ui">studio</span> (with a back arrow before it)</td><td>Back to the studio, <b>saving</b>; its tooltip says <em>save, and back to the studio</em>. The studio asks the plugin for its document. If nothing changed, nothing happens. Otherwise it checks the document and puts it in the module as <b>one undo step</b>. If the document is refused, the plugin stays open and the bar says why.</td></tr>
+      <tr><td><span class="ui">✕</span></td><td>Back <b>without saving</b>; its tooltip says <em>throw the changes away, and back to the studio</em>. If there are changes, it asks first: <span class="ui">keep editing</span> or <span class="ui">throw them away</span>.</td></tr>
     </tbody>
   </table>
-  <p>Between them, the bar names the plugin and the file, and says <em>changed</em>, <em>saving…</em> or a problem.</p>
+  <p>Between them, the bar names the plugin and the file, and says <em>changed · saved when you go back</em> while there are unsaved changes, <em>saving…</em>, or a problem.</p>
   <p>Leaving any other way, by the rail or the phone's back button, asks: <span class="ui">save and go</span>, <span class="ui">discard</span> or <span class="ui">stay</span>.</p>
   <p>Opening a file in a plugin is an address of its own, so reloading the page comes back to the plugin.</p>
   <p><b>Plugins wear the studio's style.</b> When you change the studio's style, mode or pointer (Settings → Look, or the Style card on Home), every bundled editor follows: its own colours, fonts and colour scheme are mapped onto the style's. A few canvases an editor paints in fixed colours, such as the DAW's lanes and waveforms, keep them. A plugin you write receives the style through the <code>skin</code> message if it asks for it (<code>onSkin</code> in the SDK).</p>
@@ -69,18 +69,18 @@
   <p>Back or discard clears the draft. Drafts that are left over are listed on the Plugins page.</p>
 
   <ol class="steps">
-    <li><p>In your copy of Gem Hollow, open <b>🧱 Textures</b>, tap <code>CRATE</code>, and press <span class="ui">✎ edit in qPainter</span>. qPainter opens in the studio's style.</p></li>
-    <li><p>Paint a few pixels. The bar says <em>changed</em>.</p></li>
+    <li><p>In your copy of Gem Hollow, open <b>Textures</b>, tap <code>CRATE</code>, and press <span class="ui">edit in qPainter</span>. qPainter opens in the studio's style.</p></li>
+    <li><p>Paint a few pixels. The bar says <em>changed · saved when you go back</em>.</p></li>
     <li><p>Press <span class="ui">✕</span>, then <span class="ui">keep editing</span>.</p></li>
-    <li><p>Press <span class="ui">‹ studio</span>. The texture's thumbnail shows your change.</p></li>
+    <li><p>Press <span class="ui">studio</span>. The texture's thumbnail shows your change.</p></li>
     <li><p>Press <kbd>⌘Z</kbd>. The whole edit is undone in one step.</p></li>
   </ol>
 
   <h2>The Plugins page</h2>
   <figure class="shot" data-src="../assets/shots/studio-plugins.png" data-alt="The Plugins page: one card per plugin with its switch">
-    <figcaption>The Plugins page (here with Gem Hollow open): what the studio has besides itself, six bundled plugins.</figcaption>
+    <figcaption>The Plugins page (here with Gem Hollow open): what the studio has besides itself, seven bundled plugins.</figcaption>
   </figure>
-  <p>Home's <span class="ui">🧩 plugins</span> opens it. It shows:</p>
+  <p>Home's <span class="ui">plugins (7)</span> opens it. It shows:</p>
   <ul>
     <li><span class="ui">+ install a plugin (.dnpplugin)</span> at the top.</li>
     <li>A card per plugin: its name and version, <code>bundled</code> or <code>installed</code>, what it brings (<em>edits …</em>, <em>bakes …</em>, <em>the … page</em>, <em>runs in the background</em>), what it is allowed to do beyond that (a line starting <em>may:</em>, see below), and an <span class="ui">on</span> switch. An installed plugin also has <span class="ui">uninstall</span>.</li>
@@ -138,17 +138,17 @@
   </div>
   <h3>When it bakes</h3>
   <ul>
-    <li><b>On the way back.</b> <span class="ui">‹ studio</span> with a texture or sprite bakes it at once, and the result is part of the same undo step.</li>
+    <li><b>On the way back.</b> <span class="ui">studio</span> with a texture or sprite bakes it at once, and the result is part of the same undo step.</li>
     <li><b>Music is the exception.</b> A track is baked at Play and Export, or by hand with <span class="ui">bake now</span> on the Music page, not every time you come back from DigidreamSynth.</li>
     <li><b>Before Play and Export</b>, the studio bakes every <b>stale</b> source: one whose bytes changed (an imported pack, say), whose baker changed version, or that was never baked. A source with no baker available stops Play and says which.</li>
   </ul>
   <p>Bakes are cached on the device, so undoing an edit, or baking the same source again, costs nothing.</p>
 
   <h3>Duplicate and export</h3>
-  <p>A texture's card (in 🧱 Textures) and a sprite's card (in 🎞 Sprites) have two more buttons:</p>
+  <p>A texture's card (in Textures) and a sprite's card (in Sprites) have two more buttons:</p>
   <ul>
-    <li><span class="ui">⧉ duplicate</span> copies every file it is made of under a new name (the first free <code>NAME_2</code> is offered): a texture's picture, settings and qPainter project; a sprite's sheet, ThreeSprite project and bake record. The copy is a variant of its own, and its project bakes to the copy.</li>
-    <li><span class="ui">⇪ export PNG</span>, <span class="ui">⇪ export project</span>, <span class="ui">⇪ export .tsprite</span> and <span class="ui">⇪ export sheet</span> send each file it has out of the studio (saved, or shared from the share sheet on a phone). An exported sheet is a <code>.zip</code> of its json and png, which can be imported again.</li>
+    <li><span class="ui">duplicate</span> copies every file it is made of under a new name (the first free <code>NAME_2</code> is offered): a texture's picture, settings and qPainter project; a sprite's sheet, ThreeSprite project and bake record. The copy is a variant of its own, and its project bakes to the copy.</li>
+    <li><span class="ui">export PNG</span>, <span class="ui">export project</span>, <span class="ui">export .tsprite</span> and <span class="ui">export sheet</span> send each file it has out of the studio (saved, or shared from the share sheet on a phone). An exported sheet is a <code>.zip</code> of its json and png, which can be imported again.</li>
   </ul>
   <p>The <a href="../textures/01-first-texture.html">Textures</a> and <a href="../sprites/01-first-sprite.html">Sprites</a> tracks show them on Gem Hollow's own art.</p>
 
@@ -186,7 +186,7 @@
     <li><code>id</code>, <code>name</code>, <code>version</code>, <code>description</code>: who it is.</li>
     <li><code>protocol</code> and <code>suite</code>: the editor protocol it speaks, and the studio versions it works with (<code>&gt;=x.y.z</code>, <code>^x.y.z</code>, an exact version, or <code>*</code>).</li>
     <li><code>editors</code>: each with an <code>entry</code> page, the <code>kinds</code> of document it edits (<code>file:texture</code>, <code>file:tsprite</code>, <code>file:msproj</code>, <code>file:sfxproj</code>, <code>record:script</code>, <code>record:mob</code>), a <code>label</code>, and a <code>priority</code>.</li>
-    <li><code>bakers</code> and <code>sections</code>, when it has them. The Packager's manifest, for example, has one section: <code>{ "id": "package", "label": "Package", "icon": "📦" }</code>.</li>
+    <li><code>bakers</code> and <code>sections</code>, when it has them. The Packager's manifest, for example, has one section: <code>{ "id": "package", "label": "Package", "icon": "section.package" }</code>. A section's <code>icon</code> is an id from the studio's icon catalogue, such as <code>section.package</code> or <code>section.sync</code>, so every style draws it in its own look.</li>
     <li><code>services</code> and <code>permissions</code>, when it needs them. GitHub sync's manifest has one section, one service, and <code>"permissions": ["module-write", "background", "net:api.github.com"]</code>. A plugin with services must ask for <code>background</code>.</li>
   </ul>
 
@@ -197,10 +197,10 @@
       <li>The studio asks whether to keep editing or throw the changes away</li>
       <li>The changes are kept as a draft and the plugin closes without asking</li>
     </ul>
-    <p class="why">✕ is discard. It asks first whenever there is anything to lose. ‹ studio is the way back that saves.</p>
+    <p class="why">✕ is discard. It asks first whenever there is anything to lose. <span class="ui">studio</span> is the way back that saves.</p>
   </div>
   <div class="quiz" data-answer="2">
-    <p class="q">You edit a song in DigidreamSynth and press ‹ studio. When does the game's track change?</p>
+    <p class="q">You edit a song in DigidreamSynth and press <span class="ui">studio</span>. When does the game's track change?</p>
     <ul>
       <li>At once, as for a texture</li>
       <li>Never, until you re-import the .mstk</li>
