@@ -201,6 +201,7 @@ camera_flythrough.done → fade black (0.8 s) ─done→ camera_follow → end_c
     <li>The older way still works: the trigger words <span class="ui">open a panel</span> (<code>ui_open</code>), and <span class="ui">when a panel is used</span> with <span class="ui">if it was this widget …</span> (<code>on_ui_event</code> and <code>widget_is</code>). That event's data outputs are numbers: <code>ui_id</code> and <code>widget_id</code>. Prefer the panel nodes, which name things.</li>
   </ul>
   <p>A graph that names a panel it does not carry, or a widget the panel lacks, is refused when it loads. The studio says so first, in red.</p>
+  <p>The HUD stays in the corners of the screen. To hang UI on something in the world, such as a bar over a monster, a sign over a lever or a pointer over a goal, use a marker: see <a href="07-markers.html">Markers: health bars, signs, pointers</a>.</p>
 
   <h2>The player's keys</h2>
   <ul>

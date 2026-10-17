@@ -130,6 +130,14 @@ dnp.hud(nil, { countdown = false })   -- false clears it</code></pre>
   </ul>
   <p>A value shows <b>only where an element is bound to it</b>. In <b>▣ Screens</b>, on the <span class="ui">HUD</span> tab, press <span class="ui">+ element…</span> and add a text whose words include <code>{hud.gold}</code>, or a number or bar bound to <code>hud.gold</code>. The game graph's <a href="../reference/graph-nodes.html#set_hud"><code>set_hud</code></a> node writes the same values, so a graph and a script can share one HUD.</p>
 
+  <h2 id="markers">Markers</h2>
+  <p>A marker is a small piece of UI hung on something in the world rather than on the screen: a bar over a monster, a sign over a door, a pointer over a goal. <a href="../luaref/02-every-function.html#dnp.mark"><code>dnp.mark</code></a> hangs one on an entity, a prop or a place (a <code>vec3</code>), drawn from a template (<code>health</code>, <code>label</code>, <code>marker</code> or <code>debug_health</code>), and gives back its id:</p>
+  <pre><code>-- lever: a prop of the level, found with dnp.props()
+local sign = dnp.mark(lever, 'label', { text = 'EXIT' }, { height = fx.frac(1, 2), range = fx.int(20) })
+dnp.mark_set(sign, { text = 'OPEN' })
+dnp.unmark(sign)</code></pre>
+  <p>Markers are not saved, so hang them again as the level loads. The templates, the options (<code>to</code>, <code>height</code>, <code>range</code>, <code>through_walls</code>, <code>debug</code>) and the graph nodes that do the same are in <a href="../graphs/07-markers.html">Markers: health bars, signs, pointers</a>.</p>
+
   <h2 id="camera">The camera</h2>
   <p><a href="../luaref/02-every-function.html#dnp.camera"><code>dnp.camera(e, { … })</code></a> changes how one player's camera follows them. Give only the fields you want to change.</p>
   <table>

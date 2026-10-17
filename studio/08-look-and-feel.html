@@ -66,7 +66,7 @@
   <ul>
     <li><span class="ui">🌐 every map</span> and <span class="ui">🗺 only <i>map</i></span>. A map can have a complete layout of its own, which starts as a copy of the module's.</li>
     <li>The device: <code>phone, landscape</code>, <code>phone, portrait</code>, <code>tablet</code> or <code>desktop</code>, with a notch's safe area where it has one.</li>
-    <li>Three tabs: <span class="ui">HUD</span>, <span class="ui">touch</span> and <span class="ui">templates</span>.</li>
+    <li>Four tabs: <span class="ui">HUD</span>, <span class="ui">touch</span>, <span class="ui">templates</span> and <span class="ui">markers</span>.</li>
   </ul>
   <h3>HUD</h3>
   <p>The list shows the HUD's <b>elements</b>. Tap one in the frame or the list to edit it. <b>Drag it in the frame to move it</b>: it re-anchors to the ninth of the screen it lands in, so it stays in that corner on a wider screen. <span class="ui">+ element…</span> adds a text, a number, a bar, an image or a group.</p>
@@ -83,6 +83,14 @@
   <p>The touch tab moves, resizes, relabels and hides the engine's buttons for the module's control scheme. It cannot invent a button, because each one is an input. The module's own keys with a touch label appear here too, to place beside the engine's (see <a href="07-workshops.html#controls">Controls</a>). <span class="ui">back to the engine's buttons</span> undoes the module's layout for them.</p>
   <h3>Templates</h3>
   <p>Templates are for panels that a hand-written script opens: where such a panel sits and where each widget goes (<span class="ui">+ template</span>, <span class="ui">+ slot</span>). The module's own panels are designed in Panels instead; <span class="ui">▢ Panels…</span> goes there.</p>
+  <h3 id="markers">Markers</h3>
+  <p>Markers are small UIs hung on things in the world: a bar over a monster, a sign over a door, a pointer over a goal. The <span class="ui">markers</span> tab designs their looks. Its frame is a close-up of a monster with the marker over its head, drawn by the game's own marker code at the chosen device's size.</p>
+  <ul>
+    <li>The four built-in markers (<code>health</code>, <code>label</code>, <code>marker</code>, <code>debug_health</code>) are listed with the module's own. <span class="ui">✎ change it for this module</span> changes a built-in one everywhere it is used, and <span class="ui">⧉ make a new one from it</span> copies it under a new name. <span class="ui">+ new marker</span> starts one from scratch.</li>
+    <li>One of your own has a <span class="ui">name</span> (rename it, and the monsters, graphs and signs that hang it follow), a <span class="ui">width</span> and <span class="ui">height</span>, and elements you add with <span class="ui">+ element…</span> and drag inside its box.</li>
+    <li><b>sample values</b> set what the close-up shows, and <b>used by</b> lists who hangs it.</li>
+  </ul>
+  <p>A monster wears one as <span class="ui">A bar over it</span> on its Overview, a sign placed on a map is one, and a graph hangs one with its <code>mark</code> node. See <a href="../graphs/07-markers.html">Markers: health bars, signs, pointers</a>.</p>
   <div class="callout"><p>Nothing is written until something is changed, so a module that never opens Screens gets the game's default HUD.</p></div>
 
   <h2>Panels</h2>

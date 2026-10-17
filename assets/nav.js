@@ -94,6 +94,7 @@ window.DNP_NAV = [
       { file: 'graphs/04-the-world.html', title: 'Talking to the world', kw: 'sector look light sound music camera scene panel ui entity property' },
       { file: 'graphs/05-game-graph-and-calls.html', title: 'The game graph, calls and maps', kw: 'game graph call answer change map slot shared module' },
       { file: 'graphs/06-debugging.html', title: 'Debugging graphs', kw: 'problems refused play log debug overlay test' },
+      { file: 'graphs/07-markers.html', title: 'Markers: health bars, signs, pointers', kw: 'marker health bar sign pointer label template mark set_marker remove_marker hud over a monster debug overlay' },
     ],
   },
   {

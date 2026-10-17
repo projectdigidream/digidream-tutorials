@@ -1390,3 +1390,48 @@ DNP_LUA_API.internal.push('dnp.mob_resume_point');
     see: ['dnp.length', 'fx.operators']
   });
 })();
+
+// ---- Engine 0.2.1: markers ----
+DNP_LUA_API.groups.push({
+  id: 'dnp-markers', order: 75, title: 'Markers',
+  intro: 'Small UI hung on things in the world: a health bar over a monster, a sign over a door, a pointer over a goal. Each is drawn from a template in the module\'s UI layout; `health`, `label`, `marker` and `debug_health` are built in.',
+  entries: [
+    {
+      id: 'dnp.mark', sig: 'dnp.mark(on, template[, values[, opts]]) → id | nil', where: 'both',
+      doc: 'Hang a marker on `on`, an entity, a prop or a place (a vec3 in this level), drawn from the template named `template`. `values` fills the template\'s blanks: `{ text = "EXIT" }` for `label` and `marker`, `{ value = 30, max = 100 }` for `health`.\n\nIt is hidden behind walls, out of `range`, or when it is meant for another player. Returns the marker\'s id, or `nil` when there is nothing to hang it on (or it is a debug marker in a game shipped with the overlay off).',
+      args: [
+        { name: 'on', type: 'entity | prop | vec3', doc: 'what it follows, or the place it sits' },
+        { name: 'template', type: 'string', doc: 'a template of the module\'s UI layout, or a built-in: health, label, marker, debug_health (up to 24 of a-z, 0-9, _)' },
+        { name: 'values', type: 'table', optional: true, doc: 'the template\'s values: up to 16, names up to 24 characters, text up to 128 bytes' },
+        { name: 'opts', type: 'table', optional: true, doc: '`to` (a player: only they see it), `height` (fx, above the body\'s top or the point), `range` (fx: shown only within this of the viewer), `debug = true` (only with the debug overlay), `through_walls = true`' }
+      ],
+      returns: 'the marker\'s id, or nil',
+      notes: [
+        'Markers are not saved: hang them again when the level loads. A marker on an entity that has gone is swept away.',
+        'A level keeps its markers and sends them to every player who arrives. At most 4096 per level.'
+      ],
+      example: '-- a sign over the exit lever, seen from 20 m\nfor _, p in ipairs(dnp.props()) do\n  if p:name() == "lever" then\n    dnp.mark(p, "label", { text = "EXIT" }, { height = 1, range = 20 })\n  end\nend',
+      see: ['dnp.mark_set', 'dnp.unmark', 'dnp.hud']
+    },
+    {
+      id: 'dnp.mark_set', sig: 'dnp.mark_set(id, values) → boolean', where: 'both',
+      doc: 'Change a marker\'s values. The names you give replace theirs, `false` removes one, and the rest stay. Whoever sees it gets the change. Returns `false` for a marker that is gone.',
+      args: [{ name: 'id', type: 'integer', doc: 'what dnp.mark returned' }, { name: 'values', type: 'table' }],
+      returns: 'true, or false when the marker is gone',
+      example: 'dnp.mark_set(bar, { value = boss_hp })',
+      see: ['dnp.mark']
+    },
+    {
+      id: 'dnp.unmark', sig: 'dnp.unmark(id)', where: 'both',
+      doc: 'Take a marker down, for everyone who sees it.',
+      args: [{ name: 'id', type: 'integer' }],
+      see: ['dnp.mark']
+    },
+    {
+      id: 'dnp.debug_overlay', sig: 'dnp.debug_overlay() → boolean', where: 'both',
+      doc: 'Whether the module launches with the debug overlay (⚙ Settings, "show the debug overlay in the game"). Only then are markers made with `debug = true` sent; with it off they cost nothing.',
+      returns: 'boolean',
+      see: ['dnp.mark']
+    }
+  ]
+});
