@@ -7,6 +7,20 @@ anything not released yet is under **Unreleased**.
 
 ### Changed
 
+- **For the development versions** (studio 0.4.2.11, engine 0.2.3.11). A
+  "dev" badge marks what only the development releases have, which the stable
+  studio 0.4.2 doesn't yet.
+  - **Studio, maps and the app:**
+    - stable and development releases, and the studio updating itself;
+    - the sidebar in groups;
+    - several rooms at once, and snapping to the grid or not;
+    - platforms across rooms, and how big a map can be;
+    - things lit by the map, and "its own light";
+    - a PNG imported as a sheet;
+    - Play showing the colliders;
+    - the plugins sharing the module's palette and textures.
+
+    Screenshots are retaken.
 - **For studio 0.3.4 and engine 0.2.0.** The Enemies and Weapons tracks, and
   the studio's workshop lesson, teach the new monster and weapon editors:
   - their tabs, and rules written as sentences;

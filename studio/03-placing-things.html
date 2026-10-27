@@ -34,7 +34,7 @@
     <li><span class="ui">spawn: start</span>: where players appear.</li>
     <li><span class="ui">light</span>: a coloured point light.</li>
     <li><span class="ui">sign: label</span>, <span class="ui">sign: marker</span> and the like: a sign, one chip for each marker the map's screens have (see <a href="../graphs/07-markers.html">Markers</a>).</li>
-    <li><b>Each monster</b> the module defines, by name. You make monsters in the rail's <b>Monsters</b> section.</li>
+    <li><b>Each monster</b> the module defines, by name. You make monsters in the rail's <b>Monsters</b> section, under Gameplay.</li>
     <li><b>Each prop</b>: the module's own props first, then the ones the app ships.</li>
   </ul>
   <p>When there are more than 12 chips, a <b>find</b> field sits above them (<em>"find among 89…"</em> in Gem Hollow) and the chips scroll in a box of their own. Type part of a name to narrow them. The armed chip always stays in view.</p>
@@ -42,6 +42,7 @@
   <p>Tap a chip to <em>arm</em> it. The status line says <em>"tap the floor to place …"</em>. Every tap on the floor now places one, at the height of the floor you tapped. It stays armed, so you can place several. Tap the chip again to stop.</p>
   <div class="callout"><p>If you tap the floor with nothing armed, the studio says <em>"pick something to place first"</em> and opens the palette.</p></div>
   <p>A thing you have placed is selected straight away, and its form opens. Later, tap it with <span class="ui">Select</span> to open its form again, or drag it to move it. <kbd>Delete</kbd> removes it, as does the <span class="ui">delete</span> button in its form.</p>
+  <p><span class="dev">studio 0.4.2.1</span> Whatever you drag, a spawn, a light, a monster or a prop, takes the floor height of the room you drop it in. A start flag dragged onto a raised platform stands on the platform, not at height 0 under it.</p>
 
   <h2>Spawns</h2>
   <p>A spawn's form has two fields:</p>
@@ -51,6 +52,7 @@
   </ul>
   <p>A map has one spawn of each tag. Placing <span class="ui">spawn: start</span> where the map already has one <b>moves</b> it to the floor you tapped, and the status line says <em>"Moved the spawn "start" here: a map has one of each name."</em></p>
   <div class="callout warn"><p>A map with no <code>start</code> spawn has nowhere to put the player. Place one before you press <span class="ui">Play</span>.</p></div>
+  <div class="callout tip"><p><b>A point for a trigger or a graph.</b> Where an action or a node needs a place (a spawn, a teleport, a <code>when_near</code>), its form has <span class="ui">pick a point on the map</span>: press it, then tap the floor. <span class="dev">studio 0.4.2.1</span> Its <code>x</code>, <code>y</code> and <code>z</code> are filled in as numbers, so a spawn or a teleport no longer complains that <em>x should be a number</em>. See <a href="04-triggers.html">Triggers</a>.</p></div>
 
   <h2>Lights</h2>
   <p>A light is placed 2 units above the floor you tap. Its form has:</p>
@@ -61,6 +63,7 @@
     <li><span class="ui">height</span>: −32 to 64.</li>
   </ul>
   <p>A room also has its own <span class="ui">light</span> level, in the room form. Use that for how bright the room is overall, and a placed light for a lamp, a fire or a glow.</p>
+  <p><span class="dev">studio 0.4.2.10</span> Props, monsters and players are lit by the map as its walls and floors are: by their room's light, with the placed lights near them added on top. A dark corridor hides a monster in it, and a torch lights the barrel beside it. To draw one at full brightness wherever it is, such as a glowing crystal or a fireball, tick its <span class="ui">its own light (not lit)</span> (see below).</p>
 
   <h2>Monsters and props</h2>
   <p>A placed monster's form is titled <b>Monster</b> and its name; a prop's is titled <b>Prop</b> and its name. The fields are:</p>
@@ -126,9 +129,11 @@
   </ol>
 
   <h2>Props and particles, in short</h2>
-  <p>Monsters, props and particles are defined for the whole module, in the rail. A map only places them.</p>
+  <p>Monsters, props and particles are defined for the whole module, in the rail: Monsters and Props under Gameplay, Particles under Art. A map only places them.</p>
   <ul>
     <li><b>Props</b> are bodies without a brain: a barrel, a torch, a tree. <span class="ui">+ new prop</span> makes one. A prop has a <span class="ui">name</span>, a <span class="ui">radius</span> and <span class="ui">height</span> (the body it collides as), a <span class="ui">scale</span>, <span class="ui">solid</span> and <span class="ui">usable</span> toggles, and a <span class="ui">picture</span>. Its form says how many times it is placed across the module, and has <span class="ui">place it</span> to start placing it.</li>
+    <li><span class="dev">studio 0.4.2.10</span> <span class="ui">its own light (not lit)</span> on a prop draws it at full light instead of lighting it by its room and the lamps near it. Monsters (on their Looks) and missiles have the same box.</li>
+    <li><b>A prop's picture</b> is one of the module's single pictures or sheets, or a new one: <span class="ui">+ picture (PNG)…</span> brings in one image that stands as tall as the body, and <span class="ui">+ sheet…</span> brings in a sprite. <span class="dev">studio 0.4.2.1</span> A sheet can be a single <code>.png</code> too: it becomes a sheet of one picture, the same from every side. A file that is not a PNG is refused with a message. See <a href="../sprites/01-first-sprite.html">Your first sprite</a>.</li>
     <li><b>Renaming a prop</b> renames everything that uses it: its placements on every map, a monster's or a missile's body, what a monster drops, a step or condition about the nearest one, the player's body, and a trigger's <code>spawn_prop</code>. Nothing loses its look.</li>
     <li>Tapping <b>Props</b> in the rail while a prop is open goes back to the list of props. Every section of the rail does the same.</li>
   </ul>
@@ -141,7 +146,7 @@
     <li><span class="ui">rate</span>: specks a second while it follows a body. Every kind keeps one (40 to begin with), because a missile's trail emits at its kind's rate.</li>
     <li><span class="ui">drawn as</span>: <em>a soft dot</em> (the default), <em>a hard disc</em>, <em>a hard square</em>, <em>a hard hexagon</em>, <em>a hard star</em>, or <em>the picture …</em>, one of the module's own single pictures or textures. Each particle is coloured by the kind's ramp, so one white picture makes a burst of any colour.</li>
   </ul>
-  <p>A missile picks a kind to trail it on its <span class="ui">Looks</span> (see <a href="07-workshops.html#missiles">Missiles</a>).</p>
+  <p>A missile picks a kind to trail it on its <span class="ui">Looks</span> (see <a href="07-workshops.html#missiles">Missiles</a>). <span class="dev">studio 0.4.2.2</span> A new missile is drawn 0.6 m tall and leaves a glowing trail in its colour, a particle kind of its own that appears on the Particles page, so a shot can be seen from across a room, even on a phone.</p>
   <p>Monsters are covered in <a href="07-workshops.html">Monsters, weapons, player</a>.</p>
 
   <div class="quiz" data-answer="2">
@@ -170,6 +175,15 @@
       <li>That the spawn's height is 0</li>
     </ul>
     <p class="why">The server spawns players at the tag <code>start</code>. Other tags are for teleports and scripts.</p>
+  </div>
+  <div class="quiz" data-answer="1">
+    <p class="q">A glowing crystal prop sits in a dark cave and looks as dark as the rocks. How do you make it glow?</p>
+    <ul>
+      <li>Raise the cave's light to 255</li>
+      <li>Tick its own light (not lit) on the prop</li>
+      <li>Nothing: props are always drawn at full light</li>
+    </ul>
+    <p class="why">Props, monsters and players are lit by their room and the lights near them. <span class="ui">its own light (not lit)</span> draws one at full light wherever it stands, and leaves the cave dark.</p>
   </div>
 </article>
 </body>

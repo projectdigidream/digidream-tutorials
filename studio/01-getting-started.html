@@ -19,7 +19,7 @@
   <h1>Getting started</h1>
   <p class="lede">The studio is a module editor that ships inside the game. A <em>module</em> is a whole game: its maps, monsters, weapons, textures, music, sounds and screens. You edit it on a desktop or a phone, press Play to walk through it, and export it as a pack the engine loads unchanged.</p>
   <div class="goal">
-    <b>You'll learn</b><span>how to launch the studio, how Home and the rail are laid out, how to open the Gem Hollow example, how to start a module of your own, how to change the studio's style, and what undo applies to</span>
+    <b>You'll learn</b><span>how to launch the studio, how Home and the rail's groups are laid out, how to open the Gem Hollow example, how to start a module of your own, how to change the studio's style, and what undo applies to</span>
     <b>Time</b><span>15 minutes</span>
     <b>Needs</b><span>Digidream Studio installed on a desktop or an Android device (<a href="00-get-the-tools.html">Get the tools</a>)</span>
   </div>
@@ -34,9 +34,9 @@
 
   <h2>Home</h2>
   <figure class="shot" data-src="../assets/shots/studio-home.png" data-alt="The studio's Home page with Gem Hollow open">
-    <figcaption>Home, with Gem Hollow open: the module, its maps, what is wrong, and every section.</figcaption>
+    <figcaption>Home, with Gem Hollow open: the module, its maps, what is wrong, and every section. The rail on the left lists the sections in groups.</figcaption>
   </figure>
-  <p>The studio opens on the module's <b>Home</b> page. At the top are the module's name, its <em>about</em> text and the studio's version (<code>studio 0.4.1</code>) with a <span class="ui">check for updates</span> button beside it. When a newer studio is out, a card under them says so, with what changed, <span class="ui">download</span> and <span class="ui">not now</span> (see <a href="00-get-the-tools.html">Get the tools</a>). If you sync with GitHub, the module's sync state shows beside the version too (see <a href="11-sync-with-github.html">Sync with GitHub</a>). Below them are the actions that apply to the whole module:</p>
+  <p>The studio opens on the module's <b>Home</b> page. At the top are the module's name, its <em>about</em> text and the studio's version (<code>studio 0.4.2.11</code>) with a <span class="ui">check for updates</span> button beside it. When a newer studio is out, a card under them says so, with what changed, <span class="ui">update now</span> where the studio can update itself, <span class="ui">download</span> and <span class="ui">not now</span> (see <a href="00-get-the-tools.html#updating">Get the tools</a>). If you sync with GitHub, the module's sync state shows beside the version too (see <a href="11-sync-with-github.html">Sync with GitHub</a>). Below them are the actions that apply to the whole module:</p>
   <ul>
     <li><span class="ui">play from <i>map</i></span> and <span class="ui">export</span>. Play on Home starts on the module's <b>starting map</b> and names it, as in <em>play from first</em>. You choose the starting map in <b>Settings</b> → <span class="ui">starting map</span>; left at <code>the first by name</code>, it is the first map in alphabetical order, which is where the game starts too. <span class="ui">Play</span> in the map editor and on the rail is different: it starts on the map you are editing. A module reopens on the map you edited last, so the rail's Play plays that one. Export says what it saved, such as <em>"Exported gemhollow.zip (… KB): a pack to open in the studio on another device…"</em>.</li>
     <li><span class="ui">import pack</span>, which brings in a pack someone exported.</li>
@@ -87,12 +87,13 @@
     <li><p>The second question is <em>"What kind of game is it?"</em>. Press <span class="ui">first person: a shooter</span> or <span class="ui">a platformer, seen from outside</span>. <span class="ui">cancel</span> makes nothing.</p></li>
     <li><p>The studio opens the new module on its Home. Its name is the id you typed; change it in <b>Settings</b>.</p></li>
   </ol>
+  <p><span class="dev">studio 0.4.2.1</span> An id is plain letters, digits, <code>_</code> and <code>-</code>. Accents come off by themselves: <code>île</code> becomes <code>ile</code>. A letter with no plain spelling is named, as in <em>"An id is a-z, 0-9, _ and -: … cannot be in it. Type the id again"</em>, and the id is asked again instead of losing the letter unseen.</p>
   <h3 id="starter">What a new module holds</h3>
   <p>A new module is a copy of the <b>starter</b>, which comes with the studio. Its one map, <code>first</code>, has a room, a door, a pit with a switch that raises its floor, a platform, an exit switch, a start spawn, two lights and a <code>spirit</code> to fight: a flying monster drawn twice as big as before, with a body to match, that bites gently (6 damage, at most every 1.5 seconds). The starter also has:</p>
   <ul>
     <li><b>A door that works as the door preset does.</b> <kbd>E</kbd> opens it from either side, pressing it again while it is open does nothing, and it shuts by itself 4 seconds after it has opened. Its three cards are on the map's Triggers sheet (see <a href="04-triggers.html#door">Triggers</a>), with the pit's switch and the exit.</li>
     <li><b>The player's death, shown on every map.</b> When the player dies, the screen goes dark, <em>"You died. Back to the start!"</em> is shown, and the screen clears again. It is a game graph, <code>death</code> (under <span class="ui">the game's graphs</span> in Graphs), so it answers a death on any map, maps you add later included. Change its words, or delete it.</li>
-    <li><b>The keys, shown once.</b> As the game starts, the game graph <code>welcome</code> opens the panel <code>controls</code> at the top of the screen for ten seconds: a line for a keyboard (<em>WASD walk, SPACE jump, SHIFT dash, E use, F attack, Q/R turn the camera</em>, or for first person <em>WASD walk, mouse look, click or F fire, SPACE jump, E use</em>) and one for a touch screen. A player can close it with its &times;. The subtitle line stays free for your own words. Change its words and look on the <span class="ui">Panels</span> page, or delete the <code>welcome</code> graph (or the panel) to show nothing.</li>
+    <li><span class="dev">studio 0.4.2.1</span> <b>The keys, shown once.</b> As the game starts, the game graph <code>welcome</code> opens the panel <code>controls</code> at the top of the screen for ten seconds: a line for a keyboard (<em>WASD walk | SPACE jump | SHIFT dash | E use | F punch | Q/R turn the camera</em>, or for first person <em>WASD walk | mouse look | click or F fire | SPACE jump | E use</em>) and one for a touch screen. (<span class="dev">next release</span> The platformer's line says <em>F punch</em>, not <em>F attack</em>: it has no weapon, and <kbd>F</kbd> swings bare hands.) A player can close it with its &times;. The subtitle line stays free for your own words. Change its words and look on the <span class="ui">Panels</span> page, or delete the <code>welcome</code> graph (or the panel) to show nothing.</li>
     <li><b>Shots you can see.</b> Three particle kinds of its own on the Particles page: <b>20</b> a muzzle flash, <b>21</b> a tracer and <b>22</b> sparks where a shot lands.</li>
   </ul>
   <p>The studio then makes it yours:</p>
@@ -115,31 +116,34 @@
     <li><span class="ui">pointer</span>: <code>touch — finger-sized</code>, <code>mouse — compact</code>, or <code>auto — follows the device</code>, which is where it starts.</li>
     <li><span class="ui">import a style…</span>: brings in a style made with uikit and baked into one file (a <code>.skin.json</code>, or the <code>.skin.js</code> a tool vendors). It is listed after the shipped ones, marked <em>(imported)</em>, and <span class="ui">forget this style</span> removes it.</li>
   </ul>
-  <p>The style is <b>this device's choice</b>, never the module's: it is not exported, and it changes nothing in the game. The desktop and Android apps keep it in a file of their own too, so a forced quit does not lose it. (Do not confuse it with the rail's <b>Style</b> section, which styles the <em>game's</em> screens; see <a href="08-look-and-feel.html">Sky, screens and weather</a>.)The plugins (ThreeSprite, qPainter, DigidreamSound, DigidreamSynth, Code and the Packager) wear the studio's style too.</p>
+  <p>The style is <b>this device's choice</b>, never the module's: it is not exported, and it changes nothing in the game. The desktop and Android apps keep it in a file of their own too, so a forced quit does not lose it. (Do not confuse it with the rail's <b>Style</b> section, under Interface, which styles the <em>game's</em> screens; see <a href="08-look-and-feel.html">Sky, screens and weather</a>.) The plugins (ThreeSprite, qPainter, DigidreamSound, DigidreamSynth, Code and the Packager) wear the studio's style too.</p>
   <div class="callout"><p>Each style draws the studio's icons in its own look: lines, colour pixels, glass. These tutorials quote a label by its words, such as <span class="ui">play from first</span> or <span class="ui">snapshots</span>, and leave out the icon before them, because the words are the same in every style. A button that is only an icon is named by its usual sign, such as <span class="ui">✕</span>.</p></div>
 
-  <h2>The rail</h2>
+  <h2 id="rail">The rail</h2>
   <p>On a wide or landscape screen, a <b>rail</b> down the left lists the sections. Each one shows a count of its problems. The rail's foot holds <span class="ui">Undo</span>, <span class="ui">Redo</span>, <span class="ui">Play</span> and <span class="ui">Export</span>. Tapping the section you are on again goes back to its list, for example from a prop back to all the props.</p>
+  <p>The sections are in <b>groups</b>, each under a small heading: <b>World</b>, <b>Gameplay</b>, <b>Art</b>, <b>Sound</b>, <b>Interface</b>, <b>Logic</b> and <b>Module</b>. Where the rail is too narrow for words and shows only icons, a line stands for each heading. The rail scrolls when it is taller than the window: Logic and Module are at the bottom. A plugin that brings a page of its own, such as Sync or Package, puts it under Module.</p>
   <table>
-    <thead><tr><th>Section</th><th>What it holds</th><th>Tutorial</th></tr></thead>
+    <thead><tr><th>Group</th><th>Section</th><th>What it holds</th><th>Tutorial</th></tr></thead>
     <tbody>
-      <tr><td>Maps</td><td>the maps (open, play, <span class="ui">+ new map</span>, delete) and the <span class="ui">metamap</span></td><td><a href="02-first-map.html">Your first map</a></td></tr>
-      <tr><td>Monsters · Weapons · Missiles</td><td>the monster and weapon editors (behaviour as sentences or a graph, with a preview that runs it), and the missiles they share</td><td><a href="07-workshops.html">Monsters, weapons, player</a></td></tr>
-      <tr><td>Player</td><td>the player's look, size, moves, kit and sounds</td><td><a href="07-workshops.html#player">Monsters, weapons, player</a></td></tr>
-      <tr><td>Controls</td><td>how the module is played, and its own keys</td><td><a href="07-workshops.html#controls">Monsters, weapons, player</a></td></tr>
-      <tr><td>Props · Particles</td><td>bodies without a brain; bursts and tracers</td><td><a href="03-placing-things.html">Placing things</a></td></tr>
-      <tr><td>Sprites</td><td>sprite sheets, edited in ThreeSprite</td><td><a href="../sprites/01-first-sprite.html">Sprites track</a></td></tr>
-      <tr><td>Textures</td><td>the module's own textures and the app's, edited in qPainter</td><td><a href="../textures/01-first-texture.html">Textures track</a></td></tr>
-      <tr><td>Music</td><td>tracks, and each map's cues, edited in DigidreamSynth</td><td><a href="../music/01-daw-tour.html">Music track</a></td></tr>
-      <tr><td>Sounds</td><td>sound packs, edited in DigidreamSound</td><td><a href="../sounds/01-first-sound.html">Sounds track</a></td></tr>
-      <tr><td>Screens · Panels · Style</td><td>HUD, touch controls, panels, fonts</td><td><a href="08-look-and-feel.html">Sky, screens and weather</a></td></tr>
+      <tr><td rowspan="2">World</td><td>Maps</td><td>the maps (open, play, <span class="ui">+ new map</span>, delete) and the <span class="ui">metamap</span></td><td><a href="02-first-map.html">Your first map</a></td></tr>
       <tr><td>Sky</td><td>the module's sky and each map's own</td><td><a href="08-look-and-feel.html">Sky, screens and weather</a></td></tr>
-      <tr><td>Scripts · Graphs</td><td>Lua for the module; Blueprint-style graphs</td><td><a href="06-graphs.html">Graphs</a></td></tr>
-      <tr><td>Settings</td><td>id, name, about, the starting map, controls, the debug overlay, saving, and the studio's look on this device</td><td><a href="10-play-and-export.html">Play and export</a></td></tr>
+      <tr><td rowspan="4">Gameplay</td><td>Monsters · Weapons · Missiles</td><td>the monster and weapon editors (behaviour as sentences or a graph, with a preview that runs it), and the missiles they share</td><td><a href="07-workshops.html">Monsters, weapons, player</a></td></tr>
+      <tr><td>Player</td><td>the player's look, size, moves, kit and sounds, and how it moves (walking, swimming, a dash)</td><td><a href="07-workshops.html#player">Monsters, weapons, player</a>, <a href="12-movement.html">How the player moves</a></td></tr>
+      <tr><td>Controls</td><td>how the module is played, and its own keys</td><td><a href="07-workshops.html#controls">Monsters, weapons, player</a></td></tr>
+      <tr><td>Props</td><td>bodies without a brain</td><td><a href="03-placing-things.html">Placing things</a></td></tr>
+      <tr><td rowspan="3">Art</td><td>Sprites</td><td>sprite sheets, edited in ThreeSprite</td><td><a href="../sprites/01-first-sprite.html">Sprites track</a></td></tr>
+      <tr><td>Particles</td><td>bursts and tracers</td><td><a href="03-placing-things.html#particles">Placing things</a></td></tr>
+      <tr><td>Textures</td><td>the module's own textures and the app's, edited in qPainter</td><td><a href="../textures/01-first-texture.html">Textures track</a></td></tr>
+      <tr><td rowspan="2">Sound</td><td>Music</td><td>tracks, and each map's cues, edited in DigidreamSynth</td><td><a href="../music/01-daw-tour.html">Music track</a></td></tr>
+      <tr><td>Sounds</td><td>sound packs, edited in DigidreamSound</td><td><a href="../sounds/01-first-sound.html">Sounds track</a></td></tr>
+      <tr><td>Interface</td><td>Screens · Panels · Style</td><td>HUD, touch controls, panels, fonts</td><td><a href="08-look-and-feel.html">Sky, screens and weather</a></td></tr>
+      <tr><td>Logic</td><td>Scripts · Graphs</td><td>Lua for the module; Blueprint-style graphs</td><td><a href="06-graphs.html">Graphs</a></td></tr>
+      <tr><td rowspan="3">Module</td><td>Settings</td><td>id, name, about, the starting map, controls, the debug overlay, saving, and the studio's look on this device</td><td><a href="10-play-and-export.html">Play and export</a></td></tr>
       <tr><td>Sync</td><td>keep modules in a GitHub repository and open them on your other devices</td><td><a href="11-sync-with-github.html">Sync with GitHub</a></td></tr>
       <tr><td>Package</td><td>the Packager: the module as an app for Android, Windows, macOS or Linux</td><td><a href="10-play-and-export.html#package">Play and export</a></td></tr>
     </tbody>
   </table>
+  <p>On Home, <span class="ui">the module</span> has a tile for the main sections too, each with a count.</p>
   <div class="callout tip"><p><b>On a phone held upright</b> there is no rail. Home is the list of sections, and every page has a way back: <span class="ui">module</span> on a page, and <span class="ui">‹</span> beside undo in the map editor.</p></div>
   <div class="callout tip"><p><b>On Android</b>, the phone's <b>Back</b> works as in other apps. It closes a dialog, or goes back to the page before. On Home, where there is nothing further back, it puts the studio in the background instead of quitting it, so you come back to the same place. While you type, the field is lifted above the keyboard. A quick tap on a button, such as the game's touch FIRE, is never lost.</p></div>
 
@@ -153,10 +157,11 @@
     <li><b>On a page</b> (Monsters, Textures, Settings…), it undoes changes to <em>the module</em>.</li>
   </ul>
   <p>The keys are <kbd>⌘Z</kbd> to undo, and <kbd>⇧⌘Z</kbd> or <kbd>⌘Y</kbd> to redo. On Windows and Linux, use Ctrl in place of ⌘.</p>
+  <p><span class="dev">studio 0.4.2.1</span> <b>Undo survives Play.</b> Coming back from a play-test, the map's undo and the module's are as you left them, so you can play, see what went wrong, and undo the change that did it. Each graph keeps its zoom and scroll over the trip too.</p>
   <div class="callout"><p>Undo is for the last few minutes. For anything older, the studio keeps <b>snapshots</b> of the module on the device. It takes one when the module is opened, every ten minutes while you edit, and before anything that replaces work. See <a href="10-play-and-export.html#snapshots">Snapshots</a>.</p></div>
 
   <ol class="steps">
-    <li><p>With your copy of Gem Hollow open, open <b>Settings</b> and change its <span class="ui">name</span> to <code>My Hollow</code>.</p></li>
+    <li><p>With your copy of Gem Hollow open, open <b>Settings</b> (under Module, near the foot of the rail) and change its <span class="ui">name</span> to <code>My Hollow</code>.</p></li>
     <li><p>Press <kbd>⌘Z</kbd>. The name goes back to <code>Gem Hollow</code>, because a page undoes changes to the module.</p></li>
     <li><p>Press <kbd>⇧⌘Z</kbd> to bring the name back. Then reload the page and check you land on Settings again.</p></li>
     <li><p>In the <b>Look</b> card at the bottom of Settings, set <span class="ui">style</span> to Aero, then to 90s. Set it back to Claude when you have seen enough.</p></li>
@@ -187,7 +192,7 @@
       <li>The game's HUD and panels in Aero</li>
       <li>A question asking which style to use</li>
     </ul>
-    <p class="why">The style is kept on the device and never written into the module. The game's own look is set in Screens, Panels and Style (the rail's Style section).</p>
+    <p class="why">The style is kept on the device and never written into the module. The game's own look is set in Screens, Panels and Style (the rail's Interface group).</p>
   </div>
 </article>
 </body>

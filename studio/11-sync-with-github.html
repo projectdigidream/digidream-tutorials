@@ -31,7 +31,7 @@
     <li><b>A backup.</b> If the device breaks or the app is removed, your modules are still in the repository.</li>
   </ul>
   <p>There is no Digidream server in between. The Sync page talks to GitHub directly, from your device, with a key you give it (a <b>token</b>). Nothing goes anywhere else.</p>
-  <p>Sync is a bundled plugin: <b>GitHub sync</b>. It adds <span class="ui">Sync</span> to the rail, and a service that runs in the background while the studio is open. See <a href="09-plugins.html">Plugins</a> for what that means.</p>
+  <p>Sync is a bundled plugin: <b>GitHub sync</b>. It adds <span class="ui">Sync</span> to the rail, under Module, and a service that runs in the background while the studio is open. See <a href="09-plugins.html">Plugins</a> for what that means.</p>
 
   <h2>What you need from GitHub</h2>
   <h3>An account</h3>
@@ -51,10 +51,10 @@
   <p>GitHub also asks for an <b>expiration</b>. When the token expires, sync stops until you give it a new one (see <a href="#trouble">When something goes wrong</a>). Pick a date that suits you; a longer one means fewer renewals, a shorter one means less harm if it leaks.</p>
 
   <h2>The Sync page</h2>
-  <figure class="shot" data-src="../assets/shots/studio-sync-connect.png" data-alt="The Sync page before connecting: how to make a token, a Token field, the device name and Continue" data-hotspots='[{"x":4.6,"y":96.4,"t":"Sync","d":"the plugin’s page in the rail"},{"x":38.4,"y":26.2,"t":"Make a new token on GitHub","d":"opens GitHub’s token form in your browser"},{"x":42.9,"y":29.7,"t":"All repositories","d":"the studio can list your repositories and make a new one"},{"x":38.2,"y":34.8,"t":"One repository only","d":"make the repository on GitHub first, then give the token just that one"},{"x":44.4,"y":43.6,"t":"Token","d":"paste it here; it starts with github_pat_"},{"x":70.1,"y":43.6,"t":"This device","d":"the name this device signs its commits with"},{"x":35,"y":48.7,"t":"Continue","d":"checks the token with GitHub, then asks for the repository"}]'>
+  <figure class="shot" data-src="../assets/shots/studio-sync-connect.png" data-alt="The Sync page before connecting: how to make a token, a Token field, the device name and Continue" data-hotspots='[{"x":4.4,"y":72.4,"t":"Sync","d":"the plugin’s page, in the rail’s Module group"},{"x":38.4,"y":26.2,"t":"Make a new token on GitHub","d":"opens GitHub’s token form in your browser"},{"x":42.9,"y":29.7,"t":"All repositories","d":"the studio can list your repositories and make a new one"},{"x":38.2,"y":34.8,"t":"One repository only","d":"make the repository on GitHub first, then give the token just that one"},{"x":44.4,"y":43.6,"t":"Token","d":"paste it here; it starts with github_pat_"},{"x":70.1,"y":43.6,"t":"This device","d":"the name this device signs its commits with"},{"x":35,"y":48.7,"t":"Continue","d":"checks the token with GitHub, then asks for the repository"}]'>
     <figcaption>The Sync page before you connect. The token stays on this device.</figcaption>
   </figure>
-  <p>Open <span class="ui">Sync</span> from the rail. The page is titled <b>Sync with GitHub</b>, and its card <b>A token from GitHub</b> has:</p>
+  <p>Open <span class="ui">Sync</span> from the rail: it is in the Module group, near the foot (scroll the rail down if you don't see it). The page is titled <b>Sync with GitHub</b>, and its card <b>A token from GitHub</b> has:</p>
   <ul>
     <li><span class="ui">Make a new token on GitHub</span>: opens GitHub's form for a new fine-grained token in your system's browser.</li>
     <li>The two ways to set it up, from the table above, and <span class="ui">make the repository on GitHub</span> for the second.</li>

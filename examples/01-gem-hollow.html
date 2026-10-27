@@ -29,6 +29,7 @@
     <figcaption>Home with your copy of Gem Hollow open: two maps, <code>menu</code> and <code>world</code>, and nothing wrong.</figcaption>
   </figure>
   <p>On Home, under <span class="ui">examples</span>, press <span class="ui">Gem Hollow</span>. The first time, the studio makes a module of your own from the example and opens it. It is your copy: change anything. Pressing the button again opens the same copy. <span class="ui">a fresh copy</span> makes another, untouched one beside it.</p>
+  <p>The rail down the left lists its sections in groups: World (Maps, Sky), Gameplay (Monsters, Player, Controls, Weapons, Missiles, Props), Art, Sound, Interface, Logic (Scripts, Graphs) and Module (Settings, Sync, Package). The tour below goes through them. See <a href="../studio/01-getting-started.html#rail">The rail</a>.</p>
   <p>Its <em>about</em> line says what it is: <em>"A small example platformer: a title screen, one big level in four zones, levers, gates, keys, gems, slimes, bees and snails, cutscenes at both ends."</em></p>
 
   <h2>Maps and zones</h2>
@@ -45,7 +46,7 @@
 
   <h2>Graphs</h2>
   <figure class="shot" data-src="../assets/shots/example-gem-graphs.png" data-alt="Gem Hollow's Graphs section: no game graph, main on menu, seven graphs on world">
-    <figcaption>Graphs: no game graph, one graph on <code>menu</code> and seven on <code>world</code>.</figcaption>
+    <figcaption>Graphs, under Logic in the rail: no game graph, one graph on <code>menu</code> and seven on <code>world</code>.</figcaption>
   </figure>
   <p>Gem Hollow has no triggers. All its logic is graphs, and every graph carries notes that say what each group of nodes does:</p>
   <ul>
@@ -89,9 +90,9 @@
     <li><p>Open <span class="ui">Gem Hollow</span> from Home. Check that Home shows two maps and says <em>"nothing wrong that the studio can see"</em>.</p></li>
     <li><p>Open <code>world</code>. Use <span class="ui">More</span> → <span class="ui">Fit view</span>, and find the four zones from left to right.</p></li>
     <li><p>With <span class="ui">Select</span>, tap the red gate between the Meadow and the Isles. Its tag is 11.</p></li>
-    <li><p>Open <b>Graphs</b> and tap <code>levers</code>. Find the <code>open_door</code> node whose <code>tag</code> is 11: it is the one that opens the gate you just tapped.</p></li>
-    <li><p>Open <b>Monsters</b>: <code>slime</code> opens on <span class="ui">Behaviour</span>. Find the <code>squash</code> state's card, and press <span class="ui">Run</span> in the preview to watch the slime's rules at work.</p></li>
-    <li><p>Open <b>Sky</b> and read the last line of the form: <code>sky default strip SKYHILLS repeat 2 height 0.7</code>.</p></li>
+    <li><p>Open <b>Graphs</b> (under Logic in the rail) and tap <code>levers</code>. Find the <code>open_door</code> node whose <code>tag</code> is 11: it is the one that opens the gate you just tapped.</p></li>
+    <li><p>Open <b>Monsters</b> (under Gameplay): <code>slime</code> opens on <span class="ui">Behaviour</span>. Find the <code>squash</code> state's card, and press <span class="ui">Run</span> in the preview to watch the slime's rules at work.</p></li>
+    <li><p>Open <b>Sky</b> (under World, beside Maps) and read the last line of the form: <code>sky default strip SKYHILLS repeat 2 height 0.7</code>.</p></li>
   </ol>
 
   <div class="quiz" data-answer="1">

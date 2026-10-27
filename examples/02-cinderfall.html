@@ -37,7 +37,7 @@
 
   <h2>One world: five districts and a hub</h2>
   <figure class="shot" data-src="../assets/shots/cinder-metamap.png" data-alt="Cinderfall's metamap: nine w_ maps on a grid, drawn as one world"
-    data-hotspots='[{"x":28.5,"y":18.9,"t":"one shared world","d":"on: the maps are one world you walk across"},{"x":29.7,"y":24.9,"t":"cell width / depth","d":"112 × 112: each map sits in a 112-unit cell"},{"x":55.6,"y":30.9,"t":"kept around a player","d":"3 cells each way: all nine maps stay in memory"},{"x":45.1,"y":67.8,"t":"w_hub","d":"the town square, in the middle"},{"x":53.4,"y":67.8,"t":"w_railhead","d":"where the game starts, off the last train"},{"x":36.7,"y":54.4,"t":"w_heart_w","d":"the boss arena, under the seal"}]'>
+    data-hotspots='[{"x":28.5,"y":19.8,"t":"one shared world","d":"on: the maps are one world you walk across"},{"x":29.7,"y":25.9,"t":"cell width / depth","d":"112 × 112: each map sits in a 112-unit cell"},{"x":55.6,"y":32,"t":"kept around a player","d":"3 cells each way: all nine maps stay in memory"},{"x":45.1,"y":68.1,"t":"w_hub","d":"the town square, in the middle"},{"x":53.3,"y":68.1,"t":"w_railhead","d":"where the game starts, off the last train"},{"x":36.7,"y":54.8,"t":"w_heart_w","d":"the boss arena, under the seal"}]'>
     <figcaption>Maps → <span class="ui">metamap</span>: nine <code>w_</code> maps on a grid, drawn as one world.</figcaption>
   </figure>
   <p>Cinderfall has 12 maps. Nine of them, the ones named <code>w_…</code>, are the world. On <b>Maps</b>, the <span class="ui">metamap</span> has <span class="ui">put the maps on a grid</span> and <span class="ui">one shared world (walk from map to map)</span> both on, with cells 112 × 112:</p>
@@ -64,7 +64,7 @@
 
   <h2>Story graphs and world graphs</h2>
   <figure class="shot" data-src="../assets/shots/cinder-graphs.png" data-alt="Cinderfall's Graphs section: the game's graphs arms and progress, then each map's graphs">
-    <figcaption>Graphs: two graphs for the game, then each map's. A row lists the calls a graph makes and answers.</figcaption>
+    <figcaption>Graphs, under Logic in the rail: two graphs for the game, then each map's. A row lists the calls a graph makes and answers.</figcaption>
   </figure>
   <p>Cinderfall has no triggers: every map says <em>0 triggers</em>. Each world map has <b>two graphs</b>, split by job:</p>
   <ul>
@@ -168,12 +168,12 @@
 
   <h2>Exercise: follow a keycard</h2>
   <ol class="steps">
-    <li><p>Open <b>Maps</b> and scroll to <span class="ui">metamap</span>. Find <code>w_oldtown</code>, west of the hub.</p></li>
-    <li><p>Open <b>Graphs</b> and tap <code>world</code> under <code>w_oldtown</code>. Find the note <em>The red keycard</em>: picking it up calls <code>got_red</code>.</p></li>
+    <li><p>Open <b>Maps</b> (the first section, under World) and scroll to <span class="ui">metamap</span>. Find <code>w_oldtown</code>, west of the hub.</p></li>
+    <li><p>Open <b>Graphs</b> (under Logic) and tap <code>world</code> under <code>w_oldtown</code>. Find the note <em>The red keycard</em>: picking it up calls <code>got_red</code>.</p></li>
     <li><p>Go back and tap <code>progress</code> under <span class="ui">the game's graphs</span>. Find the <code>on_call</code> for <code>got_red</code>: it sets <code>key_red</code> and shows it on the HUD.</p></li>
     <li><p>Back in the list, open <code>world</code> under <code>w_foundry_w</code>. Find <em>The red door</em>: using it calls <code>try_red</code>, and <code>on_call</code> nodes for <code>open_red</code> and <code>need_red</code> answer.</p></li>
     <li><p>Open <code>story</code> under <code>w_mine_e</code>. Tap the first <code>subtitle</code> and read its <code>speaker</code>, <code>mode</code> and <code>sound</code> in the side panel.</p></li>
-    <li><p>Open <b>Controls</b> and read the two keys. Then open <b>Panels</b> and pick <code>arms</code> to see the wheel the <code>arms</code> key opens.</p></li>
+    <li><p>Open <b>Controls</b> (under Gameplay) and read the two keys. Then open <b>Panels</b> (under Interface) and pick <code>arms</code> to see the wheel the <code>arms</code> key opens.</p></li>
   </ol>
 
   <div class="quiz" data-answer="1">

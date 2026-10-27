@@ -25,7 +25,7 @@
   </div>
 
   <h2>The bundled plugins</h2>
-  <p>Every build of the studio comes with these:</p>
+  <p>Every build of the studio comes with these. The development studio carries ThreeSprite 0.2.4, qPainter 0.2.1, the DAW of DigidreamSynth 0.2.1 and the sound tool of DigidreamSound 0.2.1; the stable studio 0.4.2 has ThreeSprite 0.2.3 and qPainter 0.2.1 (see <a href="00-get-the-tools.html#channels">Stable or development</a>). The version on a plugin's card, on the Plugins page, is the plugin's own (<em>0.1.0</em>), not the tool's.</p>
   <table>
     <thead><tr><th>Plugin</th><th>Edits</th><th>Opened from</th></tr></thead>
     <tbody>
@@ -34,8 +34,8 @@
       <tr><td>DigidreamSound</td><td>sound packs (<code>.sfxproj</code>)</td><td>Sounds: <span class="ui">+ new sound pack</span> (a new pack starts empty, under its own name), or a pack's <span class="ui">edit in DigidreamSound</span></td></tr>
       <tr><td>DigidreamSynth</td><td>music projects (<code>.msproj</code>); it also brings a <b>baker</b> that turns them into tracks</td><td>Music: <span class="ui">+ new track</span>, <span class="ui">edit in DigidreamSynth</span>, <span class="ui">bake now</span></td></tr>
       <tr><td>Code</td><td>the module's Lua scripts</td><td>Scripts: <span class="ui">open with…</span></td></tr>
-      <tr><td>Packager</td><td>nothing: it is a page of the rail, <span class="ui">Package</span></td><td>the rail (see <a href="10-play-and-export.html#package">Play, export, snapshots</a>)</td></tr>
-      <tr><td>GitHub sync</td><td>nothing by hand: it is a page of the rail, <span class="ui">Sync</span>, and a background service that keeps your modules in a GitHub repository</td><td>the rail (see <a href="11-sync-with-github.html">Sync with GitHub</a>)</td></tr>
+      <tr><td>Packager</td><td>nothing: it is a page of the rail, <span class="ui">Package</span></td><td>the rail, under Module (see <a href="10-play-and-export.html#package">Play, export, snapshots</a>)</td></tr>
+      <tr><td>GitHub sync</td><td>nothing by hand: it is a page of the rail, <span class="ui">Sync</span>, and a background service that keeps your modules in a GitHub repository</td><td>the rail, under Module (see <a href="11-sync-with-github.html">Sync with GitHub</a>)</td></tr>
     </tbody>
   </table>
   <p>The studio's own pages that edit a kind of file count as editors too: the Scripts page, the Textures page, the Sounds page and the Monsters workshop. A plugin is offered beside them and never replaces them. Code, for example, has the lowest priority, so the Scripts page stays the default for a script until you choose Code.</p>
@@ -59,6 +59,14 @@
   <p>Opening a file in a plugin is an address of its own, so reloading the page comes back to the plugin.</p>
   <p><b>Plugins wear the studio's style.</b> When you change the studio's style, mode or pointer (Settings → Look, or the Style card on Home), every bundled editor follows: its own colours, fonts and colour scheme are mapped onto the style's. A few canvases an editor paints in fixed colours, such as the DAW's lanes and waveforms, keep them. A plugin you write receives the style through the <code>skin</code> message if it asks for it (<code>onSkin</code> in the SDK).</p>
 
+  <h3 id="module">qPainter and ThreeSprite work with the module</h3>
+  <p>Inside the studio, the two picture editors reach the module directly, with no files in between, so this works on a phone too:</p>
+  <ul>
+    <li><b>One palette.</b> Both read the module's palette and can set it. Set it from a texture's colours in qPainter, and ThreeSprite paints from the same colours, or the other way round. See <a href="../textures/01-first-texture.html">Textures</a> and <a href="../sprites/01-first-sprite.html">Sprites</a> for where each keeps it.</li>
+    <li><b>The module's textures.</b> Both can take the colours of any of the module's textures into their palette. ThreeSprite can also bring a texture in as a part of a sprite; one bigger than the sprite comes in shrunk to fit.</li>
+    <li><b>Files on a phone.</b> Exporting a palette, a PNG or an image, and importing one, go through the studio's own save dialog and file picker, so they work in the Android app as they do on a computer.</li>
+  </ul>
+
   <h3>Drafts</h3>
   <p>A phone often closes an app that is in the background. So while a plugin works, it sends the studio a <b>draft</b> every couple of seconds, and the studio also asks for one when the app goes to the background. Drafts are kept on the device, by file, not by plugin.</p>
   <p>When you open a file that has a draft, the studio asks:</p>
@@ -67,6 +75,7 @@
     <li><span class="ui">start from the saved one</span>: throw the draft away and open the file as it was saved.</li>
   </ul>
   <p>Back or discard clears the draft. Drafts that are left over are listed on the Plugins page.</p>
+  <div class="callout"><p><b>Autosave, inside and out.</b> On their own, as downloaded apps, DigidreamSynth 0.2.1 and DigidreamSound 0.2.1 save as you go: a reload or a crash brings your work back. Inside the studio, it is the studio that keeps your work: drafts while you edit, and the file saved into the module when you press <span class="ui">studio</span>.</p></div>
 
   <ol class="steps">
     <li><p>In your copy of Gem Hollow, open <b>Textures</b>, tap <code>CRATE</code>, and press <span class="ui">edit in qPainter</span>. qPainter opens in the studio's style.</p></li>
@@ -78,7 +87,7 @@
 
   <h2>The Plugins page</h2>
   <figure class="shot" data-src="../assets/shots/studio-plugins.png" data-alt="The Plugins page: one card per plugin with its switch">
-    <figcaption>The Plugins page (here with Gem Hollow open): what the studio has besides itself, seven bundled plugins.</figcaption>
+    <figcaption>The Plugins page (here with Gem Hollow open): what the studio has besides itself, seven bundled plugins. On the rail, the Module group holds Settings and the plugins' own pages, Sync and Package.</figcaption>
   </figure>
   <p>Home's <span class="ui">plugins (7)</span> opens it. It shows:</p>
   <ul>
@@ -162,7 +171,7 @@
       <tr><td><code>net:<i>host</i></code></td><td><em>talk to <i>host</i></em>, for example <em>talk to api.github.com</em></td></tr>
     </tbody>
   </table>
-  <figure class="shot" data-src="../assets/shots/studio-sync-plugins.png" data-alt="The Plugins page, with the GitHub sync card listing its permissions" data-hotspots='[{"x":20.8,"y":63.5,"t":"GitHub sync","d":"a bundled plugin: version 0.1.0"},{"x":24,"y":72.3,"t":"What it brings","d":"the Sync page, and a service that runs in the background"},{"x":45,"y":75,"t":"may:","d":"its permissions: replace whole modules, keep running in the background, talk to api.github.com"},{"x":29.4,"y":79.4,"t":"on","d":"turn it off on this device"}]'>
+  <figure class="shot" data-src="../assets/shots/studio-sync-plugins.png" data-alt="The Plugins page, with the GitHub sync card listing its permissions" data-hotspots='[{"x":20.7,"y":63.6,"t":"GitHub sync","d":"a bundled plugin: version 0.1.0"},{"x":24.3,"y":72.2,"t":"What it brings","d":"the Sync page, and a service that runs in the background"},{"x":44.4,"y":75.1,"t":"may:","d":"its permissions: replace whole modules, keep running in the background, talk to api.github.com"},{"x":29.4,"y":79.3,"t":"on","d":"turn it off on this device"},{"x":4.5,"y":72.4,"t":"Sync","d":"its page, in the rail's Module group"}]'>
     <figcaption>The Plugins page: GitHub sync's card says what it brings and, after <em>may:</em>, what it is allowed to do.</figcaption>
   </figure>
   <p>A plugin with the <code>background</code> permission can bring a <b>service</b>: a hidden page that starts with the studio and runs all session, whatever page you are on. GitHub sync's service is what syncs your modules while you edit.</p>
