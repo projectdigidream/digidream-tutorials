@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Camera and cinematics · Digidream Studio tutorials</title>
-<meta name="description" content="Set how the game looks at a map, draw camera paths, and make the camera track the player or fly along a path.">
+<meta name="description" content="Set how the game looks at a map, put the camera behind the player, draw camera paths, and make the camera track the player or fly along a path.">
 <link rel="stylesheet" href="../assets/site.css">
 <link rel="stylesheet" href="../assets/skins/skins.css">
 <link rel="icon" type="image/png" href="../assets/logo.png">
@@ -19,7 +19,7 @@
   <h1>Camera and cinematics</h1>
   <p class="lede">Each map can say how the game's camera looks at it: from which angle, how far away, and whether the player may turn or zoom. It can also have camera <em>paths</em> — curves the camera rides — for a fixed-track shot or a flythrough.</p>
   <div class="goal">
-    <b>You'll learn</b><span>how to set a map's camera angle and distance, lock them, tune how it moves, draw and reorder a camera path, and choose how the camera follows</span>
+    <b>You'll learn</b><span>how to set a map's camera angle and distance, lock them, tune how it moves, put it behind the player, draw and reorder a camera path, and choose how the camera follows</span>
     <b>Time</b><span>20 minutes</span>
     <b>Needs</b><span>a map with a few rooms (see <a href="02-first-map.html">Your first map</a>)</span>
   </div>
@@ -59,6 +59,37 @@
   </table>
   <p><span class="ui">back to the engine's movement</span> clears every one the map set. A graph's <code>camera_follow</code> node can change <code>lead</code> and <code>lead_velocity</code> later, for one scene.</p>
   <div class="callout tip"><p>For a fast runner, a little <b>look ahead with speed</b> (0.2 to 0.4) shows more of what is coming without moving the camera when the player stands still.</p></div>
+
+  <h2 id="behind">Behind the player <span class="dev">studio 0.4.2.7</span></h2>
+  <p>The engine's own camera stays where the player last turned it. For a game played over the shoulder, the section <b>behind the player</b>, under <b>how it moves</b>, makes it come round behind the player by itself.</p>
+  <figure class="shot" data-src="../assets/shots/studio-camera-behind.png" data-alt="The Camera sheet's behind the player section: swing round behind the player on, with its delay and speed, walls pull it in, and the camera's height over the player"
+    data-hotspots='[{"x":78,"y":39.4,"t":"swing round behind the player","d":"it turns to look where the player faces, unless they turned it lately"},{"x":81,"y":47.4,"t":"after (s) · how fast","d":"the delay after the player turns it, and how fast it swings back"},{"x":78,"y":54.8,"t":"walls pull it in","d":"a wall between the camera and the player brings it closer"},{"x":78,"y":60.3,"t":"set its height over the player","d":"its switch, then how high it sits and what it looks at"},{"x":81,"y":68.6,"t":"height · looks at","d":"3 units over the feet, looking at a point 1.5 up"}]'>
+    <figcaption>The Camera sheet's <b>behind the player</b> on a new module's <code>first</code> map: the camera swings round behind, walls pull it in, and it sits 3 units over the player, looking at a point 1.5 units up.</figcaption>
+  </figure>
+  <ul>
+    <li><span class="ui">swing round behind the player</span>: the camera turns to look along where the player faces, the short way round, unless the player turned it themselves in the last few seconds. Its distance and its angle down, above, are where it settles. Two sliders come with it:
+      <ul>
+        <li><span class="ui">after (s)</span>: how long after the player last turned the camera it starts swinging back. 2 until the map sets one.</li>
+        <li><span class="ui">how fast (turns/s)</span>: how quickly it swings round. 1.5 until the map sets one.</li>
+      </ul>
+      Like the sliders above, each is marked <em>(own)</em> once the map sets it.</li>
+    <li><span class="ui">walls pull it in</span>: a wall or a ceiling between the camera and the player brings the camera closer at once, so it never looks through one, and it eases back out to its distance after. A platform's open edge lets it out over the platform, and its slab pulls it in like a wall. Best with a low camera behind the player.</li>
+    <li><span class="dev">studio 0.4.2.8</span> <span class="ui">set its height over the player</span>: the camera sits a height above the player's feet, its distance behind them, and the angle down follows from the two, instead of the angle above. Two sliders come with it:
+      <ul>
+        <li><span class="ui">height (units, 3)</span>: how high above the player's feet it sits, 0 to 30.</li>
+        <li><span class="ui">looks at (units up, 1)</span>: the point above the feet it looks at and swings round: their middle, their head, or the floor (0).</li>
+      </ul></li>
+  </ul>
+  <p>Each switch and slider has a help button with its description. The camera never swings round in first person, nor while the map locks turning.</p>
+  <div class="callout tip"><p>For a camera close behind the player, switch on all three, turn on <span class="ui">set the distance</span> and bring <span class="ui">distance</span> down to 8, then set the height to about 3 and <b>looks at</b> to about 1.5, the player's head.</p></div>
+  <h3 id="camera-follow">From a graph</h3>
+  <p>A graph's <code>camera_follow</code> node sends the camera back to following the player, from where it is told: <code>distance</code>, <code>height</code> (the angle down), <code>angle</code>, <code>lock</code>, <code>lead</code> and <code>lead_velocity</code>, and now the same as this section:</p>
+  <ul>
+    <li><code>auto</code>, <code>auto_delay</code> and <code>auto_rate</code>: swing round behind the player, after how many seconds, and how fast;</li>
+    <li><code>collide</code>: walls pull it in;</li>
+    <li><span class="dev">studio 0.4.2.8</span> <code>camera_height</code> and <code>aim_height</code>: its height over the player's feet, and the height it looks at. A negative <code>camera_height</code> goes back to the angle.</li>
+  </ul>
+  <p>So a cutscene can end on a low camera behind the player, though the map itself starts with the engine's.</p>
 
   <h2>Camera paths</h2>
   <p>Further down the sheet is <b>⌁ camera paths</b>. A path is a line the camera can ride. It bends outward at every corner, because the camera rides a smooth curve <em>through</em> the points, not the straight lines between them.</p>
@@ -134,6 +165,9 @@
     <li><p>Change <span class="ui">mode</span> to <b>flythrough: ride the path at a speed</b> and read how long the shot lasts. Set <span class="ui">speed (units/s)</span> to 3 and read it again.</p></li>
     <li><p>Set <span class="ui">mode</span> back to <b>follow the player</b>. Under <b>how it moves</b>, set <span class="ui">look ahead with speed</span> to 0.3. Its label now ends in <em>(own)</em>.</p></li>
     <li><p>If you are in the app, press <span class="ui">Play</span>, run, and watch the camera lead you.</p></li>
+    <li><p>Back in <span class="ui">Camera</span>, turn off <span class="ui">lock turning</span>. Under <b>behind the player</b>, switch on <span class="ui">swing round behind the player</span> and <span class="ui">walls pull it in</span>, and set <span class="ui">after (s)</span> to 1.</p></li>
+    <li><p>Switch on <span class="ui">set its height over the player</span>. Set the height to 3 and <b>looks at</b> to 1.5.</p></li>
+    <li><p>Press <span class="ui">Play</span>. Turn the camera with <kbd>Q</kbd> and let go: a second later it swings back behind you. Run along a wall and watch the camera come in rather than look through it.</p></li>
   </ol>
 
   <div class="quiz" data-answer="1">
@@ -162,6 +196,15 @@
       <li>Until the engine reports the flythrough has finished</li>
     </ul>
     <p class="why">Length divided by speed: 30 / 6 = 5 s. The engine has no completion event, so a cutscene is timed from this number.</p>
+  </div>
+  <div class="quiz" data-answer="0">
+    <p class="q">You switched on <span class="ui">swing round behind the player</span>, but in the game the camera never turns by itself. The map also has <span class="ui">lock turning</span> on. Why?</p>
+    <ul>
+      <li>The camera never swings round while the map locks turning</li>
+      <li>It needs <span class="ui">walls pull it in</span> too</li>
+      <li>It only works on maps with a camera path</li>
+    </ul>
+    <p class="why">A locked camera keeps the angle the map gave it. The automatic camera, like the player, may not turn it. It is also never used in first person.</p>
   </div>
   <div class="quiz" data-answer="1">
     <p class="q">You want the camera to show more of the course ahead when the player sprints, but not to drift when they stand still. Which slider?</p>

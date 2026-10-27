@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How the player moves · Digidream Studio tutorials</title>
+<meta name="description" content="The player's own settings (coyote time, a variable jump, ledge grab) and the module's own movement: states such as swimming, sliding and gliding, the ways between them, meters such as breath and stamina, and layered moves such as a dash or a jump pad.">
+<link rel="stylesheet" href="../assets/site.css">
+<link rel="stylesheet" href="../assets/skins/skins.css">
+<link rel="icon" type="image/png" href="../assets/logo.png">
+<script src="../assets/skins/skins.js"></script>
+<script src="../assets/skin.js"></script>
+<script defer src="../assets/nav.js"></script>
+<script defer src="../assets/shortcuts.js"></script>
+<script defer src="../assets/site.js"></script>
+</head>
+<body>
+<article>
+  <h1>How the player moves</h1>
+  <p class="lede">The engine walks, runs, jumps, climbs and dashes by itself, and the player's settings tune it: how high the jump, how long you may jump after walking off an edge, whether a ledge is caught. A module can add movement of its own on top: swimming, sliding, gliding, a stun, with meters such as breath or stamina, and short pushes such as a dash or a jump pad.</p>
+  <div class="goal">
+    <b>You'll learn</b><span>the new jumping and climbing settings, how movement states and the ways between them work, how meters and layered moves work, how graphs listen to them and switch them, and how to make a pool the player swims in with a breath meter</span>
+    <b>Time</b><span>35 minutes</span>
+    <b>Needs</b><span>a module with a map (<a href="02-first-map.html">Your first map</a>); for swimming, a pool (<a href="13-effect-areas-and-water.html">Effect areas, water and fills</a>)</span>
+  </div>
+  <div class="callout"><p>Most of this page is in the development releases of the studio (Nightly), studio 0.4.2.7 to 0.4.2.11. Each part is marked with the first release that has it.</p></div>
+
+  <h2>Two places: moves and movement</h2>
+  <p>Open <b>Player</b> in the sidebar's <b>Gameplay</b> group. Two of its tabs are about moving, and they do different things:</p>
+  <table>
+    <thead><tr><th>Tab</th><th>What it is</th><th>For</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">moves</span></td><td>The player's <b>settings</b>: numbers and switches the engine's own movement reads.</td><td>a higher jump, a double jump, a faster run, climbing, a dash, ledge grab</td></tr>
+      <tr><td><span class="ui">movement</span> <span class="dev">studio 0.4.2.11</span></td><td>The module's own <b>movement states</b>, the <b>ways</b> between them, <b>meters</b> and <b>layered moves</b>.</td><td>swimming, sliding, gliding, a stun; breath, stamina; a dash, a jump pad</td></tr>
+    </tbody>
+  </table>
+  <p>The <span class="ui">moves</span> tab is covered in <a href="07-workshops.html#player">Monsters, weapons, player</a>: each setting is switched on to set it, for every map or one map. This page covers its new settings, then the <span class="ui">movement</span> tab.</p>
+
+  <h2 id="settings">The player's new settings</h2>
+  <h3>Jumping <span class="dev">studio 0.4.2.7</span></h3>
+  <p>Under <b>jumping</b> on the <span class="ui">moves</span> tab:</p>
+  <ul>
+    <li><code>coyote_time</code> (0.1 s): after walking off an edge, the ground jump is still there this long, so a jump pressed a moment late still works. Before, it lasted the whole fall. After it, a body that fell rather than jumped has only the air jumps that <code>max_jumps</code> leaves.</li>
+    <li><span class="dev">studio 0.4.2.8</span> <code>variable_jump</code> (off): a jump is as high as JUMP is held. Letting go while the jump still rises cuts it short, so a tap is a short hop and a held press the full jump. Double jumps and wall jumps follow it too.</li>
+    <li><code>jump_release_keep</code> (0.5): with <code>variable_jump</code> on, how much of the rising speed letting go keeps. 1 cuts nothing; 0 stops the jump dead.</li>
+  </ul>
+
+  <h3 id="ledge">Ledge grab <span class="dev">studio 0.4.2.7</span></h3>
+  <p>Under <b>climbing</b>:</p>
+  <ul>
+    <li><code>ledge_grab</code> (off): falling, the player catches the edge of a higher floor that a jump just missed, on any side, climbable or not. Rising past a ledge, a jump goes on by: it is caught on the way down.</li>
+    <li><code>ledge_reach</code> (0.5 units): how far above the head a ledge's top may be and still be caught.</li>
+  </ul>
+  <p>Hanging from a ledge, the body is head level with its top. Then:</p>
+  <ul>
+    <li><b>JUMP with the stick towards the ledge</b> pulls up onto it.</li>
+    <li><b>JUMP with the stick still</b> is a small hop that falls back and catches the ledge again.</li>
+    <li><b>JUMP with the stick away</b> leaps off.</li>
+    <li><b>Pushing away</b>, or <b>CROUCH</b>, lets go.</li>
+  </ul>
+  <p>Two animation conditions draw it, on the <span class="ui">skin</span> tab under <b>which state draws which condition</b>: <code>hang</code>, while hanging (it falls back to <code>climb</code>'s state), and <span class="dev">studio 0.4.2.8</span> <code>hop</code>, for the small hop and the pull-up (it falls back to <code>jump</code>'s).</p>
+
+  <h3 id="change-setting">Changing a setting from a graph <span class="dev">studio 0.4.2.8</span></h3>
+  <p>The graph node <b>change player setting</b> (<code>change_player_setting</code>, in the node menu's <span class="ui">do to a thing</span>) changes one of these settings while the game runs: a jump potion, a level where climbing is learnt.</p>
+  <ul>
+    <li><code>setting</code>: chosen from a list of exactly the player's settings, <code>coyote_time</code>, <code>ledge_grab</code> and <code>variable_jump</code> among them.</li>
+    <li><code>value</code>, and <code>how</code>: <code>set</code> it (the default), <code>add</code> to it, or <code>multiply</code> it. An on/off setting takes 1 or 0.</li>
+    <li><code>seconds</code>: for a while only, then it goes back by itself. Empty, it lasts until changed again.</li>
+    <li><code>everyone</code>: every player in the level, not just the event's.</li>
+  </ul>
+  <p>The player's own device predicts the change at once, so the stronger jump is there on the very next press. See <a href="../graphs/02-variables-and-numbers.html#change-setting">Variables, numbers and saving</a>.</p>
+
+  <h2 id="states">Movement states <span class="dev">studio 0.4.2.11</span></h2>
+  <p>A player is always in exactly one <b>movement state</b>. The first is <code>default</code>: the engine's own walking, jumping and climbing, as it always was. A module can add up to 8 states of its own. Most of them are the same physics with other numbers: sliding is running with little friction, gliding is falling with little gravity, swimming is moving in 3D with a lift.</p>
+  <p>Ways in and out (the studio calls them <b>ways</b>) take a body from one state to another when their conditions hold: <em>default → swim when the water reaches the waist and you are falling</em>. Everything is predicted: the player's own device runs the same rules as the server, so a slide feels instant even on a slow connection.</p>
+
+  <h3>The movement tab</h3>
+  <figure class="shot" data-src="../assets/shots/studio-movement.png" data-alt="Player, movement tab: the swimming and glide recipes added, each state a line with its ways under it, and a hint that no map has water yet"
+    data-hotspots='[{"x":36.8,"y":15.7,"t":"movement","d":"the module&#39;s own states, ways, meters and moves"},{"x":21,"y":22.8,"t":"The engine&#39;s verdict","d":"every change is read by the engine&#39;s own parser"},{"x":44,"y":25.8,"t":"A hint","d":"what a map is missing for it: here, water"},{"x":20,"y":29,"t":"add from a recipe","d":"seven starting points"},{"x":27,"y":38.8,"t":"default","d":"the engine&#39;s own movement, with its ways out under it"},{"x":45,"y":44.8,"t":"A way","d":"where it goes, and when; tap it to edit it"},{"x":46,"y":68.1,"t":"A state","d":"how it moves, in plain words; tap it to open its editor"},{"x":96.6,"y":68,"t":"+ way","d":"a new way out of this state"}]'>
+    <figcaption>The <span class="ui">movement</span> tab in a new module, after two recipes: <b>swimming</b> and <b>glide</b>. Each state is a line, with its ways out under it in the order they are tried.</figcaption>
+  </figure>
+  <p>The tab takes the whole width, with no preview beside it, so a phone shows a module's movement in a screen or two. From the top:</p>
+  <ol>
+    <li>A line saying what the tab is for.</li>
+    <li>The engine's <b>verdict</b>: <em>"The engine reads all of it."</em> Every change you make goes through the engine's own parser. A line it refuses is outlined in red and opened, and the top says why: <em>"The engine refuses the way swim → wade: … It is outlined below."</em> It is listed among the module's problems, on Home too.</li>
+    <li><b>Hints</b>, in amber, about what a map is missing: <em>"No map has water yet"</em>, or <em>"No floor is tagged 7 yet"</em> for a way that waits for a floor tag.</li>
+    <li><span class="ui">start from</span> (on an empty tab) or <span class="ui">add from a recipe</span>: seven starting points.</li>
+    <li><b>states (N of 8)</b>: <code>default</code> first, then each of the module's states, each with its ways out under it, then <b>from any state</b>, and <span class="ui">+ a state</span>.</li>
+    <li><b>meters (N of 8)</b>, with <span class="ui">+ a meter</span>.</li>
+    <li><b>moves (N of 8)</b>, with <span class="ui">+ a move</span>.</li>
+    <li><span class="ui">as written in module.txt</span>: the lines the tab writes, to read.</li>
+  </ol>
+  <p>Each line says what it is in plain words: <em>swim · swimming · top speed 5, speeds up 20, slows down 3, gravity × 0.3, floats up 8, jump 7 · no dash · draws "swim"</em>. Tap a line to open its editor under it; tap it again to close it. One editor is open at a time.</p>
+
+  <h3>The recipes</h3>
+  <p>A recipe adds its states, meters, moves and ways to what the module has. A name the module already has is left as it is. The status line says what the recipe needs.</p>
+  <table>
+    <thead><tr><th>Recipe</th><th>What it adds</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">swimming (wade, swim, breath)</span></td><td><code>wade</code> and <code>swim</code>, and an <code>air</code> meter that drains with the head under water. Needs water on a map.</td></tr>
+      <tr><td><span class="ui">slide (crouch at a run)</span></td><td><code>slide</code>: crouch while running fast; it slows to a stop, or jump out of it.</td></tr>
+      <tr><td><span class="ui">sprint (stamina)</span></td><td><code>sprint</code> while DASH is held and there is <code>stamina</code>.</td></tr>
+      <tr><td><span class="ui">dash (costs stamina)</span></td><td>a move, <code>dash</code>: USE dashes forward for a fifth of a second, for 20 stamina.</td></tr>
+      <tr><td><span class="ui">jump pad (floor tag 7)</span></td><td>a move, <code>pad</code>: a floor tagged 7 throws the player up.</td></tr>
+      <tr><td><span class="ui">glide (hold jump while falling)</span></td><td><code>glide</code>: hold JUMP while falling to glide down slowly.</td></tr>
+      <tr><td><span class="ui">stunned (a script asks)</span></td><td><code>stunned</code>: a graph asks for it, and it lasts half a second.</td></tr>
+    </tbody>
+  </table>
+  <div class="callout warn"><p>The engine's own dash is on the DASH button too. If a module's sprint should be the only thing DASH does, turn the player's dash off: <code>max_dashes</code> 0 on the <span class="ui">moves</span> tab.</p></div>
+
+  <h3>A state</h3>
+  <p>A state's editor has:</p>
+  <ul>
+    <li><span class="ui">name</span> (up to 15 letters, digits and <code>_</code>). Renaming it renames every way and rate that names it.</li>
+    <li><span class="ui">animation</span>: a name the player's picture draws while in this state (see <a href="#anim">Drawing a state</a>).</li>
+    <li><span class="ui">moves</span>: how the stick moves the body.
+      <ul>
+        <li><b>on foot</b>: walking, with its own numbers (wading, sliding, ice, mud);</li>
+        <li><b>in the air</b>: gliding, a slow fall;</li>
+        <li><b>swimming</b>: in 3D, jump and crouch go up and down;</li>
+        <li><b>held still</b>: the stick does nothing (stunned, frozen, a cutscene).</li>
+      </ul></li>
+    <li>Its numbers: <span class="ui">top speed</span>, <span class="ui">speeds up</span>, <span class="ui">slows down</span> (in water, the drag), <span class="ui">gravity ×</span> (a share of the world's gravity: 1 on foot, 0.3 in water), <span class="ui">floats up</span> (the lift in water, while it is at the waist or above) and <span class="ui">jump</span> (for a way that says <b>jump</b>). An empty box is as the player usually moves, from the <span class="ui">moves</span> tab. <span class="ui">what the numbers mean</span> says so in full.</li>
+    <li>Its flags, each a chip: <span class="ui">no jumping</span>, <span class="ui">no dash</span>, <span class="ui">no attacking</span>, <span class="ui">no using</span>, <span class="ui">no crouching</span>, <span class="ui">weapon put away</span>, <span class="ui">counts as ground</span> (it gives back the jumps and the coyote time, as landing does), <span class="ui">can't be hurt</span>, and <span class="dev">next release</span> <span class="ui">starts switched off</span> (see <a href="#switching">Switching them on and off</a>).</li>
+    <li><span class="ui">delete this state</span>. The ways and rates that used it go with it, and the status line says how many. Undo brings them back.</li>
+  </ul>
+
+  <h3 id="ways">A way, and the order they are tried</h3>
+  <p>A way's editor has where it goes from and to, then <b>when all of these hold</b>: up to four conditions, all of which must hold at once. <span class="ui">+ when…</span> adds the first and <span class="ui">+ and…</span> the next. The conditions:</p>
+  <table>
+    <thead><tr><th>Condition</th><th>Holds when</th></tr></thead>
+    <tbody>
+      <tr><td>on the ground, in the air, going up, falling</td><td>the body is so</td></tr>
+      <tr><td>a button pressed, a button held, a button let go</td><td>that button (jump, crouch, dash, use, attack and the others) was pressed this tick, is down, or came up this tick</td></tr>
+      <tr><td>its speed</td><td>faster than, or slower than, a number (along the ground)</td></tr>
+      <tr><td>after a time in the state</td><td>it has been in the state that many seconds</td></tr>
+      <tr><td>standing on a floor tagged</td><td>the room it stands on has that tag: ice, a jump pad</td></tr>
+      <tr><td>how deep in water</td><td>the water <b>reaches</b> the feet, the waist or the eyes (or it is out of it), or is <b>below</b> one of them</td></tr>
+      <tr><td>a meter</td><td>a meter is empty, full, below or above a number</td></tr>
+      <tr><td>touching a wall</td><td>it is against a wall</td></tr>
+      <tr><td>a script asked for it</td><td>a graph or a script asked for this state (see <a href="#graphs">Graphs</a>)</td></tr>
+    </tbody>
+  </table>
+  <p>For one condition <em>or</em> another, make two ways. Under the conditions, <b>then</b> says what happens as the way is taken: nothing, <b>jump</b> (the new state's jump), <b>stop</b>, <b>a push</b> up, forward or back, <b>change a meter</b> (add to it or set it), or <b>start a move</b>. <span class="ui">tried sooner</span> and <span class="ui">later</span> move it among the ways out of the same state, and <span class="ui">delete</span> removes it.</p>
+  <p><b>The order matters.</b> Each tick, the engine tries the ways out of the state the body is in, top to bottom, then the ways <b>from any state</b>, top to bottom. The first whose conditions all hold is taken, and no other that tick. A way from any state never goes to the state the body is already in. The tab lists the ways in exactly this order, so what you read is what the engine does.</p>
+  <p>Try it on the swimming and glide recipes. Pick where the player is and what is true, and see which way the engine takes:</p>
+  <div class="widget" data-widget="movement-states" data-title="Which way out?"></div>
+
+  <h3 id="meters">Meters</h3>
+  <p>A <b>meter</b> is a number every body carries, from 0 to its most: breath, stamina, heat, a combo window. A meter's editor has:</p>
+  <ul>
+    <li><span class="ui">name</span>, <span class="ui">most</span>, <span class="ui">starts at</span> (empty: full) and <span class="ui">a second</span>: how fast it fills (plus) or drains (minus) by default.</li>
+    <li><span class="ui">its own rate in a state</span>: a rule such as <em>−2 a second in swim, when under water</em>, with conditions of its own. The first rule that holds sets the rate: the state's own, then any state's, in order. With none, the meter's own rate.</li>
+    <li><span class="ui">delete this meter</span>.</li>
+  </ul>
+  <p>Ways read a meter (<b>a meter</b>: <em>air empty</em>) and change it (<b>change a meter</b>: a sprint that costs 10 to start). What happens when a meter runs out is a way, such as into a state that drowns, or a graph (<a href="#graphs">below</a>). A meter does no damage by itself.</p>
+  <p>On the HUD, each meter is two bindings, <code>meter.<i>name</i></code> and <code>meter.<i>name</i>_max</code>, in the <b>Screens</b> lists: a <b>bar</b> with <span class="ui">value of</span> <code>meter.air</code> and <span class="ui">out of</span> <code>meter.air_max</code> is a breath bar. It moves without waiting for the server.</p>
+
+  <h3 id="moves">Layered moves</h3>
+  <p>A <b>move</b> is a push that lasts a moment, on top of whatever state the body is in, and it keeps going through a change of state: a dash, a jump pad, a boost into a slide, a knockback. A move's editor has:</p>
+  <ul>
+    <li><span class="ui">name</span>, and <span class="ui">it</span>: <b>holds a speed</b> (keeps that speed for its time: a dash) or <b>pushes once</b> (adds it once, and keeps the brakes off that way for its time: a boost).</li>
+    <li><span class="ui">which way</span>: <code>facing</code> or <code>back</code> (on the level, fixed as it starts), <code>up</code> or <code>down</code>. <span class="ui">speed</span> and <span class="ui">seconds</span>.</li>
+    <li><span class="ui">priority</span>: one move runs on the level and one up or down at a time. A new one replaces a running one on its way only at a priority no lower.</li>
+    <li><span class="ui">costs</span> a meter, and <span class="ui">how much</span>. Too dear, it does not start and nothing is paid.</li>
+    <li><span class="dev">next release</span> <span class="ui">at the start</span>: switched on, or switched off (see <a href="#switching">Switching them on and off</a>).</li>
+    <li>It <b>starts by itself when</b> its conditions hold. With none, it waits for a way's <b>start a move</b> or a graph.</li>
+  </ul>
+  <p>Moves do not run while climbing or on a rope: those hold the body themselves.</p>
+
+  <h3 id="anim">Drawing a state</h3>
+  <p>A state's <span class="ui">animation</span> is a name, such as <code>swim</code>. Once a state has one, the <span class="ui">skin</span> tab lists it under <b>which state draws which condition</b>, as <em>swim (movement state)</em>: give it the number of a state of the player's picture, and the player is drawn with it while swimming. Left at <em>by its motion</em>, the player is drawn as the motion says (a swimmer would otherwise look as if falling).</p>
+
+  <h2 id="switching">Switching them on and off <span class="dev">next release</span></h2>
+  <p>A state or a move can start <b>switched off</b>, for a graph to switch on for one player: a glide found on a ledge, a dash learnt, swimming taken away in a cursed level.</p>
+  <ul>
+    <li>A state: the chip <span class="ui">starts switched off</span> among its flags.</li>
+    <li>A move: <span class="ui">at the start</span> → <b>switched off</b>.</li>
+  </ul>
+  <p>Switched off, a state is never entered (a body in it goes back to <code>default</code>), and a move does not start (a running one stops). The switches are each player's own, and predicted like the rest. If something starts switched off and no graph ever switches it on, the tab says so: <em>"glide starts switched off, and no graph switches it on ("enable movement state" glide): it never runs, unless a script does."</em></p>
+  <p>The engine's own abilities (its dash, climbing, hovering, flight, the grapple) are the player's settings instead: switch those with <b>change player setting</b>.</p>
+
+  <h2 id="graphs">Graphs</h2>
+  <p>A graph listens to the movement, asks for states and changes meters. In the node menu:</p>
+  <table>
+    <thead><tr><th>Node</th><th>Group</th><th>What it does</th></tr></thead>
+    <tbody>
+      <tr><td><a href="../reference/graph-nodes.html#when_movement_state_entered"><code>when_movement_state_entered</code></a>, <a href="../reference/graph-nodes.html#when_movement_state_left"><code>when_movement_state_left</code></a></td><td>when …</td><td>somebody began to swim, or stopped. <code>state</code> is optional: without it, any state. Gives <code>entity</code> and <code>state</code>.</td></tr>
+      <tr><td><a href="../reference/graph-nodes.html#when_meter_empty"><code>when_meter_empty</code></a>, <a href="../reference/graph-nodes.html#when_meter_full"><code>when_meter_full</code></a></td><td>when …</td><td>somebody's <code>meter</code> ran out, or is full again: once as it gets there, then not again until it has left.</td></tr>
+      <tr><td><a href="../reference/graph-nodes.html#ask_movement_state"><code>ask_movement_state</code></a></td><td>do to a thing</td><td>asks for a state. A way that says <b>a script asked for it</b> takes the body there when its other conditions hold: the module's rules decide.</td></tr>
+      <tr><td><a href="../reference/graph-nodes.html#set_meter"><code>set_meter</code></a></td><td>do to a thing</td><td>sets a meter (<code>how</code> <code>set</code>) or adds to it (<code>add</code>; less than 0 takes): a bubble of air, a stamina potion.</td></tr>
+      <tr><td><a href="../reference/graph-nodes.html#start_move"><code>start_move</code></a></td><td>do to a thing</td><td>starts a move, as a way's <b>start a move</b> would: a knockback, a boost.</td></tr>
+      <tr><td><a href="../reference/graph-nodes.html#enable_movement_state"><code>enable_movement_state</code></a>, <a href="../reference/graph-nodes.html#enable_move"><code>enable_move</code></a></td><td>do to a thing</td><td>switch a state or a move on (<code>on</code>, the default) or off, for this body.</td></tr>
+      <tr><td><a href="../reference/graph-nodes.html#movement_state_of"><code>movement_state_of</code></a>, <a href="../reference/graph-nodes.html#meter_of"><code>meter_of</code></a></td><td>read</td><td>the state an entity is in (<code>default</code>, or one of the module's), and a meter's <code>value</code> and <code>max</code>.</td></tr>
+    </tbody>
+  </table>
+  <p>Their <code>state</code>, <code>meter</code> and <code>move</code> fields offer the module's own names. A name the module does not declare does nothing, and says so in the Play log.</p>
+
+  <h2 id="swimming">Exercise: a pool with a breath meter</h2>
+  <p>You need a pool first: an effect area made water, with a fill to see it. <a href="13-effect-areas-and-water.html#pool">Effect areas, water and fills</a> builds one on a new module's first map.</p>
+  <ol class="steps">
+    <li><p>Open <b>Player</b> → <span class="ui">movement</span>. Under <span class="ui">start from</span>, press <span class="ui">swimming (wade, swim, breath)</span>.</p></li>
+    <li><p>Read the lines. <code>default</code> goes to <code>wade</code> when the water is at the feet; <code>wade</code> back to <code>default</code> out of the water; from any state to <code>swim</code> when it reaches the waist and you are falling; <code>swim</code> to <code>wade</code> on the ground with the water below the waist, or with a jump while the head is above water.</p></li>
+    <li><p>If your map has no water yet, the tab says <em>"No map has water yet"</em>. Build the pool, then come back: the hint is gone.</p></li>
+    <li><p>Tap the <code>air</code> meter's line. It holds 10, fills at 5 a second, and has its own rate in <code>swim</code>, −2 a second, when the water is at the eyes. Change <span class="ui">most</span> to 6, for a shorter breath.</p></li>
+    <li><p>Open <b>Screens</b>. Add a bar with <span class="ui">+ element…</span> → <code>bar</code>, and set <span class="ui">value of</span> to <code>meter.air</code> and <span class="ui">out of</span> to <code>meter.air_max</code>.</p></li>
+    <li><p>Open your map's <span class="ui">Graph</span>. Add <b>when meter empty</b> with <code>meter</code> <code>air</code> and <code>who</code> <code>players</code>, then <b>damage</b> with <code>amount</code> 5, then <b>set meter</b> with <code>meter</code> <code>air</code> and <code>value</code> 2, and link them in a row. Out of breath, the player is hurt and gets two seconds' more air.</p></li>
+    <li><p>If you are in the app, press <span class="ui">Play</span>. Walk into the pool: you wade, then swim. Hold CROUCH to dive, watch the bar drain, and come up with JUMP.</p></li>
+  </ol>
+
+  <h3>A glide found on a ledge <span class="dev">next release</span></h3>
+  <ol class="steps">
+    <li><p>On the <span class="ui">movement</span> tab, open <span class="ui">add from a recipe</span> and press <span class="ui">glide (hold jump while falling)</span>.</p></li>
+    <li><p>Tap the <code>glide</code> line, and tap the chip <span class="ui">starts switched off</span>. A hint says nothing switches it on.</p></li>
+    <li><p>On a map, place a prop for the glider (a feather) and open the map's <span class="ui">Graph</span>. Add <b>when prop touched</b> with that prop, then <b>enable movement state</b> with <code>state</code> <code>glide</code>, then a <code>subtitle</code>: <em>"Hold JUMP as you fall to glide."</em></p></li>
+    <li><p>Back on the <span class="ui">movement</span> tab, the hint is gone.</p></li>
+  </ol>
+
+  <div class="quiz" data-answer="2">
+    <p class="q">The <code>swim</code> state has two ways out, both to <code>wade</code>, and there is a way from any state to <code>swim</code>. A swimmer stands on the bottom with the water below the waist. Which is tried first?</p>
+    <ul>
+      <li>The way from any state, because it is the most general</li>
+      <li>Whichever was added last</li>
+      <li>swim's own first way, top of its list; any state's only after all of swim's own</li>
+    </ul>
+    <p class="why">A state's own ways are tried before any state's, each list top to bottom, and the first that holds wins. The tab lists them in that order.</p>
+  </div>
+  <div class="quiz" data-answer="0">
+    <p class="q">You want a jump that is short when JUMP is tapped and full when it is held. Where?</p>
+    <ul>
+      <li>Player → moves → jumping: switch on <code>variable_jump</code></li>
+      <li>Player → movement: a new state with a smaller jump</li>
+      <li>A graph with when button released</li>
+    </ul>
+    <p class="why"><code>variable_jump</code> is one of the player's own settings: letting go while the jump rises cuts it, keeping <code>jump_release_keep</code> of the speed.</p>
+  </div>
+  <div class="quiz" data-answer="1">
+    <p class="q">The <code>air</code> meter runs out under water. What happens, with only the swimming recipe?</p>
+    <ul>
+      <li>The player takes damage until they surface</li>
+      <li>Nothing yet: running out does what a way or a graph says, and the recipe has neither</li>
+      <li>The player is sent back to the start</li>
+    </ul>
+    <p class="why">A meter is a number. A way (into a drowning state) or a graph (<b>when meter empty</b>, then <b>damage</b>) gives running out its meaning.</p>
+  </div>
+  <div class="quiz" data-answer="1">
+    <p class="q">The <code>glide</code> state starts switched off. A graph runs <b>enable movement state</b> glide for one player. Who can glide?</p>
+    <ul>
+      <li>Every player in the level</li>
+      <li>That player only: the switches are each player's own</li>
+      <li>Nobody until the level restarts</li>
+    </ul>
+    <p class="why">The node acts on its entity, the event's player unless another is linked. Each body has its own switches.</p>
+  </div>
+</article>
+</body>
+</html>

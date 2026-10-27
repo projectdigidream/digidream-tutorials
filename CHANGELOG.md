@@ -44,6 +44,12 @@ anything not released yet is under **Unreleased**.
     - the bigger default missile with a trail of its own, and the small-missile flag;
     - a sprite with no animations drawn as a still;
     - a PNG imported as a sheet.
+  - **Studio player, camera, graphs and effects:**
+    - two new lessons: "How the player moves" (movement states, meters, layered moves, ledge grab, coyote time, a variable jump, and a "Which way out?" demo) and "Effect areas, water and fills";
+    - the camera behind the player;
+    - the graph board's warnings, and errors from Play;
+    - aim assist and "its own light" in the workshops;
+    - the Sky preview and the starter's controls panel.
 - **For studio 0.3.4 and engine 0.2.0.** The Enemies and Weapons tracks, and
   the studio's workshop lesson, teach the new monster and weapon editors:
   - their tabs, and rules written as sentences;

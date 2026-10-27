@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Effect areas, water and fills · Digidream Studio tutorials</title>
+<meta name="description" content="Lay rain, snow, dust, embers or fog over any part of a map with an effect area, hear bodies come in and go out, make an area water, and fill a volume with a colour and a surface picture.">
+<link rel="stylesheet" href="../assets/site.css">
+<link rel="stylesheet" href="../assets/skins/skins.css">
+<link rel="icon" type="image/png" href="../assets/logo.png">
+<script src="../assets/skins/skins.js"></script>
+<script src="../assets/skin.js"></script>
+<script defer src="../assets/nav.js"></script>
+<script defer src="../assets/shortcuts.js"></script>
+<script defer src="../assets/site.js"></script>
+</head>
+<body>
+<article>
+  <h1>Effect areas, water and fills</h1>
+  <p class="lede">An effect area is a volume you lay over the map: a fog bank across a doorway, snow over half a hall. Nothing is drawn of it but its effects, and nothing bumps into it, but a graph hears a body come in and go out. Switch it to water and the game knows how deep a body stands in it. Give it a fill and it looks like water you can see into.</p>
+  <div class="goal">
+    <b>You'll learn</b><span>how to make an effect area and pick it again, how a graph hears it, how to make it water, how to fill a volume and dress its surface, and how to hide effects while you build</span>
+    <b>Time</b><span>25 minutes</span>
+    <b>Needs</b><span>a map with a room or two (<a href="02-first-map.html">Your first map</a>); weather in one room is in <a href="08-look-and-feel.html#weather">Sky, screens and weather</a></span>
+  </div>
+  <div class="callout"><p>Everything on this page is in the development releases of the studio (Nightly), from studio 0.4.2.9 on. The stable studio 0.4.2 has weather and fog in single rooms only.</p></div>
+
+  <h2 id="areas">Effect areas <span class="dev">studio 0.4.2.9</span></h2>
+  <p>Weather in a room is the room's: it fills that room and stops at its walls. An <b>effect area</b> is a volume of its own, laid over anything: rooms, platforms, other effect areas, across walls and doorways. It has:</p>
+  <ul>
+    <li><b>no floor, ceiling or walls</b>. It needs no textures and draws nothing but its effects;</li>
+    <li><b>nothing to bump into</b>. A body walks through it as if it were not there, and nobody stands in it: the room under it is still where they are;</li>
+    <li><b>a coming in and a going out</b>, which graphs hear (see <a href="#events">Hearing a body come in</a>).</li>
+  </ul>
+  <figure class="shot" data-src="../assets/shots/studio-effect-area.png" data-alt="A fog bank drawn as an effect area across the doorway between two rooms, outlined on the map, with its panel open"
+    data-hotspots='[{"x":63,"y":50,"t":"The outline","d":"an effect area is always outlined on the map; tap the outline to pick it"},{"x":87.9,"y":17.2,"t":"kind","d":"effect area, or back to a room"},{"x":84,"y":24.6,"t":"bottom · top","d":"the volume, as heights"},{"x":78,"y":31.9,"t":"liquid (water)","d":"water: its top is the surface"},{"x":76,"y":43,"t":"Its effects","d":"here a fog; rain, snow, dust, embers or a fill"},{"x":64.1,"y":3.3,"t":"FX","d":"hides the effects while you build (X)"}]'>
+    <figcaption>A fog bank as an effect area across the doorway of a new module's first map. It overlaps both rooms and the door between them, and its panel is open.</figcaption>
+  </figure>
+
+  <h3>Making one</h3>
+  <p>An effect area starts as a room. Draw it where it should be, over the rooms it covers, then change its kind:</p>
+  <ol>
+    <li>With the <span class="ui">Room</span> tool, tap its corners (tap the first one again to close it), or drag a rectangle.</li>
+    <li>Tap the new room to open its panel.</li>
+    <li>Set <span class="ui">edges</span> to <b>effect area: only its effects (rain, snow, fog...), laid over anything, nothing drawn</b>.</li>
+  </ol>
+  <p>A room drawn over other rooms makes openings in their walls. Their wall textures are kept aside, not thrown away, and they come back the moment the walls are solid again: when the room becomes an effect area, or is deleted.</p>
+
+  <h3>Its panel</h3>
+  <p>An effect area's panel is short. It begins with a line that says what it is, then:</p>
+  <ul>
+    <li><span class="ui">kind</span>: the same list as a room's <span class="ui">edges</span>, to turn it back into a room.</li>
+    <li><span class="ui">bottom</span> and <span class="ui">top</span>: the volume, as heights on the map. Its effects' own <code>bottom</code> and <code>top</code> are measured up from the area's bottom, as a room's are from its floor.</li>
+    <li><span class="ui">liquid (water)</span>: see <a href="#water">Water</a>.</li>
+    <li><b>weather and fog</b>: its effects, the same cards as a room's (<span class="ui">+ rain</span>, <span class="ui">+ snow</span>, <span class="ui">+ dust</span>, <span class="ui">+ embers</span>, <span class="ui">+ fog</span>), and <span class="ui">+ fill</span> (see <a href="#fills">Filled volumes</a>).</li>
+    <li><span class="ui">tag</span>, so a graph can name it, and <span class="ui">duplicate</span> and <span class="ui">delete</span>.</li>
+  </ul>
+
+  <h3>Picking it again</h3>
+  <p>The map always draws an effect area's <b>outline</b>, in the game view too, since it has nothing else to show. <b>Tap the outline</b> to pick it. A tap inside it picks the room under it, because that is what you usually mean: the floor you see is the room's.</p>
+  <div class="callout tip"><p>A map can hold many effect areas, and they may overlap each other. A body can be in several at once.</p></div>
+
+  <h3 id="events">Hearing a body come in</h3>
+  <p>The graph nodes <code>when_sector_entered</code> and <code>when_sector_left</code> (in the node menu, <span class="ui">when …</span> → <b>when sector entered</b>, <b>when sector left</b>) hear an effect area as they hear a room: by its <code>sector</code>, picked on the map, or by its <code>tag</code>. Their <code>who</code> is <code>players</code>, <code>monsters</code> or <code>anyone</code>.</p>
+  <ul>
+    <li>A body counts as inside when it stands within the outline and its height overlaps the area's bottom to top.</li>
+    <li>In several areas at once, each one is entered and left on its own.</li>
+    <li>The body's own room does not change, so walking into a fog bank does not fire the room's <b>when sector left</b>.</li>
+  </ul>
+  <p>Trigger cards have no event for walking into a place. For that, use a graph (see <a href="06-graphs.html">Graphs</a>).</p>
+
+  <ol class="steps">
+    <li><p>Open a map with two rooms joined by a door, such as a new module's <code>first</code>. Choose <span class="ui">Room</span> and drag a rectangle across the doorway, so it covers part of each room.</p></li>
+    <li><p>Tap inside the new room. In its panel, set <span class="ui">edges</span> to <b>effect area</b>. The panel changes to the effect area's, and the rooms under it have their walls back.</p></li>
+    <li><p>A new room takes its heights from what it was drawn over, here perhaps the closed door, whose ceiling is on its floor. Set the area's <span class="ui">bottom</span> to 0 and its <span class="ui">top</span> to 4.</p></li>
+    <li><p>Press <span class="ui">+ fog</span>. In its card, type 2.5 in <code>top</code> and 0.45 in <code>density</code>.</p></li>
+    <li><p>Set the area's <span class="ui">tag</span> to 5. Tap somewhere else on the map, then tap the area's <b>outline</b> to pick it again.</p></li>
+    <li><p>Open <span class="ui">Graph</span> and add <b>when sector entered</b> from <span class="ui">+ node…</span>. Set its <code>tag</code> to 5 and its <code>who</code> to <code>players</code>, and link it to a <code>subtitle</code> that says <em>"The air is thick here."</em></p></li>
+    <li><p>If you are in the app, press <span class="ui">Play</span> and walk into the fog.</p></li>
+  </ol>
+
+  <h2 id="water">Water <span class="dev">studio 0.4.2.11</span></h2>
+  <p>Switch on <span class="ui">liquid (water)</span> in an effect area's panel, and it is water. Its <b>top is the surface</b>. Each tick the game measures how deep a body stands in it:</p>
+  <table>
+    <thead><tr><th>Depth</th><th>When</th></tr></thead>
+    <tbody>
+      <tr><td>out of the water</td><td>the body is not in it</td></tr>
+      <tr><td>feet</td><td>the surface is above the feet</td></tr>
+      <tr><td>waist</td><td>the surface is above half the body's height</td></tr>
+      <tr><td>eyes</td><td>the surface is above the eyes: under water</td></tr>
+    </tbody>
+  </table>
+  <p>The depth is what the module's own movement reads: wade when the water is at the feet, swim once it reaches the waist, lose breath with the head under. Water does nothing by itself; the movement states say what it does. See <a href="12-movement.html#swimming">How the player moves</a>.</p>
+  <p>Water draws only its effects, like any effect area: on its own it is invisible. To see it, give it a fill.</p>
+  <div class="callout tip"><p>Until a map has water, <b>Player</b> → <span class="ui">movement</span> says so: <em>"No map has water yet: on a map, draw an effect area and switch on "liquid (water)" in its panel."</em></p></div>
+
+  <h2 id="fills">Filled volumes <span class="dev">studio 0.4.2.11</span></h2>
+  <figure class="shot" data-src="../assets/shots/studio-water-fill.png" data-alt="A pool in the game view: an effect area made water, with a blue fill and a water picture on its surface, and its fill card open in the panel"
+    data-hotspots='[{"x":48.6,"y":44.4,"t":"The pool","d":"what is seen through it is tinted; its top wears the surface picture"},{"x":76,"y":20,"t":"fill","d":"its colour, how much it hides, its band, its glow, and how much of the surface picture shows"},{"x":80,"y":60,"t":"its surface","d":"the picture on its top, and the light that lights it"},{"x":45,"y":72,"t":"The outline","d":"the effect area is larger than the pit; the part over the floor is under it"}]'>
+    <figcaption>A pool in the game view. The pit is a room with its floor lowered; an effect area over it is water, with a fill and <code>FWATER1</code> on its surface.</figcaption>
+  </figure>
+  <p><span class="ui">+ fill</span>, among a sector's effects, fills its volume: water, lava, slime, a pane of coloured glass. Whatever is seen through it is tinted by its colour, and a camera inside it sees the whole view tinted. Its card has:</p>
+  <table>
+    <thead><tr><th>Key</th><th>Meaning</th><th>Default</th></tr></thead>
+    <tbody>
+      <tr><td><code>color</code></td><td>the body's colour</td><td>a grey blue</td></tr>
+      <tr><td><code>alpha</code></td><td>0 to 1: how much of what is behind it the body hides</td><td>0.5</td></tr>
+      <tr><td><code>bottom</code>, <code>top</code></td><td>the band it fills, up from the bottom</td><td>0, the top</td></tr>
+      <tr><td><code>glow</code></td><td>0: lit by the sector's light; 1: its own light, for lava</td><td>0</td></tr>
+      <tr><td><code>surface</code> <span class="dev">next release</span></td><td>0 to 1: how much of the surface picture shows</td><td>1</td></tr>
+    </tbody>
+  </table>
+  <p>As with the other effects, an empty field is the engine's default, shown greyed, and a value you set is marked with •. A fill is a look and nothing else: the volume a body swims in is the liquid's, not the fill's.</p>
+
+  <h3 id="surface">Its surface</h3>
+  <p>An effect area or a water area with a fill has one more section, <b>its surface</b>:</p>
+  <ul>
+    <li><span class="ui">surface picture</span>: a texture drawn on the fill's top, such as ripples on water or a crust on lava. An animated texture animates there. <code>(none)</code> leaves the top its colour alone.</li>
+    <li><span class="ui">light</span>: the light that lights the fill and its picture, unless the fill's <code>glow</code> is 1.</li>
+    <li><b>surface pattern</b>: the picture's turn, shift, size and how it is painted, as a ceiling's are.</li>
+  </ul>
+  <p>How much of the picture shows is the fill's own <code>surface</code>, in its card. <span class="dev">next release</span> Before, the surface had a <span class="ui">see-through</span> row of its own; a fill that used it is folded into <code>surface</code> and looks the same.</p>
+  <div class="callout"><p>A fill also works in an ordinary room. Give a room <span class="ui">+ fill</span> with <code>top</code> 1 for a flooded floor. Its top is then plain colour: a room's ceiling picture is its ceiling, not the water's.</p></div>
+
+  <h2 id="fx">Hiding effects while you build <span class="dev">studio 0.4.2.11</span></h2>
+  <p>Fog and snow get in the way of placing corners. On a map that has effects, an <span class="ui">FX</span> button sits beside <span class="ui">PLAN</span> / <span class="ui">GAME</span>. Press it, or <kbd>X</kbd>, to hide the sector effects in the map view, and again to show them. It is struck through while they are hidden, and the device remembers your choice. The game draws them all the same.</p>
+
+  <h2 id="runtime">Changing them while the game runs</h2>
+  <p>The <code>set_sector_effect</code> node, in the node menu's <span class="ui">move the map</span> group, starts or stops an effect in a sector while the game runs. Its <code>effect</code> is <code>rain</code>, <code>snow</code>, <code>dust</code>, <code>embers</code>, <code>fog</code> or, from studio 0.4.2.11, <code>fill</code>. With <code>on</code> off it takes the effect away. Its settings:</p>
+  <ul>
+    <li><code>density</code>: how thick it is. A fill has none.</li>
+    <li><code>color</code>, as <code>#rrggbb</code>.</li>
+    <li><code>alpha</code> <span class="dev">studio 0.4.2.11</span>: 0 to 1, how much it hides.</li>
+  </ul>
+  <p>What it leaves out takes the effect's defaults. The server keeps the change for whoever arrives later, and saves it with the level. A pool that turns to blood when a lever is pulled is one node: <code>set_sector_effect</code> on the pool's tag, <code>fill</code>, <code>color</code> <code>#8a1010</code>.</p>
+
+  <h2 id="pool">Exercise: a pool to swim in</h2>
+  <ol class="steps">
+    <li><p>On a new module's <code>first</code> map, choose <span class="ui">Select</span> and tap the small square pit beside the start. In its panel, set <span class="ui">floor</span> to -3, so it is deep enough to swim in.</p></li>
+    <li><p>Choose <span class="ui">Room</span> and drag a rectangle a little larger than the pit, all round it. Tap the new room, and set <span class="ui">edges</span> to <b>effect area</b>.</p></li>
+    <li><p>Tap its <b>outline</b> to pick it. Set its <span class="ui">bottom</span> to the pit's floor, -3 (it may be already), and its <span class="ui">top</span> to -0.25: the surface, a little below the floor round the pit. The part of the area over the floor is under that floor, so the water shows only in the pit.</p></li>
+    <li><p>Switch on <span class="ui">liquid (water)</span>. The line under it says how deep a body stands in it is now measured.</p></li>
+    <li><p>Press <span class="ui">+ fill</span>. In its card, pick a blue for <code>color</code> and type 0.45 in <code>alpha</code>.</p></li>
+    <li><p>Under <b>its surface</b>, tap <span class="ui">surface picture</span>, type <code>WAT</code> in its filter, and pick <code>FWATER1</code>. Type 0.55 in the fill's <code>surface</code> <span class="dev">next release</span>.</p></li>
+    <li><p>Press <span class="ui">PLAN</span> to see it in the game view. Then press <kbd>X</kbd> twice, to hide the effects and bring them back.</p></li>
+    <li><p>Now teach the player to swim in it: <a href="12-movement.html#swimming">How the player moves</a>.</p></li>
+  </ol>
+
+  <div class="quiz" data-answer="1">
+    <p class="q">You tap in the middle of a fog bank you drew as an effect area, and the panel shows a room with floor and ceiling textures. Why?</p>
+    <ul>
+      <li>The effect area was deleted</li>
+      <li>A tap inside an effect area picks the room under it; tap its outline to pick the area</li>
+      <li>Effect areas can only be picked in the plan view</li>
+    </ul>
+    <p class="why">An effect area draws only its outline, so the outline is how you take it. A tap inside means the floor you see, which is the room's.</p>
+  </div>
+  <div class="quiz" data-answer="2">
+    <p class="q">You switch on <span class="ui">liquid (water)</span> on an effect area and press Play. The water is invisible. What is missing?</p>
+    <ul>
+      <li>A tag</li>
+      <li>A movement state called swim</li>
+      <li>A fill: water draws only its effects, so it needs <span class="ui">+ fill</span> to be seen</li>
+    </ul>
+    <p class="why">The liquid is the volume the game measures depth in. What it looks like is its effects, and a fill is the one that makes it look like water.</p>
+  </div>
+  <div class="quiz" data-answer="0">
+    <p class="q">A fog bank (an effect area) lies over half of a room. A player standing in the other half walks into the fog. Which nodes fire?</p>
+    <ul>
+      <li>when sector entered, for the fog bank only</li>
+      <li>when sector left for the room, then when sector entered for the fog bank</li>
+      <li>none: effect areas have no events</li>
+    </ul>
+    <p class="why">The body's own room does not change: an effect area is laid over it. Only the area is entered.</p>
+  </div>
+</article>
+</body>
+</html>
