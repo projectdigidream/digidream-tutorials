@@ -163,6 +163,9 @@ th { color: var(--text-2); font-weight: 600; font-size: 13px; background: var(--
 .callout.tip { border-left-color: var(--ok); } .callout.tip::before { content: "✦"; color: var(--ok); }
 .callout.warn { border-left-color: var(--warn); } .callout.warn::before { content: "⚠"; color: var(--warn); }
 .callout.soon { border-left-color: var(--text-dim); } .callout.soon::before { content: "◌"; color: var(--text-dim); }
+/* A feature only the development releases have yet: <span class="dev">studio 0.4.2.8</span> */
+.dev { display: inline-block; font-size: 0.72em; font-weight: 600; line-height: 1.5; padding: 0 0.5em; margin: 0 0.2em; border: 1px solid var(--info); border-radius: 999px; color: var(--info); vertical-align: 0.15em; white-space: nowrap; }
+.dev::before { content: "dev · "; opacity: 0.8; }
 .callout p:first-child { margin-top: 0; } .callout p:last-child { margin-bottom: 0; }
 
 /* steps with checkboxes */
