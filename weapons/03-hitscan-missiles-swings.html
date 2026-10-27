@@ -19,7 +19,7 @@
   <h1>Hitscan, missiles and swings</h1>
   <p class="lede">A weapon hurts things in one of three ways. A <b>hitscan</b> is an instant ray. A <b>missile</b> is a thing that flies. A <b>swing</b> is a volume that sweeps through an arc over a few ticks. This lesson covers each one's numbers, then what your own game client shows at once and what only the server decides.</p>
   <div class="goal">
-    <b>You'll learn</b><span>the instant shot's numbers and how spread works per ray; how a weapon launches a missile, and what the Missiles page decides about it; arcs, bounces, splits and homing; blasts, recoil and warnings; missile trails; the swing step and its numbers, the default swing, two swings at once, and a swing kept on a state the older way; and the line between predicted and server-decided</span>
+    <b>You'll learn</b><span>the instant shot's numbers and how spread works per ray; aim assist, and how each weapon chooses it; how a weapon launches a missile, and what the Missiles page decides about it; arcs, bounces, splits and homing; blasts, recoil and warnings; missile trails; the swing step and its numbers, the default swing, two swings at once, and a swing kept on a state the older way; and the line between predicted and server-decided</span>
     <b>Time</b><span>35 minutes</span>
     <b>Needs</b><span>a weapon with states (<a href="02-phases.html">The phase machine</a>); for missiles, the <b>Missiles</b> page, which the Enemies track covers in depth (<a href="../enemies/03-attacks.html#missiles">Attacks</a>)</span>
   </div>
@@ -53,11 +53,28 @@
   </ul>
   <p>The spread is only sideways. Up and down is handled by aiming, below.</p>
 
-  <h3>Aiming up and down</h3>
-  <p>In third person, a player's input has a heading but no pitch, so the engine aims for you vertically. It finds the nearest visible solid body inside a narrow cone around your facing (5.625° each way, DOOM's number) and aims at its middle. In first person, your shot follows the view's own pitch instead. Corpses and bodies a script made non-solid are not aimed at.</p>
+  <h3 id="aim">Aiming up and down: aim assist</h3>
+  <p>In third person, a player's input has a heading but no pitch, so the engine aims for you. It finds the nearest visible solid body inside a narrow cone around your facing (5.625° each way, DOOM's number) and aims at its middle. That is <b>aim assist</b>. In first person the view has a pitch of its own, so by default your shot follows the view instead. Corpses and bodies a script made non-solid are not aimed at.</p>
+  <p>Each weapon can choose for itself. On its <span class="ui">Advanced</span> tab, under <b>The weapon</b>:</p>
+  <table>
+    <thead><tr><th>Field</th><th>What it does</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">Aim assist</span></td><td><em>(the default)</em>: on for every body but a first-person one, the rule above. <em>on</em>: on for everyone, first person too; the shot turns to the nearest body in the cone and climbs or drops to its exact middle, and with nothing in the cone it goes where the view looks. <em>off</em>: never; the shot goes along the facing, and in first person along the view's pitch. (<a href="../reference/weapon-vocab.html#weapon_fields.autoaim"><code>autoaim</code></a>)</td></tr>
+      <tr><td><span class="ui">Aim assist reach (°, 0 = the game's)</span></td><td>How far either side of the nose it looks for a body, in degrees. Empty or 0 is the game's own 5.625°. A wider reach forgives more. More than 180 is listed among the module's problems, on <b>Home</b> under <b>to fix</b>. (<a href="../reference/weapon-vocab.html#weapon_fields.autoaim_cone"><code>autoaim_cone</code></a>)</td></tr>
+    </tbody>
+  </table>
+  <ul>
+    <li><b>A first-person shooter with DOOM's feel</b> sets <span class="ui">Aim assist</span> to <em>on</em> for its guns: the player aims left and right, and the game finds the height.</li>
+    <li><b>A rifle that rewards a steady hand</b> sets it <em>off</em>, even in third person.</li>
+    <li><b>A rocket launcher played with a thumb</b> keeps it on with a reach of 15°.</li>
+  </ul>
+  <p>The choice is made in the engine's shared core, so your own client aims each shot exactly as the server will (<a href="#prediction">What is predicted</a>). A homing missile locks onto the body aim assist picks.</p>
+  <figure class="shot" data-src="../assets/shots/weapon-aim-assist.png" data-alt="Advanced for Gem Hollow's startoss, The weapon: Name, Selection order, Uses ammunition, A shot costs, Starts in, Icon on the panel, Aim directions, then Aim assist set to on and Aim assist reach 15" data-hotspots='[{"x":19.3,"y":18.7,"t":"The weapon","d":"Every field of the weapon, in plain words"},{"x":17.5,"y":55.7,"t":"Aim directions","d":"How many directions aim snaps to; empty is free aim"},{"x":60,"y":61.6,"t":"Aim assist","d":"(the default), on or off. Here: on, first person too"},{"x":60,"y":67.4,"t":"Aim assist reach","d":"15° either side of the nose; empty or 0 is the game&#39;s 5.625°"},{"x":97.4,"y":61.4,"t":"ⓘ","d":"The engine&#39;s own description of the field"}]'>
+    <figcaption><span class="ui">Aim assist</span> and its reach, at the end of <b>The weapon</b> on <span class="ui">Advanced</span>.</figcaption>
+  </figure>
 
   <h2 id="missiles">Missiles: things that fly</h2>
-  <p>The step <b>launch the missile …</b> (<a href="../reference/weapon-vocab.html#launch"><code>launch</code></a>) fires one of the module's missiles. The missiles themselves are on their own page, <b>Missiles</b> in the rail, <em>"shared by every monster and weapon of the module"</em>: a rocket launcher and a cyberdemon can fire the same rocket.</p>
+  <p>The step <b>launch the missile …</b> (<a href="../reference/weapon-vocab.html#launch"><code>launch</code></a>) fires one of the module's missiles. The missiles themselves are on their own page, <b>Missiles</b> in the rail (under <b>Gameplay</b>), <em>"shared by every monster and weapon of the module"</em>: a rocket launcher and a cyberdemon can fire the same rocket.</p>
   <figure class="shot" data-src="../assets/shots/weapon-phase-fire.png" data-alt="The throw state of Gem Hollow's startoss: its Timeline from 0 s to 0.23 s with use 1 ammo, launch the missile star_shot, play the sound player.swing at 0 s and switch weapon if it is empty at 0.17 s, and the launch step open with edit star_shot and more of it (count, arc, offset, angle)" data-hotspots='[{"x":38.6,"y":63.8,"t":"The card","d":"throw: picture 2, for 0.23 s, then ready, and its steps as chips"},{"x":64,"y":53.2,"t":"Timeline","d":"from 0 s to the state&#39;s length, 0.23 s"},{"x":83.3,"y":65.1,"t":"use 1 ammo","d":"takes one star"},{"x":83.3,"y":69.5,"t":"launch the missile","d":"star_shot, picked: it opens below"},{"x":83.3,"y":78.4,"t":"0.17 s","d":"switch weapon if it is empty: to the fists after the last star"},{"x":71.2,"y":83.6,"t":"at","d":"the step&#39;s moment, in seconds"},{"x":81.8,"y":83.6,"t":"edit star_shot","d":"opens the missile on the Missiles page"},{"x":95.7,"y":83.6,"t":"remove step","d":"takes it away"},{"x":75.8,"y":87.8,"t":"The missile","d":"chosen from the module&#39;s missiles"},{"x":71.3,"y":91.1,"t":"more of it","d":"count, arc, offset, angle: the launch&#39;s other numbers"},{"x":81.3,"y":95.6,"t":"+ add a step at 0 s","d":"opens the chooser of steps"}]'>
     <figcaption>The <code>throw</code> state of Gem Hollow's <code>startoss</code>: a launch between "use 1 ammo" and a sound.</figcaption>
   </figure>
@@ -66,14 +83,14 @@
   <ul>
     <li><b>Flight</b>: <span class="ui">Speed</span> (m/s), <span class="ui">Falls</span> (m/s², empty flies straight), <span class="ui">Homing</span>, <span class="ui">Lasts</span> (then <em>"when it runs out"</em> happens), <span class="ui">Launch height</span> (empty: from the middle of the shooter, as the engine launches it), <span class="ui">Hit size</span>, <span class="ui">Bounces</span> and <span class="ui">At most</span> (missiles from one shot).</li>
     <li><b>When it hits</b>, <b>When it runs out</b>, <b>When it bounces</b> and <b>On its way</b>: what it does, as sentences: <em>"hurt what it hit for 20"</em>, <em>"a blast of 90 damage within 3.2 m, weaker at the edge"</em>, an effect, a sound, a split.</li>
-    <li><b>Looks</b>: <span class="ui">Drawn as</span> (a prop, with its own sprite and scale), <span class="ui">Trail</span> (a particle kind that follows it from launch until it bursts, at that kind's rate, drawn along the flight when you press <span class="ui">Fire</span>; see <a href="../enemies/03-attacks.html#trail">Attacks, trails</a>) and the states it plays flying and bursting. A new missile, and one a recipe makes (<code>bolt</code>), gets a prop of its own name, a glowing dot the studio paints, and is drawn as that while <span class="ui">Drawn as</span> says <em>"(nothing: an unseen shot)"</em>. A missile left with nothing to be drawn as is named as a problem before you press Play (<a href="../enemies/03-attacks.html#looks">Attacks, looks</a>).</li>
+    <li><b>Looks</b>: <span class="ui">Drawn as</span> (a prop, with its own sprite and scale), <span class="ui">Trail</span> (a particle kind that follows it from launch until it bursts, at that kind's rate, drawn along the flight when you press <span class="ui">Fire</span>; see <a href="../enemies/03-attacks.html#trail">Attacks, trails</a>) and the states it plays flying and bursting. A new missile, and one a recipe makes (<code>bolt</code>), gets a prop of its own name, a glowing dot the studio paints, and is drawn as that while <span class="ui">Drawn as</span> says <em>"(nothing: an unseen shot)"</em>. <span class="dev">studio 0.4.2.2</span> The dot is drawn 0.6 m tall, and the new missile has a <span class="ui">Trail</span> of glowing specks in its colour, a particle kind the studio adds to the <b>Particles</b> page; a small missile with no trail is flagged on the page. <span class="dev">studio 0.4.2.10</span> A missile drawn as one of the module's props also has <span class="ui">Its own light (not lit)</span>, for a shot that glows in the dark. A missile left with nothing to be drawn as is named as a problem before you press Play (<a href="../enemies/03-attacks.html#looks">Attacks, looks</a>).</li>
   </ul>
   <p>The Enemies track walks through the page field by field: <a href="../enemies/03-attacks.html#missiles">Attacks, missiles</a>. What matters most for a weapon:</p>
   <ul>
     <li><b>A falling missile flies a real arc.</b> With <span class="ui">Falls</span>, a grenade rises and drops. A player's starts along their aim, up or down, and their own client flies the same arc. <span class="ui">Thrown</span> <em>low</em> or <em>high</em> makes <span class="ui">Speed</span> its launch speed.</li>
     <li><b>It can bounce.</b> <span class="ui">Bounces</span> off walls, floors and ceilings, keeping a share of its speed each time (<span class="ui">Keeps of its speed</span>), and doing <b>When it bounces</b> there.</li>
     <li><b>It can launch missiles.</b> <em>"split into 3 … spread over 30°"</em> in <b>When it hits</b>, <b>When it runs out</b> or <b>On its way</b>: a cluster bomb, bomblets dropped as it flies. <span class="ui">At most</span> caps a shot's missiles (16 unless you say).</li>
-    <li><b>Homing.</b> A player's homing missile locks onto what their auto-aim picks. <span class="ui">Homing starts after</span> delays the turn, and <span class="ui">Gives up beyond</span> lets a target too far round go.</li>
+    <li><b>Homing.</b> A player's homing missile locks onto what their aim assist picks (<a href="#aim">above</a>). <span class="ui">Homing starts after</span> delays the turn, and <span class="ui">Gives up beyond</span> lets a target too far round go.</li>
   </ul>
   <p>DOOM's rocket, on that page:</p>
   <pre><code>rocket   Speed 14.58 m/s (DOOM's 20 map units a tic)   Falls: flies straight   Lasts 5 s
@@ -284,7 +301,7 @@ When it hits a blast of 90 damage within 3.2 m, weaker at the edge, knocking bac
   <ol class="steps">
     <li><p>Make a weapon called <code>rifle</code> from the <span class="ui">Pistol</span> recipe. Tap <code>fire</code>, set <span class="ui">Lasts</span> to <code>0.6</code>, and in its instant shot set 25 damage, range <code>42.67</code> and spread <code>0</code>. Play: a slow, exact rifle.</p></li>
     <li><p>On <code>fire</code>, press <span class="ui">+ add a step at 0 s</span>, then <span class="ui">Moving</span> and <em>push the player away at 3 m/s</em>. Set the speed to <code>2</code>. Fire while standing still: you slide back.</p></li>
-    <li><p>On <b>Missiles</b>, type <code>fireball</code> and press <span class="ui">New</span>: 15 m/s, gone after 3 s, <em>"hurt what it hit for 10"</em>, drawn as a glowing dot (its own prop, <code>fireball</code>). Under <b>Looks</b>, give it a <span class="ui">Trail</span>: <em>11 · fireball</em>. Back in <b>Weapons</b>, make a weapon <code>caster</code> from the <span class="ui">Launcher</span> recipe; on its <code>fire</code>, tap the launch step and pick <code>fireball</code>. Play: the shot flies trailing fire, and only does its 10 damage when it arrives.</p></li>
+    <li><p>On <b>Missiles</b>, type <code>fireball</code> and press <span class="ui">New</span>: 15 m/s, gone after 3 s, <em>"hurt what it hit for 10"</em>, drawn as a glowing dot with a trail of specks (its own prop, <code>fireball</code>). Under <b>Looks</b>, give it a thicker <span class="ui">Trail</span>: <em>11 · fireball</em>. Back in <b>Weapons</b>, make a weapon <code>caster</code> from the <span class="ui">Launcher</span> recipe; on its <code>fire</code>, tap the launch step and pick <code>fireball</code>. Play: the shot flies trailing fire, and only does its 10 damage when it arrives.</p></li>
     <li><p>Make a weapon <code>spear</code> from the <span class="ui">Blade</span> recipe. Tap <code>slash</code> and its step, <em>swing for 15 damage, 1.6 m long, from -60° to 60° over 0.2 s</em>. Set both angles to <code>0</code>, and under <span class="ui">more of it</span>, <code>min_reach</code> to <code>1</code>: now it's a thrust that misses anything right against you. Do the same to <code>heavy</code>'s step.</p></li>
     <li><p>Play with the spear and step back from a monster as it closes. Then thrust just as it reaches you. The thrust appears on the tick you press; the monster's health drops when the server's answer arrives.</p></li>
   </ol>
@@ -324,6 +341,15 @@ When it hits a blast of 90 damage within 3.2 m, weaker at the edge, knocking bac
       <li>The default swing only: the step has no shape of its own</li>
     </ul>
     <p class="why">With a swing step anywhere, the button swings nothing itself: it moves the weapon to <code>fire</code>, and the step swings. What the step leaves out comes from the default swing.</p>
+  </div>
+  <div class="quiz" data-answer="2">
+    <p class="q">In a first-person module, players keep shooting over the heads of small monsters on the floor below them. The pistol's <span class="ui">Aim assist</span> is <em>(the default)</em>. What helps?</p>
+    <ul>
+      <li>A wider <span class="ui">Aim assist reach</span>: the default already aims for them</li>
+      <li>Nothing: aim assist only works in third person</li>
+      <li><span class="ui">Aim assist</span> set to <em>on</em>: the default is off for a first-person body, which aims with its view</li>
+    </ul>
+    <p class="why">The default is on for every body but a first-person one. Set to <em>on</em>, the shot turns to the nearest body in the cone and drops to its middle; with nothing in the cone it still goes where the view looks.</p>
   </div>
 </article>
 </body>

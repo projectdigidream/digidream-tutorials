@@ -38,6 +38,12 @@ anything not released yet is under **Unreleased**.
     - scripts are Lua 5.1 only;
     - the studio's new keys;
     - glossary entries, and the new module.txt and map lines.
+  - **Enemies and Weapons:**
+    - aim assist per weapon, and its reach;
+    - "its own light" for monsters, missiles and pickups;
+    - the bigger default missile with a trail of its own, and the small-missile flag;
+    - a sprite with no animations drawn as a still;
+    - a PNG imported as a sheet.
 - **For studio 0.3.4 and engine 0.2.0.** The Enemies and Weapons tracks, and
   the studio's workshop lesson, teach the new monster and weapon editors:
   - their tabs, and rules written as sentences;
