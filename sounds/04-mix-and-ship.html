@@ -81,7 +81,7 @@
   </ol>
 
   <h2 id="match">Match a recording</h2>
-  <p>Give the editor a recording and it finds a recipe that sounds like it. Press <span class="ui">🎙 Match a recording…</span> in <span class="ui">Start from</span>. A sheet opens with three steps:</p>
+  <p>Give the editor a recording and it finds a recipe that sounds like it. Press <span class="ui">Match a recording…</span> in <span class="ui">Start from</span>. A sheet opens with three steps:</p>
   <ol>
     <li><b>The recording.</b> Drop a WAV, or click to choose one. Press <span class="ui">▶ Play it</span>. Drag across the waveform to match <b>one part</b> — a real sound is often a crack and then a tail, and each matches better on its own — or press <span class="ui">Use all of it</span>. Then <span class="ui">Next ›</span>.</li>
     <li><b>What it is.</b> Pick the kind, or <span class="ui">Not sure</span> (it tries every recipe briefly, then refines the best). Choose an <span class="ui">Effort</span>: <span class="ui">Quick</span>, <span class="ui">Good</span> or <span class="ui">Best</span>, with an estimate of the time. Then <span class="ui">Find a match ›</span>.</li>
@@ -97,6 +97,7 @@
     <thead><tr><th>Action</th><th>Writes</th></tr></thead>
     <tbody>
       <tr><td><span class="ui">Save</span> <kbd>⌘S</kbd> / <span class="ui">Save as…</span> <kbd>⇧⌘S</kbd></td><td>the <code>.sfxproj</code>: the editable bank, as JSON. <b>Keep this one.</b></td></tr>
+      <tr><td><span class="ui">⋯</span> → <span class="ui">Save to the file automatically</span></td><td>in the desktop and Android apps, on at first: the bank goes back into its <code>.sfxproj</code> a second after you stop editing (see <a href="01-first-sound.html#autosave">Autosave</a>)</td></tr>
       <tr><td><span class="ui">⋯</span> → <span class="ui">Export for the game (.sfxb)</span></td><td>the <code>.sfxb</code>: a sealed binary bank for a game that embeds the DigidreamSound engine</td></tr>
       <tr><td><span class="ui">⋯</span> → <span class="ui">Export this sound as WAV</span></td><td>the selected take, 48 kHz stereo</td></tr>
       <tr><td>Library <span class="ui">⋯</span> → <span class="ui">Even out the levels of all sounds…</span></td><td>asks for a target (−6 dB by default) and sets every sound's volume so its loudest moment lands on it</td></tr>
@@ -109,7 +110,7 @@
   <figure class="shot" data-src="../assets/shots/studio-sounds-page.png" data-alt="The studio's Sounds page in Gem Hollow: one pack, meadow, with 30 sounds, and the sounds listed with who uses them">
     <figcaption>The Sounds page in Gem Hollow: one pack, then every sound with who uses it and a ▶.</figcaption>
   </figure>
-  <p>Open <span class="ui">Sounds</span> from the rail or Home. The page has:</p>
+  <p>Open <span class="ui">Sounds</span>, under <b>Sound</b> in the studio's sidebar, or from Home. The page has:</p>
   <ul>
     <li><span class="ui">+ new sound pack</span> — asks for a name, then opens DigidreamSound on the new pack. It starts empty, under that name, with the three groups <b>world</b>, <b>player</b> and <b>ui</b>;</li>
     <li><span class="ui">+ import sound packs (.sfxproj)</span> — takes one or more project files. Each is checked by the sound engine's own loader first, so a file that parses but would not play is refused;</li>
@@ -158,7 +159,7 @@ dnp.sound("weapon.pistol.fire", e, { predicted = true })  -- e's client already 
   <div class="callout warn"><p>A sound may be dropped — by distance, by a limit, by the network. Never make it the only sign of anything. A door that opens should also move; a hit should also flash.</p></div>
   <ol class="steps">
     <li><p>In the studio, open <span class="ui">Sounds</span> and press <span class="ui">+ new sound pack</span>. Call it <code>mine</code>.</p></li>
-    <li><p>In DigidreamSound, make <code>world.door.open</code> from <span class="ui">🚪 Door / mechanism</span>, on the <b>world</b> group. Press <span class="ui">studio</span>.</p></li>
+    <li><p>In DigidreamSound, make <code>world.door.open</code> from <span class="ui">Door / mechanism</span>, on the <b>world</b> group. Press <span class="ui">studio</span>.</p></li>
     <li><p>If the module has another pack with the same name, move <code>mine</code> to the top with <span class="ui">↑</span> and check the report says yours is kept.</p></li>
     <li><p>Press <span class="ui">▶</span> beside <code>world.door.open</code> to hear it from the merged bank. Then play the module and open a door.</p></li>
   </ol>
@@ -188,7 +189,7 @@ dnp.sound("weapon.pistol.fire", e, { predicted = true })  -- e's client already 
   <ol class="steps">
     <li><p>Open Gem Hollow and the <code>world</code> map's graphs (<a href="../graphs/01-thinking-in-graphs.html">Graphs</a> shows how). In <code>world.pickups</code>, find the <code>play_sound</code> node after the coin and change its sound to <code>pickup.gem</code>. Press <span class="ui">Play</span> and grab a coin: it sparkles like a gem. Change it back.</p></li>
     <li><p>In <code>world.intro</code>, select one of the <code>subtitle</code> nodes, set its <code>mode</code> to <code>typed</code> and its <code>sound</code> to <code>ui.select</code>. Play: the story line types itself out with a click per step.</p></li>
-    <li><p>In <b>Sounds</b>, open <code>meadow</code> and replace <code>world.door.open</code> with something heavier (press <span class="ui">🚪 Door / mechanism</span> until one fits). Press <span class="ui">studio</span>, then pull the red lever in the game: the gate uses your door.</p></li>
+    <li><p>In <b>Sounds</b>, open <code>meadow</code> and replace <code>world.door.open</code> with something heavier (press <span class="ui">Door / mechanism</span> until one fits). Press <span class="ui">studio</span>, then pull the red lever in the game: the gate uses your door.</p></li>
   </ol>
 
   <h2 id="cinderfall">In Cinderfall</h2>

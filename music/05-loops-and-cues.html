@@ -37,7 +37,7 @@
   <ul>
     <li><span class="ui">Bake project → load here</span> bakes the whole project in memory, with its bank, kit, effects and mastering, and opens it here. <span class="ui">…or load a .mstk</span> opens a baked track from a file instead.</li>
     <li>On the <b>timeline</b>, drag to select a region; click to move the playhead. With <span class="ui">snap to bars</span> ticked, the region snaps to bar lines.</li>
-    <li><span class="ui">▶ Loop region</span> plays just the region, looping, so you hear how the seam sounds. <span class="ui">▶ Whole track</span> plays everything; <span class="ui">⏹</span> stops.</li>
+    <li><span class="ui">▶ Loop region</span> plays just the region, looping, so you hear how the seam sounds. <span class="ui">▶ Whole track</span> plays everything; <span class="ui">■</span> stops.</li>
     <li><span class="ui">crossfade ms</span> and <span class="ui">⇄ Crossfade into region</span>: while something plays, fade from it into the region, to hear the change.</li>
     <li>Type a <span class="ui">slice name</span> (it suggests one from the bar number) and press <span class="ui">＋ Add slice</span>.</li>
   </ul>
@@ -72,12 +72,12 @@
     <thead><tr><th>Button</th><th>When the switch lands</th></tr></thead>
     <tbody>
       <tr><td><span class="ui">▶ now</span></td><td>At once, a hard cut. Also how you start the first piece.</td></tr>
-      <tr><td><span class="ui">⏭ at loop end</span></td><td>When the current piece finishes its loop. The playing card counts down the seconds left.</td></tr>
-      <tr><td><span class="ui">⏭ next bar</span></td><td>On the next bar line of the current piece.</td></tr>
+      <tr><td><span class="ui">⇥ at loop end</span></td><td>When the current piece finishes its loop. The playing card counts down the seconds left: <em>in 4.2s</em>.</td></tr>
+      <tr><td><span class="ui">⇥ next bar</span></td><td>On the next bar line of the current piece.</td></tr>
       <tr><td><span class="ui">⇄ fade</span></td><td>Now, crossfading over <span class="ui">crossfade ms</span> (800 at first).</td></tr>
     </tbody>
   </table>
-  <p>While a switch is waiting, the card says <em>queued</em> and <span class="ui">✕ cancel queued</span> calls it off. <span class="ui">⏹ stop</span> stops playback.</p>
+  <p>While a switch is waiting, the card says <em>queued</em> and <span class="ui">✕ cancel queued</span> calls it off. <span class="ui">■ stop</span> stops playback.</p>
   <p>Try the timing here. The demo is silent unless you tick <span class="ui">sound</span>:</p>
   <div class="widget" data-widget="cue-timeline" data-title="When does the switch land?"></div>
 
@@ -92,7 +92,7 @@
 
   <ol class="steps">
     <li><p>Open <span class="ui">Cues</span>. Press <span class="ui">▶ now</span> on <code>calm</code>.</p></li>
-    <li><p>Press <span class="ui">⏭ at loop end</span> on <code>fight</code>. Watch the countdown on <code>calm</code>'s card and the switch land on the loop's end.</p></li>
+    <li><p>Press <span class="ui">⇥ at loop end</span> on <code>fight</code>. Watch the countdown on <code>calm</code>'s card and the switch land on the loop's end.</p></li>
     <li><p>On <code>fight</code>'s card, set <span class="ui">then →</span> <code>calm</code> <span class="ui">after</span> 2 <span class="ui">loops</span>. Check the log: after two loops of <code>fight</code>, <code>calm</code> comes back.</p></li>
   </ol>
 
@@ -100,7 +100,7 @@
   <figure class="shot" data-src="../assets/shots/studio-music-page.png" data-alt="The studio's Music page in Gem Hollow: the menu map's default cue on title, and the five tracks of the module">
     <figcaption>The Music page in Gem Hollow, with the <code>menu</code> map open: its one cue on top, the module's five tracks below.</figcaption>
   </figure>
-  <p>In the studio, open <b>Music</b> from the rail. The page, titled <b>Soundtrack</b>, has two parts.</p>
+  <p>In the studio, open <b>Music</b>, under <b>Sound</b> in the sidebar. The page, titled <b>Soundtrack</b>, has two parts.</p>
   <h3>Tracks in the module</h3>
   <p>Under <b>♫ tracks in the module</b>, every track the module has, with its size (or <em>not baked yet</em>), how many cues use it (<em>in 1 cue(s)</em>), <em>from its project</em> when the studio keeps its <code>.msproj</code>, and buttons:</p>
   <ul>

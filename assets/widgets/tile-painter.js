@@ -67,7 +67,7 @@
     const note = h('p', { class: 'wout', style: 'margin:6px 0 0' });
 
     el.append(
-      h('div', { class: 'wrow' }, mkTool('pencil', '✏️ Pencil'), mkTool('dither', '▦ Dither'), mkTool('eraser', '🧽 Eraser'),
+      h('div', { class: 'wrow' }, mkTool('pencil', 'Pencil'), mkTool('dither', 'Dither'), mkTool('eraser', 'Eraser'),
         h('label', { class: 'wlabel' }, 'Size', sizeIn, sizeOut)),
       swatches,
       h('div', { style: 'display:flex;flex-wrap:wrap;gap:16px;align-items:flex-start' },

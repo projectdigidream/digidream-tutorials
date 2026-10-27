@@ -57,19 +57,19 @@
   <p>On its own, DigidreamSound has its own <span class="ui">Open</span>, <span class="ui">Save</span> and <span class="ui">New bank</span>, and you keep your banks as <code>.sfxproj</code> files. In the studio those are hidden, and <span class="ui">studio</span> saves into the module.</p>
 
   <h3>From the studio</h3>
-  <p>DigidreamSound ships with the studio as a plugin. Open the <span class="ui">Sounds</span> section, then either press <span class="ui">+ new sound pack</span> or press <span class="ui">edit in DigidreamSound</span> on a pack. The editor fills the screen under a slim bar: <span class="ui">studio</span> goes back and saves, <span class="ui">✕</span> goes back without saving. Packs are covered in <a href="04-mix-and-ship.html#packs">Mix, test and ship</a>.</p>
+  <p>DigidreamSound ships with the studio as a plugin. Open <span class="ui">Sounds</span>, under <b>Sound</b> in the studio's sidebar, then either press <span class="ui">+ new sound pack</span> or press <span class="ui">edit in DigidreamSound</span> on a pack. The editor fills the screen under a slim bar: <span class="ui">studio</span> goes back and saves, <span class="ui">✕</span> goes back without saving. Packs are covered in <a href="04-mix-and-ship.html#packs">Mix, test and ship</a>.</p>
 
   <h2>The screen</h2>
-  <figure class="shot" data-src="../assets/shots/sound-main.png" data-hotspots='[{"x": 3.3, "y": 1.8, "t": "studio", "d": "back to the studio, saving the pack; ✕ at the far right leaves without saving"}, {"x": 9.7, "y": 44.4, "t": "Library", "d": "every sound in the bank, grouped by its first name part"}, {"x": 16.8, "y": 13, "t": "＋ New", "d": "a new sound"}, {"x": 22.1, "y": 6.8, "t": "Views", "d": "Sounds, and Mix & test for the whole bank"}, {"x": 30.3, "y": 6.8, "t": "Play", "d": "Space plays the sound"}, {"x": 48.6, "y": 28.3, "t": "The player", "d": "the waveform; Fix level, Repeat, Play on change"}, {"x": 55.6, "y": 40, "t": "Layers timeline", "d": "when each layer sounds; S solo, M mute"}, {"x": 25.5, "y": 57, "t": "Takes", "d": "A, B, C… — the game picks one at random"}, {"x": 48.6, "y": 63, "t": "Start from", "d": "13 recipes — press one until it is close"}, {"x": 29.2, "y": 92.8, "t": "🎲 Randomize and ✨ Vary", "d": "a new one of the kind, or a small nudge"}, {"x": 68.8, "y": 92.8, "t": "🎙 Match a recording…", "d": "fit the sound to a WAV you have"}, {"x": 81.1, "y": 12.7, "t": "In the game", "d": "group, limits, variety, distance, ducking, looping"}, {"x": 97.8, "y": 6.8, "t": "⋯", "d": "the menu: export this sound as WAV, how this works"}]' data-alt="DigidreamSound in the studio, with Gem Hollow's meadow pack open on world.checkpoint">
+  <figure class="shot" data-src="../assets/shots/sound-main.png" data-hotspots='[{"x": 3.3, "y": 1.8, "t": "studio", "d": "back to the studio, saving the pack; ✕ at the far right leaves without saving"}, {"x": 9.7, "y": 44.4, "t": "Library", "d": "every sound in the bank, grouped by its first name part"}, {"x": 16.8, "y": 13, "t": "＋ New", "d": "a new sound"}, {"x": 22.1, "y": 6.8, "t": "Views", "d": "Sounds, and Mix & test for the whole bank"}, {"x": 30.3, "y": 6.8, "t": "Play", "d": "Space plays the sound"}, {"x": 48.6, "y": 28.3, "t": "The player", "d": "the waveform; Fix level, Repeat, Play on change"}, {"x": 55.6, "y": 40, "t": "Layers timeline", "d": "when each layer sounds; S solo, M mute"}, {"x": 25.5, "y": 57, "t": "Takes", "d": "A, B, C… — the game picks one at random"}, {"x": 48.6, "y": 63, "t": "Start from", "d": "13 recipes — press one until it is close"}, {"x": 29.2, "y": 92.8, "t": "Randomize and Vary", "d": "a new one of the kind, or a small nudge"}, {"x": 68.8, "y": 92.8, "t": "Match a recording…", "d": "fit the sound to a WAV you have"}, {"x": 81.1, "y": 12.7, "t": "In the game", "d": "group, limits, variety, distance, ducking, looping"}, {"x": 97.8, "y": 6.8, "t": "⋯", "d": "the menu: export this sound as WAV, how this works"}]' data-alt="DigidreamSound in the studio, with Gem Hollow's meadow pack open on world.checkpoint">
     <figcaption>Gem Hollow's <code>meadow</code> pack in the studio, on <code>world.checkpoint</code>: the library on the left, the selected sound in the middle, and <b>In the game</b> on the right.</figcaption>
   </figure>
   <p><b>The top bar</b>, left to right:</p>
   <ul>
-    <li>The bank's name. Click it to rename the bank. A dot beside it means there are unsaved changes.</li>
+    <li>The bank's name. Click it to rename the bank. A dot beside it means the bank is not saved to a file yet; the work itself is kept in the app (see <a href="#autosave">Autosave</a>).</li>
     <li>The two views, <span class="ui">Sounds</span> and <span class="ui">Mix &amp; test</span>.</li>
     <li>The play button <span class="ui">▶</span>, with the name of the sound it will play. <kbd>Space</kbd> does the same.</li>
     <li><span class="ui">↶</span> and <span class="ui">↷</span> (undo and redo), <span class="ui">Open</span> and <span class="ui">Save</span>.</li>
-    <li><span class="ui">⋯</span>, the menu for everything else: <span class="ui">New bank</span>, <span class="ui">Open…</span>, <span class="ui">Open the example bank</span>, <span class="ui">Save</span>, <span class="ui">Save as…</span>, <span class="ui">Export for the game (.sfxb)</span>, <span class="ui">Export this sound as WAV</span> and <span class="ui">How this works</span>.</li>
+    <li><span class="ui">⋯</span>, the menu for everything else: <span class="ui">New bank</span>, <span class="ui">Open…</span>, <span class="ui">Open the example bank</span>, <span class="ui">Save</span>, <span class="ui">Save as…</span>, <span class="ui">Save to the file automatically</span>, <span class="ui">Export for the game (.sfxb)</span>, <span class="ui">Export this sound as WAV</span> and <span class="ui">How this works</span>.</li>
   </ul>
   <p><b>The library</b> (left) lists every sound, grouped by the first part of its name. Each row shows a small picture of the sound, its length, a dot if something is wrong, and <em>too loud</em> if it would clip. The search box matches names and tags. <span class="ui">＋ New</span> makes a sound. The library's own <span class="ui">⋯</span>, at its foot, holds <span class="ui">Even out the levels of all sounds…</span> and <span class="ui">Sort A → Z</span>.</p>
   <p><b>The sound</b> (middle) is the selected sound, top to bottom in the order you work on it:</p>
@@ -89,44 +89,51 @@
   <table>
     <thead><tr><th>Kind</th><th>Good for</th></tr></thead>
     <tbody>
-      <tr><td>🔫 Gunshot</td><td>firearms: a crack, a body, a tail, a mechanical action</td></tr>
-      <tr><td>💥 Explosion</td><td>blasts, rockets, barrels</td></tr>
-      <tr><td>⚡ Laser / zap</td><td>energy weapons, magic, electricity</td></tr>
-      <tr><td>👊 Hit / punch</td><td>impacts, footsteps, thuds</td></tr>
-      <tr><td>🔔 Metal / bell</td><td>anything struck that rings</td></tr>
-      <tr><td>✨ Pickup / blip</td><td>items, UI</td></tr>
-      <tr><td>🎵 Jingle</td><td>a few notes in a row: power-ups, alerts</td></tr>
-      <tr><td>🚪 Door / mechanism</td><td>doors, switches, lifts</td></tr>
-      <tr><td>⚙️ Machine</td><td>working, buzzing things</td></tr>
-      <tr><td>🚗 Engine hum</td><td>held drones, motors, chainsaws</td></tr>
-      <tr><td>👹 Monster</td><td>roars and growls</td></tr>
-      <tr><td>🗣️ Voice / grunt</td><td>vowel-like shouts, pain</td></tr>
-      <tr><td>💨 Whoosh</td><td>swings, air, passing things</td></tr>
+      <tr><td>Gunshot</td><td>firearms: a crack, a body, a tail, a mechanical action</td></tr>
+      <tr><td>Explosion</td><td>blasts, rockets, barrels</td></tr>
+      <tr><td>Laser / zap</td><td>energy weapons, magic, electricity</td></tr>
+      <tr><td>Hit / punch</td><td>impacts, footsteps, thuds</td></tr>
+      <tr><td>Metal / bell</td><td>anything struck that rings</td></tr>
+      <tr><td>Pickup / blip</td><td>items, UI</td></tr>
+      <tr><td>Jingle</td><td>a few notes in a row: power-ups, alerts</td></tr>
+      <tr><td>Door / mechanism</td><td>doors, switches, lifts</td></tr>
+      <tr><td>Machine</td><td>working, buzzing things</td></tr>
+      <tr><td>Engine hum</td><td>held drones, motors, chainsaws</td></tr>
+      <tr><td>Monster</td><td>roars and growls</td></tr>
+      <tr><td>Voice / grunt</td><td>vowel-like shouts, pain</td></tr>
+      <tr><td>Whoosh</td><td>swings, air, passing things</td></tr>
     </tbody>
   </table>
   <p>Under the kinds are three buttons:</p>
   <ul>
-    <li><span class="ui">🎲 Randomize</span> (<kbd>R</kbd>) makes <b>another sound of the same kind</b>, staying with the recipe you have.</li>
-    <li><span class="ui">✨ Vary</span> (<kbd>V</kbd>) moves every knob <b>a little</b>: the same sound, slightly different. It is greyed out for a take that was not made from a recipe.</li>
-    <li><span class="ui">🎙 Match a recording…</span> finds a recipe that sounds like a WAV you have. See <a href="04-mix-and-ship.html#match">Match a recording</a>.</li>
+    <li><span class="ui">Randomize</span> (<kbd>R</kbd>) makes <b>another sound of the same kind</b>, staying with the recipe you have.</li>
+    <li><span class="ui">Vary</span> (<kbd>V</kbd>) moves every knob <b>a little</b>: the same sound, slightly different. It is greyed out for a take that was not made from a recipe.</li>
+    <li><span class="ui">Match a recording…</span> finds a recipe that sounds like a WAV you have. See <a href="04-mix-and-ship.html#match">Match a recording</a>.</li>
   </ul>
   <p>Every generated sound is levelled to −6 dB before you hear it, so pressing through kinds never blasts you. The card's subtitle says where the take came from: <em>made from the Explosion recipe</em>, <em>matched to shotgun.wav</em>, or <em>hand-made</em>.</p>
   <div class="callout"><p><b>Randomize jumps; Vary nudges.</b> Use Randomize while you are still looking for the right sound. Once one is close, use Vary to search around it without losing it. If you overshoot, <kbd>⌘Z</kbd> brings back the last one: every press is one undo step.</p></div>
 
   <h3>Try the idea here</h3>
-  <p>This toy has four of the recipes and two layers: a filtered noise burst and a tone that sweeps in pitch. Press a recipe, then compare <span class="ui">🎲 Randomize</span> and <span class="ui">✨ Vary</span>. Watch the recipe knobs below: Randomize moves them anywhere, Vary moves them a little.</p>
+  <p>This toy has four of the recipes and two layers: a filtered noise burst and a tone that sweeps in pitch. Press a recipe, then compare <span class="ui">Randomize</span> and <span class="ui">Vary</span>. Watch the recipe knobs below: Randomize moves them anywhere, Vary moves them a little.</p>
   <div class="widget" data-widget="sfx-toy" data-title="Toy sound · two layers"></div>
 
   <h2>Make one, step by step</h2>
   <ol class="steps">
     <li><p>In the library, press <span class="ui">＋ New</span>. A sound appears, made from a random kind, and plays. It gets a placeholder name such as <code>new.gunshot</code>.</p></li>
-    <li><p>In <span class="ui">Start from</span>, press <span class="ui">⚡ Laser / zap</span>. Press it a few more times and listen to how different each one is.</p></li>
+    <li><p>In <span class="ui">Start from</span>, press <span class="ui">Laser / zap</span>. Press it a few more times and listen to how different each one is.</p></li>
     <li><p>Press <kbd>R</kbd> until one is close to a plasma shot. Then press <kbd>V</kbd> three or four times to try its neighbours. Undo (<kbd>⌘Z</kbd>) back to the one you liked best.</p></li>
     <li><p>Click the name at the top of the sound and type <code>weapon.plasma.fire</code>. Press Enter. The sound moves into a <b>WEAPON</b> group in the library.</p></li>
     <li><p>Press <kbd>Space</kbd> to play it, and tick <span class="ui">Repeat</span> (<kbd>L</kbd>) to hear it again and again. A short sound is easier to judge by repetition. Untick it when you are done; it is only a listening aid.</p></li>
     <li><p>Press <kbd>⌘S</kbd> to save the bank as a <code>.sfxproj</code>. In the studio, press <span class="ui">studio</span> instead.</p></li>
   </ol>
-  <div class="callout warn"><p>Nothing is saved automatically. The <code>.sfxproj</code> is your document. The editor remembers only where you were (the view, the selected sound, the search, which cards were folded). If you reload with unsaved changes, it asks first.</p></div>
+  <h3 id="autosave">Autosave</h3>
+  <p>From DigidreamSound 0.2.1 on, the editor keeps your work by itself. A second after you stop editing, the bank is kept in the app, so closing it, a reload or a crash opens it again as it was, unsaved changes included. Nothing asks <em>leave the page?</em> any more.</p>
+  <ul>
+    <li><b>In the desktop and Android apps</b>, a bank you opened from a file or saved to one is written back to that file too. To try things without touching the file, untick <span class="ui">⋯</span> → <span class="ui">Save to the file automatically</span>; <span class="ui">Save</span> then writes it when you choose.</li>
+    <li><b>In a browser</b>, the bank is kept in the browser's own storage, and <span class="ui">Save</span> downloads a <code>.sfxproj</code>. Clearing the browser's site data clears that copy, so save the banks you want to keep.</li>
+    <li><b>Inside the studio</b>, none of this runs: the studio keeps a draft while you work, and <span class="ui">studio</span> saves the pack into the module.</li>
+  </ul>
+  <p>Only one bank is kept this way. Opening another replaces it, and the editor asks first if the current one is not in a file. The editor also remembers where you were: the view, the selected sound, the search, and which cards were folded.</p>
 
   <h2>Naming sounds</h2>
   <p>A sound's name is its whole identity. The game asks for <code>weapon.shotgun.fire</code>; there is no table of numbers anywhere. So the name you type is the name a script, a monster or a weapon has to use, letter for letter.</p>
@@ -160,7 +167,7 @@
       <tr><td>CINE 2</td><td><code>cine.whoosh</code>, <code>cine.victory</code>, for the cutscenes</td><td>ui</td></tr>
     </tbody>
   </table>
-  <p>The pickups play on <b>player</b>, not <b>world</b>: a coin you grab is your own feedback and should be just as loud wherever the coin was. Every sound has a single take (<span class="ui">A</span>), and every take is <em>hand-made</em>: the <span class="ui">Start from</span> card says so and <span class="ui">✨ Vary</span> is greyed out. To get a recipe back on one, press a kind; that replaces the take.</p>
+  <p>The pickups play on <b>player</b>, not <b>world</b>: a coin you grab is your own feedback and should be just as loud wherever the coin was. Every sound has a single take (<span class="ui">A</span>), and every take is <em>hand-made</em>: the <span class="ui">Start from</span> card says so and <span class="ui">Vary</span> is greyed out. To get a recipe back on one, press a kind; that replaces the take.</p>
   <p>Several rows say <em>too loud</em>, <code>player.jump</code> among them: its peak is just over the ceiling (the badge reads <em>too loud: +0.6 dB</em>). In the game the group volumes (−5 dB for player and world, −8 dB for ui) bring them back down. <span class="ui">Fix level</span> is one click if you want the editor's view and the game's to agree.</p>
   <ol class="steps">
     <li><p>Open Gem Hollow, then <b>Sounds</b>, and press <span class="ui">edit in DigidreamSound</span> on <code>Meadow (generated) (meadow)</code>.</p></li>
@@ -176,9 +183,9 @@
   <div class="quiz" data-answer="1">
     <p class="q">You have a laser that is almost right, but the end is slightly too low. Which button keeps the sound and tries close neighbours?</p>
     <ul>
-      <li>🎲 Randomize</li>
-      <li>✨ Vary</li>
-      <li>Press ⚡ Laser / zap again</li>
+      <li>Randomize</li>
+      <li>Vary</li>
+      <li>Press Laser / zap again</li>
     </ul>
     <p class="why">Vary moves every knob a little. Randomize and pressing the kind both make a new sound of that kind, so the one you had is gone (until you undo).</p>
   </div>

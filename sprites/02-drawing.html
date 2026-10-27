@@ -19,7 +19,7 @@
   <h1>Drawing</h1>
   <p class="lede">The Draw tab is a pixel editor that paints one part's picture in one view at a time. This page covers the eight tools, dithering, mirror drawing and colours, and how to step round the views without leaving the keyboard.</p>
   <div class="goal">
-    <b>You'll learn</b><span>every drawing tool and its key, drawing with a finger, brush sizes, the dither density and offset, the three toggles under the tools, the canvas background, colours, and the view strip</span>
+    <b>You'll learn</b><span>every drawing tool and its key, drawing with a finger, brush sizes, the dither density and offset, the three toggles under the tools, the canvas background, colours, the view strip, and how to bring in a PNG or a texture of the module as a part</span>
     <b>Time</b><span>20 minutes</span>
     <b>Needs</b><span>a sprite open in ThreeSprite (see <a href="01-first-sprite.html">Your first sprite</a>)</span>
   </div>
@@ -117,6 +117,14 @@
       <tr><td><kbd>Space</kbd>+drag, middle button, or the wheel</td><td>Pan</td></tr>
     </tbody>
   </table>
+
+  <h2 id="pictures">Bringing a picture in</h2>
+  <p>A picture made elsewhere can become a part, drawn in view 1 and hung on the selected bone. Both ways are in the project menu, <b>☰</b>:</p>
+  <ul>
+    <li><span class="ui">Import PNG as part…</span> takes a PNG file. The part is named after the file, and its feet are the middle of its bottom row. A picture bigger than the canvas is refused: <em>The image is W×H but the canvas is N×N. Resize it first.</em></li>
+    <li><span class="ui">Texture from the module as part…</span>, inside the studio only, takes one of the module's textures, as painted in qPainter, with no file in between. It asks <em>A texture from the module, as a new part</em> and lists them. A texture with several layers comes in flattened: its visible layers, each at its own opacity. One bigger than the canvas comes in shrunk by a whole step, every 2nd, 3rd or 4th pixel, so the pixel art stays crisp, and ThreeSprite says so first. A 256×256 texture on a 64-pixel sprite reads <em>Bigger than the 64×64 canvas, so it comes in at 1/4 of its size, every 4th pixel.</em></li>
+  </ul>
+  <p>Inside the studio, picking a file and saving one go through the studio, with the system's own file picker and save dialog, so they work on a phone too.</p>
 
   <h2 id="gem-hollow">In Gem Hollow</h2>
   <p>Gem Hollow uses the Draw tab in two ways.</p>

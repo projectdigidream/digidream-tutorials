@@ -19,7 +19,7 @@
   <h1>Palettes, dither, layers</h1>
   <p class="lede">Retro textures look right because they use a few colours and use them well. qPainter keeps you inside a palette, shades along ramps, blends with dither instead of new colours, and lets you build a texture in layers.</p>
   <div class="goal">
-    <b>You'll learn</b><span>the palette panel, <span class="ui">Lock</span> and its two snaps, ramps and the Shade brush, the Dither brush and Dithered gradient, Replace, palette files, layers, and how to recolour a texture to a fixed palette</span>
+    <b>You'll learn</b><span>the palette panel, <span class="ui">Lock</span> and its two snaps, ramps and the Shade brush, the Dither brush and Dithered gradient, Replace, palette files, the module's palette, layers, and how to recolour a texture to a fixed palette</span>
     <b>Time</b><span>25 minutes</span>
     <b>Needs</b><span>qPainter open on a texture (see <a href="01-first-texture.html">Your first texture</a>)</span>
   </div>
@@ -32,8 +32,8 @@
       <tr><td><span class="ui">+</span></td><td>Adds the primary colour to the palette.</td></tr>
       <tr><td><span class="ui">−</span></td><td>Removes the primary colour from the palette.</td></tr>
       <tr><td><span class="ui">Sort</span></td><td>Sorts the swatches from dark to light.</td></tr>
-      <tr><td><span class="ui">Import…</span></td><td><span class="ui">Replace palette…</span> or <span class="ui">Add to palette…</span> from a file. Adding skips colours already there.</td></tr>
-      <tr><td><span class="ui">Export…</span></td><td>Saves the <b>Whole palette</b>, or only the <b>Colours used in the texture</b>.</td></tr>
+      <tr><td><span class="ui">Import…</span></td><td><span class="ui">Replace palette…</span> or <span class="ui">Add to palette…</span> from a file. Adding skips colours already there. Inside the studio, <b>From the module</b> also takes the module's palette or a texture's colours (see <a href="#module-palette">The module's palette</a>).</td></tr>
+      <tr><td><span class="ui">Export…</span></td><td>Saves the <b>Whole palette</b>, or only the <b>Colours used in the texture</b>. Inside the studio, <span class="ui">As the module's palette (the other tools paint from it)</span> makes this palette the module's.</td></tr>
       <tr><td><span class="ui">Extract</span></td><td>Replaces the palette with this texture's own colours, reduced to the number you ask for.</td></tr>
       <tr><td><span class="ui">Remap…</span></td><td>Converts the active layer to the palette: <span class="ui">nearest</span>, <span class="ui">ordered dither</span> or <span class="ui">Floyd–Steinberg</span>.</td></tr>
     </tbody>
@@ -113,13 +113,29 @@
     <li><p>For a texture that needs a few extra shades, use <span class="ui">Import…</span> → <span class="ui">Add to palette…</span>. It merges the shared colours in without duplicates.</p></li>
     <li><p>Before shipping, check the line under the palette: no off-palette pixels.</p></li>
   </ol>
-  <div class="callout soon"><p>A palette shared by the whole module, kept in the module and picked from the studio, is planned but not started. For now, carry a palette between textures with palette files, as above.</p></div>
+
+  <h2 id="module-palette">The module's palette</h2>
+  <p>Inside the studio, a module can keep one palette of its own, which qPainter and ThreeSprite both read and write. Set it once, and every texture and sprite can paint from the same colours, with no file in between, on a phone too.</p>
+  <ul>
+    <li><span class="ui">Export…</span> → <span class="ui">As the module's palette (the other tools paint from it)</span> makes this texture's palette, with its ramps, the module's palette. qPainter says <em>The module's palette is now these 60 colours.</em> (or however many there are).</li>
+    <li><span class="ui">Import…</span>, under <b>From the module</b>, has four choices: <span class="ui">Replace with the module's palette</span>, <span class="ui">Add the module's palette</span>, <span class="ui">Replace with a texture's colours…</span> and <span class="ui">Add a texture's colours…</span>. The last two ask <em>Take the colours of which texture?</em> and list the module's textures.</li>
+    <li>A module with no palette yet says so: <em>This module has no palette yet. Export… → "As the module's palette" gives it this one.</em></li>
+  </ul>
+  <p>ThreeSprite has the same two doors in its palette editor (see <a href="../sprites/06-preview-palettes-bake.html#module-palette">Palettes</a> in the Sprites track). Its import lists the module's palette first, then every texture:</p>
+  <figure class="shot" data-src="../assets/shots/texture-palette-module.png" data-alt="ThreeSprite's palette editor inside the studio, with HERO open, and the Colours from the module list: The module's palette, then Texture BLOCKGREEN, BLOCKWOOD, BRICKBROWN, BRICKGREY and the rest of Gem Hollow's textures" data-hotspots='[{"x":56,"y":8.8,"t":"Colours from the module","d":"Import… → From the module: as a new palette…"},{"x":58,"y":12.9,"t":"The module&#39;s palette","d":"the one qPainter set with As the module&#39;s palette"},{"x":58,"y":31.1,"t":"Texture BRICKGREY","d":"or the colours of any one texture"},{"x":29.5,"y":20.5,"t":"Palettes","d":"ThreeSprite&#39;s palette editor, behind the list"}]'>
+    <figcaption>In ThreeSprite, <span class="ui">Import…</span> → <span class="ui">From the module: as a new palette…</span> on Gem Hollow's HERO: the module's palette, set from BRICKGREY in qPainter, then each of the module's textures.</figcaption>
+  </figure>
+  <ol class="steps">
+    <li><p>In the studio, open a texture in qPainter. Choose palette <span class="ui">Export…</span> → <span class="ui">As the module's palette (the other tools paint from it)</span>, then press <span class="ui">studio</span>.</p></li>
+    <li><p>Open another texture. Choose <span class="ui">Import…</span> → <span class="ui">Replace with the module's palette</span> and turn on <span class="ui">Lock</span>: it now paints from the same colours.</p></li>
+    <li><p>Open a sprite in ThreeSprite, open its palette editor, and take the same palette there with <span class="ui">Import…</span> → <span class="ui">From the module: as a new palette…</span> → <span class="ui">The module's palette</span>.</p></li>
+  </ol>
 
   <h2>Layers</h2>
   <p>The <b>Layers</b> section of the side panel works like layers anywhere:</p>
   <ul>
     <li><span class="ui">+</span> new layer, <span class="ui">⧉</span> duplicate, <span class="ui">−</span> delete, <span class="ui">↑</span> <span class="ui">↓</span> reorder, <span class="ui">⤓</span> merge down.</li>
-    <li>The checkbox shows or hides a layer. The slider on the active layer sets its opacity. Double-click a layer to rename it.</li>
+    <li>The checkbox shows or hides a layer. The slider on the active layer sets its opacity, and the number box beside it takes a typed value. Double-click a layer to rename it.</li>
     <li>Tools paint on the <b>active</b> (highlighted) layer. Fill, Replace and Remap only look at the active layer. The eyedropper and the 3D preview see all visible layers together.</li>
   </ul>
   <p>A useful split for a wall is a base layer (stone and noise), a detail layer (cracks, moss) and a light layer (highlights from the Shade brush). You can then hide the moss, or redo the lighting, without touching the stone.</p>
@@ -198,6 +214,15 @@
       <li><span class="ui">Extract</span></li>
     </ul>
     <p class="why">Colours used in the texture looks at every layer and frame, and writes only what is there. Extract changes your own palette; it doesn't write a file.</p>
+  </div>
+  <div class="quiz" data-answer="0">
+    <p class="q">You want a new texture and a ThreeSprite sprite to paint from the colours of a texture you finished in the studio. What is the shortest way?</p>
+    <ul>
+      <li>Export… → As the module's palette on the finished texture, then Import… from the module in the other two</li>
+      <li>Export a .gpl file, then import it in each tool</li>
+      <li>Copy the hex codes by hand</li>
+    </ul>
+    <p class="why">The module's palette is shared by qPainter and ThreeSprite inside the studio, with no file in between. A palette file still works, and is the way between tools outside the studio.</p>
   </div>
 </article>
 </body>

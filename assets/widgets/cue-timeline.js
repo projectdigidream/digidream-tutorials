@@ -1,6 +1,6 @@
 // Cue timing demo for the Music track (music/05-loops-and-cues.html).
 // Two looping pieces drawn as bars with a moving playhead. "▶ now",
-// "⏭ next bar" and "⏭ at loop end" queue a switch to the other piece and mark
+// "⇥ next bar" and "⇥ at loop end" queue a switch to the other piece and mark
 // where it will land; "⇄ fade" crossfades now. Silent unless "sound" is ticked.
 (function () {
   window.DNPW = window.DNPW || {};
@@ -37,8 +37,8 @@
     const status = h('div', { class: 'wout' }, 'Press ▶ play, then queue a switch.');
     const playBtn = h('button', { type: 'button', class: 'wbtn primary', onclick: () => (playing ? stop() : start()) }, '▶ play');
     const btnNow = h('button', { type: 'button', class: 'wbtn', onclick: () => request('now') }, '▶ now');
-    const btnBar = h('button', { type: 'button', class: 'wbtn', onclick: () => request('nextBar') }, '⏭ next bar');
-    const btnEnd = h('button', { type: 'button', class: 'wbtn', onclick: () => request('loopEnd') }, '⏭ at loop end');
+    const btnBar = h('button', { type: 'button', class: 'wbtn', onclick: () => request('nextBar') }, '⇥ next bar');
+    const btnEnd = h('button', { type: 'button', class: 'wbtn', onclick: () => request('loopEnd') }, '⇥ at loop end');
     const btnFade = h('button', { type: 'button', class: 'wbtn', onclick: () => request('fade') }, '⇄ fade');
     const btnCancel = h('button', { type: 'button', class: 'wbtn', onclick: cancel }, '✕ cancel queued');
     const fadeMs = h('input', { type: 'number', min: '20', max: '8000', step: '50', value: '800', style: 'width:70px' });
@@ -62,7 +62,7 @@
     // ---------- actions ----------
     function start() {
       playing = true; last = performance.now();
-      playBtn.textContent = '⏹ stop';
+      playBtn.textContent = '■ stop';
       say(`▶ '${PIECES[cur].name}' is playing.`);
       beats(cur, 0, 0, 1, true);
       loop();

@@ -21,6 +21,15 @@ anything not released yet is under **Unreleased**.
     - the plugins sharing the module's palette and textures.
 
     Screenshots are retaken.
+  - **Plugins** (ThreeSprite 0.2.4, qPainter 0.2.1, DigidreamSynth 0.2.1,
+    DigidreamSound 0.2.1):
+    - the module's palette and textures, from both ThreeSprite and qPainter;
+    - a texture brought in as a sprite part;
+    - exporting some parts on their own;
+    - a sprite with no animations drawn as a still;
+    - number boxes on qPainter's sliders;
+    - autosave in the sound tool and the DAW;
+    - their flat icons.
 - **For studio 0.3.4 and engine 0.2.0.** The Enemies and Weapons tracks, and
   the studio's workshop lesson, teach the new monster and weapon editors:
   - their tabs, and rules written as sentences;

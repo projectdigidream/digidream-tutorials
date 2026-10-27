@@ -35,6 +35,7 @@
     <li><b>+</b> <span class="ui">Add animation</span> asks for a name (it suggests <i>anim 2</i>, <i>anim 3</i> …).</li>
     <li><b>Pencil</b> <span class="ui">Rename animation</span> and <b>trash</b> <span class="ui">Delete animation</span>. Deleting removes its keys, and is undoable.</li>
   </ul>
+  <p>A sprite with no animations at all, the last one deleted, is not lost to the game: it is read as one still animation called <code>idle</code>, the drawing as it stands, in every view.</p>
   <p>Then come the controls for the one you chose:</p>
   <table>
     <thead><tr><th>Control</th><th>What it does</th></tr></thead>
@@ -237,6 +238,7 @@
     </tbody>
   </table>
   <p>If nothing matches, the first animation is used. You can change any of them on <span class="ui">Looks</span> afterwards.</p>
+  <p>A monster given a sprite that has no animations yet is drawn as one still picture, the drawing as it stands, in every state, until the sprite has animations. So a monster can be given a sprite you have only just drawn, and be seen in the game at once.</p>
   <div class="callout tip"><p>Name your animations <code>idle</code>, <code>walk</code>, <code>attack</code>, <code>pain</code> and <code>death</code>, and a new monster is wired up the moment you give it the sheet. Gem Hollow's SLIME, BEE and SNAIL use <code>idle</code>, <code>walk</code>, <code>attack</code>, <code>hurt</code> and <code>death</code>: <code>hurt</code> matches the pain state.</p></div>
 
   <div class="quiz" data-answer="2">

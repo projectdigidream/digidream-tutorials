@@ -9,16 +9,16 @@
   // ---- the recipes: each knob has a range; a sound is a position 0..1 on each ----
   // `log` knobs move by ratios (pitches, times), the rest move evenly.
   var RECIPES = [
-    { id: 'gunshot', icon: '🔫', label: 'Gunshot', noise: 'bandpass', wave: 'triangle', knobs: {
+    { id: 'gunshot', label: 'Gunshot', noise: 'bandpass', wave: 'triangle', knobs: {
       nHz: [700, 2600, 1], nQ: [0.4, 1.6, 0], nMs: [70, 320, 1], nLvl: [0.7, 1, 0],
       t0: [140, 260, 1], t1: [38, 75, 1], tSweep: [25, 90, 1], tMs: [70, 220, 1], tLvl: [0.4, 0.85, 0] } },
-    { id: 'explosion', icon: '💥', label: 'Explosion', noise: 'lowpass', wave: 'sine', knobs: {
+    { id: 'explosion', label: 'Explosion', noise: 'lowpass', wave: 'sine', knobs: {
       nHz: [280, 1300, 1], nQ: [0.4, 1.2, 0], nMs: [600, 1500, 1], nLvl: [0.85, 1, 0],
       t0: [85, 150, 1], t1: [28, 45, 1], tSweep: [180, 520, 1], tMs: [380, 950, 1], tLvl: [0.6, 0.95, 0] } },
-    { id: 'laser', icon: '⚡', label: 'Laser / zap', noise: 'bandpass', wave: 'sawtooth', knobs: {
+    { id: 'laser', label: 'Laser / zap', noise: 'bandpass', wave: 'sawtooth', knobs: {
       nHz: [2800, 7000, 1], nQ: [0.8, 3, 0], nMs: [15, 60, 1], nLvl: [0, 0.2, 0],
       t0: [1100, 2600, 1], t1: [140, 420, 1], tSweep: [90, 300, 1], tMs: [140, 360, 1], tLvl: [0.45, 0.7, 0] } },
-    { id: 'pickup', icon: '✨', label: 'Pickup / blip', noise: 'highpass', wave: 'square', knobs: {
+    { id: 'pickup', label: 'Pickup / blip', noise: 'highpass', wave: 'square', knobs: {
       nHz: [4000, 9000, 1], nQ: [0.5, 1.5, 0], nMs: [8, 30, 1], nLvl: [0, 0.08, 0],
       t0: [480, 900, 1], t1: [950, 2100, 1], tSweep: [35, 120, 1], tMs: [110, 260, 1], tLvl: [0.35, 0.6, 0] } },
   ];
@@ -68,13 +68,13 @@
     var btn = function (text, title, on) { var b = h('button', { class: 'wbtn', type: 'button', title: title }, text); b.addEventListener('click', on); return b; };
     var recipeRow = h('div', { class: 'wrow' });
     var recipeBtns = RECIPES.map(function (r) {
-      var b = btn(r.icon + ' ' + r.label, 'a new ' + r.label.toLowerCase() + ' sound', function () { fromRecipe(r); });
+      var b = btn(r.label, 'a new ' + r.label.toLowerCase() + ' sound', function () { fromRecipe(r); });
       recipeRow.append(b); return b;
     });
     var playBtn = btn('▶', 'play (Space while the demo has focus)', function () { play(); });
     playBtn.classList.add('primary');
-    var randBtn = btn('🎲 Randomize', 'another sound of the same kind (R)', function () { randomize(); });
-    var varyBtn = btn('✨ Vary', 'the same sound, a little different (V)', function () { vary(); });
+    var randBtn = btn('Randomize', 'another sound of the same kind (R)', function () { randomize(); });
+    var varyBtn = btn('Vary', 'the same sound, a little different (V)', function () { vary(); });
     var poc = h('input', { type: 'checkbox' }); poc.checked = true;
     poc.addEventListener('change', function () { st.playOnChange = poc.checked; });
     var lenBadge = h('span', { class: 'wout' }), peakBadge = h('span', { class: 'wout' });

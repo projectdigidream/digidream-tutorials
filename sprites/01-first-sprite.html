@@ -54,10 +54,10 @@
   <p>Every frame of every view is drawn on one square canvas. You pick its size under <span class="ui">Size in pixels</span> when you make the sprite: 16, 24, 32, 48, 64, 96, 128 or 256, or a custom size from 8 to 256. The size is fixed after that. The character's <b>feet go on the bottom row</b>, and an orange ground line under the canvas marks it. The game hangs the sprite from its feet, so a character drawn floating will float in the game too.</p>
 
   <h2>Make a sprite from the studio</h2>
-  <figure class="shot" data-src="../assets/shots/sprite-sprites-page.png" data-alt="The studio's Sprites page in Gem Hollow: 23 sheets as tiles, and HERO's card open with its buttons and which animations loop" data-hotspots='[{"x":28,"y":10,"t":"Add a sheet","d":"+ new sprite opens ThreeSprite; + import brings a .tsprite or an atlas in"},{"x":40,"y":15.6,"t":"find among N sprites…","d":"shown when the module has more than 12 sheets"},{"x":64.3,"y":23.1,"t":"HERO, selected","d":"click a tile for its card"},{"x":30,"y":46,"t":"The card","d":"its animations, who draws it, and where it came from"},{"x":36.8,"y":54.9,"t":"The card&#39;s buttons","d":"edit in ThreeSprite, duplicate, export .tsprite, export sheet"},{"x":30,"y":71,"t":"Which animations loop","d":"one switch per animation, kept through every bake"}]'>
+  <figure class="shot" data-src="../assets/shots/sprite-sprites-page.png" data-alt="The studio's Sprites page in Gem Hollow: 23 sheets as tiles, and HERO's card open with its buttons and which animations loop" data-hotspots='[{"x":5,"y":52.3,"t":"Art","d":"the sidebar&#39;s group for Sprites, Particles and Textures"},{"x":19.4,"y":10.1,"t":"+ new sprite","d":"opens ThreeSprite on a new sprite"},{"x":36.6,"y":10.1,"t":"+ import a sprite","d":"a .tsprite, an atlas, or one PNG picture"},{"x":49.8,"y":15.4,"t":"find among N sprites…","d":"shown when the module has more than 12 sheets"},{"x":64.3,"y":23.1,"t":"HERO, selected","d":"click a tile for its card"},{"x":30,"y":46,"t":"The card","d":"its animations, who draws it, and where it came from"},{"x":36.8,"y":54.9,"t":"The card&#39;s buttons","d":"edit in ThreeSprite, duplicate, export .tsprite, export sheet"},{"x":30,"y":71,"t":"Which animations loop","d":"one switch per animation, kept through every bake"}]'>
     <figcaption>Sprites in Gem Hollow: its 23 sheets, with HERO's card open.</figcaption>
   </figure>
-  <p>Open <b>Sprites</b> from the rail or from Home. The page shows every sheet in the module as a tile:</p>
+  <p>Open <b>Sprites</b>, under <b>Art</b> in the studio's sidebar, or from Home. The page shows every sheet in the module as a tile:</p>
   <ul>
     <li>A tile with a small icon in front of its name is a sheet with no ThreeSprite project behind it: it was imported as a finished atlas. Its pictures can't be edited, but its animations can, on its card (see <a href="#imported-animations">An imported sheet's animations</a>).</li>
     <li>Click a tile to see its card: its animations, which props draw it, and whether it was baked from a project. A baked sheet's card also says which of its animations loop (see <a href="06-preview-palettes-bake.html#loops">Which animations loop</a>).</li>
@@ -119,14 +119,15 @@
     <li>The <b>bake</b> makes what the game draws: <code>assets/sprites/NAME.json</code> (the atlas manifest) and <code>NAME.png</code> (the packed sheet). It runs when you press <span class="ui">studio</span>, and again before Play and Export for any source that changed.</li>
     <li><b>Props and monsters pick a sheet by name.</b> Re-bake a sheet under the same name and everything drawn with it changes.</li>
   </ul>
-  <p>You can also bring in work made elsewhere with <span class="ui">+ import a sprite (.tsprite, an atlas, or one PNG picture)</span>. A <code>.tsprite</code> is kept as the source and baked. An atlas (its <code>.json</code>, then its <code>.png</code>) is taken as a finished sheet, and its tile gets the small icon in front of its name. A single <code>.png</code> becomes a sheet of one picture, the same from every side; make it in ThreeSprite when it should turn and move.</p>
+  <p>You can also bring in work made elsewhere with <span class="ui">+ import a sprite (.tsprite, an atlas, or one PNG picture)</span>. A <code>.tsprite</code> is kept as the source and baked. An atlas (its <code>.json</code>, then its <code>.png</code>) is taken as a finished sheet, and its tile gets the small icon in front of its name.</p>
+  <p><span class="dev">studio 0.4.2.1</span> A single <code>.png</code> becomes a sheet of one picture, the same from every side; make it in ThreeSprite when it should turn and move. The <span class="ui">+ import sheet…</span> chip, where Player, Monsters and Props choose a sheet, takes one PNG the same way. A file that is not a PNG is refused with a message. (The stable studio's button reads <span class="ui">+ import a sprite (.tsprite, or an atlas)</span>.)</p>
   <p>The new sheet takes the sprite's own name. A ThreeSprite project nobody named is still called <code>SPRT</code>, ThreeSprite's default, so the studio names it after its file instead: <code>blob.tsprite</code> becomes <code>BLOB</code>. If the module already has a sheet by that name, the studio never takes it over unasked. It says <em>There is a sheet called <i>NAME</i> already</em> and offers a free name, such as <code>NAME_2</code>. Keep the offer to import it beside the old one. Type the old name instead to replace that sheet, and the studio asks once more, because everything drawn with it changes.</p>
 
   <h3 id="duplicate-export">Duplicate and export</h3>
   <p>A sheet's card has two more kinds of button:</p>
   <ul>
     <li><span class="ui">duplicate</span> asks for the copy's name, and offers the first free one, such as <code>HERO_2</code>. The copy takes everything the sheet is made of: the baked sheet (its manifest renamed), the ThreeSprite project and its bake record. The copy is its own sheet: change it, and the original stays as it was. Use it to make a variant, such as a blue slime from the green one.</li>
-    <li><span class="ui">export .tsprite</span> saves the ThreeSprite project out of the studio. <span class="ui">export sheet</span> saves the baked sheet as a <code>.zip</code> of its <code>.json</code> and <code>.png</code>, which <span class="ui">+ import a sprite</span> can bring back in. In the desktop app these use the system's share or save. In a browser they download.</li>
+    <li><span class="ui">export .tsprite</span> saves the ThreeSprite project out of the studio. <span class="ui">export sheet</span> saves the baked sheet as a <code>.zip</code> of its <code>.json</code> and <code>.png</code>, which <span class="ui">+ import a sprite</span> can bring back in. The app asks where to save it (on a phone, Android's save dialog); a browser downloads it.</li>
   </ul>
   <p>A sheet imported as a finished atlas has no project, so it offers <span class="ui">export sheet</span> only.</p>
 
@@ -146,6 +147,8 @@
     <li>Its project menu (☰) has no <b>New project…</b>, <b>Open…</b> or <b>Save as…</b>: the studio decides which file you are editing.</li>
     <li><kbd>⌘S</kbd> saves only a <b>draft</b>, which survives a reload. ThreeSprite also keeps a draft by itself every few seconds while you edit.</li>
     <li><span class="ui">studio</span>, top left, is what saves into the module and bakes. The <span class="ui">✕</span> at the top right discards your changes and goes back.</li>
+    <li>Importing and exporting go through the studio, with the system's own file picker and save dialog, so they work in the studio on a phone too.</li>
+    <li>The module is one tap away: the project menu has <span class="ui">Texture from the module as part…</span> (see <a href="02-drawing.html#pictures">Bringing a picture in</a>), and the palette editor takes and sets the module's palette, the one qPainter paints from (see <a href="06-preview-palettes-bake.html#module-palette">The module's palette</a>).</li>
     <li>Its <span class="ui">Export</span> tab opens with <em>The game needs nothing from here: the studio builds this sprite into it by itself. Export only to use the sprite somewhere else.</em> See <a href="06-preview-palettes-bake.html#export-standalone">The Export tab</a>.</li>
     <li>ThreeSprite wears the studio's skin. Its own colours are mapped onto the skin's, so it looks like the rest of the studio and changes when you change the skin. Run on its own, it has its own light and dark look.</li>
   </ul>
@@ -205,7 +208,7 @@
   <h3>The top bar</h3>
   <p>From left to right:</p>
   <ul>
-    <li><b>☰</b> — the project menu: <b>Save</b>, <b>Import PNG as part…</b>, and (outside the studio) new, open and recent projects.</li>
+    <li><b>☰</b> — the project menu: <b>Save</b>, <b>Import PNG as part…</b>, inside the studio <b>Texture from the module as part…</b>, and outside it new, open and recent projects.</li>
     <li><b>The project's name</b>, with a <b>•</b> while it has changes still to be saved, then its canvas size, view count and <i>mirrored</i>, for example <code>32px · 8 views · mirrored</code>, or <code>96px · 8 views</code> for HERO, which isn't mirrored. Click it to open <b>Project settings</b>.</li>
     <li><b>Undo</b> and <b>Redo</b> (<kbd>⌘Z</kbd>, <kbd>⇧⌘Z</kbd> or <kbd>⌘Y</kbd>).</li>
     <li><b>The mode tabs</b>, in the middle.</li>

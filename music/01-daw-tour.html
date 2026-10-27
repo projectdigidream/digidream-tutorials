@@ -19,7 +19,7 @@
   <h1>A tour of the DAW</h1>
   <p class="lede">DigidreamSynth is the module's music tool: a small DAW built on the same synth engine the game runs. What you hear while you edit is exactly what the game will play, because the file you hand the game is made by that engine too.</p>
   <div class="goal">
-    <b>You'll learn</b><span>how to start the DAW, what the header, the File menu and the transport do, how the tabs are laid out, how Arrange works, and which file is which</span>
+    <b>You'll learn</b><span>how to start the DAW, what the header, the File menu, autosave and the transport do, how the tabs are laid out, how Arrange works, and which file is which</span>
     <b>Time</b><span>15 minutes</span>
     <b>Needs</b><span>the studio (DigidreamSynth is one of its plugins), or the standalone DigidreamSynth app</span>
   </div>
@@ -37,7 +37,7 @@
   <p>The patch editor and the track cutter are inside the DAW, as the <b>Synth</b> and <b>Cut &amp; Loop</b> tabs.</p>
 
   <ol class="steps">
-    <li><p>Open the DAW: in the studio, open <b>Music</b> and press <span class="ui">edit in DigidreamSynth</span> on a track; or start the standalone DigidreamSynth app.</p></li>
+    <li><p>Open the DAW: in the studio, open <b>Music</b>, under <b>Sound</b> in the sidebar, and press <span class="ui">edit in DigidreamSynth</span> on a track; or start the standalone DigidreamSynth app.</p></li>
     <li><p>If the page shows <span class="ui">Start audio</span>, press it: some systems only allow sound after a click. A progress bar shows the boot stages, and the log at the bottom ends with <em>"DAW ready — draw notes in Track, record with ● Rec, bake in File › Bake .mstk"</em>.</p></li>
   </ol>
 
@@ -57,7 +57,7 @@
   <table>
     <thead><tr><th>Item</th><th>What it does</th></tr></thead>
     <tbody>
-      <tr><td><span class="ui">New project</span></td><td>An empty project. It asks first if you have unsaved edits.</td></tr>
+      <tr><td><span class="ui">New project</span></td><td>An empty project. It asks first if you have unsaved edits, and drops the session the DAW kept (see <a href="#autosave">Autosave</a>).</td></tr>
       <tr><td><span class="ui">Open .msproj…</span> · <span class="ui">Save .msproj</span></td><td>The project file. It holds everything: tracks, tempo, loop, bank, kit, effects, mastering, slices and cue rules. <kbd>⌘S</kbd> saves and <kbd>⇧⌘S</kbd> saves as.</td></tr>
       <tr><td><span class="ui">Import .mid / .mstk…</span></td><td>Brings in a song. See <a href="#import">Importing a MIDI file</a>.</td></tr>
       <tr><td><span class="ui">Import bank.json…</span> · <span class="ui">Import kit.json…</span> · <span class="ui">Import fx.json…</span> · <span class="ui">Import master.json…</span></td><td>Replaces that one part of the project: the melodic patches, the drum kit, the send effects, or the mastering chain.</td></tr>
@@ -69,13 +69,21 @@
     </tbody>
   </table>
   <p>You can also drag any of these files onto the page. A <code>.msproj</code> opens, a <code>.mid</code> or <code>.mstk</code> imports, and a <code>.json</code> is recognised as a bank, kit, fx or master file by what is in it.</p>
+  <h3 id="autosave">Autosave</h3>
+  <p>From DigidreamSynth 0.2.1 on, the standalone DAW keeps the session by itself. Two seconds after an edit, the project is kept in the app's own storage, and a reload or a crash brings it back. The log then says <em>recovered 'NAME' from the last session — File › New project starts over</em>.</p>
+  <ul>
+    <li>A recovered project counts as unsaved, and it no longer knows its file. So its first <kbd>⌘S</kbd> asks where to put it, rather than writing over a file that may have changed since.</li>
+    <li><span class="ui">File</span> → <span class="ui">New project</span> drops the kept session and starts over.</li>
+    <li>Only one session is kept. The <code>.msproj</code> you save is still the project to keep.</li>
+  </ul>
+  <p>Inside the studio, the studio keeps the project: <span class="ui">studio</span> saves it into the module and goes back.</p>
 
   <h2>The transport</h2>
   <table>
     <thead><tr><th>Control</th><th>What it does</th></tr></thead>
     <tbody>
       <tr><td><span class="ui">▶</span></td><td>Play from the playhead. <kbd>Space</kbd> plays and stops.</td></tr>
-      <tr><td><span class="ui">⏹</span></td><td>Stop and return to the start.</td></tr>
+      <tr><td><span class="ui">■</span></td><td>Stop and return to the start.</td></tr>
       <tr><td><span class="ui">● Rec</span></td><td>Record from a MIDI keyboard onto the armed track, with a count-in. <kbd>R</kbd> does the same. See <a href="02-piano-roll.html#record">Recording</a>.</td></tr>
       <tr><td>Position</td><td><code>1.1.000</code> is bar 1, beat 1, tick 0. Beside it, the time in minutes and seconds.</td></tr>
       <tr><td><span class="ui">bpm</span></td><td>Tempo, 20 to 400.</td></tr>

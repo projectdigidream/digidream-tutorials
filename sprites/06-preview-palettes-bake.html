@@ -19,7 +19,7 @@
   <h1>3D preview, palettes, baking</h1>
   <p class="lede">The last steps before a sprite goes into the game: walk round it in 3D to catch a view that jumps, keep its colours in order, set how tall it stands, and know what the studio makes from it.</p>
   <div class="goal">
-    <b>You'll learn</b><span>the 3D tab and its controls, the palette editor and palette files, Project settings, what the bake makes and how tall the sprite stands, the Export tab and the format it opens on, and what is inside a .tsprite</span>
+    <b>You'll learn</b><span>the 3D tab and its controls, the palette editor, palette files and the module's palette, Project settings, what the bake makes and how tall the sprite stands, the Export tab, the format it opens on and how to export some parts on their own, and what is inside a .tsprite</span>
     <b>Time</b><span>25 minutes</span>
     <b>Needs</b><span>an animated sprite (see <a href="04-animate.html">Animating</a>)</span>
   </div>
@@ -66,7 +66,22 @@
     <li>the palette inside a JSON project, including qPainter's <code>.texproj.json</code>.</li>
   </ul>
   <p><span class="ui">Export…</span> writes <span class="ui">.hex (Lospec)</span>, <span class="ui">.gpl (GIMP, Aseprite)</span>, <span class="ui">.pal (JASC)</span> or <span class="ui">.png swatches</span>, of either the <b>Whole palette</b> or only the <b>Colours the sprite uses</b>. These are the formats qPainter reads and writes, so a palette moves between sprites and textures as a file.</p>
-  <div class="callout soon"><p>A shared module palette, <code>assets/palette.json</code>, that every tool would read is planned but not started. For now, keep sprites and textures matched by exporting a palette file from one tool and importing it in the other.</p></div>
+
+  <h3 id="module-palette">The module's palette</h3>
+  <p>Inside the studio, a module keeps one palette that ThreeSprite and qPainter both read and write, so sprites and textures can paint from the same colours with no file in between, on a phone too. The palette editor has two more choices there:</p>
+  <ul>
+    <li><span class="ui">Import…</span> → <span class="ui">From the module: as a new palette…</span> asks <em>Colours from the module</em>: <span class="ui">The module's palette</span> (once the module has one), then <span class="ui">Texture <i>NAME</i></span> for each of its textures. A texture painted in qPainter gives its own palette; a plain picture gives the colours it uses. The colours land as a new palette, named <b>Module</b> or after the texture.</li>
+    <li><span class="ui">Export…</span> → <span class="ui">To the module's palette (qPainter's too)</span> makes the palette you are on the module's. ThreeSprite says <em>"HERO colours" is now the module's palette, the one qPainter paints from too.</em></li>
+  </ul>
+  <p>qPainter has the same two doors, under the names <span class="ui">As the module's palette</span> and <b>From the module</b>: see <a href="../textures/03-palettes-layers.html#module-palette">The module's palette</a> in the Textures track.</p>
+  <figure class="shot" data-src="../assets/shots/texture-palette-module.png" data-alt="ThreeSprite's palette editor inside the studio, with HERO open, and the Colours from the module list: The module's palette, then Texture BLOCKGREEN, BLOCKWOOD, BRICKBROWN, BRICKGREY and the rest of Gem Hollow's textures" data-hotspots='[{"x":56,"y":8.8,"t":"Colours from the module","d":"Import… → From the module: as a new palette…"},{"x":58,"y":12.9,"t":"The module&#39;s palette","d":"here set from BRICKGREY in qPainter"},{"x":58,"y":31.1,"t":"Texture BRICKGREY","d":"or the colours of any one texture"},{"x":29.5,"y":20.5,"t":"Palettes","d":"the palette editor, behind the list"}]'>
+    <figcaption>HERO's palette editor, <span class="ui">Import…</span> → <span class="ui">From the module: as a new palette…</span>: the module's palette first, then each of Gem Hollow's textures.</figcaption>
+  </figure>
+  <ol class="steps">
+    <li><p>In the studio, open a sprite in ThreeSprite, then its palette editor. Choose <span class="ui">Export…</span> → <span class="ui">To the module's palette (qPainter's too)</span>.</p></li>
+    <li><p>Open a texture in qPainter and choose palette <span class="ui">Import…</span> → <span class="ui">Replace with the module's palette</span>. The texture now paints from the sprite's colours.</p></li>
+  </ol>
+  <p>Outside the studio, or between two modules, a palette file still does the job: export it from one tool and import it in the other.</p>
 
   <h2>Project settings</h2>
   <p>Click the project's name in the top bar, or the gear, for <b>Project settings</b>:</p>
@@ -86,6 +101,7 @@
   <p>Inside the studio you don't use the Export tab. Pressing <span class="ui">studio</span> saves the project as <code>sources/sprites/NAME.tsprite</code> and bakes it into <code>assets/sprites/NAME.json</code> and <code>NAME.png</code>. Play and Export bake again any sprite whose project changed. ThreeSprite's own runtime composes the sheet, in the same layout as its Atlas + JSON export: every view of every frame, mirrored views included, trimmed and packed, with each frame's feet, every animation's fps and loop, and the world height. A view with its own layer order (see <a href="03-rig.html#layer-order">Layer order, per view</a>) is baked in that order, so an arm drawn behind the body from the back stays behind it in the game. To take a sprite out of the studio, its card on the Sprites page has <span class="ui">export .tsprite</span> (the project) and <span class="ui">export sheet</span> (the baked sheet, <code>NAME-sheet.zip</code> of json + png, which imports again), and <span class="ui">duplicate</span> copies all of it under a new name.</p>
   <ul>
     <li>The sheet is named after the studio's name for it, whatever the project's sprite id says.</li>
+    <li>A sprite with no animations yet is baked as one still picture, <code>idle</code>: the drawing as it stands, in every view. A monster drawn with it shows that picture in every state until the sprite has animations.</li>
     <li>Props and monsters choose a sheet by that name. In the monster editor, <span class="ui">Looks</span> picks it under <span class="ui">sprite</span>, and each state is matched to one of its animations by name (see <a href="../studio/07-workshops.html">Monsters, weapons, player</a>).</li>
   </ul>
   <h3 id="loops">Which animations loop</h3>
@@ -152,7 +168,14 @@ state 15 → reload   (set by the reload phase)</code></pre>
       <tr><td><b>GIF previews</b></td><td>An animated GIF per animation and view, plus a turntable cycling every view of the first frame.</td><td><span class="ui">Turntable fps</span>. GIF timing is in hundredths of a second, so some fps values play slightly off; the panel says so.</td></tr>
     </tbody>
   </table>
-  <p>Mirrored views are written as real files in every format. The buttons depend on where ThreeSprite runs: <span class="ui">Export to folder…</span> and <span class="ui">Export as zip…</span> on the desktop, <span class="ui">Save zip…</span> on Android, and <span class="ui">Download zip</span> in a browser.</p>
+  <h3 id="export-parts">Some parts on their own <span class="dev">studio 0.4.2.6</span></h3>
+  <p>From ThreeSprite 0.2.4, the Export tab has a <b>Parts</b> list under <b>Animations</b>, every part ticked at first. Untick parts, and only the ticked ones are exported, with every animation kept: a sword, a hat or a backpack as a layer of its own, for a game that draws a character in layers. A field appears, <span class="ui">Sprite id for these files</span>, with the line <em>Only the ticked parts, with every animation. A name of their own keeps these files from replacing the whole sprite's.</em> Give the layer its own id, and the file list on the right follows it.</p>
+  <figure class="shot" data-src="../assets/shots/sprite-export-parts.png" data-alt="ThreeSprite's Export tab inside the studio, with Cinderfall's GUNNER: Atlas + JSON chosen, all six animations ticked, only the rifle part ticked, Sprite id for these files GUNNER_RIFLE, and the files GUNNER_RIFLE.png and GUNNER_RIFLE.json" data-hotspots='[{"x":30,"y":24.6,"t":"Atlas + JSON","d":"any format works on some parts"},{"x":16,"y":44.4,"t":"Animations","d":"every animation is kept"},{"x":13,"y":59.9,"t":"Parts","d":"all ticked at first: the whole sprite"},{"x":14,"y":70.7,"t":"rifle","d":"the only part ticked: the layer"},{"x":29,"y":88,"t":"Sprite id for these files","d":"shown once a part is unticked"},{"x":72,"y":12.2,"t":"Files","d":"GUNNER_RIFLE.png and .json, beside GUNNER&#39;s own"}]'>
+    <figcaption>Cinderfall's <code>GUNNER</code> with only <code>rifle</code> ticked, exported as <code>GUNNER_RIFLE</code>: the rifle alone, in every frame of every animation.</figcaption>
+  </figure>
+  <p>Inside the studio the game needs none of this: the studio bakes the whole sprite. A layer of its own is for another engine, or for a game that draws each player in layers of its own choosing; in this studio, the graph node <a href="../reference/graph-nodes.html#set_layer">set layer</a> gives one player a layer of a sprite.</p>
+
+  <p>Mirrored views are written as real files in every format. The buttons depend on where ThreeSprite runs: <span class="ui">Export to folder…</span> and <span class="ui">Export as zip…</span> on the desktop, <span class="ui">Save zip…</span> on Android, and <span class="ui">Download zip</span> in a browser. Inside the studio, the zip goes through the studio's own save dialog, so it can be saved on a phone too.</p>
 
   <h2>Inside a .tsprite</h2>
   <p>A <code>.tsprite</code> is a zip:</p>
@@ -196,6 +219,15 @@ thumbnail.png                   a small preview</code></pre>
       <li>Facing only works with mirror symmetry off</li>
     </ul>
     <p class="why">Spread turns copy i to i/N of a turn, so that every view is on screen at once. Untick it to turn the character yourself.</p>
+  </div>
+  <div class="quiz" data-answer="1">
+    <p class="q">On the Export tab you untick every part but <code>hat</code>, and leave <span class="ui">Sprite id for these files</span> empty. What do you get?</p>
+    <ul>
+      <li>The whole sprite: the Parts list only matters inside the studio</li>
+      <li>The hat alone, in every animation, under the whole sprite's file names, so it would replace the whole sprite's files</li>
+      <li>The hat in its rest pose only, one frame</li>
+    </ul>
+    <p class="why">Only the ticked parts are exported, every animation kept. With no id of their own, the files take the sprite's id; give the layer its own, such as <code>HERO_HAT</code>, to keep both.</p>
   </div>
 </article>
 </body>
