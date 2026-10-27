@@ -33,6 +33,7 @@
       <tr><td><a href="../luaref/02-every-function.html#entity.pos"><code>e:pos()</code></a>, <a href="../luaref/02-every-function.html#entity.vel"><code>e:vel()</code></a></td><td>position and velocity, as vec3</td></tr>
       <tr><td><a href="../luaref/02-every-function.html#entity.grounded"><code>e:grounded()</code></a></td><td>standing on something</td></tr>
       <tr><td><a href="../luaref/02-every-function.html#entity.sector"><code>e:sector()</code></a></td><td>the room it stands in, as a number (<code>-1</code> in a neighbouring map of the same world)</td></tr>
+      <tr><td><a href="../luaref/02-every-function.html#entity.effect_sectors"><code>e:effect_sectors()</code></a></td><td>the effect areas and water it is in, as a table of room numbers (below)</td></tr>
       <tr><td><a href="../luaref/02-every-function.html#entity.index"><code>e:index()</code></a>, <a href="../luaref/02-every-function.html#entity.player"><code>e:player()</code></a></td><td>its slot in this level; a player's number that stays the same between levels</td></tr>
       <tr><td><code>e:kind()</code>, <a href="../luaref/02-every-function.html#entity.name"><code>e:name()</code></a></td><td>its catalogue number and name (a monster's <code>slime</code>; <code>nil</code> for a player)</td></tr>
       <tr><td><a href="../luaref/02-every-function.html#entity.facing"><code>e:facing()</code></a></td><td>which way it faces, in brad: a full turn is 4294967296</td></tr>
@@ -40,7 +41,9 @@
       <tr><td><a href="../luaref/02-every-function.html#entity.buttons"><code>e:buttons()</code></a>, <a href="../luaref/02-every-function.html#entity.actions"><code>e:actions()</code></a></td><td>the buttons held this tick, and the module's own keys held</td></tr>
       <tr><td><a href="../luaref/02-every-function.html#entity.teleport"><code>e:teleport(v)</code></a>, <a href="../luaref/02-every-function.html#entity.set_velocity"><code>e:set_velocity(v)</code></a>, <a href="../luaref/02-every-function.html#entity.add_impulse"><code>e:add_impulse(v)</code></a></td><td>move it. Queued (<a href="02-events-and-time.html#deferred">page 2</a>)</td></tr>
       <tr><td><a href="../luaref/02-every-function.html#entity.set_animation"><code>e:set_animation(n)</code></a>, <a href="../luaref/02-every-function.html#entity.set_solid"><code>e:set_solid(b)</code></a></td><td>its picture's state number; whether things bump into it</td></tr>
-      <tr><td><a href="../luaref/02-every-function.html#entity.param"><code>e:param(name)</code></a>, <a href="../luaref/02-every-function.html#entity.add_effect"><code>e:add_effect(name, op, value[, ticks])</code></a>, <a href="../luaref/02-every-function.html#entity.remove_effect"><code>e:remove_effect(id)</code></a></td><td>read and change a movement rule (<code>move_speed</code>, <code>jump_impulse</code>, <code>gravity_scale</code> …). <code>op</code> is <code>"mul"</code>, <code>"add"</code> or <code>"set"</code>. <code>add_effect</code> returns an id</td></tr>
+      <tr><td><a href="../luaref/02-every-function.html#entity.param"><code>e:param(name)</code></a>, <a href="../luaref/02-every-function.html#entity.add_effect"><code>e:add_effect(name, op, value[, ticks])</code></a>, <a href="../luaref/02-every-function.html#entity.remove_effect"><code>e:remove_effect(id)</code></a></td><td>read and change a movement rule (<code>move_speed</code>, <code>jump_impulse</code>, <code>gravity_scale</code>, <code>ledge_grab</code>, <code>coyote_time</code> …). <code>op</code> is <code>"mul"</code>, <code>"add"</code> or <code>"set"</code>. <code>add_effect</code> returns an id</td></tr>
+      <tr><td><a href="../luaref/02-every-function.html#entity.set_avatar"><code>e:set_avatar(n)</code></a>, <a href="../luaref/02-every-function.html#entity.set_layer"><code>e:set_layer(slot, prop)</code></a>, <a href="../luaref/02-every-function.html#entity.set_anim"><code>e:set_anim(from[, to])</code></a></td><td>how a player looks: its avatar, what it wears, which animation plays (below)</td></tr>
+      <tr><td><a href="../luaref/02-every-function.html#entity.movement_state"><code>e:movement_state()</code></a>, <a href="../luaref/02-every-function.html#entity.meter"><code>e:meter(name)</code></a> …</td><td>the module's own movement: states, meters and moves (below)</td></tr>
       <tr><td><a href="../luaref/02-every-function.html#entity.change_map"><code>e:change_map([level[, spawn_tag]])</code></a></td><td>send a player to another map (<a href="05-state-and-bridges.html#maps">page 5</a>)</td></tr>
     </tbody>
   </table>
@@ -50,6 +53,42 @@
   <p><code>e:teleport</code> puts the body where you say, even inside a wall. Before you move something, ask <a href="../luaref/02-every-function.html#dnp.place"><code>dnp.place(pos, radius, height[, ignore])</code></a> whether a body that size fits there: it gives back the spot on the floor, or <code>nil</code> when a wall, a low ceiling or another body is in the way. Pass the body you are moving as <code>ignore</code>, so it does not count against itself.</p>
   <pre><code>local spot = dnp.place(vec3.new(12, 4, 0), fx.frac(1, 2), 2, e)
 if spot then e:teleport(spot) end</code></pre>
+
+  <h3 id="looks">How a player looks <span class="dev">studio 0.4.2.5</span></h3>
+  <p>Each player can look different. <a href="../luaref/02-every-function.html#entity.set_avatar"><code>e:set_avatar(n)</code></a> swaps the whole body. On top of it, a player wears up to eight <b>layers</b>: props of the module drawn on the body, in its own animation and facing, so a helmet walks and jumps with it. Slot 1 is drawn nearest the body.</p>
+  <pre><code>e:set_layer(1, "helmet")      -- a prop's name, or its kind number
+e:set_layer(2, "axe")
+print(e:layer(2))             -- the axe's kind number; nil for an empty slot
+e:set_layer(2, nil)           -- take it off</code></pre>
+  <p><a href="../luaref/02-every-function.html#entity.set_anim"><code>e:set_anim(from, to)</code></a> redefines one of a player's animations: wherever the body would play state <code>from</code>, it plays <code>to</code>, and so do its layers. Give the axe its own attack (state 2 is the attack), then put it back:</p>
+  <pre><code>e:set_anim(2, 12)             -- attack with the avatar's state 12
+e:set_anim(2)                 -- the usual attack again</code></pre>
+  <p>Players only: on a monster these do nothing. Everyone sees them. A graph does the same with <a href="../graphs/04-the-world.html#looks">set layer and set animation for</a>.</p>
+
+  <h3 id="movement">Movement states, meters and moves <span class="dev">studio 0.4.2.11</span></h3>
+  <p>A module can define movement of its own on the studio's <b>Player</b> page, tab <span class="ui">movement</span>: <b>states</b> such as swimming, sliding or a stun, <b>meters</b> such as breath and stamina, and <b>layered moves</b> such as a dash or a jump pad (<a href="../studio/12-movement.html">Movement states, meters and moves</a>). A script reads and steers them by the names the module gave:</p>
+  <table>
+    <thead><tr><th>Method</th><th>Gives or does</th></tr></thead>
+    <tbody>
+      <tr><td><a href="../luaref/02-every-function.html#entity.movement_state"><code>e:movement_state()</code></a></td><td>the state's name: one of the module's, or <code>"default"</code></td></tr>
+      <tr><td><a href="../luaref/02-every-function.html#entity.ask_movement_state"><code>e:ask_movement_state(name)</code></a></td><td>asks for a state; a way in that says <code>asked</code> takes the body there</td></tr>
+      <tr><td><a href="../luaref/02-every-function.html#entity.meter"><code>e:meter(name)</code></a>, <a href="../luaref/02-every-function.html#entity.set_meter"><code>e:set_meter(name, v)</code></a></td><td>a meter's value and its max; set it (kept within 0 and the max)</td></tr>
+      <tr><td><a href="../luaref/02-every-function.html#entity.start_move"><code>e:start_move(name)</code></a></td><td>start a layered move, as a way's <code>do move</code> would</td></tr>
+      <tr><td><span class="dev">next release</span> <a href="../luaref/02-every-function.html#entity.set_movement_state_enabled"><code>e:set_movement_state_enabled(name, on)</code></a>, <a href="../luaref/02-every-function.html#entity.set_move_enabled"><code>e:set_move_enabled(name, on)</code></a></td><td>switch a state or a move on or off for this player: a glide found, a dash learnt</td></tr>
+      <tr><td><a href="../luaref/02-every-function.html#entity.movement_state_enabled"><code>e:movement_state_enabled(name)</code></a>, <a href="../luaref/02-every-function.html#entity.move_enabled"><code>e:move_enabled(name)</code></a></td><td>whether it is on now</td></tr>
+    </tbody>
+  </table>
+  <p>A script <b>asks</b>; the module's rules decide. <code>e:ask_movement_state("stunned")</code> does nothing unless the module has a way into <code>stunned</code> that says <code>asked</code>. A name the module never declared is an error, so a typo stops the script at once. The writes are queued like a teleport and land on the next tick.</p>
+  <pre><code>-- a trap that stuns, and a breath bubble
+function on_touch(e, p)
+  if p:name() == "shock_trap" then
+    e:ask_movement_state("stunned")
+  elseif p:name() == "bubble" then
+    local _, max = e:meter("air")
+    e:set_meter("air", max)
+    p:despawn()
+  end
+end</code></pre>
 
   <h2 id="props">Props</h2>
   <p>A prop is a body without a brain: a lever, a coin, a crate. <a href="../luaref/02-every-function.html#dnp.props"><code>dnp.props()</code></a> lists them and <a href="../luaref/02-every-function.html#dnp.prop"><code>dnp.prop(i)</code></a> gets one. A prop's <a href="../luaref/02-every-function.html#prop.name"><code>p:name()</code></a> is the name it has in <b>Props</b>. Finding by name is the robust way:</p>
@@ -118,8 +157,15 @@ end</code></pre>
   <pre><code>dnp.set_sector_light(s:index(), 60, 2)              -- 0..255, fading over 2 seconds
 dnp.set_sector_texture(s:index(), "floor", "LAVA1")   -- or "ceiling"
 dnp.set_sector_effect(s:index(), "fog", { density = 0.5, color = "#203040" })
-dnp.set_sector_effect(s:index(), "snow")             -- rain, snow, dust, embers, fog
-dnp.set_sector_effect(s:index(), "snow", false)      -- stop it</code></pre>
+dnp.set_sector_effect(s:index(), "snow")             -- rain, snow, dust, embers, fog, fill
+dnp.set_sector_effect(s:index(), "snow", false)      -- stop it
+dnp.set_sector_effect(s:index(), "fill", { color = "#2c6a90", alpha = 0.3 })  -- tint the whole room</code></pre>
+  <p><span class="dev">studio 0.4.2.11</span> A <code>fill</code> tints a room's whole volume, as murky water does: whatever is seen through it takes its colour, <code>alpha</code> hiding that much, and a camera inside sees everything tinted.</p>
+  <p><span class="dev">studio 0.4.2.9</span> An <b>effect area</b> is a room laid over other rooms, for its effects and events only (<a href="../studio/13-effect-areas-and-water.html">Effect areas and water</a>). A body can be in several at once, besides its room, so <code>e:sector()</code> does not name them: <a href="../luaref/02-every-function.html#entity.effect_sectors"><code>e:effect_sectors()</code></a> lists them.</p>
+  <pre><code>local FOG = 12                       -- the fog bank's room number
+for _, n in ipairs(e:effect_sectors()) do
+  if n == FOG then dnp.hud(e, { in_fog = 1 }) end
+end</code></pre>
   <p>A wall's picture is <a href="../luaref/02-every-function.html#dnp.set_side_texture"><code>dnp.set_side_texture(side, "upper"|"middle"|"lower", NAME)</code></a>. Texture names are the ones in <b>Textures</b>. Every one of these is kept by the server, saved with the level, and sent to players who arrive later.</p>
 
   <h3 id="move">Moving rooms: move_parametric</h3>

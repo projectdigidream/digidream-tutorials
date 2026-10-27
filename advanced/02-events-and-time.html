@@ -161,6 +161,7 @@ end
   <pre><code>e:teleport(vec3.new(10, 4, 0))
 print(e:pos())   -- still the OLD position: the move is queued</code></pre>
   <p>So don't read back what you just wrote. Keep the value you wrote in a variable if you need it again.</p>
+  <p><span class="dev">studio 0.4.2.11</span> The calls that steer a module's own movement are queued the same way: <a href="../luaref/02-every-function.html#entity.ask_movement_state"><code>e:ask_movement_state</code></a>, <a href="../luaref/02-every-function.html#entity.set_meter"><code>e:set_meter</code></a>, <a href="../luaref/02-every-function.html#entity.start_move"><code>e:start_move</code></a> and the switches. They land on the next tick, so an <code>e:meter("air")</code> read straight after a <code>set_meter</code> still gives the old value (<a href="03-the-world.html#movement">The world</a>).</p>
 
   <h2 id="handles">Stale handles</h2>
   <p>An entity, prop or sector you get from the engine is a <b>handle</b>: a name for a slot, not the thing itself. When the thing goes (a monster dies and vanishes, a coin is picked up, a player leaves), the handle goes stale:</p>

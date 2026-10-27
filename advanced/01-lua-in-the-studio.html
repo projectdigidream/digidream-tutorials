@@ -119,9 +119,10 @@ end
       <tr><td><code>utf8.len(s)</code></td><td>there is no <code>utf8</code> library; <code>#s</code> counts bytes</td></tr>
       <tr><td><code>a &amp; b</code>, <code>a | b</code></td><td>no bit operators; test one button with <code>math.floor(b / dnp.button.USE) % 2 == 1</code></td></tr>
       <tr><td><code>table.unpack(t)</code></td><td>avoid it; index the table instead</td></tr>
-      <tr><td><code>goto</code></td><td>avoid it; use a flag or a function</td></tr>
+      <tr><td><code>goto</code></td><td>don't; use a flag or a function</td></tr>
     </tbody>
   </table>
+  <p><span class="dev">studio 0.4.2.9</span> <b>Keep to Lua 5.1, and to nothing else.</b> LuaJIT also takes a few things Lua 5.1 does not: <code>goto</code>, and its own <code>ffi</code> and <code>jit</code> libraries. Don't use them. The engine can run its server inside a web page, for a single-player game played in the browser, and LuaJIT cannot run there, so that server runs plain Lua 5.1. A script that keeps to 5.1 runs in both. See <a href="../luaref/01-environment.html#version">The Lua environment</a>.</p>
   <p>Numbers are plain Lua numbers, and whole numbers are exact. The world itself uses <b>fx</b>, a fixed-point number that is the same on every machine. Positions, heights and speeds are fx.</p>
   <pre><code>local a = fx.int(3)          -- 3
 local b = fx.frac(1, 4)      -- 0.25, exactly

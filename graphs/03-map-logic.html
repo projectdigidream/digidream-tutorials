@@ -123,6 +123,7 @@ b.entity   → yell.entity        (the roar comes from the second imp)</code></p
     <li>Give <a href="../reference/graph-nodes.html#spawn"><code>spawn</code></a> its <code>z</code>: picking a spot on the floor fills x, y and z. Without <code>z</code> it spawns at height 0, which may be inside the floor or the void.</li>
     <li>If a spawn fails (no room), its <code>entity</code> is nil, and the linked <code>play_sound</code> does nothing rather than roaring from the player.</li>
   </ul>
+  <div class="callout tip"><p><span class="dev">studio 0.4.2.9</span> The trap need not be a whole room. Draw an <b>effect area</b> over just the part of the floor that springs it, and pick that for <code>enter</code>: an effect area lies over other rooms without changing them, and <code>when_sector_entered</code> and <code>when_sector_left</code> hear a body come into it and go out (<a href="../studio/13-effect-areas-and-water.html">Effect areas and water</a>). A body can be in several areas at once, and each is entered on its own.</p></div>
 
   <h2 id="arena">Recipe 5: an arena that opens when all are dead</h2>
   <p>Two waves of three. When the last monster of the last wave dies, the exit opens. This joins recipe 4 with a counter.</p>

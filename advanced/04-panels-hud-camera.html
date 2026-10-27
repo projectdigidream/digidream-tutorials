@@ -129,6 +129,7 @@ dnp.hud(nil, { countdown = false })   -- false clears it</code></pre>
     <li>Values are sent only when they change, so calling it every tick costs little.</li>
   </ul>
   <p>A value shows <b>only where an element is bound to it</b>. In <b>Screens</b>, on the <span class="ui">HUD</span> tab, press <span class="ui">+ element…</span> and add a text whose words include <code>{hud.gold}</code>, or a number or bar bound to <code>hud.gold</code>. The game graph's <a href="../reference/graph-nodes.html#set_hud"><code>set_hud</code></a> node writes the same values, so a graph and a script can share one HUD.</p>
+  <p><span class="dev">studio 0.4.2.11</span> A module's <b>meters</b> (breath, stamina: <a href="03-the-world.html#movement">The world</a>) need no script at all: each is bound as <code>meter.<i>name</i></code>, with its max as <code>meter.<i>name</i>_max</code>. Bind a bar to <code>meter.air</code> with its max from <code>meter.air_max</code>, and it follows the player's own device, with no round trip.</p>
 
   <h2 id="markers">Markers</h2>
   <p>A marker is a small piece of UI hung on something in the world rather than on the screen: a bar over a monster, a sign over a door, a pointer over a goal. <a href="../luaref/02-every-function.html#dnp.mark"><code>dnp.mark</code></a> hangs one on an entity, a prop or a place (a <code>vec3</code>), drawn from a template (<code>health</code>, <code>label</code>, <code>marker</code> or <code>debug_health</code>), and gives back its id:</p>
@@ -148,12 +149,16 @@ dnp.unmark(sign)</code></pre>
       <tr><td><code>yaw</code></td><td>turns</td><td>where the camera stands around the player</td></tr>
       <tr><td><code>lock_yaw</code>, <code>lock_zoom</code></td><td>1 or 0</td><td>stop the player turning or zooming</td></tr>
       <tr><td><code>smoothing</code>, <code>lead</code></td><td></td><td>how fast it catches up; how far ahead it looks</td></tr>
-      <tr><td><code>cam_shake</code>, <code>cam_shake_time</code></td><td>units, seconds</td><td>a shake: it happens each time you send <code>cam_shake</code></td></tr>
+      <tr><td><code>cam_shake</code>, <code>cam_shake_time</code></td><td>strength, milliseconds</td><td>a shake: it happens each time you send <code>cam_shake</code></td></tr>
       <tr><td><code>cam_mode</code>, <code>cam_path</code>, <code>cam_path_speed</code></td><td></td><td>0 follow, 1 track, 2 flythrough, 3 auto, along the camera path with that tag</td></tr>
+      <tr><td><code>auto_turn</code>, <code>auto_delay</code>, <code>auto_rate</code> <span class="dev">studio 0.4.2.7</span></td><td>1 or 0, seconds, a rate</td><td>the automatic camera: it swings round behind the player by itself unless they turned it within the last <code>auto_delay</code> seconds (2 by default), at <code>auto_rate</code>. Never in first person, nor with the yaw locked</td></tr>
+      <tr><td><code>collide</code></td><td>1 or 0</td><td>walls pull the camera in front of them; it eases back out to its <code>distance</code></td></tr>
+      <tr><td><code>camera_height</code>, <code>aim_height</code> <span class="dev">studio 0.4.2.8</span></td><td>units</td><td>how high above the player's feet the camera sits (then <code>distance</code> is how far behind, and the angle follows; negative goes back to <code>pitch</code>), and how high above the feet it looks</td></tr>
     </tbody>
   </table>
   <pre><code>dnp.camera(e, { distance = 30, pitch = 0.2, lock_yaw = 1 })   -- a high, fixed view
-dnp.camera(e, { cam_shake = 0.6, cam_shake_time = 0.5 })      -- a jolt</code></pre>
+dnp.camera(e, { cam_shake = 0.6, cam_shake_time = 500 })      -- a jolt, half a second
+dnp.camera(e, { auto_turn = 1, collide = 1, camera_height = 3, aim_height = 1.5 })  -- low, behind, at the head</code></pre>
   <p><a href="../luaref/02-every-function.html#dnp.level_camera"><code>dnp.level_camera{ … }</code></a> takes the same fields and sets the camera for <b>everyone who joins</b> the level. The map's own <b>Camera</b> settings are written the same way, after your scripts, so they win. To change the view for a player who is already here, use <code>dnp.camera</code>.</p>
 
   <h2 id="screen">Fades and letterbox</h2>
@@ -198,7 +203,7 @@ dnp.sky(nil)                         -- back to the module's sky</code></pre>
     <li><p>Open Gem Hollow from Home → <span class="ui">examples</span>. In <b>Scripts</b>, add a script called <code>travel</code> and paste the travel panel above.</p></li>
     <li><p>Change <code>"lever"</code> to <code>"lever_gold"</code>. Gem Hollow's tagged rooms are gates, rafts and water, which are poor places to land, so travel to its spawn points instead. Make <code>PLACES</code> <code>{ { name = "Start", spawn = "start" }, { name = "Checkpoint 2", spawn = "cp2" } }</code>, and replace the lines from <code>local room</code> down to the <code>end</code> after the <a href="../luaref/02-every-function.html#lua.print"><code>print</code></a> with <code>local to = place and dnp.spawn_point(place.spawn)</code> and <code>if to then e:teleport(to) end</code>.</p></li>
     <li><p>Play <code>world</code>, find the gold lever and use it. The panel opens. Choose a place and press <b>Go</b>.</p></li>
-    <li><p>Add <a href="../luaref/02-every-function.html#dnp.camera"><code>dnp.camera(e, { cam_shake = 0.5, cam_shake_time = 0.4 })</code></a> just before the teleport. Play again and feel the jolt.</p></li>
+    <li><p>Add <a href="../luaref/02-every-function.html#dnp.camera"><code>dnp.camera(e, { cam_shake = 0.5, cam_shake_time = 400 })</code></a> just before the teleport. Play again and feel the jolt.</p></li>
     <li><p>Open the panel and close it with its ×. Use the lever again: it opens, because <code>widget == 0</code> cleared your table.</p></li>
   </ol>
 

@@ -118,7 +118,15 @@
       {
         id: 'mobs.free_aim', sig: 'mobs.free_aim() → boolean', where: 'level',
         doc: 'True when the module\'s controls are first-person, so players aim up and down themselves.',
-        args: [], returns: 'boolean', see: ['mobs.pitch_slope', 'dnp.controls'],
+        args: [], returns: 'boolean', see: ['mobs.pitch_slope', 'dnp.controls', 'mobs.assists'],
+      },
+      {
+        id: 'mobs.assists', sig: 'mobs.assists([mode]) → boolean', where: 'level',
+        doc: 'Whether a player\'s shot is turned toward a target by the aim-assist cone. `mode` is the weapon\'s "Aim assist" setting: 1 is on, 2 is off, and anything else (the default) means on for every control scheme except first person, where players aim with the view.',
+        args: [{ name: 'mode', type: 'integer', optional: true, doc: '1 on, 2 off; nil or 0 for the default rule' }],
+        returns: 'boolean',
+        example: 'local t, ang, slope\nif mobs.assists() then t, ang, slope = mobs.autoaim(e) end\nif t == nil then ang, slope = e:facing(), mobs.pitch_slope(e) end\nmobs.launch_from(e, "fireball", ang, fx.int(1), slope)',
+        see: ['mobs.autoaim', 'mobs.free_aim'],
       },
       {
         id: 'mobs.apply_hit', sig: 'mobs.apply_hit(target, origin, attack [, share [, bare]])', where: 'level',
@@ -364,7 +372,7 @@
   // ------------------------------------------------------------ Lua itself
   API.groups.push({
     id: 'lua', order: 240, title: 'Lua itself',
-    intro: 'The engine runs LuaJIT, which speaks Lua 5.1, with the JIT compiler switched off (it would hide runaway loops from the instruction budget). These are the standard libraries as a script finds them. A server runs scripts in one of two trust profiles: the default, which is what the studio\'s ▶ Play uses, or strict, which a host can choose.',
+    intro: 'Scripts are Lua 5.1. A server runs them on LuaJIT with the JIT compiler switched off (it would hide runaway loops from the instruction budget), and a game whose server runs inside a web page runs them on plain Lua 5.1, because LuaJIT cannot run in a browser. So keep to Lua 5.1: no `goto` (LuaJIT takes it, Lua 5.1 does not), no `ffi` and no `jit`. These are the standard libraries as a script finds them. A server runs scripts in one of two trust profiles: the default, which is what the studio\'s ▶ Play uses, or strict, which a host can choose.',
     entries: [
       {
         id: 'lua.basics', sig: 'assert error ipairs pairs next select type tonumber tostring unpack pcall xpcall rawget rawset rawequal setmetatable getmetatable setfenv getfenv', where: 'both',
@@ -403,7 +411,7 @@
       },
       {
         id: 'lua.bit', sig: 'bit.band bit.bor bit.bxor bit.bnot bit.lshift bit.rshift …', where: 'both',
-        doc: 'LuaJIT\'s bit library, present under both trust profiles. Lua 5.1 has no `&` or `|` operators; use these instead, for example to test a button in `e:buttons()`.',
+        doc: 'The `bit` library, present under both trust profiles and in a web game too. Lua 5.1 has no `&` or `|` operators; use these instead, for example to test a button in `e:buttons()`.',
         example: 'if bit.band(e:buttons(), dnp.button.USE) ~= 0 then print("use is down") end',
         see: ['entity.buttons', 'dnp.button.USE'],
       },
@@ -432,7 +440,7 @@
       },
       {
         id: 'lua.ffi', sig: 'ffi · jit', where: 'both',
-        doc: 'LuaJIT\'s `ffi` (calling native code) is present under the default trust profile and removed under strict; never rely on it in a module. `jit` exists but the compiler is switched off, so `jit.on()` changes nothing you want.',
+        doc: 'Don\'t use them. LuaJIT\'s `ffi` (calling native code) is present on a server under the default trust profile and removed under strict, and `jit` exists there with the compiler switched off. A web game runs plain Lua 5.1, which has neither, so a script that uses them fails there.',
       },
     ],
   });

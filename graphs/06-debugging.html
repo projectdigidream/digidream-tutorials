@@ -19,7 +19,7 @@
   <h1>Debugging graphs</h1>
   <p class="lede">A graph fails in one of two ways: it is refused, so it never loads, or it loads and quietly does something other than you meant. The studio catches most of the first kind before you press Play. For the second, you read the play log, and you narrow it down.</p>
   <div class="goal">
-    <b>You'll learn</b><span>what the studio refuses and where it tells you, how to read the play log and the engine's <code>[graphs]</code> lines, how the debug overlay helps, a checklist for "my graph does nothing", and the mistakes almost everyone makes once</span>
+    <b>You'll learn</b><span>what the studio refuses and where it tells you, the warnings it gives as you draw, how the game's own errors come back to the graph window after Play, how to read the play log and the engine's <code>[graphs]</code> lines, how the debug overlay helps, a checklist for "my graph does nothing", and the mistakes almost everyone makes once</span>
     <b>Time</b><span>25 minutes</span>
     <b>Needs</b><span>the rest of this track; the app for Play (<a href="../studio/10-play-and-export.html">Play, export, snapshots</a>)</span>
   </div>
@@ -28,7 +28,7 @@
   <p>A graph the engine would refuse does not load at all, and the rest of the level runs without it. That is the worst kind of bug: nothing happens and nothing looks wrong. So the studio checks every graph as you draw, with the engine's own rules, and says what the engine would refuse.</p>
   <h3>Where it says so</h3>
   <ul>
-    <li><b>The graph window</b>: a count of problems in red in the bar, and the problems themselves in red in the side panel.</li>
+    <li><b>The graph window</b>: a count of problems in red in the bar, and the problems themselves in red in the side panel. Each line names its node by id.</li>
     <li><b>Graphs</b>: each row shows how many problems its graph has, and the first one.</li>
     <li><b>Home</b>: under <span class="ui">to fix (N)</span>, one line per problem in the whole module. Tap a line to go there. With none, Home says <em>nothing wrong that the studio can see</em>.</li>
     <li><b>Play and Export</b> refuse to start while any graph has a problem. The status line names it: <em>first's graph doors: …</em>.</li>
@@ -48,6 +48,8 @@
       <tr><td>A level-only node in a game graph</td><td><em>a spawn acts on a level, and the game has none -- call the level's graph …</em></td></tr>
       <tr><td>A game event in a map's graph</td><td><em>'on_player_enter' reaches only the game's graph</em></td></tr>
       <tr><td>A player action in a run with no player</td><td><em>music acts on the run's player, and a run from 'tick' (every) has none -- it does nothing</em></td></tr>
+      <tr><td>A <code>do despawn</code> or <code>remove</code> that would take the player <span class="dev">studio 0.4.2.1</span></td><td><em>despawn removes the one who set this off -- a player, and a script cannot remove a player, so the run stops here. Set who? to target …</em></td></tr>
+      <tr><td>Words or a camera from <code>when_level_starts</code> <span class="dev">studio 0.4.2.1</span></td><td><em>a subtitle from 'level_starts' (when level starts) reaches nobody -- the level starts before any player is in it. Start it from "when player arrives" instead (with a once, for the first time only) …</em></td></tr>
       <tr><td>A data loop</td><td><em>the data links form a cycle through 'x'</em></td></tr>
       <tr><td>A number bound to a field with no input</td><td><em>`count` cannot be taken from a variable -- the engine gives it no input</em></td></tr>
       <tr><td>A call nobody answers</td><td><em>… calls 'x' (to game), and no game graph has an on_call of that name</em> (a warning)</td></tr>
@@ -55,6 +57,17 @@
     </tbody>
   </table>
   <p>While you draw, the board refuses two links outright: an exec pin into a data pin (<em>exec links to exec, data to data</em>) and a node into itself (<em>a node cannot feed itself</em>). Everything else you can draw, and the list above tells you what is wrong with it.</p>
+  <h3 id="board">Warnings as you draw <span class="dev">studio 0.4.2.1</span></h3>
+  <p>Some mistakes would load and quietly do the wrong thing. The graph window names the node and says why, in red with the other problems, as you draw:</p>
+  <ul>
+    <li><b>A despawn after a prop is touched or used.</b> A touch or a use carries two things: the player who did it (<code>entity</code>) and the prop (<code>prop</code>, or <code>target</code> for a trigger word). <span class="ui">do despawn</span> left at its default takes <code>entity</code>, the player, whom a script cannot remove: the engine refuses, and the run stops there. So in a run that only ever starts from a prop, the studio now writes it as the prop, and its <code>who?</code> reads <span class="ui">target -- the prop (default here)</span>. An unlinked <a href="../reference/graph-nodes.html#remove"><code>remove</code></a> after one <code>when_prop_touched</code> or <code>when_prop_used</code> takes the prop too. Where it would still take a player (a run that also starts from something else), the window says so: set <code>who?</code> to <code>target</code>, or link what to remove into <code>entity</code>.</li>
+    <li><b>An opening line from <code>when_level_starts</code>.</b> The level starts before any player is in it, so a subtitle, fade, cutscene, camera or sound node there reaches nobody. The window says so, and suggests <a href="../reference/graph-nodes.html#when_player_arrives"><code>when_player_arrives</code></a> with a <a href="../reference/graph-nodes.html#once"><code>once</code></a>, or the game graph's <code>when_player_arrives</code>.</li>
+    <li><b>A second wire from an exec output.</b> An exec output leads to one node, so a new wire from it replaces the old one. The board names the wire that went: <em>an exec output leads to one node: the wire from … to … was replaced (undo puts it back; for both, add a sequence)</em>. One undo brings it back. To run both, put a <a href="../reference/graph-nodes.html#sequence"><code>sequence</code></a> in between.</li>
+  </ul>
+  <p>A word like the last one shows on the board itself for a while, as well as on the status line under the window; tap it to dismiss it.</p>
+  <figure class="shot" data-src="../assets/shots/graph-board-warning.png" data-alt="A graph with when level starts linked to a subtitle: the bar says 1 problem, and the side panel says the subtitle reaches nobody and suggests when player arrives" data-hotspots='[{"x":35,"y":26.5,"t":"The wire","d":"when level starts leads to the subtitle. Nothing refuses the link: the graph would load."},{"x":45.5,"y":19,"t":"The subtitle","d":"Its line would be shown to every player in the level, and at the level&#39;s start there are none."},{"x":91,"y":9.4,"t":"1 problem","d":"The count in the window&#39;s bar."},{"x":86,"y":23,"t":"Why, and what to do","d":"It names the node, says why it reaches nobody, and suggests when player arrives with a once."}]'>
+    <figcaption>A subtitle from <code>when_level_starts</code>: one problem in the bar, and the reason in the side panel.</figcaption>
+  </figure>
   <div class="callout tip"><p>The problem list names nodes by id: <em>node 'open3'</em>. The id is in the side panel when you pick a node. If the list is long, fix the first problem first: one missing sector can cause several lines.</p></div>
 
   <h2>The play log</h2>
@@ -85,6 +98,8 @@
       <tr><td><code>[graphs] records: could not save store 'records': …</code></td><td>A <code>save_vars</code> could not write.</td></tr>
     </tbody>
   </table>
+  <h3 id="after-play">Back from Play: the game's errors in the graph window <span class="dev">studio 0.4.2.1</span></h3>
+  <p>When you come back from a play-test, what the game said about a graph is in its window too, with the other problems, naming the node that failed: <em>node 'x': in the last play-test, the game said: …</em> (and <em>(×12)</em> when it said so twelve times). You no longer have to open the Play log to find it. The line goes once you change that node, and all of them go at the next Play.</p>
   <div class="callout"><p>The run-time lines (<em>skipped</em>, <em>acted on no player</em>, <em>stopped -- a loop?</em>) are said <b>once</b> per node, so the log is not flooded, and the Play log sheet lists each of them under <span class="ui">what looks wrong</span>. The load line (<em>12 nodes, 14 links</em>) is not a failure, so it is only in the full <code>play-server.log</code>.</p></div>
 
   <h3>Your own log lines</h3>
@@ -131,7 +146,9 @@
       <tr><td>A fraction from <code>math</code> into a trigger action's number</td><td>The action is skipped, said once</td><td>Round it, or use the world node (<code>teleport</code>, <code>move_floor</code> …)</td></tr>
       <tr><td><code>play_sound</code> or <code>set_hud</code> after <code>every</code>, <code>after</code> or <code>when_level_starts</code></td><td>Nobody hears or sees it</td><td>Link an entity in, or <code>set_hud</code> <code>to: everyone</code></td></tr>
       <tr><td>A cutscene node after <code>when_dies</code></td><td>The dead monster is not a player: acted on no player</td><td>Tick <code>everyone</code>, or link <code>by</code> (the killer)</td></tr>
-      <tr><td><code>remove</code> or <code>kill</code> after a touch, unlinked</td><td>It acts on the player who touched</td><td>Link the start node's <code>prop</code> (or the right entity)</td></tr>
+      <tr><td><code>kill</code>, <code>damage</code> or <code>push</code> after a touch, unlinked</td><td>It acts on the player who touched (a <code>remove</code> or <code>do despawn</code> there takes the prop, and the board says where it can't)</td><td>Link the start node's <code>prop</code> (or the right entity)</td></tr>
+      <tr><td>An intro from <code>when_level_starts</code></td><td>Nobody sees it: no player is in the level yet. The graph window says so</td><td><code>when_player_arrives</code> → <code>once</code></td></tr>
+      <tr><td>A second wire drawn from a <b>then</b></td><td>It replaces the first; the board names the one that went</td><td>Undo, then a <code>sequence</code> for both</td></tr>
       <tr><td><code>when_dies</code> for an arena</td><td>Counts every death in the level</td><td>Guard with a flag, or set <code>kind</code></td></tr>
       <tr><td>Counting kills by <code>by</code> in a game graph's <code>when_dies</code></td><td>Some kills count for nobody: <code>by</code> is empty there when the killer is out of the game's reach</td><td>Count kills in the map's graph, and call the game with the result</td></tr>
       <tr><td>Expecting a variable per player</td><td>One player's key opens the door for everyone</td><td>Accept it, or keep it in Lua</td></tr>
@@ -160,14 +177,23 @@
     </ul>
     <p class="why">The log line tells you whether the start node fires, and the overlay tells you which sector you are really in.</p>
   </div>
-  <div class="quiz" data-answer="2">
-    <p class="q">Where do the engine's <em>… -- skipped</em> lines appear?</p>
+  <div class="quiz" data-answer="1">
+    <p class="q">During a play-test the server said <em>node 'm' was given 2.5 for 'height', which is not a fx -- skipped</em>. Where do you see it when you come back to the studio?</p>
     <ul>
-      <li>In red in the graph window</li>
-      <li>Only under "what looks wrong" in the Play log</li>
-      <li>In <code>play-server.log</code>, once per node, starting with <code>[graphs]</code></li>
+      <li>Only in <code>play-server.log</code></li>
+      <li>In that graph's window, as a problem naming node <code>m</code>, as well as in the Play log</li>
+      <li>On Home, under <span class="ui">to fix</span></li>
     </ul>
-    <p class="why">They are run-time messages, so only the running server knows them; the Play log sheet also lists them under "what looks wrong", but that is not the only place. The studio can't see them while you draw.</p>
+    <p class="why">The game's lines about a graph come back to its window, naming the node that failed, until you change that node or play again. They are in <code>play-server.log</code> and the Play log sheet too.</p>
+  </div>
+  <div class="quiz" data-answer="1">
+    <p class="q"><code>when_prop_touched</code> (prop <code>coin</code>) leads to <span class="ui">do despawn</span>, with <code>who?</code> left at its default. What goes when a player touches a coin?</p>
+    <ul>
+      <li>The player</li>
+      <li>The coin</li>
+      <li>Nothing: the board refuses the link</li>
+    </ul>
+    <p class="why">In a run that only ever starts from a prop, a despawn at its default removes the prop, and <code>who?</code> says <em>target -- the prop (default here)</em>. A script can never remove a player.</p>
   </div>
 </article>
 </body>

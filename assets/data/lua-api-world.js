@@ -493,7 +493,7 @@ e:set_input(0, 1, aim)        -- a scripted body walks toward the target`,
     {
       id: 'dnp.dir', sig: 'dnp.dir(angle) → vec3',
       doc: "A flat unit vector pointing at `angle` (in brads), with z = 0. The opposite of `dnp.atan2`.",
-      args: [{ name: 'angle', type: 'integer (brad)', doc: '4294967296 is a full turn.' }],
+      args: [{ name: 'angle', type: 'integer (brad)', doc: '4294967296 is a full turn. A negative angle turns the other way.' }],
       returns: 'vec3', where: 'both',
       example: `local ahead = dnp.dir(e:facing())
 local spot = e:pos() + vec3.new(ahead.x * 3, ahead.y * 3, 0)`,
@@ -567,16 +567,17 @@ DNP_LUA_API.groups.push({
     },
     {
       id: 'dnp.set_sector_effect', sig: "dnp.set_sector_effect(sector, kind [, settings | false])",
-      doc: "Turns weather on in a room: `'rain'`, `'snow'`, `'dust'`, `'embers'` or `'fog'`. `settings` is a table of the same keys the map editor's effects take; leave one out and it keeps its default. Pass `false` to switch that effect off.\n\nKeys: `density`, `color`, `alpha`, `bottom`, `top`, `glow` for every kind; `speed`, `windx`, `windy`, `sway`, `size`, `length` for the particle kinds; `falloff`, `noise`, `drift` for fog.",
+      doc: "Turns an effect on in a room: weather (`'rain'`, `'snow'`, `'dust'`, `'embers'` or `'fog'`) or a `'fill'`, which tints the room's whole volume (water you can see into). `settings` is a table of the same keys the map editor's effects take; leave one out and it keeps its default. Pass `false` to switch that effect off.\n\nKeys: `color`, `alpha`, `bottom`, `top`, `glow` for every kind; `density` for all but fill; `speed`, `windx`, `windy`, `sway`, `size`, `length` for the particle kinds; `falloff`, `noise`, `drift` for fog; `surface` for fill (0 to 1, how much of the picture on the fill's top shows; from the release after studio 0.4.2.11).",
       args: [
         { name: 'sector', type: 'integer', doc: 'The room number.' },
-        { name: 'kind', type: 'string', doc: "'rain', 'snow', 'dust', 'embers' or 'fog'." },
+        { name: 'kind', type: 'string', doc: "'rain', 'snow', 'dust', 'embers', 'fog' or 'fill'." },
         { name: 'settings', type: 'table|false', optional: true, doc: "Numbers, fx or decimal strings; `color` also as a '#rrggbb' string. `false` removes the effect." }
       ],
       returns: 'nothing', where: 'level',
       notes: ["A key the kind does not take is an error that names it (snow has no `falloff`)."],
       example: `dnp.set_sector_effect(3, "snow", { density = 6, color = "#ddeeff" })
-dnp.set_sector_effect(3, "snow", false)       -- and off again`,
+dnp.set_sector_effect(3, "snow", false)       -- and off again
+dnp.set_sector_effect(9, "fill", { color = "#2c6a90", alpha = 0.3 })   -- murky water`,
       see: ['dnp.set_sector_light']
     },
     {
@@ -790,14 +791,15 @@ DNP_LUA_API.groups.push({
   entries: [
     {
       id: 'dnp.camera', sig: 'dnp.camera(e, { distance, pitch, yaw, … })',
-      doc: "Changes how the camera behaves for player `e`. Name only the fields you want to change; the rest stay as they are.\n\nFields: `distance` (units from the player), `pitch` (turns above horizontal; 0.125 is 45°), `yaw` (turns around the player), `lock_yaw` and `lock_zoom` (1: the player may not turn or zoom it; 0: may), `smoothing`, `max_accel` (0 = no limit), `lead` (units ahead of the player), `lead_smoothing`, `lead_velocity` (extra lead per unit of forward speed), `deadzone_x`, `deadzone_y`.\n\nPaths and shake: `cam_mode` (0 follow, 1 track, 2 flythrough, 3 auto), `cam_path` (the tag of a camera path in the map; negative for none), `cam_path_speed` (units a second along it, may be negative), `cam_path_attach`, `cam_path_blend`, `cam_shake` (strength; sending it shakes once, and a new shake replaces a running one), `cam_shake_time` (milliseconds).",
+      doc: "Changes how the camera behaves for player `e`. Name only the fields you want to change; the rest stay as they are.\n\nFields: `distance` (units from the player), `pitch` (turns above horizontal; 0.125 is 45°), `yaw` (turns around the player), `lock_yaw` and `lock_zoom` (1: the player may not turn or zoom it; 0: may), `smoothing`, `max_accel` (0 = no limit), `lead` (units ahead of the player), `lead_smoothing`, `lead_velocity` (extra lead per unit of forward speed), `deadzone_x`, `deadzone_y`.\n\nThe automatic camera: `auto_turn` (1: it swings round behind the player by itself, the short way, unless they turned it themselves lately; never in first person or with the yaw locked), `auto_delay` (seconds after the player turns it before it swings back; 2 by default), `auto_rate` (how fast it swings), `collide` (1: walls pull it in front of them, and it eases back out to its `distance`).\n\nBy height: `camera_height` (units above the player's feet the camera sits; `distance` is then how far behind, and the angle down follows from the two; negative goes back to `pitch`), `aim_height` (units above the feet it looks at and swings round: the head rather than the feet).\n\nPaths and shake: `cam_mode` (0 follow, 1 track, 2 flythrough, 3 auto), `cam_path` (the tag of a camera path in the map; negative for none), `cam_path_speed` (units a second along it, may be negative), `cam_path_attach`, `cam_path_blend`, `cam_shake` (strength; sending it shakes once, and a new shake replaces a running one), `cam_shake_time` (milliseconds).",
       args: [
         { name: 'e', type: 'entity', doc: 'The player.' },
         { name: 'fields', type: 'table', doc: 'Plain numbers (not fx); kept to a thousandth.' }
       ],
       returns: 'nothing', where: 'both',
       example: `dnp.camera(e, { distance = 30, pitch = 0.1, lock_yaw = 1 })
-dnp.camera(e, { cam_shake = 0.6, cam_shake_time = 400 })`,
+dnp.camera(e, { cam_shake = 0.6, cam_shake_time = 400 })
+dnp.camera(e, { auto_turn = 1, collide = 1, camera_height = 3, aim_height = 1.5 })`,
       see: ['dnp.level_camera', 'dnp.screen', 'dnp.path_length']
     },
     {
@@ -1147,7 +1149,7 @@ if at then e:teleport(at) end`, see: ['dnp.spawn_point', 'entity.change_map'] },
       example: `function on_cross(e, side)
   if side == EXIT_LINE then e:change_map(dnp.level() + 1, "from_south") end
 end`, see: ['dnp.levels', 'dnp.level', 'dnp.spawn_point'] },
-    { id: 'entity.param', sig: 'e:param(name) → fx | nil', doc: "The body's current value of a movement setting (your module's player rules: `move_speed`, `jump_impulse`, `gravity_scale`, `max_jumps`, `dash_speed`, `attack_reach`…), with every effect on it applied.", args: [{ name: 'name', type: 'string', doc: 'A movement setting name; an unknown name is an error.' }], returns: 'fx, or nil when stale', where: 'both',
+    { id: 'entity.param', sig: 'e:param(name) → fx | nil', doc: "The body's current value of a movement setting (your module's player rules: `move_speed`, `jump_impulse`, `gravity_scale`, `max_jumps`, `dash_speed`, `attack_reach`, `ledge_grab`, `coyote_time`…), with every effect on it applied.", args: [{ name: 'name', type: 'string', doc: 'A movement setting name; an unknown name is an error.' }], returns: 'fx, or nil when stale', where: 'both',
       example: `print("speed now " .. tostring(e:param("move_speed")))`, see: ['entity.base_param', 'entity.add_effect'] },
     { id: 'entity.base_param', sig: 'e:base_param(name) → fx | nil', doc: "The same setting before any effect: what the body has on its own.", args: [{ name: 'name', type: 'string', doc: 'A movement setting name.' }], returns: 'fx, or nil when stale', where: 'both',
       example: `local boosted = e:param("move_speed") > e:base_param("move_speed")`, see: ['entity.param'] },
@@ -1219,7 +1221,7 @@ end`, see: ['prop.kind'] },
       example: `dnp.sound("world.pickup", p:pos())`, see: ['prop.set_pos'] },
     { id: 'prop.set_pos', sig: 'p:set_pos(pos)', doc: "Moves the prop at once. This is how a projectile travels: move it a little every tick and check what it meets with `dnp.sweep_hit`.", args: [{ name: 'pos', type: 'vec3', doc: "The new position, in this level's coordinates." }], returns: 'nothing', where: 'level',
       example: `ball:set_pos(ball:pos() + vec3.new(0, fx.frac(1, 4), 0))`, see: ['dnp.sweep_hit', 'prop.set_facing'] },
-    { id: 'prop.set_facing', sig: 'p:set_facing(angle)', doc: "Which way the prop points, in brads. Props face 0 until you set it; a missile with sprites for several angles needs this to look right in flight.", args: [{ name: 'angle', type: 'integer (brad)', doc: '4294967296 is a full turn.' }], returns: 'nothing', where: 'level',
+    { id: 'prop.set_facing', sig: 'p:set_facing(angle)', doc: "Which way the prop points, in brads. Props face 0 until you set it; a missile with sprites for several angles needs this to look right in flight.", args: [{ name: 'angle', type: 'integer (brad)', doc: '4294967296 is a full turn. A negative angle turns the other way.' }], returns: 'nothing', where: 'level',
       example: `rocket:set_facing(shooter:facing())`, see: ['entity.facing', 'dnp.atan2'] },
     { id: 'prop.solid', sig: 'p:solid() → boolean | nil', doc: "Whether bodies bump into the prop.", args: [], returns: 'boolean, or nil when stale', where: 'both',
       example: `print(gate:solid())`, see: ['prop.set_solid'] },
@@ -1484,5 +1486,137 @@ DNP_LUA_API.groups.push({
     doc: 'The particle kind following this prop, 0 for none. `nil` for a handle that is gone.',
     returns: 'integer, or nil',
     see: ['prop.set_trail']
+  });
+})();
+
+// ---- Engine 0.2.3: how a player looks, effect areas, movement ----
+(function () {
+  var g = function (id) { return DNP_LUA_API.groups.filter(function (x) { return x.id === id; })[0]; };
+  g('entity').entries.push({
+    id: 'entity.effect_sectors', sig: 'e:effect_sectors() → { integer, … }', where: 'both',
+    doc: "The effect areas the body is in, as this level's room numbers, lowest first, or an empty table when it is in none. An effect area (a room whose kind is \"effect area\", or one of water: `sector type effect` or `liquid`) is a volume laid over anything, so a body can be in several at once, besides the room `e:sector()` names.\n\nAn area counts when the body stands inside its outline and the body's height overlaps the area's, between its floor and its ceiling.",
+    returns: 'a table of integers (empty when none, or for a handle that is gone)',
+    notes: ['The graph nodes "when sector entered" and "when sector left" hear these areas too, each entered and left on its own.'],
+    example: 'local FOG = 12                  -- the room number of a fog bank\nfunction on_tick()\n  for _, e in ipairs(dnp.players()) do\n    for _, s in ipairs(e:effect_sectors()) do\n      if s == FOG then dnp.hud(e, { in_fog = 1 }) end\n    end\n  end\nend',
+    see: ['entity.sector', 'dnp.set_sector_effect']
+  }, {
+    id: 'entity.set_layer', sig: 'e:set_layer(slot, prop)', where: 'both',
+    doc: "Draws one of the module's props on a player, on top of its avatar: armour, a hat, a weapon in hand. The layer plays in the body's own animation, clock and facing, so it walks, jumps and attacks with it. There are eight slots; slot 1 is drawn nearest the body. `nil` or 0 takes the slot's layer off.\n\nEvery player sees it. Players only: on a monster it does nothing.",
+    args: [
+      { name: 'slot', type: 'integer', doc: '1 to 8; anything else is an error.' },
+      { name: 'prop', type: 'string | integer | nil', doc: "A prop's name or its kind number (0 to 65535). A name the module has no prop for is an error. nil or 0 takes it off." }
+    ],
+    returns: 'nothing',
+    example: 'function on_prop_use(e, p)\n  if p:name() == "helmet_stand" then\n    e:set_layer(1, "helmet")       -- worn from now on\n  end\nend',
+    see: ['entity.layer', 'entity.set_anim', 'entity.set_avatar']
+  }, {
+    id: 'entity.layer', sig: 'e:layer(slot) → integer | nil', where: 'both',
+    doc: "The kind number of the prop in that slot of a player's layers, or `nil` when the slot is empty (or for a monster, a slot outside 1 to 8, or a handle that is gone).",
+    args: [{ name: 'slot', type: 'integer', doc: '1 to 8.' }],
+    returns: 'integer, or nil',
+    example: 'if e:layer(1) == nil then e:set_layer(1, "helmet") end',
+    see: ['entity.set_layer']
+  }, {
+    id: 'entity.set_anim', sig: 'e:set_anim(from[, to])', where: 'both',
+    doc: "Redefines one of a player's animations: wherever the body would play animation state `from`, it plays `to` instead, and so do its layers. An attack can look different with each weapon. Leave `to` out (or pass `nil`) to put `from` back as it was.\n\nA player holds up to eight of these at once. Players only: on a monster it does nothing.",
+    args: [
+      { name: 'from', type: 'integer', doc: "The animation state to redefine, 0 to 65535 (2 is the attack)." },
+      { name: 'to', type: 'integer', optional: true, doc: 'The state played in its place, 0 to 65535. nil takes the redefinition back.' }
+    ],
+    returns: 'nothing',
+    notes: ['A ninth redefinition is an error; take one back first.', 'The state numbers are the avatar\'s: Player → skin gives each animation its state.'],
+    example: '-- the axe swings with its own animation, state 12\ne:set_layer(2, "axe")\ne:set_anim(2, 12)\n-- and back to bare hands\ne:set_layer(2, nil)\ne:set_anim(2)',
+    see: ['entity.set_layer', 'entity.set_animation']
+  });
+
+  DNP_LUA_API.groups.push({
+    id: 'entity-movement', order: 145, title: 'Movement states, meters and moves',
+    intro: "A module can give its players movement of its own, as data on the studio's Player → movement page (module.txt `movestate`, `transition`, `meter` and `move` lines): states such as swimming, sliding or a stun, meters such as breath and stamina, and layered moves such as a dash or a jump pad. These methods read and steer them by the names the module gave. A name the module never declared is an error, so a typo stops the script instead of doing nothing.\n\nScripts ask; the module's rules decide. A change lands on the next tick, through the same queue as `e:teleport`, and reaches the player's device as a correction, never counted as a misprediction.",
+    entries: [
+      {
+        id: 'entity.movement_state', sig: 'e:movement_state() → string | nil', where: 'both',
+        doc: "The name of the movement state the body is in: one of the module's, or `\"default\"`, the movement every body has without them (walking, jumping, climbing, ledges). `nil` for a handle that is gone.",
+        returns: 'string, or nil',
+        example: 'if e:movement_state() == "swim" then\n  dnp.hud(e, { hint = "Hold JUMP to swim up" })\nend',
+        see: ['entity.ask_movement_state', 'entity.movement_state_enabled']
+      },
+      {
+        id: 'entity.ask_movement_state', sig: 'e:ask_movement_state(name)', where: 'both',
+        doc: "Asks for a movement state. Nothing is forced: a transition that says `asked` takes the body there, when its other conditions hold. The ask waits until one does. Asking for the state the body is already in, or for one that is switched off for it, does nothing.",
+        args: [{ name: 'name', type: 'string', doc: "One of the module's states, or `\"default\"`. Any other name is an error." }],
+        returns: 'nothing',
+        notes: ['The module needs a way in that says `asked`, for example `transition default -> stunned when asked`, and a way out such as `transition stunned -> default when after 0.5`.'],
+        example: 'function on_touch(e, p)\n  if p:name() == "shock_trap" then\n    e:ask_movement_state("stunned")\n  end\nend',
+        see: ['entity.movement_state', 'entity.set_movement_state_enabled']
+      },
+      {
+        id: 'entity.meter', sig: 'e:meter(name) → fx, fx | nil', where: 'both',
+        doc: "How full one of the body's meters is, and its max: two fx. `nil` for a handle that is gone.",
+        args: [{ name: 'name', type: 'string', doc: "One of the module's meters. Any other name is an error." }],
+        returns: 'two fx (the value now and the max), or nil',
+        example: 'local air, max = e:meter("air")\nif air and air < max / 4 then\n  dnp.hud(e, { warn = "Air!" })\nend',
+        see: ['entity.set_meter']
+      },
+      {
+        id: 'entity.set_meter', sig: 'e:set_meter(name, value)', where: 'both',
+        doc: "Sets one of the body's meters, from the next tick: a bubble of air, a stamina potion. The value is kept within 0 and the meter's max. To add, read it first with `e:meter`.",
+        args: [
+          { name: 'name', type: 'string', doc: "One of the module's meters. Any other name is an error." },
+          { name: 'value', type: 'fx', doc: 'The new value.' }
+        ],
+        returns: 'nothing',
+        example: 'function on_touch(e, p)\n  if p:name() == "bubble" then\n    local _, max = e:meter("air")\n    e:set_meter("air", max)          -- a full breath\n    p:despawn()\n  end\nend',
+        see: ['entity.meter']
+      },
+      {
+        id: 'entity.start_move', sig: 'e:start_move(name)', where: 'both',
+        doc: "Starts one of the module's layered moves, as a transition's `do move` would: a knockback, a boost. It does not start when its axis already runs a move of higher priority, when its meter cost cannot be paid, when it is switched off for this body, or while the body climbs or hangs on a rope.",
+        args: [{ name: 'name', type: 'string', doc: "One of the module's moves. Any other name is an error." }],
+        returns: 'nothing',
+        example: 'function on_touch(e, p)\n  if p:name() == "boost_pad" then e:start_move("boost") end\nend',
+        see: ['entity.set_move_enabled', 'entity.add_impulse']
+      },
+      {
+        id: 'entity.set_movement_state_enabled', sig: 'e:set_movement_state_enabled(name[, on])', where: 'both',
+        doc: "Switches one of the module's movement states on or off for this body, from the next tick: a glide found on a ledge, swimming taken away in a cursed level. Off, no transition goes into it, and a body in it is back in `default` on the next tick.\n\nEach player has their own switches. A state marked \"starts switched off\" in the studio (`flags off`) waits for this.",
+        args: [
+          { name: 'name', type: 'string', doc: "One of the module's states. `\"default\"` is always on, and naming it is an error, as any unknown name is." },
+          { name: 'on', type: 'boolean', optional: true, doc: 'true (the default) or false.' }
+        ],
+        notes: ['New after studio 0.4.2.11: in the next release.'],
+        returns: 'nothing',
+        example: 'function on_prop_use(e, p)\n  if p:name() == "glider" then\n    e:set_movement_state_enabled("glide", true)\n  end\nend',
+        see: ['entity.movement_state_enabled', 'entity.set_move_enabled']
+      },
+      {
+        id: 'entity.set_move_enabled', sig: 'e:set_move_enabled(name[, on])', where: 'both',
+        doc: "Switches one of the module's layered moves on or off for this body, from the next tick: a dash learnt, a boost taken away. Off, nothing starts it (its own conditions, a transition, `e:start_move`), and a running one stops.",
+        args: [
+          { name: 'name', type: 'string', doc: "One of the module's moves. Any other name is an error." },
+          { name: 'on', type: 'boolean', optional: true, doc: 'true (the default) or false.' }
+        ],
+        notes: ['New after studio 0.4.2.11: in the next release.'],
+        returns: 'nothing',
+        example: 'e:set_move_enabled("dash", true)',
+        see: ['entity.move_enabled', 'entity.start_move']
+      },
+      {
+        id: 'entity.movement_state_enabled', sig: 'e:movement_state_enabled(name) → boolean | nil', where: 'both',
+        doc: "Whether one of the module's states is switched on for this body now. A switch made this tick shows from the next. `\"default\"` is always on. `nil` for a handle that is gone.",
+        args: [{ name: 'name', type: 'string', doc: "One of the module's states, or `\"default\"`." }],
+        notes: ['New after studio 0.4.2.11: in the next release.'],
+        returns: 'boolean, or nil',
+        see: ['entity.set_movement_state_enabled']
+      },
+      {
+        id: 'entity.move_enabled', sig: 'e:move_enabled(name) → boolean | nil', where: 'both',
+        doc: "Whether one of the module's layered moves is switched on for this body now. A switch made this tick shows from the next. `nil` for a handle that is gone.",
+        args: [{ name: 'name', type: 'string', doc: "One of the module's moves." }],
+        notes: ['New after studio 0.4.2.11: in the next release.'],
+        returns: 'boolean, or nil',
+        example: 'if not e:move_enabled("dash") then dnp.hud(e, { hint = "Find the boots" }) end',
+        see: ['entity.set_move_enabled']
+      }
+    ]
   });
 })();

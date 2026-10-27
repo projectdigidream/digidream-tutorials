@@ -30,6 +30,14 @@ anything not released yet is under **Unreleased**.
     - number boxes on qPainter's sliders;
     - autosave in the sound tool and the DAW;
     - their flat icons.
+  - **Graphs, Lua and Reference:**
+    - the per-player looks nodes, change_player_setting, and the movement and meter nodes;
+    - camera_follow's automatic camera, and set_sector_effect's fill;
+    - the graph board's new warnings, and errors from Play shown on the board;
+    - the Lua reference matching engine 0.2.3.11: movement states, meters, moves, layers, `e:set_anim` and `mobs.assists`;
+    - scripts are Lua 5.1 only;
+    - the studio's new keys;
+    - glossary entries, and the new module.txt and map lines.
 - **For studio 0.3.4 and engine 0.2.0.** The Enemies and Weapons tracks, and
   the studio's workshop lesson, teach the new monster and weapon editors:
   - their tabs, and rules written as sentences;

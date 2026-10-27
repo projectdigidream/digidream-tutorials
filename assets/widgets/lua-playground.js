@@ -414,7 +414,9 @@ function EM.despawn(self)
   if a and a.kind == 0 then fail('despawn: a player is not a scripted agent') end
   if a then a.active = false a.gen = a.gen + 1 end
 end
-for _, n in ipairs({ 'param', 'base_param', 'add_effect', 'remove_effect', 'set_input', 'press', 'release', 'set_body_param', 'swing', 'set_trail' }) do
+for _, n in ipairs({ 'param', 'base_param', 'add_effect', 'remove_effect', 'set_input', 'press', 'release', 'set_body_param', 'swing', 'set_trail',
+    'effect_sectors', 'layer', 'set_layer', 'set_anim', 'movement_state', 'ask_movement_state', 'meter', 'set_meter', 'start_move',
+    'set_movement_state_enabled', 'set_move_enabled', 'movement_state_enabled', 'move_enabled' }) do
   EM[n] = notin('e:' .. n)
 end
 ENT.__index = function(_, k) return EM[k] end
@@ -592,10 +594,11 @@ end
 
 local CAMERA_FIELDS = { 'distance', 'pitch', 'smoothing', 'max_accel', 'lead', 'lead_smoothing', 'deadzone_x', 'deadzone_y',
   'yaw', 'lock_yaw', 'lock_zoom', 'cam_mode', 'cam_path', 'cam_path_speed', 'cam_path_attach', 'cam_path_blend',
-  'cam_shake', 'cam_shake_time', 'lead_velocity' }
-local FX_KINDS = { rain = 1, snow = 2, dust = 3, embers = 4, fog = 5 }
-local FX_KEYS = { density = 'any', speed = 'p', windx = 'p', windy = 'p', sway = 'p', size = 'p', length = 'p',
-  color = 'any', alpha = 'any', bottom = 'any', top = 'any', glow = 'any', falloff = 'fog', noise = 'fog', drift = 'fog' }
+  'cam_shake', 'cam_shake_time', 'lead_velocity', 'auto_turn', 'auto_delay', 'auto_rate', 'collide', 'camera_height', 'aim_height' }
+local FX_KINDS = { rain = 1, snow = 2, dust = 3, embers = 4, fog = 5, fill = 6 }
+-- who takes a key: any kind, 'w' all but fill, 'p' the particle kinds, or only 'fog' / 'fill'
+local FX_KEYS = { density = 'w', speed = 'p', windx = 'p', windy = 'p', sway = 'p', size = 'p', length = 'p',
+  color = 'any', alpha = 'any', bottom = 'any', top = 'any', glow = 'any', falloff = 'fog', noise = 'fog', drift = 'fog', surface = 'fill' }
 local UI_KINDS = { label = true, button = true, slider = true, select = true, toggle = true }
 
 local function ui_text(v, what)
@@ -697,13 +700,14 @@ dnp = {
   set_sector_effect = function(i, kind, opts)
     local s = sector_arg(i, 'dnp.set_sector_effect')
     kind = str(kind, "'set_sector_effect'")
-    if not FX_KINDS[kind] then fail("no sector effect '" .. kind .. "' (rain, snow, dust, embers, fog)") end
+    if not FX_KINDS[kind] then fail("no sector effect '" .. kind .. "' (rain, snow, dust, embers, fog, fill)") end
     if opts == false then s.effects[kind] = nil return end
     local set = {}
     if type(opts) == 'table' then
       for k, v in pairs(opts) do
         local who_takes = type(k) == 'string' and FX_KEYS[k]
-        if not who_takes or (who_takes == 'p' and kind == 'fog') or (who_takes == 'fog' and kind ~= 'fog') then
+        if not who_takes or (who_takes == 'p' and FX_KINDS[kind] > 4) or (who_takes == 'w' and kind == 'fill')
+          or ((who_takes == 'fog' or who_takes == 'fill') and kind ~= who_takes) then
           fail(kind .. " takes no setting '" .. tostr(k) .. "'")
         end
         if k == 'color' then
@@ -957,7 +961,7 @@ mobs = {
   has = function(kind) return W0.mobs[kind] ~= nil end,
 }
 with_missing(mobs, 'mobs.', { 'place', 'load', 'autoaim', 'pain_ticks', 'has_missile', 'telegraph', 'apply_hit',
-  'tagged_effect', 'clear_tagged', 'mob_masses', 'missile_defs' })
+  'tagged_effect', 'clear_tagged', 'mob_masses', 'missile_defs', 'assists' })
 
 triggers = {
   counter = function(name) local v = W.counters[name] return type(v) == 'number' and v or 0 end,
@@ -1188,7 +1192,7 @@ function PG.snapshot()
       if sf ~= 'floor' then ce = ce + z end
     end
     local fxs = arr()
-    for _, k in ipairs({ 'rain', 'snow', 'dust', 'embers', 'fog' }) do
+    for _, k in ipairs({ 'rain', 'snow', 'dust', 'embers', 'fog', 'fill' }) do
       if x.effects[k] then fxs[#fxs + 1] = { kind = k, density = x.effects[k].density, color = x.effects[k].color } end
     end
     s.sectors[#s.sectors + 1] = { i = i, name = x.name, tag = x.tag, x0 = x.x0, y0 = x.y0, x1 = x.x1, y1 = x.y1,
@@ -1672,7 +1676,7 @@ reset(1)
         panels: [], hud: [], screen: { fade: 0, fade_ms: 0, letterbox: 0, letterbox_ms: 0 }, persist: 0,
       };
     }
-    const FX_GLYPH = { rain: '⁞ rain', snow: '∗ snow', dust: '· dust', embers: '✦ embers', fog: '≋ fog' };
+    const FX_GLYPH = { rain: '⁞ rain', snow: '∗ snow', dust: '· dust', embers: '✦ embers', fog: '≋ fog', fill: '▒ fill' };
     function draw() {
       const w = worldState();
       const box = canvas.parentElement.getBoundingClientRect();
@@ -1707,7 +1711,7 @@ reset(1)
         for (const e of s.effects || []) {
           const n = Math.round(Math.min(40, 10 + (e.density || 1) * 4));
           g.fillStyle = g.strokeStyle = e.color || (e.kind === 'embers' ? C.warn : e.kind === 'fog' ? C.text2 : C.info);
-          if (e.kind === 'fog') { g.globalAlpha = 0.18; g.fillRect(x, y, ww, hh); g.globalAlpha = 1; continue; }
+          if (e.kind === 'fog' || e.kind === 'fill') { g.globalAlpha = e.kind === 'fill' ? 0.3 : 0.18; g.fillRect(x, y, ww, hh); g.globalAlpha = 1; continue; }
           for (let k = 0; k < n; k++) {
             const hx = ((k * 73 + s.i * 31) % 97) / 97, hy = ((k * 41 + s.i * 17) % 89) / 89;
             const sp = e.kind === 'rain' ? 0.02 : e.kind === 'embers' ? -0.006 : e.kind === 'snow' ? 0.006 : 0.002;

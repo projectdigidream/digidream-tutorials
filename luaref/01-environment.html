@@ -27,7 +27,7 @@
   <h2 id="glance">At a glance</h2>
   <table>
     <tbody>
-      <tr><td>Language</td><td>LuaJIT, Lua 5.1, with the JIT compiler switched off</td></tr>
+      <tr><td>Language</td><td>Lua 5.1 only: LuaJIT on a server, with the JIT compiler switched off; plain Lua 5.1 when the server runs in a web page</td></tr>
       <tr><td>Machines</td><td>one per level, plus one game machine for the whole server</td></tr>
       <tr><td>Rate</td><td>60 ticks a second; <a href="02-every-function.html#hook.on_tick"><code>on_tick</code></a> runs once per tick</td></tr>
       <tr><td>Numbers</td><td>Lua numbers for counting; <code>fx</code> fixed point for anything in the world</td></tr>
@@ -37,7 +37,9 @@
   </table>
 
   <h2 id="version">The language: Lua 5.1</h2>
-  <p>The engine runs <b>LuaJIT</b>, which speaks <b>Lua 5.1</b>. The JIT compiler is switched off: compiled code would slip past the instruction budget, and measured on real levels it made no difference, because scripts spend their time calling into the engine. Lua tutorials on the web mostly teach 5.3 or 5.4. What is not there:</p>
+  <p>A server runs <b>LuaJIT</b>, which speaks <b>Lua 5.1</b>. The JIT compiler is switched off: compiled code would slip past the instruction budget, and measured on real levels it made no difference, because scripts spend their time calling into the engine.</p>
+  <p><span class="dev">studio 0.4.2.9</span> The engine can also run its server inside a web page, for a single-player game played in the browser. LuaJIT cannot run there, so that server runs plain <b>Lua 5.1</b>. Write for Lua 5.1 alone and a script runs in both: no <code>goto</code>, no <code>ffi</code> and no <code>jit</code>. The engine's own scripts keep to the same rule.</p>
+  <p>Lua tutorials on the web mostly teach 5.3 or 5.4. What is not there:</p>
   <table>
     <thead><tr><th>Newer Lua</th><th>In this engine</th></tr></thead>
     <tbody>
@@ -46,7 +48,7 @@
       <tr><td>integers as a separate subtype, <code>math.type</code>, <code>math.tointeger</code></td><td>one number type, a double: whole numbers up to 2^53 are exact</td></tr>
       <tr><td>the <code>utf8</code> library</td><td>absent; strings are bytes and <code>#s</code> counts bytes</td></tr>
       <tr><td><code>table.unpack</code>, <code>table.pack</code></td><td>absent; <code>unpack</code> is a global</td></tr>
-      <tr><td><code>goto</code> and labels</td><td>LuaJIT accepts them, but avoid them: the studio's checks and most readers do not expect them</td></tr>
+      <tr><td><code>goto</code> and labels</td><td>not Lua 5.1: LuaJIT accepts them, plain Lua 5.1 does not. Don't use them; a loop with a flag, or a function that returns early, does the same</td></tr>
       <tr><td><code>_ENV</code></td><td>absent; Lua 5.1 has <code>setfenv</code> / <code>getfenv</code></td></tr>
     </tbody>
   </table>
@@ -109,7 +111,7 @@
     <li><code>+ - * /</code> mix fx with whole numbers. Comparisons do not: in Lua 5.1 <code>p.z &lt; 10</code> is an error and <code>p.z == 10</code> is always false. Compare with <code>fx.int(10)</code>.</li>
     <li><code>x.int</code> is the whole part (rounded down), <code>tostring(x)</code> the decimal.</li>
   </ul>
-  <p>Angles are <b>brad</b>: a whole number where 2^32 is a full turn (<code>e:facing()</code>, <code>dnp.atan2</code>, <code>dnp.dir</code>).</p>
+  <p>Angles are <b>brad</b>: a whole number where 2^32 is a full turn (<code>e:facing()</code>, <code>dnp.atan2</code>, <code>dnp.dir</code>). A negative angle turns the other way: <code>dnp.dir(-1073741824)</code>, a quarter turn back, is the same as <code>dnp.dir(3221225472)</code>, three quarters forward.</p>
 
   <h2 id="determinism">Determinism</h2>
   <p>The server's world must come out the same every time from the same inputs: that is what lets players' machines predict it, and saves load back exactly. So:</p>
@@ -118,7 +120,7 @@
     <li>For time, count ticks with <code>dnp.tick()</code>. There is no timer and no <code>wait</code>: keep a deadline (<code>next_at = dnp.tick() + 120</code>) and compare it in <code>on_tick</code>. <code>os.time</code> and <code>os.clock</code> read the real clock and differ every run.</li>
     <li>For world maths, use fx and the engine's helpers (<code>dnp.length</code>, <code>dnp.atan2</code>, <code>dnp.dir</code>); <code>math.sin</code> and friends may differ in the last digits between machines.</li>
     <li>Never let <code>pairs</code> order decide something the game can see. The engine's own lists (<code>dnp.players()</code>, <code>dnp.props()</code> …) come in a fixed order; walk them with <code>ipairs</code>.</li>
-    <li>Reads are immediate. Some writes (<code>teleport</code>, <code>add_impulse</code>, <code>set_velocity</code>, <code>set_offset</code>, <code>change_map</code>) are queued and land when the world steps.</li>
+    <li>Reads are immediate. Some writes (<code>teleport</code>, <code>add_impulse</code>, <code>set_velocity</code>, <code>set_offset</code>, <code>change_map</code>, and the <a href="02-every-function.html#g-entity-movement">movement</a> ones: <code>ask_movement_state</code>, <code>set_meter</code>, <code>start_move</code>, the switches) are queued and land when the world steps.</li>
   </ul>
 
   <h2 id="budgets">Budgets</h2>
@@ -145,7 +147,7 @@
       <tr><td><code>load</code>, <code>loadstring</code>, <code>dofile</code>, <code>loadfile</code>, <code>require</code>, <code>module</code>, <code>package</code></td><td>yes</td><td>removed</td></tr>
       <tr><td><code>coroutine</code></td><td>yes, but don't: it runs outside the budget</td><td>removed</td></tr>
       <tr><td><code>debug</code></td><td>yes, without <code>debug.sethook</code></td><td>removed</td></tr>
-      <tr><td><code>ffi</code></td><td>yes</td><td>removed</td></tr>
+      <tr><td><code>ffi</code>, <code>jit</code></td><td>yes on a server, but don't: a web game's Lua 5.1 has neither</td><td>removed</td></tr>
       <tr><td><code>collectgarbage</code></td><td>removed</td><td>removed</td></tr>
       <tr><td>a <span class="ui">do lua</span> line in a graph or trigger</td><td>runs</td><td>refused at load: it needs <code>loadstring</code></td></tr>
       <tr><td>precompiled bytecode</td><td>refused</td><td>refused</td></tr>
