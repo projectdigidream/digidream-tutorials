@@ -46,10 +46,10 @@
   <h3 id="channels">Stable or development</h3>
   <p>There are two kinds of release:</p>
   <ul>
-    <li><b>Stable</b> releases have a version of three numbers, such as <code>0.4.2</code>. Most people want these.</li>
-    <li><b>Development</b> releases have four, such as <code>0.4.2.11</code>. They come between two stable ones and carry the newest features as each one is finished. GitHub marks them <em>Pre-release</em>. On the website's Downloads page, <span class="ui">Nightly builds</span> lists them, and each one is marked <em>Nightly</em>.</li>
+    <li><b>Stable</b> releases have a version of three numbers, such as <code>0.4.3</code>. Most people want these.</li>
+    <li><b>Development</b> releases have four, such as <code>0.4.3.1</code>. They come between two stable ones and carry the newest features as each one is finished. GitHub marks them <em>Pre-release</em>. On the website's Downloads page, <span class="ui">Nightly builds</span> lists them, and each one is marked <em>Nightly</em>.</li>
   </ul>
-  <p>These tutorials teach the newest development studio. A feature that only the development releases have so far is marked with a badge naming the first release that has it, like this: <span class="dev">studio 0.4.2.8</span>. <span class="dev">next release</span> means that it comes in the next release. If your studio is stable, skip the parts with a badge, or take a development release.</p>
+  <p>These tutorials teach the newest development studio. A feature that only the development releases have so far is marked with a badge naming the first release that has it, like this: <span class="dev">studio 0.4.3.1</span>. If your studio is stable, skip the parts with a badge, or take a development release.</p>
   <p>Which kind you have decides which updates it is offered. A stable studio is only offered stable releases. A development studio is offered the newest release of either kind.</p>
   <p>A file's name says which system it is for:</p>
   <table>
@@ -105,29 +105,29 @@
   <h2>Where your work is kept</h2>
   <ul>
     <li><b>Your modules live inside the app, on this device.</b> There is no account and nothing is uploaded, unless you turn on <a href="11-sync-with-github.html">Sync with GitHub</a>, which keeps them in a GitHub repository of yours.</li>
-    <li><span class="dev">next release</span> The studio asks the system to keep its storage (your modules, snapshots and drafts), so a phone that runs short of space does not clear it to make room.</li>
+    <li>The studio asks the system to keep its storage (your modules, snapshots and drafts), so a phone that runs short of space does not clear it to make room.</li>
     <li>The studio takes <b>snapshots</b> of a module as you work, and you can restore one from Home → <span class="ui">snapshots</span>.</li>
     <li>To back up a module, or move it to another device, press <span class="ui">export</span> on Home. It saves the whole module as one pack file, and says what it saved. On the other device, <span class="ui">import pack</span> opens it.</li>
     <li>The example projects, <b>Gem Hollow</b> and <b>Cinderfall</b>, come with the studio: Home → <span class="ui">examples</span>. Opening one makes a copy of your own, so you can't break the original.</li>
   </ul>
 
   <h2 id="updating">Updating</h2>
-  <p>The studio tells you when a newer one is out. It asks its releases on GitHub at most every six hours, and never gets in your way: offline, it just says nothing. When a later release exists, Home shows a card, <em>"Studio <i>0.4.2</i> is out (you have <i>0.4.1</i>)"</em>, with a short list of what changed and these buttons:</p>
+  <p>The studio tells you when a newer one is out. It asks its releases on GitHub at most every six hours, and never gets in your way: offline, it just says nothing. When a later release exists, Home shows a card, <em>"Studio <i>0.4.3</i> is out (you have <i>0.4.2</i>)"</em>, with a short list of what changed and these buttons:</p>
   <ul>
     <li><span class="ui">update now</span>, where the studio can update itself (below).</li>
     <li><span class="ui">download</span> opens the release page in your system's browser, where you pick the download for your device.</li>
     <li><span class="ui">not now</span> hides the card until an even later release comes out.</li>
   </ul>
   <p>Which releases are offered depends on your studio: a stable one is only offered stable releases (see <a href="#channels">Stable or development</a>).</p>
-  <p>To ask straight away, press <span class="ui">check for updates</span> beside the version on Home (<em>studio 0.4.2.11</em>). It answers on the button itself: <em>up to date (… is the latest)</em>, or <em>could not check: …</em> when GitHub could not be reached. If there is a newer release, the card appears.</p>
+  <p>To ask straight away, press <span class="ui">check for updates</span> beside the version on Home (<em>studio 0.4.3.1</em>). It answers on the button itself: <em>up to date (… is the latest)</em>, or <em>could not check: …</em> when GitHub could not be reached. If there is a newer release, the card appears.</p>
 
   <h3>update now</h3>
   <p>The studio updates itself. <span class="ui">update now</span> downloads the release for your device, puts it in place of this one, and starts it again. Everything you were editing is saved first, and your modules stay where they are.</p>
   <ul>
     <li><b>Android</b> installs the new studio over this one. The first time, Android asks to allow installs from the studio, and the button says <em>allow installs, then press again</em>: allow it, come back and press it again.</li>
-    <li><span class="dev">studio 0.4.2.4</span> <b>macOS, Windows and Linux</b> download the release for your computer, and the studio quits and comes back as the new one.</li>
+    <li><b>macOS, Windows and Linux</b> download the release for your computer, and the studio quits and comes back as the new one.</li>
   </ul>
-  <p><span class="dev">next release</span> While it works, a bar under <span class="ui">update now</span> shows how far it has got: <em>downloading 12 of 80 MB (15%)</em>, then <em>unpacking…</em> (on a computer) or <em>installing: Android takes it from here…</em>, then <em>restarting into the new one…</em>. If something goes wrong, the bar goes and the button says <em>update failed: …</em> and why; press it to try again.</p>
+  <p>While it works, a bar under <span class="ui">update now</span> shows how far it has got: <em>downloading 12 of 80 MB (15%)</em>, then <em>unpacking…</em> (on a computer) or <em>installing: Android takes it from here…</em>, then <em>restarting into the new one…</em>. If something goes wrong, the bar goes and the button says <em>update failed: …</em> and why; press it to try again.</p>
   <div class="callout"><p><b>When it cannot replace itself, it says so.</b> A Mac app opened straight from Downloads runs from a copy macOS will not let it change, and an install made by an administrator is not yours to replace. The button then says <em>this app cannot replace itself where it is (move it to Applications, or a folder of yours); "download" gets it by hand</em>. A studio unpacked loose among other files says, in the same way, <em>the studio shares its folder with other files: unpack it into a folder of its own to update it here</em>. Either way, <span class="ui">download</span> still works.</p></div>
   <p>To update by hand, download the newer release and install it the same way, over the old one. Your modules stay: they belong to the app's storage on the device, not to the folder you unpacked. Export a pack first if you want to be safe.</p>
   <div class="callout"><p>If Home doesn't offer an example these tutorials mention, such as Cinderfall, your studio is older than the tutorials. Download the latest release.</p></div>
@@ -151,10 +151,10 @@
     <p class="why">The app is signed but not notarized by Apple, so macOS asks once. Open Anyway lets it run from then on.</p>
   </div>
   <div class="quiz" data-answer="0">
-    <p class="q">Home says <em>studio 0.4.2</em>, and a development release, 0.4.2.11, is out. What does Home's card offer you?</p>
+    <p class="q">Home says <em>studio 0.4.3</em>, and a development release, 0.4.3.1, is out. What does Home's card offer you?</p>
     <ul>
       <li>Nothing: a stable studio is only offered stable releases</li>
-      <li>update now to 0.4.2.11</li>
+      <li>update now to 0.4.3.1</li>
       <li>A choice between the two</li>
     </ul>
     <p class="why">A studio with three numbers is stable, and is only offered stable releases. To try the development one, download it from the releases page (Pre-release) or the website's Nightly builds.</p>

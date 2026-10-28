@@ -51,7 +51,7 @@ Pages are one folder deep (`studio/`, `sprites/` …), so assets are at `../asse
 | `<kbd>⌘Z</kbd>` | a key |
 | `<ol class="steps"><li>…</li></ol>` | numbered steps. Each gets a tick box, and the ticks are what count as progress. A page is "done" when every step is ticked. |
 | `<div class="callout tip\|warn\|soon">` | a callout. Use `soon` for things that are not finished or not wired yet. |
-| `<span class="dev">studio 0.4.2.8</span>` | a badge for a feature only the development releases have (not yet the stable studio): put it after the heading or at the start of the paragraph that teaches it, naming the first release that has it. It reads "dev · studio 0.4.2.8". |
+| `<span class="dev">studio 0.4.3.1</span>` | a badge for a feature only the development releases have (not yet the stable studio): put it after the heading or at the start of the paragraph that teaches it, naming the first release that has it. It reads "dev · studio 0.4.3.1". When a stable release takes the feature in, remove its badges (grep `class="dev"`). |
 | `<pre><code>…</code></pre>` | code or commands, with a copy button added automatically |
 | `<div class="quiz" data-answer="N">` | a multiple-choice quiz. Inside: `<p class="q">`, a `<ul>` of `<li>` options (`N` is the 0-based index of the right one), then `<p class="why">`. |
 | `<figure class="shot" data-src="../assets/shots/NAME.png" data-alt="…" data-hotspots='[{"x":10,"y":20,"t":"Label","d":"what it does"}]'><figcaption>…</figcaption></figure>` | a screenshot with numbered hotspots. `x` and `y` are percentages of the image. |

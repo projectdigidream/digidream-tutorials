@@ -69,7 +69,7 @@
     <li><span class="ui">↶</span> and <span class="ui">↷</span>: undo and redo for this map.</li>
     <li><span class="ui">⟲</span> and <span class="ui">⟳</span>: rotate the view. <kbd>Q</kbd> and <kbd>E</kbd> rotate it by 45°.</li>
     <li><span class="ui">PLAN</span>: switches between the flat plan view and the game view. The button then reads <span class="ui">GAME</span>. The key is <kbd>V</kbd>.</li>
-    <li><span class="dev">studio 0.4.2.11</span> <span class="ui">FX</span>, on a map that has fog, rain, snow, dust or embers: hides them in the map view while you build, and shows them again. The key is <kbd>X</kbd>. It is struck through while they are hidden, and the game draws them all the same. See <a href="13-effect-areas-and-water.html#fx">Effect areas, water and fills</a>.</li>
+    <li><span class="ui">FX</span>, on a map that has fog, rain, snow, dust or embers: hides them in the map view while you build, and shows them again. The key is <kbd>X</kbd>. It is struck through while they are hidden, and the game draws them all the same. See <a href="13-effect-areas-and-water.html#fx">Effect areas, water and fills</a>.</li>
     <li>On a phone held upright, <span class="ui">‹</span> takes you back to the module.</li>
   </ul>
 
@@ -86,7 +86,7 @@
   </table>
   <p>The studio decides what a gesture is when it starts. A drag that started as a tool drag stays one if a second finger lands. A pan stays a pan if one finger lifts early. So a wall never ends up drawn where you meant to move the view.</p>
   <p>On a keyboard, the arrow keys pan and <kbd>+</kbd> and <kbd>-</kbd> zoom.</p>
-  <p>Corners are drawn twice as big on a touch screen, and a tap within a finger's width of one selects it. The corners and labels grow and shrink with the zoom, within bounds: zoomed in, <em>start</em> no longer covers its room, and zoomed out, the corners stay in sight. <span class="dev">studio 0.4.2.1</span> A small room is easy to tap too: a tap well inside a small platform or a thin door picks the room, and its walls and corners win only near its edge.</p>
+  <p>Corners are drawn twice as big on a touch screen, and a tap within a finger's width of one selects it. The corners and labels grow and shrink with the zoom, within bounds: zoomed in, <em>start</em> no longer covers its room, and zoomed out, the corners stay in sight. A small room is easy to tap too: a tap well inside a small platform or a thin door picks the room, and its walls and corners win only near its edge.</p>
 
   <h2>Drawing a room</h2>
   <figure class="shot" data-src="../assets/shots/studio-map-room.png" data-alt="The Room tool drawing a new room corner by corner">
@@ -112,9 +112,9 @@
   <p>How rooms fit together:</p>
   <ul>
     <li><b>Rooms that touch share a wall.</b> You can walk across it, unless you force it to a wall. A wall that becomes an opening this way shows no middle texture, on either side, so the doorway is not bricked up in the game.</li>
-    <li><span class="dev">studio 0.4.2.11</span> <b>A room drawn over other rooms keeps their wall textures.</b> The walls it turns into openings put their textures aside, and take them back once they are solid walls again: when the room is deleted, say, or made an effect area.</li>
+    <li><b>A room drawn over other rooms keeps their wall textures.</b> The walls it turns into openings put their textures aside, and take them back once they are solid walls again: when the room is deleted, say, or made an effect area.</li>
     <li><b>A room inside a room</b> is a <b>platform</b> when its floor is higher, and a <b>pit</b> when its floor is lower.</li>
-    <li><span class="dev">studio 0.4.2.2</span> <b>A platform can reach across rooms.</b> A room drawn over two or more rooms, with its floor above all of them, is a platform standing on them, with open edges, not a walled box. A room across a border whose floor is level with, or below, a room it reaches over is still refused, and the studio says why.</li>
+    <li><b>A platform can reach across rooms.</b> A room drawn over two or more rooms, with its floor above all of them, is a platform standing on them, with open edges, not a walled box. A room across a border whose floor is level with, or below, a room it reaches over is still refused, and the studio says why.</li>
   </ul>
 
   <p>Try it here. This is a stand-in for the studio's grid, not the studio itself.</p>
@@ -137,7 +137,7 @@
   </ul>
   <p>A selected corner has its own small form: <span class="ui">x</span>, <span class="ui">y</span>, <span class="ui">remove corner</span>, <span class="ui">select sector</span>, and a button for each of the two walls that meet at it, <span class="ui">wall to corner <i>id</i></span>. On a phone, a wall beside a corner is hard to land on; from the corner it is one tap away.</p>
 
-  <h2 id="several">Several rooms at once <span class="dev">studio 0.4.2.8</span></h2>
+  <h2 id="several">Several rooms at once</h2>
   <figure class="shot" data-src="../assets/shots/studio-map-multi.png" data-alt="Five rooms in Gem Hollow's lake selected, outlined in yellow, with their panel: copy, duplicate, paste, turn left, turn right, mirror, raise and lower, raise all by, floor texture, ceiling texture, light, add more by tapping, select none, delete 5 rooms" data-hotspots='[{"x":30.8,"y":51.1,"t":"The selected rooms","d":"outlined in yellow: three islands and two stones"},{"x":37,"y":2.3,"t":"The status line","d":"what the copy took: 5 rooms and the 18 things standing in them"},{"x":79.7,"y":17.2,"t":"copy, duplicate, paste","d":"⌘/Ctrl+C, D and V do the same"},{"x":79.2,"y":22.1,"t":"turn and mirror","d":"a quarter turn either way, or mirrored"},{"x":81.8,"y":27,"t":"raise and lower","d":"by a step, or any amount typed in raise all by"},{"x":87.9,"y":38.9,"t":"One look for all","d":"a floor or ceiling texture, and a light, for every room selected"},{"x":76.7,"y":51.4,"t":"add more by tapping","d":"for a phone, which has no Shift"}]'>
     <figcaption>Five rooms of Gem Hollow's lake, selected together, and their panel.</figcaption>
   </figure>
@@ -190,7 +190,7 @@
     <li><b>room: walls (by floor height inside another)</b>: the usual room. Inside another room it becomes a platform or a pit, by its floor height.</li>
     <li><b>floating platform: open edges, fall off</b>: no walls; you can walk off the edge.</li>
     <li><b>cut into the floor of the room around it</b>.</li>
-    <li><span class="dev">studio 0.4.2.9</span> <b>effect area: only its effects (rain, snow, fog...), laid over anything, nothing drawn</b>: not a room at all, but a volume for weather and fog that you can lay over other rooms. See <a href="13-effect-areas-and-water.html#areas">Effect areas, water and fills</a>.</li>
+    <li><b>effect area: only its effects (rain, snow, fog...), laid over anything, nothing drawn</b>: not a room at all, but a volume for weather and fog that you can lay over other rooms. See <a href="13-effect-areas-and-water.html#areas">Effect areas, water and fills</a>.</li>
   </ul>
 
   <h3>The floor and ceiling patterns</h3>
@@ -233,15 +233,15 @@
   </table>
   <div class="callout tip"><p>You rarely set <span class="ui">trigger</span> and <span class="ui">usable</span> by hand. The presets in <span class="ui">Triggers</span> set them on the right sides for you.</p></div>
 
-  <h2 id="grid">Snap to the grid, or not <span class="dev">studio 0.4.2.1</span></h2>
+  <h2 id="grid">Snap to the grid, or not</h2>
   <p>Corners, rooms, things and points snap to the map's grid as you place them. To put them exactly where you tap, switch the grid off: <span class="ui">More</span> → <span class="ui">Snap to grid: on (turn off)</span>, or press <kbd>G</kbd>. The status line says <em>"grid off: things go exactly where you put them (a corner still joins a corner or wall it lands on)"</em>. Press <kbd>G</kbd> again to snap once more.</p>
   <ul>
     <li>With the grid off, a corner goes where you put it, to a 256th of a unit, and stays there when you edit the room again. It still joins another room's corner or wall that it lands on, so rooms meet cleanly.</li>
-    <li><span class="dev">studio 0.4.2.8</span> A room's floor, ceiling and thickness, and a thing's height, take a 256th of a unit too, so a typed <code>1.1</code> stays <code>1.1</code> (with the grid on, it is kept to a quarter).</li>
+    <li>A room's floor, ceiling and thickness, and a thing's height, take a 256th of a unit too, so a typed <code>1.1</code> stays <code>1.1</code> (with the grid on, it is kept to a quarter).</li>
     <li>The choice is this device's, remembered for every map. It changes nothing in a map you made before.</li>
   </ul>
 
-  <h2 id="size">How big a map can be <span class="dev">next release</span></h2>
+  <h2 id="size">How big a map can be</h2>
   <p>A map can have up to 16384 rooms, 65535 corners and 65535 sides, and use up to 1024 textures: the engine's own limits. (The studio used to stop a map at 512 rooms, 4096 corners and sides, and 256 textures, before Play or Export.)</p>
 
   <h2 id="more">More and Map settings</h2>
@@ -251,14 +251,14 @@
   <p><span class="ui">More</span> holds what is about this map, not one room:</p>
   <ul>
     <li><span class="ui">Map settings…</span></li>
-    <li><span class="dev">studio 0.4.2.1</span> <span class="ui">Snap to grid: on (turn off)</span>, or <span class="ui">Snap to grid: off (turn on)</span>: see <a href="#grid">Snap to the grid, or not</a>.</li>
-    <li><span class="dev">studio 0.4.2.8</span> <span class="ui">Paste <i>n</i> rooms</span>, once you have copied some, and <span class="ui">Select several rooms (tap to add)</span>: see <a href="#several">Several rooms at once</a>.</li>
-    <li><span class="dev">studio 0.4.2.7</span> <span class="ui">Play shows colliders: off (turn on)</span>: Play then draws every body's and wall's collider over the game (see <a href="10-play-and-export.html#colliders">Play</a>).</li>
+    <li><span class="ui">Snap to grid: on (turn off)</span>, or <span class="ui">Snap to grid: off (turn on)</span>: see <a href="#grid">Snap to the grid, or not</a>.</li>
+    <li><span class="ui">Paste <i>n</i> rooms</span>, once you have copied some, and <span class="ui">Select several rooms (tap to add)</span>: see <a href="#several">Several rooms at once</a>.</li>
+    <li><span class="ui">Play shows colliders: off (turn on)</span>: Play then draws every body's and wall's collider over the game (see <a href="10-play-and-export.html#colliders">Play</a>).</li>
     <li><span class="ui">Play log…</span>: why the last play-test did or did not start.</li>
     <li><span class="ui">Camera…</span>: the same sheet as <span class="ui">Camera</span>.</li>
     <li><span class="ui">Import texture (PNG)</span></li>
     <li><span class="ui">Fit view</span>: frames the whole map in the part of the view you can see, clear of the rail and the bars.</li>
-    <li><span class="ui">Help</span>: a short summary of the tools and keys.</li>
+    <li><span class="ui">Help</span>: a short summary of the tools and keys, and <span class="ui">the tutorials (opens the browser)</span>.</li>
   </ul>
   <p><b>Map settings</b> holds the map's own things:</p>
   <ul>

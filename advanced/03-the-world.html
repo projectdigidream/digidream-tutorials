@@ -54,7 +54,7 @@
   <pre><code>local spot = dnp.place(vec3.new(12, 4, 0), fx.frac(1, 2), 2, e)
 if spot then e:teleport(spot) end</code></pre>
 
-  <h3 id="looks">How a player looks <span class="dev">studio 0.4.2.5</span></h3>
+  <h3 id="looks">How a player looks</h3>
   <p>Each player can look different. <a href="../luaref/02-every-function.html#entity.set_avatar"><code>e:set_avatar(n)</code></a> swaps the whole body. On top of it, a player wears up to eight <b>layers</b>: props of the module drawn on the body, in its own animation and facing, so a helmet walks and jumps with it. Slot 1 is drawn nearest the body.</p>
   <pre><code>e:set_layer(1, "helmet")      -- a prop's name, or its kind number
 e:set_layer(2, "axe")
@@ -65,7 +65,7 @@ e:set_layer(2, nil)           -- take it off</code></pre>
 e:set_anim(2)                 -- the usual attack again</code></pre>
   <p>Players only: on a monster these do nothing. Everyone sees them. A graph does the same with <a href="../graphs/04-the-world.html#looks">set layer and set animation for</a>.</p>
 
-  <h3 id="movement">Movement states, meters and moves <span class="dev">studio 0.4.2.11</span></h3>
+  <h3 id="movement">Movement states, meters and moves</h3>
   <p>A module can define movement of its own on the studio's <b>Player</b> page, tab <span class="ui">movement</span>: <b>states</b> such as swimming, sliding or a stun, <b>meters</b> such as breath and stamina, and <b>layered moves</b> such as a dash or a jump pad (<a href="../studio/12-movement.html">Movement states, meters and moves</a>). A script reads and steers them by the names the module gave:</p>
   <table>
     <thead><tr><th>Method</th><th>Gives or does</th></tr></thead>
@@ -74,7 +74,7 @@ e:set_anim(2)                 -- the usual attack again</code></pre>
       <tr><td><a href="../luaref/02-every-function.html#entity.ask_movement_state"><code>e:ask_movement_state(name)</code></a></td><td>asks for a state; a way in that says <code>asked</code> takes the body there</td></tr>
       <tr><td><a href="../luaref/02-every-function.html#entity.meter"><code>e:meter(name)</code></a>, <a href="../luaref/02-every-function.html#entity.set_meter"><code>e:set_meter(name, v)</code></a></td><td>a meter's value and its max; set it (kept within 0 and the max)</td></tr>
       <tr><td><a href="../luaref/02-every-function.html#entity.start_move"><code>e:start_move(name)</code></a></td><td>start a layered move, as a way's <code>do move</code> would</td></tr>
-      <tr><td><span class="dev">next release</span> <a href="../luaref/02-every-function.html#entity.set_movement_state_enabled"><code>e:set_movement_state_enabled(name, on)</code></a>, <a href="../luaref/02-every-function.html#entity.set_move_enabled"><code>e:set_move_enabled(name, on)</code></a></td><td>switch a state or a move on or off for this player: a glide found, a dash learnt</td></tr>
+      <tr><td><a href="../luaref/02-every-function.html#entity.set_movement_state_enabled"><code>e:set_movement_state_enabled(name, on)</code></a>, <a href="../luaref/02-every-function.html#entity.set_move_enabled"><code>e:set_move_enabled(name, on)</code></a></td><td>switch a state or a move on or off for this player: a glide found, a dash learnt</td></tr>
       <tr><td><a href="../luaref/02-every-function.html#entity.movement_state_enabled"><code>e:movement_state_enabled(name)</code></a>, <a href="../luaref/02-every-function.html#entity.move_enabled"><code>e:move_enabled(name)</code></a></td><td>whether it is on now</td></tr>
     </tbody>
   </table>
@@ -160,8 +160,8 @@ dnp.set_sector_effect(s:index(), "fog", { density = 0.5, color = "#203040" })
 dnp.set_sector_effect(s:index(), "snow")             -- rain, snow, dust, embers, fog, fill
 dnp.set_sector_effect(s:index(), "snow", false)      -- stop it
 dnp.set_sector_effect(s:index(), "fill", { color = "#2c6a90", alpha = 0.3 })  -- tint the whole room</code></pre>
-  <p><span class="dev">studio 0.4.2.11</span> A <code>fill</code> tints a room's whole volume, as murky water does: whatever is seen through it takes its colour, <code>alpha</code> hiding that much, and a camera inside sees everything tinted.</p>
-  <p><span class="dev">studio 0.4.2.9</span> An <b>effect area</b> is a room laid over other rooms, for its effects and events only (<a href="../studio/13-effect-areas-and-water.html">Effect areas and water</a>). A body can be in several at once, besides its room, so <code>e:sector()</code> does not name them: <a href="../luaref/02-every-function.html#entity.effect_sectors"><code>e:effect_sectors()</code></a> lists them.</p>
+  <p>A <code>fill</code> tints a room's whole volume, as murky water does: whatever is seen through it takes its colour, <code>alpha</code> hiding that much, and a camera inside sees everything tinted.</p>
+  <p>An <b>effect area</b> is a room laid over other rooms, for its effects and events only (<a href="../studio/13-effect-areas-and-water.html">Effect areas and water</a>). A body can be in several at once, besides its room, so <code>e:sector()</code> does not name them: <a href="../luaref/02-every-function.html#entity.effect_sectors"><code>e:effect_sectors()</code></a> lists them.</p>
   <pre><code>local FOG = 12                       -- the fog bank's room number
 for _, n in ipairs(e:effect_sectors()) do
   if n == FOG then dnp.hud(e, { in_fog = 1 }) end

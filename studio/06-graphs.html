@@ -58,7 +58,7 @@
   </figure>
   <p><b>Graphs</b>, in the sidebar's <b>Logic</b> group, lists every graph of the module, in two groups:</p>
   <ul>
-    <li><span class="ui">the game's graphs</span>, with <span class="ui">+ new graph for the game</span> below them. A new module already has two: <code>welcome</code>, which shows the keys in the panel <code>controls</code> for ten seconds as the game starts <span class="dev">studio 0.4.2.1</span>, and <code>death</code>, the death screen (see <a href="01-getting-started.html#starter">What a new module holds</a>).</li>
+    <li><span class="ui">the game's graphs</span>, with <span class="ui">+ new graph for the game</span> below them. A new module already has two: <code>welcome</code>, which shows the keys in the panel <code>controls</code> for ten seconds as the game starts, and <code>death</code>, the death screen (see <a href="01-getting-started.html#starter">What a new module holds</a>).</li>
     <li>One group per map, headed by the map's name, with <span class="ui">+ new graph on <i>map</i></span>.</li>
   </ul>
   <p>Each row shows how many nodes the graph has, what it <b>calls</b> and what it <b>answers</b>. An empty graph says <em>"empty -- not written until it has a node"</em>. A row also shows the graph's first problem, and if a graph calls a name that no graph answers, a warning says so below the list. Tap a row to open the graph. A map's graph opens with its map, because its places are picked on that map.</p>
@@ -93,7 +93,7 @@
   <h3 id="the-board">The board</h3>
   <ul>
     <li><b>Link:</b> drag from a pin on the right of a node to one on the left of another. While you drag, every input the link can reach lights up.</li>
-    <li><b>Replace:</b> an exec output goes to one place and a data input takes one value, so a new link replaces the one it would break. <span class="dev">studio 0.4.2.1</span> The board says so, naming the wire that went: <em>"an exec output leads to one node: the wire from … to … was replaced (undo puts it back; for both, add a sequence)"</em>. One undo brings it back.</li>
+    <li><b>Replace:</b> an exec output goes to one place and a data input takes one value, so a new link replaces the one it would break. The board says so, naming the wire that went: <em>"an exec output leads to one node: the wire from … to … was replaced (undo puts it back; for both, add a sequence)"</em>. One undo brings it back.</li>
     <li><b>Zoom:</b> pinch, use the wheel, or use the bar in the corner: <span class="ui">−</span>, the zoom level, <span class="ui">+</span>, and <span class="ui">⤢</span>, which puts every node in view.</li>
     <li><b>Delete a node:</b> the small <span class="ui">✕</span> in its header deletes it and its links. Undo brings it back.</li>
   </ul>
@@ -121,7 +121,7 @@
       <tr><td>trigger words</td><td>every trigger event, condition and action by name: <code>if counter at least</code>, <code>do music</code></td></tr>
     </tbody>
   </table>
-  <p>Some groups have an icon before their name. A new node starts with sensible values: an option's first choice, a few seconds, the first monster. <span class="dev">studio 0.4.2.1</span> It goes to the nearest free spot beside the node you picked (or the others), by its real size, so it never lands on top of another node, and the view moves just enough to show it.</p>
+  <p>Some groups have an icon before their name. A new node starts with sensible values: an option's first choice, a few seconds, the first monster. It goes to the nearest free spot beside the node you picked (or the others), by its real size, so it never lands on top of another node, and the view moves just enough to show it.</p>
 
   <h3>The side panel</h3>
   <p>Tap a node to edit it in the side panel. A node shows its main arguments on the board, and the rest are in the side panel. Every field has a help button that shows its own description, and so does the node's header.</p>
@@ -129,7 +129,7 @@
     <li><b>Places are picked on the map.</b> Tap a room for a sector or a tag, the floor for x/y/z, a placed thing for its name, or a wall for a side. The board steps aside while you tap.</li>
     <li><b>Linked arguments:</b> a field with a link into it reads <code>← node.pin</code>, and asks for no value.</li>
     <li><b>Optional arguments</b> stay off the node until they have a value or a link. <code>+ N more…</code> brings them on.</li>
-    <li><b>Names from the module</b>: a sound, a panel, a cue, a movement state or a meter is offered from what the module has. <span class="dev">studio 0.4.2.1</span> <code>play_sound</code>'s list has the module's sounds at once (it said <em>(none)</em> until the Sounds page had been opened).</li>
+    <li><b>Names from the module</b>: a sound, a panel, a cue, a movement state or a meter is offered from what the module has. <code>play_sound</code>'s list has the module's sounds at once (it said <em>(none)</em> until the Sounds page had been opened).</li>
     <li><span class="ui">delete node</span> is at the bottom of a node's details.</li>
   </ul>
   <p>Tap a link to pick it. Its panel has <span class="ui">bend</span> (with a plus before it), which adds a point the link is drawn through so you can route it round other nodes, and <span class="ui">delete link</span>.</p>
@@ -175,9 +175,9 @@
   <h2 id="player-nodes">How a player looks and moves</h2>
   <p>Three families of nodes in <span class="ui">do to a thing</span> act on a player:</p>
   <ul>
-    <li><span class="dev">studio 0.4.2.5</span> <b>How they look</b>: <code>set_avatar</code> draws them with another avatar, <code>set_layer</code> draws a prop on them (armour, a weapon in hand) in their own animation, and <code>set_animation_for</code> plays one animation where another would play. See <a href="../graphs/04-the-world.html#looks">The world</a>.</li>
-    <li><span class="dev">studio 0.4.2.8</span> <b>Their settings</b>: <b>change player setting</b> sets, adds to or multiplies one of the player's settings (jump height, speed, ledge grab and the rest), for good or for some seconds. See <a href="12-movement.html#change-setting">How the player moves</a>.</li>
-    <li><span class="dev">studio 0.4.2.11</span> <b>The module's movement</b>: <code>ask_movement_state</code>, <code>set_meter</code>, <code>start_move</code>, <code>enable_movement_state</code> and <code>enable_move</code>, with start nodes in <span class="ui">when …</span> (<b>when movement state entered</b>, <b>when meter empty</b> and the rest). See <a href="12-movement.html#graphs">How the player moves</a>.</li>
+    <li><b>How they look</b>: <code>set_avatar</code> draws them with another avatar, <code>set_layer</code> draws a prop on them (armour, a weapon in hand) in their own animation, and <code>set_animation_for</code> plays one animation where another would play. See <a href="../graphs/04-the-world.html#looks">The world</a>.</li>
+    <li><b>Their settings</b>: <b>change player setting</b> sets, adds to or multiplies one of the player's settings (jump height, speed, ledge grab and the rest), for good or for some seconds. See <a href="12-movement.html#change-setting">How the player moves</a>.</li>
+    <li><b>The module's movement</b>: <code>ask_movement_state</code>, <code>set_meter</code>, <code>start_move</code>, <code>enable_movement_state</code> and <code>enable_move</code>, with start nodes in <span class="ui">when …</span> (<b>when movement state entered</b>, <b>when meter empty</b> and the rest). See <a href="12-movement.html#graphs">How the player moves</a>.</li>
   </ul>
 
   <h2 id="scene">Playing a scene</h2>
@@ -216,14 +216,14 @@
   </ol>
 
   <h2 id="problems">When the studio says no</h2>
-  <p>The studio names what the engine would refuse while you draw: a button nobody has, a map the module lacks, a path tag the map does not have, a variable named like a property. The problems show in red in the side panel, as a count in the window's bar, and on Home. Play refuses to start while a graph has problems. <span class="dev">studio 0.4.2.1</span> The window's warnings also show on the board itself, by the node they are about.</p>
-  <p>It also warns about graphs that load but would not do what they look like. <span class="dev">studio 0.4.2.1</span></p>
+  <p>The studio names what the engine would refuse while you draw: a button nobody has, a map the module lacks, a path tag the map does not have, a variable named like a property. The problems show in red in the side panel, as a count in the window's bar, and on Home. Play refuses to start while a graph has problems. The window's warnings also show on the board itself, by the node they are about.</p>
+  <p>It also warns about graphs that load but would not do what they look like.</p>
   <ul>
     <li><b>An opening line that reaches nobody.</b> A level starts before any player is in it, so a <code>subtitle</code>, a fade, a cutscene, a camera or a sound run from <b>when level starts</b> is seen by nobody. The board says so at the node, and suggests <b>when player arrives</b>, with a <code>once</code> for the first time only.</li>
     <li><b>Removing the player.</b> A script cannot remove a player, and the run stops there. After <b>when prop touched</b>, a <code>despawn</code> left at its default now removes the prop that was touched: its <code>who?</code> reads <em>target -- the prop (default here)</em>. A <code>remove</code> with nothing linked takes the prop too. Where a despawn or a remove would still hit a player, the board says so in red.</li>
     <li><b>A second wire from an exec output</b> replaces the first, and the board names the wire that went (see <a href="#the-board">The board</a>).</li>
   </ul>
-  <h3 id="after-play">What the game said, on the board <span class="dev">studio 0.4.2.1</span></h3>
+  <h3 id="after-play">What the game said, on the board</h3>
   <p>Some problems only show when the game runs: a name the server does not know, a node that failed. Back from <span class="ui">Play</span>, what the game said about a graph is on its board, at the node that failed: <em>"in the last play-test, the game said: …"</em>. The line goes once you change that node, and at the next Play. The Play log has the same lines.</p>
 
   <h2>Scripts: the module's own Lua</h2>

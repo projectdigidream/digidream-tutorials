@@ -48,8 +48,8 @@
       <tr><td>A level-only node in a game graph</td><td><em>a spawn acts on a level, and the game has none -- call the level's graph …</em></td></tr>
       <tr><td>A game event in a map's graph</td><td><em>'on_player_enter' reaches only the game's graph</em></td></tr>
       <tr><td>A player action in a run with no player</td><td><em>music acts on the run's player, and a run from 'tick' (every) has none -- it does nothing</em></td></tr>
-      <tr><td>A <code>do despawn</code> or <code>remove</code> that would take the player <span class="dev">studio 0.4.2.1</span></td><td><em>despawn removes the one who set this off -- a player, and a script cannot remove a player, so the run stops here. Set who? to target …</em></td></tr>
-      <tr><td>Words or a camera from <code>when_level_starts</code> <span class="dev">studio 0.4.2.1</span></td><td><em>a subtitle from 'level_starts' (when level starts) reaches nobody -- the level starts before any player is in it. Start it from "when player arrives" instead (with a once, for the first time only) …</em></td></tr>
+      <tr><td>A <code>do despawn</code> or <code>remove</code> that would take the player</td><td><em>despawn removes the one who set this off -- a player, and a script cannot remove a player, so the run stops here. Set who? to target …</em></td></tr>
+      <tr><td>Words or a camera from <code>when_level_starts</code></td><td><em>a subtitle from 'level_starts' (when level starts) reaches nobody -- the level starts before any player is in it. Start it from "when player arrives" instead (with a once, for the first time only) …</em></td></tr>
       <tr><td>A data loop</td><td><em>the data links form a cycle through 'x'</em></td></tr>
       <tr><td>A number bound to a field with no input</td><td><em>`count` cannot be taken from a variable -- the engine gives it no input</em></td></tr>
       <tr><td>A call nobody answers</td><td><em>… calls 'x' (to game), and no game graph has an on_call of that name</em> (a warning)</td></tr>
@@ -57,7 +57,7 @@
     </tbody>
   </table>
   <p>While you draw, the board refuses two links outright: an exec pin into a data pin (<em>exec links to exec, data to data</em>) and a node into itself (<em>a node cannot feed itself</em>). Everything else you can draw, and the list above tells you what is wrong with it.</p>
-  <h3 id="board">Warnings as you draw <span class="dev">studio 0.4.2.1</span></h3>
+  <h3 id="board">Warnings as you draw</h3>
   <p>Some mistakes would load and quietly do the wrong thing. The graph window names the node and says why, in red with the other problems, as you draw:</p>
   <ul>
     <li><b>A despawn after a prop is touched or used.</b> A touch or a use carries two things: the player who did it (<code>entity</code>) and the prop (<code>prop</code>, or <code>target</code> for a trigger word). <span class="ui">do despawn</span> left at its default takes <code>entity</code>, the player, whom a script cannot remove: the engine refuses, and the run stops there. So in a run that only ever starts from a prop, the studio now writes it as the prop, and its <code>who?</code> reads <span class="ui">target -- the prop (default here)</span>. An unlinked <a href="../reference/graph-nodes.html#remove"><code>remove</code></a> after one <code>when_prop_touched</code> or <code>when_prop_used</code> takes the prop too. Where it would still take a player (a run that also starts from something else), the window says so: set <code>who?</code> to <code>target</code>, or link what to remove into <code>entity</code>.</li>
@@ -98,7 +98,7 @@
       <tr><td><code>[graphs] records: could not save store 'records': …</code></td><td>A <code>save_vars</code> could not write.</td></tr>
     </tbody>
   </table>
-  <h3 id="after-play">Back from Play: the game's errors in the graph window <span class="dev">studio 0.4.2.1</span></h3>
+  <h3 id="after-play">Back from Play: the game's errors in the graph window</h3>
   <p>When you come back from a play-test, what the game said about a graph is in its window too, with the other problems, naming the node that failed: <em>node 'x': in the last play-test, the game said: …</em> (and <em>(×12)</em> when it said so twelve times). You no longer have to open the Play log to find it. The line goes once you change that node, and all of them go at the next Play.</p>
   <div class="callout"><p>The run-time lines (<em>skipped</em>, <em>acted on no player</em>, <em>stopped -- a loop?</em>) are said <b>once</b> per node, so the log is not flooded, and the Play log sheet lists each of them under <span class="ui">what looks wrong</span>. The load line (<em>12 nodes, 14 links</em>) is not a failure, so it is only in the full <code>play-server.log</code>.</p></div>
 

@@ -7,6 +7,15 @@ anything not released yet is under **Unreleased**.
 
 ### Changed
 
+- **Studio 0.4.3 is stable** (on engine 0.2.4). What the pages badged as
+  development-only (studio 0.4.2.1 to 0.4.2.12) is in it, so those badges are
+  gone. Version examples name 0.4.3 and 0.4.3.1.
+- **For studio 0.4.3.1 (dev):** the Camera panel's "turns by itself" has
+  three choices, including "on a lead", and `auto_turn = 2` in Lua. The stable
+  studio's switch is noted.
+- **From 0.4.2.12**, now stable:
+  - "tutorials" on Home, and the tutorials link in the map's Help;
+  - the warnings for a module saved by a newer studio, and for a second tab.
 - **For the development versions** (studio 0.4.2.11, engine 0.2.3.11). A
   "dev" badge marks what only the development releases have, which the stable
   studio 0.4.2 doesn't yet.

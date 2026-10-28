@@ -567,7 +567,7 @@ DNP_LUA_API.groups.push({
     },
     {
       id: 'dnp.set_sector_effect', sig: "dnp.set_sector_effect(sector, kind [, settings | false])",
-      doc: "Turns an effect on in a room: weather (`'rain'`, `'snow'`, `'dust'`, `'embers'` or `'fog'`) or a `'fill'`, which tints the room's whole volume (water you can see into). `settings` is a table of the same keys the map editor's effects take; leave one out and it keeps its default. Pass `false` to switch that effect off.\n\nKeys: `color`, `alpha`, `bottom`, `top`, `glow` for every kind; `density` for all but fill; `speed`, `windx`, `windy`, `sway`, `size`, `length` for the particle kinds; `falloff`, `noise`, `drift` for fog; `surface` for fill (0 to 1, how much of the picture on the fill's top shows; from the release after studio 0.4.2.11).",
+      doc: "Turns an effect on in a room: weather (`'rain'`, `'snow'`, `'dust'`, `'embers'` or `'fog'`) or a `'fill'`, which tints the room's whole volume (water you can see into). `settings` is a table of the same keys the map editor's effects take; leave one out and it keeps its default. Pass `false` to switch that effect off.\n\nKeys: `color`, `alpha`, `bottom`, `top`, `glow` for every kind; `density` for all but fill; `speed`, `windx`, `windy`, `sway`, `size`, `length` for the particle kinds; `falloff`, `noise`, `drift` for fog; `surface` for fill (0 to 1, how much of the picture on the fill's top shows).",
       args: [
         { name: 'sector', type: 'integer', doc: 'The room number.' },
         { name: 'kind', type: 'string', doc: "'rain', 'snow', 'dust', 'embers', 'fog' or 'fill'." },
@@ -791,7 +791,7 @@ DNP_LUA_API.groups.push({
   entries: [
     {
       id: 'dnp.camera', sig: 'dnp.camera(e, { distance, pitch, yaw, … })',
-      doc: "Changes how the camera behaves for player `e`. Name only the fields you want to change; the rest stay as they are.\n\nFields: `distance` (units from the player), `pitch` (turns above horizontal; 0.125 is 45°), `yaw` (turns around the player), `lock_yaw` and `lock_zoom` (1: the player may not turn or zoom it; 0: may), `smoothing`, `max_accel` (0 = no limit), `lead` (units ahead of the player), `lead_smoothing`, `lead_velocity` (extra lead per unit of forward speed), `deadzone_x`, `deadzone_y`.\n\nThe automatic camera: `auto_turn` (1: it swings round behind the player by itself, the short way, unless they turned it themselves lately; never in first person or with the yaw locked), `auto_delay` (seconds after the player turns it before it swings back; 2 by default), `auto_rate` (how fast it swings), `collide` (1: walls pull it in front of them, and it eases back out to its `distance`).\n\nBy height: `camera_height` (units above the player's feet the camera sits; `distance` is then how far behind, and the angle down follows from the two; negative goes back to `pitch`), `aim_height` (units above the feet it looks at and swings round: the head rather than the feet).\n\nPaths and shake: `cam_mode` (0 follow, 1 track, 2 flythrough, 3 auto), `cam_path` (the tag of a camera path in the map; negative for none), `cam_path_speed` (units a second along it, may be negative), `cam_path_attach`, `cam_path_blend`, `cam_shake` (strength; sending it shakes once, and a new shake replaces a running one), `cam_shake_time` (milliseconds).",
+      doc: "Changes how the camera behaves for player `e`. Name only the fields you want to change; the rest stay as they are.\n\nFields: `distance` (units from the player), `pitch` (turns above horizontal; 0.125 is 45°), `yaw` (turns around the player), `lock_yaw` and `lock_zoom` (1: the player may not turn or zoom it; 0: may), `smoothing`, `max_accel` (0 = no limit), `lead` (units ahead of the player), `lead_smoothing`, `lead_velocity` (extra lead per unit of forward speed), `deadzone_x`, `deadzone_y`.\n\nThe automatic camera: `auto_turn` (1: it swings round behind the player by itself, the short way, unless they turned it themselves lately; 2, from studio 0.4.3.1 and engine 0.2.4.1: on a lead, turning with the way they move, never round behind them; never in first person or with the yaw locked), `auto_delay` (seconds after the player turns it before it swings back; 2 by default), `auto_rate` (how fast it swings), `collide` (1: walls pull it in front of them, and it eases back out to its `distance`).\n\nBy height: `camera_height` (units above the player's feet the camera sits; `distance` is then how far behind, and the angle down follows from the two; negative goes back to `pitch`), `aim_height` (units above the feet it looks at and swings round: the head rather than the feet).\n\nPaths and shake: `cam_mode` (0 follow, 1 track, 2 flythrough, 3 auto), `cam_path` (the tag of a camera path in the map; negative for none), `cam_path_speed` (units a second along it, may be negative), `cam_path_attach`, `cam_path_blend`, `cam_shake` (strength; sending it shakes once, and a new shake replaces a running one), `cam_shake_time` (milliseconds).",
       args: [
         { name: 'e', type: 'entity', doc: 'The player.' },
         { name: 'fields', type: 'table', doc: 'Plain numbers (not fx); kept to a thousandth.' }
@@ -1583,7 +1583,6 @@ DNP_LUA_API.groups.push({
           { name: 'name', type: 'string', doc: "One of the module's states. `\"default\"` is always on, and naming it is an error, as any unknown name is." },
           { name: 'on', type: 'boolean', optional: true, doc: 'true (the default) or false.' }
         ],
-        notes: ['New after studio 0.4.2.11: in the next release.'],
         returns: 'nothing',
         example: 'function on_prop_use(e, p)\n  if p:name() == "glider" then\n    e:set_movement_state_enabled("glide", true)\n  end\nend',
         see: ['entity.movement_state_enabled', 'entity.set_move_enabled']
@@ -1595,7 +1594,6 @@ DNP_LUA_API.groups.push({
           { name: 'name', type: 'string', doc: "One of the module's moves. Any other name is an error." },
           { name: 'on', type: 'boolean', optional: true, doc: 'true (the default) or false.' }
         ],
-        notes: ['New after studio 0.4.2.11: in the next release.'],
         returns: 'nothing',
         example: 'e:set_move_enabled("dash", true)',
         see: ['entity.move_enabled', 'entity.start_move']
@@ -1604,7 +1602,6 @@ DNP_LUA_API.groups.push({
         id: 'entity.movement_state_enabled', sig: 'e:movement_state_enabled(name) → boolean | nil', where: 'both',
         doc: "Whether one of the module's states is switched on for this body now. A switch made this tick shows from the next. `\"default\"` is always on. `nil` for a handle that is gone.",
         args: [{ name: 'name', type: 'string', doc: "One of the module's states, or `\"default\"`." }],
-        notes: ['New after studio 0.4.2.11: in the next release.'],
         returns: 'boolean, or nil',
         see: ['entity.set_movement_state_enabled']
       },
@@ -1612,7 +1609,6 @@ DNP_LUA_API.groups.push({
         id: 'entity.move_enabled', sig: 'e:move_enabled(name) → boolean | nil', where: 'both',
         doc: "Whether one of the module's layered moves is switched on for this body now. A switch made this tick shows from the next. `nil` for a handle that is gone.",
         args: [{ name: 'name', type: 'string', doc: "One of the module's moves." }],
-        notes: ['New after studio 0.4.2.11: in the next release.'],
         returns: 'boolean, or nil',
         example: 'if not e:move_enabled("dash") then dnp.hud(e, { hint = "Find the boots" }) end',
         see: ['entity.set_move_enabled']

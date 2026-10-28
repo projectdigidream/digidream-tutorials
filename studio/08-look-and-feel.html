@@ -40,7 +40,7 @@
     </tbody>
   </table>
   <p>Every kind but none can be <span class="ui">turned, degrees</span>. The pictures are textures, the module's own or the app's, picked with their thumbnails. A sky with a missing picture is said here and on Home. The form's last line shows the <code>module.txt</code> line it writes, such as <code>sky default strip …</code>.</p>
-  <p>The preview is the game's own sky. Drag it to look round; it says which way you are facing. <span class="dev">studio 0.4.2.1</span> It shows the picture as soon as the page opens (it stayed black until dragged).</p>
+  <p>The preview is the game's own sky. Drag it to look round; it says which way you are facing. It shows the picture as soon as the page opens (it stayed black until dragged).</p>
 
   <div class="callout"><p><b>In Gem Hollow</b> the module's sky is a <b>strip</b> of rolling hills and clouds, the texture <code>SKYHILLS</code> (composed from Kenney's art in qPainter), set to <span class="ui">times round the horizon</span> 2 and <span class="ui">height (how far up the sky)</span> 0.7. The form's last line shows what it writes: <code>sky default strip SKYHILLS repeat 2 height 0.7</code>. Neither map has its own sky; every outdoor room has its ceiling open to it.</p></div>
 
@@ -106,9 +106,9 @@
     <li>Drag the panel to move it (it re-anchors like a HUD element) and its edges to size it. Drag a widget or decor to place it, and a widget's corner to size it. Arrow keys nudge, and <kbd>Delete</kbd> removes.</li>
     <li>Zoom with a pinch, the wheel, or the bar: <span class="ui">−</span>, <span class="ui">+</span>, the panel button (zoom onto the panel) and <span class="ui">⤢</span> (the whole screen).</li>
     <li>The panel's details include its <span class="ui">style</span> (with a button beside it to go to Style), <span class="ui">duplicate</span> and <span class="ui">delete panel</span>.</li>
-    <li>Decor can be shown on touch screens only, or with a keyboard and mouse only. <span class="dev">studio 0.4.2.1</span> A phone frame draws the touch screen's, and a desktop frame the computer's, as the game does.</li>
+    <li>Decor can be shown on touch screens only, or with a keyboard and mouse only. A phone frame draws the touch screen's, and a desktop frame the computer's, as the game does.</li>
   </ul>
-  <h3 id="controls-panel">A new module's controls panel <span class="dev">studio 0.4.2.1</span></h3>
+  <h3 id="controls-panel">A new module's controls panel</h3>
   <p>A new module has one panel already, <code>controls</code>. Its <code>welcome</code> game graph opens it near the top of the screen for ten seconds as the game starts: the keyboard's keys on a computer, the on-screen controls on a touch screen. A player can close it with its ×. Its words and look are edited here, like any panel. To show nothing, delete the panel, or the <code>welcome</code> graph in <b>Graphs</b>. The subtitle line stays free for the game's own words.</p>
   <div class="callout"><p><b>In Gem Hollow</b> there are two panels. <code>title</code> (titled <em>GEM HOLLOW</em>, centred, modal, not closeable) has the label <code>tagline</code>, <em>"Three levers. Three keys. One star."</em>, and the buttons <code>play</code> and <code>quit</code>. <code>theend</code> has <code>again</code> and <code>quit</code>. The <code>menu</code> map's graph opens <code>title</code> and answers its buttons; the <code>ending</code> graph does the same for <code>theend</code> (see <a href="06-graphs.html#gem-hollow">Graphs</a>).</p></div>
   <h3>Try</h3>
@@ -155,7 +155,7 @@
   <h2 id="weather">Weather and fog</h2>
   <p>Rain, snow, dust, embers and fog belong to a <b>room</b>. In the map editor, select a room. Its inspector has a <b>weather and fog</b> section with a chip for each kind, each with its icon:</p>
   <p><span class="ui">+ rain</span> <span class="ui">+ snow</span> <span class="ui">+ dust</span> <span class="ui">+ embers</span> <span class="ui">+ fog</span> <span class="ui">+ fill</span></p>
-  <div class="callout"><p><span class="dev">studio 0.4.2.9</span> Weather can also have a volume of its own: an <b>effect area</b>, laid over any rooms and across their walls, such as a fog bank across a doorway. <span class="dev">studio 0.4.2.11</span> <span class="ui">+ fill</span> fills a volume with a colour, for water, lava or coloured glass, and an effect area can be water the player swims in. All of it is in <a href="13-effect-areas-and-water.html">Effect areas, water and fills</a>.</p></div>
+  <div class="callout"><p>Weather can also have a volume of its own: an <b>effect area</b>, laid over any rooms and across their walls, such as a fog bank across a doorway. <span class="ui">+ fill</span> fills a volume with a colour, for water, lava or coloured glass, and an effect area can be water the player swims in. All of it is in <a href="13-effect-areas-and-water.html">Effect areas, water and fills</a>.</p></div>
   <p>A room can have as many as it wants, such as rain and a low fog together. Each becomes a card with its settings and a <span class="ui">✕</span> to remove it.</p>
   <ul>
     <li><b>An empty field is the engine's default</b>, shown greyed as the placeholder. The studio reads the defaults from the engine itself, so they are always the game's.</li>
@@ -180,8 +180,8 @@
     <li><p>Press <span class="ui">+ fog</span>, and set <code>top</code> to 1 for a low mist.</p></li>
     <li><p>Press <span class="ui">↺</span> beside <code>windx</code> to go back to the default.</p></li>
   </ol>
-  <div class="callout tip"><p>A graph can change a room's weather or fog while the game runs, with the <code>set_sector_effect</code> node in the node menu's <em>move the map</em> group. <span class="dev">studio 0.4.2.11</span> It takes a <code>fill</code> too, and an <code>alpha</code>.</p></div>
-  <p><span class="dev">studio 0.4.2.11</span> Fog and snow can get in the way while you build. On a map with effects, the <span class="ui">FX</span> button beside <span class="ui">PLAN</span> / <span class="ui">GAME</span>, or <kbd>X</kbd>, hides them in the map view and shows them again. The game draws them all the same.</p>
+  <div class="callout tip"><p>A graph can change a room's weather or fog while the game runs, with the <code>set_sector_effect</code> node in the node menu's <em>move the map</em> group. It takes a <code>fill</code> too, and an <code>alpha</code>.</p></div>
+  <p>Fog and snow can get in the way while you build. On a map with effects, the <span class="ui">FX</span> button beside <span class="ui">PLAN</span> / <span class="ui">GAME</span>, or <kbd>X</kbd>, hides them in the map view and shows them again. The game draws them all the same.</p>
 
   <h2>Animated textures</h2>
   <p>A wall, floor or ceiling texture can be animated: a sprite sheet of frames. When you import a PNG in <b>Textures</b>, the sheet dialog cuts it into frames and sets how many play per second. A picture exactly twice as wide as tall is taken as a still picture, because that is the shape of a sky strip or a panorama; frames side by side are guessed from three up. A texture's card opens it again: <span class="ui">animate…</span> on a still picture, <span class="ui">cut &amp; speed…</span> on a sheet. Drawing frames and skies is covered in the Textures track: <a href="../textures/04-frames-and-skies.html">Animation and skies</a>.</p>

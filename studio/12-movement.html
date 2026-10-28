@@ -23,7 +23,7 @@
     <b>Time</b><span>35 minutes</span>
     <b>Needs</b><span>a module with a map (<a href="02-first-map.html">Your first map</a>); for swimming, a pool (<a href="13-effect-areas-and-water.html">Effect areas, water and fills</a>)</span>
   </div>
-  <div class="callout"><p>Most of this page is in the development releases of the studio (Nightly), studio 0.4.2.7 to 0.4.2.11. Each part is marked with the first release that has it.</p></div>
+  <div class="callout"><p>Everything on this page is new in studio 0.4.3.</p></div>
 
   <h2>Two places: moves and movement</h2>
   <p>Open <b>Player</b> in the sidebar's <b>Gameplay</b> group. Two of its tabs are about moving, and they do different things:</p>
@@ -31,21 +31,21 @@
     <thead><tr><th>Tab</th><th>What it is</th><th>For</th></tr></thead>
     <tbody>
       <tr><td><span class="ui">moves</span></td><td>The player's <b>settings</b>: numbers and switches the engine's own movement reads.</td><td>a higher jump, a double jump, a faster run, climbing, a dash, ledge grab</td></tr>
-      <tr><td><span class="ui">movement</span> <span class="dev">studio 0.4.2.11</span></td><td>The module's own <b>movement states</b>, the <b>ways</b> between them, <b>meters</b> and <b>layered moves</b>.</td><td>swimming, sliding, gliding, a stun; breath, stamina; a dash, a jump pad</td></tr>
+      <tr><td><span class="ui">movement</span></td><td>The module's own <b>movement states</b>, the <b>ways</b> between them, <b>meters</b> and <b>layered moves</b>.</td><td>swimming, sliding, gliding, a stun; breath, stamina; a dash, a jump pad</td></tr>
     </tbody>
   </table>
   <p>The <span class="ui">moves</span> tab is covered in <a href="07-workshops.html#player">Monsters, weapons, player</a>: each setting is switched on to set it, for every map or one map. This page covers its new settings, then the <span class="ui">movement</span> tab.</p>
 
   <h2 id="settings">The player's new settings</h2>
-  <h3>Jumping <span class="dev">studio 0.4.2.7</span></h3>
+  <h3>Jumping</h3>
   <p>Under <b>jumping</b> on the <span class="ui">moves</span> tab:</p>
   <ul>
     <li><code>coyote_time</code> (0.1 s): after walking off an edge, the ground jump is still there this long, so a jump pressed a moment late still works. Before, it lasted the whole fall. After it, a body that fell rather than jumped has only the air jumps that <code>max_jumps</code> leaves.</li>
-    <li><span class="dev">studio 0.4.2.8</span> <code>variable_jump</code> (off): a jump is as high as JUMP is held. Letting go while the jump still rises cuts it short, so a tap is a short hop and a held press the full jump. Double jumps and wall jumps follow it too.</li>
+    <li><code>variable_jump</code> (off): a jump is as high as JUMP is held. Letting go while the jump still rises cuts it short, so a tap is a short hop and a held press the full jump. Double jumps and wall jumps follow it too.</li>
     <li><code>jump_release_keep</code> (0.5): with <code>variable_jump</code> on, how much of the rising speed letting go keeps. 1 cuts nothing; 0 stops the jump dead.</li>
   </ul>
 
-  <h3 id="ledge">Ledge grab <span class="dev">studio 0.4.2.7</span></h3>
+  <h3 id="ledge">Ledge grab</h3>
   <p>Under <b>climbing</b>:</p>
   <ul>
     <li><code>ledge_grab</code> (off): falling, the player catches the edge of a higher floor that a jump just missed, on any side, climbable or not. Rising past a ledge, a jump goes on by: it is caught on the way down.</li>
@@ -58,9 +58,9 @@
     <li><b>JUMP with the stick away</b> leaps off.</li>
     <li><b>Pushing away</b>, or <b>CROUCH</b>, lets go.</li>
   </ul>
-  <p>Two animation conditions draw it, on the <span class="ui">skin</span> tab under <b>which state draws which condition</b>: <code>hang</code>, while hanging (it falls back to <code>climb</code>'s state), and <span class="dev">studio 0.4.2.8</span> <code>hop</code>, for the small hop and the pull-up (it falls back to <code>jump</code>'s).</p>
+  <p>Two animation conditions draw it, on the <span class="ui">skin</span> tab under <b>which state draws which condition</b>: <code>hang</code>, while hanging (it falls back to <code>climb</code>'s state), and <code>hop</code>, for the small hop and the pull-up (it falls back to <code>jump</code>'s).</p>
 
-  <h3 id="change-setting">Changing a setting from a graph <span class="dev">studio 0.4.2.8</span></h3>
+  <h3 id="change-setting">Changing a setting from a graph</h3>
   <p>The graph node <b>change player setting</b> (<code>change_player_setting</code>, in the node menu's <span class="ui">do to a thing</span>) changes one of these settings while the game runs: a jump potion, a level where climbing is learnt.</p>
   <ul>
     <li><code>setting</code>: chosen from a list of exactly the player's settings, <code>coyote_time</code>, <code>ledge_grab</code> and <code>variable_jump</code> among them.</li>
@@ -70,7 +70,7 @@
   </ul>
   <p>The player's own device predicts the change at once, so the stronger jump is there on the very next press. See <a href="../graphs/02-variables-and-numbers.html#change-setting">Variables, numbers and saving</a>.</p>
 
-  <h2 id="states">Movement states <span class="dev">studio 0.4.2.11</span></h2>
+  <h2 id="states">Movement states</h2>
   <p>A player is always in exactly one <b>movement state</b>. The first is <code>default</code>: the engine's own walking, jumping and climbing, as it always was. A module can add up to 8 states of its own. Most of them are the same physics with other numbers: sliding is running with little friction, gliding is falling with little gravity, swimming is moving in 3D with a lift.</p>
   <p>Ways in and out (the studio calls them <b>ways</b>) take a body from one state to another when their conditions hold: <em>default → swim when the water reaches the waist and you are falling</em>. Everything is predicted: the player's own device runs the same rules as the server, so a slide feels instant even on a slow connection.</p>
 
@@ -121,7 +121,7 @@
         <li><b>held still</b>: the stick does nothing (stunned, frozen, a cutscene).</li>
       </ul></li>
     <li>Its numbers: <span class="ui">top speed</span>, <span class="ui">speeds up</span>, <span class="ui">slows down</span> (in water, the drag), <span class="ui">gravity ×</span> (a share of the world's gravity: 1 on foot, 0.3 in water), <span class="ui">floats up</span> (the lift in water, while it is at the waist or above) and <span class="ui">jump</span> (for a way that says <b>jump</b>). An empty box is as the player usually moves, from the <span class="ui">moves</span> tab. <span class="ui">what the numbers mean</span> says so in full.</li>
-    <li>Its flags, each a chip: <span class="ui">no jumping</span>, <span class="ui">no dash</span>, <span class="ui">no attacking</span>, <span class="ui">no using</span>, <span class="ui">no crouching</span>, <span class="ui">weapon put away</span>, <span class="ui">counts as ground</span> (it gives back the jumps and the coyote time, as landing does), <span class="ui">can't be hurt</span>, and <span class="dev">next release</span> <span class="ui">starts switched off</span> (see <a href="#switching">Switching them on and off</a>).</li>
+    <li>Its flags, each a chip: <span class="ui">no jumping</span>, <span class="ui">no dash</span>, <span class="ui">no attacking</span>, <span class="ui">no using</span>, <span class="ui">no crouching</span>, <span class="ui">weapon put away</span>, <span class="ui">counts as ground</span> (it gives back the jumps and the coyote time, as landing does), <span class="ui">can't be hurt</span>, and <span class="ui">starts switched off</span> (see <a href="#switching">Switching them on and off</a>).</li>
     <li><span class="ui">delete this state</span>. The ways and rates that used it go with it, and the status line says how many. Undo brings them back.</li>
   </ul>
 
@@ -163,7 +163,7 @@
     <li><span class="ui">which way</span>: <code>facing</code> or <code>back</code> (on the level, fixed as it starts), <code>up</code> or <code>down</code>. <span class="ui">speed</span> and <span class="ui">seconds</span>.</li>
     <li><span class="ui">priority</span>: one move runs on the level and one up or down at a time. A new one replaces a running one on its way only at a priority no lower.</li>
     <li><span class="ui">costs</span> a meter, and <span class="ui">how much</span>. Too dear, it does not start and nothing is paid.</li>
-    <li><span class="dev">next release</span> <span class="ui">at the start</span>: switched on, or switched off (see <a href="#switching">Switching them on and off</a>).</li>
+    <li><span class="ui">at the start</span>: switched on, or switched off (see <a href="#switching">Switching them on and off</a>).</li>
     <li>It <b>starts by itself when</b> its conditions hold. With none, it waits for a way's <b>start a move</b> or a graph.</li>
   </ul>
   <p>Moves do not run while climbing or on a rope: those hold the body themselves.</p>
@@ -171,7 +171,7 @@
   <h3 id="anim">Drawing a state</h3>
   <p>A state's <span class="ui">animation</span> is a name, such as <code>swim</code>. Once a state has one, the <span class="ui">skin</span> tab lists it under <b>which state draws which condition</b>, as <em>swim (movement state)</em>: give it the number of a state of the player's picture, and the player is drawn with it while swimming. Left at <em>by its motion</em>, the player is drawn as the motion says (a swimmer would otherwise look as if falling).</p>
 
-  <h2 id="switching">Switching them on and off <span class="dev">next release</span></h2>
+  <h2 id="switching">Switching them on and off</h2>
   <p>A state or a move can start <b>switched off</b>, for a graph to switch on for one player: a glide found on a ledge, a dash learnt, swimming taken away in a cursed level.</p>
   <ul>
     <li>A state: the chip <span class="ui">starts switched off</span> among its flags.</li>
@@ -208,7 +208,7 @@
     <li><p>If you are in the app, press <span class="ui">Play</span>. Walk into the pool: you wade, then swim. Hold CROUCH to dive, watch the bar drain, and come up with JUMP.</p></li>
   </ol>
 
-  <h3>A glide found on a ledge <span class="dev">next release</span></h3>
+  <h3>A glide found on a ledge</h3>
   <ol class="steps">
     <li><p>On the <span class="ui">movement</span> tab, open <span class="ui">add from a recipe</span> and press <span class="ui">glide (hold jump while falling)</span>.</p></li>
     <li><p>Tap the <code>glide</code> line, and tap the chip <span class="ui">starts switched off</span>. A hint says nothing switches it on.</p></li>

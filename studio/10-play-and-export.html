@@ -34,11 +34,11 @@
   <p>In order, Play:</p>
   <ol>
     <li><b>bakes</b> every stale source (a texture, sprite or track changed since its last bake; see <a href="09-plugins.html">Plugins</a>);</li>
-    <li><b>writes</b> the module into the game's files on the device; <span class="dev">studio 0.4.2.1</span> a map you deleted is taken out of them, so the game no longer loads it;</li>
+    <li><b>writes</b> the module into the game's files on the device; a map you deleted is taken out of them, so the game no longer loads it;</li>
     <li><b>launches</b> the game on that map. The server starts every other map of the module too, so a graph's <code>change_map</code> finds the map it names.</li>
   </ol>
   <p>If the module does not bake, nothing is launched. Play also refuses to start while a graph has problems.</p>
-  <p><span class="dev">studio 0.4.2.1</span> When the game itself finds a graph at fault while you play, the studio shows what the game said on that graph's board when you come back, at the node that failed, not only in the Play log. The line goes once you change that node, and at the next Play. See <a href="06-graphs.html">Graphs</a>.</p>
+  <p>When the game itself finds a graph at fault while you play, the studio shows what the game said on that graph's board when you come back, at the node that failed, not only in the Play log. The line goes once you change that node, and at the next Play. See <a href="06-graphs.html">Graphs</a>.</p>
   <h3>The progress panel</h3>
   <p>From the moment you press Play until the game appears, a full-screen panel shows what is happening, titled <em>Play: <i>module</i> · <i>map</i></em>. It has a bar and these steps, each ticked with the time it took:</p>
   <ol>
@@ -51,11 +51,11 @@
   <p>If a step fails, the panel stays on screen: the step is marked ✗, the line under the bar says <em>"<i>step</i> failed"</em>, and the error is shown. Two buttons take you on: <span class="ui">play log</span> opens the Play log (below), and <span class="ui">back to the studio</span> closes the panel.</p>
   <h3>Coming back</h3>
   <p>The game's <b>◀ Studio</b> link returns you to the map you were testing, with the view as you left it. On Android, the phone's <b>Back</b> does the same. The studio remembers where you were for an hour; after that it opens on Home as usual.</p>
-  <p><span class="dev">studio 0.4.2.1</span> Undo survives the trip: the map's undo and the module's are as you left them, so a change that went wrong in the game is one <kbd>⌘Z</kbd> away.</p>
+  <p>Undo survives the trip: the map's undo and the module's are as you left them, so a change that went wrong in the game is one <kbd>⌘Z</kbd> away.</p>
 
-  <h3 id="colliders">Play shows colliders <span class="dev">studio 0.4.2.7</span></h3>
+  <h3 id="colliders">Play shows colliders</h3>
   <p>To see why something hits or misses, let Play draw the colliders: in the map editor, <span class="ui">More</span> → <span class="ui">Play shows colliders: off (turn on)</span>. The status line says <em>"Play shows the colliders over the game (F4 in the game turns them off)"</em>. Every play-test then draws each body's collision cylinder over the game, in a colour for what it is: the player green, solid bodies orange, and props that nothing collides with grey. In the game, <kbd>F4</kbd> turns them off and on.</p>
-  <p>The switch is this device's and stays as you leave it; the menu then says <span class="ui">Play shows colliders: on (turn off)</span>. The Android studio has it from 0.4.2.7, the desktop studio from 0.4.2.8.</p>
+  <p>The switch is this device's and stays as you leave it; the menu then says <span class="ui">Play shows colliders: on (turn off)</span>.</p>
 
   <h3>The Play log</h3>
   <p>On a phone there is no console, so a play-test that does not start says why in the studio. Each Play starts three log files afresh, in the game's <code>logs/</code> folder:</p>

@@ -23,9 +23,9 @@
     <b>Time</b><span>25 minutes</span>
     <b>Needs</b><span>a map with a room or two (<a href="02-first-map.html">Your first map</a>); weather in one room is in <a href="08-look-and-feel.html#weather">Sky, screens and weather</a></span>
   </div>
-  <div class="callout"><p>Everything on this page is in the development releases of the studio (Nightly), from studio 0.4.2.9 on. The stable studio 0.4.2 has weather and fog in single rooms only.</p></div>
+  <div class="callout"><p>Everything on this page is new in studio 0.4.3. Before it, weather and fog belonged to single rooms only.</p></div>
 
-  <h2 id="areas">Effect areas <span class="dev">studio 0.4.2.9</span></h2>
+  <h2 id="areas">Effect areas</h2>
   <p>Weather in a room is the room's: it fills that room and stops at its walls. An <b>effect area</b> is a volume of its own, laid over anything: rooms, platforms, other effect areas, across walls and doorways. It has:</p>
   <ul>
     <li><b>no floor, ceiling or walls</b>. It needs no textures and draws nothing but its effects;</li>
@@ -79,7 +79,7 @@
     <li><p>If you are in the app, press <span class="ui">Play</span> and walk into the fog.</p></li>
   </ol>
 
-  <h2 id="water">Water <span class="dev">studio 0.4.2.11</span></h2>
+  <h2 id="water">Water</h2>
   <p>Switch on <span class="ui">liquid (water)</span> in an effect area's panel, and it is water. Its <b>top is the surface</b>. Each tick the game measures how deep a body stands in it:</p>
   <table>
     <thead><tr><th>Depth</th><th>When</th></tr></thead>
@@ -94,7 +94,7 @@
   <p>Water draws only its effects, like any effect area: on its own it is invisible. To see it, give it a fill.</p>
   <div class="callout tip"><p>Until a map has water, <b>Player</b> → <span class="ui">movement</span> says so: <em>"No map has water yet: on a map, draw an effect area and switch on "liquid (water)" in its panel."</em></p></div>
 
-  <h2 id="fills">Filled volumes <span class="dev">studio 0.4.2.11</span></h2>
+  <h2 id="fills">Filled volumes</h2>
   <figure class="shot" data-src="../assets/shots/studio-water-fill.png" data-alt="A pool in the game view: an effect area made water, with a blue fill and a water picture on its surface, and its fill card open in the panel"
     data-hotspots='[{"x":48.6,"y":44.4,"t":"The pool","d":"what is seen through it is tinted; its top wears the surface picture"},{"x":76,"y":20,"t":"fill","d":"its colour, how much it hides, its band, its glow, and how much of the surface picture shows"},{"x":80,"y":60,"t":"its surface","d":"the picture on its top, and the light that lights it"},{"x":45,"y":72,"t":"The outline","d":"the effect area is larger than the pit; the part over the floor is under it"}]'>
     <figcaption>A pool in the game view. The pit is a room with its floor lowered; an effect area over it is water, with a fill and <code>FWATER1</code> on its surface.</figcaption>
@@ -107,7 +107,7 @@
       <tr><td><code>alpha</code></td><td>0 to 1: how much of what is behind it the body hides</td><td>0.5</td></tr>
       <tr><td><code>bottom</code>, <code>top</code></td><td>the band it fills, up from the bottom</td><td>0, the top</td></tr>
       <tr><td><code>glow</code></td><td>0: lit by the sector's light; 1: its own light, for lava</td><td>0</td></tr>
-      <tr><td><code>surface</code> <span class="dev">next release</span></td><td>0 to 1: how much of the surface picture shows</td><td>1</td></tr>
+      <tr><td><code>surface</code></td><td>0 to 1: how much of the surface picture shows</td><td>1</td></tr>
     </tbody>
   </table>
   <p>As with the other effects, an empty field is the engine's default, shown greyed, and a value you set is marked with •. A fill is a look and nothing else: the volume a body swims in is the liquid's, not the fill's.</p>
@@ -119,18 +119,18 @@
     <li><span class="ui">light</span>: the light that lights the fill and its picture, unless the fill's <code>glow</code> is 1.</li>
     <li><b>surface pattern</b>: the picture's turn, shift, size and how it is painted, as a ceiling's are.</li>
   </ul>
-  <p>How much of the picture shows is the fill's own <code>surface</code>, in its card. <span class="dev">next release</span> Before, the surface had a <span class="ui">see-through</span> row of its own; a fill that used it is folded into <code>surface</code> and looks the same.</p>
+  <p>How much of the picture shows is the fill's own <code>surface</code>, in its card. Before, the surface had a <span class="ui">see-through</span> row of its own; a fill that used it is folded into <code>surface</code> and looks the same.</p>
   <div class="callout"><p>A fill also works in an ordinary room. Give a room <span class="ui">+ fill</span> with <code>top</code> 1 for a flooded floor. Its top is then plain colour: a room's ceiling picture is its ceiling, not the water's.</p></div>
 
-  <h2 id="fx">Hiding effects while you build <span class="dev">studio 0.4.2.11</span></h2>
+  <h2 id="fx">Hiding effects while you build</h2>
   <p>Fog and snow get in the way of placing corners. On a map that has effects, an <span class="ui">FX</span> button sits beside <span class="ui">PLAN</span> / <span class="ui">GAME</span>. Press it, or <kbd>X</kbd>, to hide the sector effects in the map view, and again to show them. It is struck through while they are hidden, and the device remembers your choice. The game draws them all the same.</p>
 
   <h2 id="runtime">Changing them while the game runs</h2>
-  <p>The <code>set_sector_effect</code> node, in the node menu's <span class="ui">move the map</span> group, starts or stops an effect in a sector while the game runs. Its <code>effect</code> is <code>rain</code>, <code>snow</code>, <code>dust</code>, <code>embers</code>, <code>fog</code> or, from studio 0.4.2.11, <code>fill</code>. With <code>on</code> off it takes the effect away. Its settings:</p>
+  <p>The <code>set_sector_effect</code> node, in the node menu's <span class="ui">move the map</span> group, starts or stops an effect in a sector while the game runs. Its <code>effect</code> is <code>rain</code>, <code>snow</code>, <code>dust</code>, <code>embers</code>, <code>fog</code> or <code>fill</code>. With <code>on</code> off it takes the effect away. Its settings:</p>
   <ul>
     <li><code>density</code>: how thick it is. A fill has none.</li>
     <li><code>color</code>, as <code>#rrggbb</code>.</li>
-    <li><code>alpha</code> <span class="dev">studio 0.4.2.11</span>: 0 to 1, how much it hides.</li>
+    <li><code>alpha</code>: 0 to 1, how much it hides.</li>
   </ul>
   <p>What it leaves out takes the effect's defaults. The server keeps the change for whoever arrives later, and saves it with the level. A pool that turns to blood when a lever is pulled is one node: <code>set_sector_effect</code> on the pool's tag, <code>fill</code>, <code>color</code> <code>#8a1010</code>.</p>
 
@@ -141,7 +141,7 @@
     <li><p>Tap its <b>outline</b> to pick it. Set its <span class="ui">bottom</span> to the pit's floor, -3 (it may be already), and its <span class="ui">top</span> to -0.25: the surface, a little below the floor round the pit. The part of the area over the floor is under that floor, so the water shows only in the pit.</p></li>
     <li><p>Switch on <span class="ui">liquid (water)</span>. The line under it says how deep a body stands in it is now measured.</p></li>
     <li><p>Press <span class="ui">+ fill</span>. In its card, pick a blue for <code>color</code> and type 0.45 in <code>alpha</code>.</p></li>
-    <li><p>Under <b>its surface</b>, tap <span class="ui">surface picture</span>, type <code>WAT</code> in its filter, and pick <code>FWATER1</code>. Type 0.55 in the fill's <code>surface</code> <span class="dev">next release</span>.</p></li>
+    <li><p>Under <b>its surface</b>, tap <span class="ui">surface picture</span>, type <code>WAT</code> in its filter, and pick <code>FWATER1</code>. Type 0.55 in the fill's <code>surface</code>.</p></li>
     <li><p>Press <span class="ui">PLAN</span> to see it in the game view. Then press <kbd>X</kbd> twice, to hide the effects and bring them back.</p></li>
     <li><p>Now teach the player to swim in it: <a href="12-movement.html#swimming">How the player moves</a>.</p></li>
   </ol>

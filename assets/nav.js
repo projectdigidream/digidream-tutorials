@@ -10,7 +10,7 @@ window.DNP_NAV = [
       { file: 'studio/02-first-map.html', title: 'Your first map', kw: 'grid snap several rooms multi select copy paste duplicate mirror turn fx limits room tool corners rectangle floor ceiling light wall flags select' },
       { file: 'studio/03-placing-things.html', title: 'Placing things', kw: 'lit own light picture sheet png place palette spawn light monster prop facing dormant' },
       { file: 'studio/04-triggers.html', title: 'Triggers', kw: 'door lift switch teleport ambush exit crusher when if then' },
-      { file: 'studio/05-camera.html', title: 'Camera and cinematics', kw: 'camera path waypoint follow track flythrough lock' },
+      { file: 'studio/05-camera.html', title: 'Camera and cinematics', kw: 'behind the player turns by itself on a lead walls pull height camera path waypoint follow track flythrough lock' },
       { file: 'studio/06-graphs.html', title: 'Graphs', kw: 'blueprint node variable pin link scene' },
       { file: 'studio/07-workshops.html', title: 'Monsters, weapons, player', kw: 'monster editor weapon editor behaviour states sentences graph phase recipe preview whatever it is doing missiles arsenal swing looks body player skin size moves kit controls keys' },
       { file: 'studio/08-look-and-feel.html', title: 'Sky, screens and weather', kw: 'sky strip panorama cube screens hud panels style fog rain snow dust embers' },

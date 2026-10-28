@@ -38,7 +38,7 @@
 
   <h2 id="version">The language: Lua 5.1</h2>
   <p>A server runs <b>LuaJIT</b>, which speaks <b>Lua 5.1</b>. The JIT compiler is switched off: compiled code would slip past the instruction budget, and measured on real levels it made no difference, because scripts spend their time calling into the engine.</p>
-  <p><span class="dev">studio 0.4.2.9</span> The engine can also run its server inside a web page, for a single-player game played in the browser. LuaJIT cannot run there, so that server runs plain <b>Lua 5.1</b>. Write for Lua 5.1 alone and a script runs in both: no <code>goto</code>, no <code>ffi</code> and no <code>jit</code>. The engine's own scripts keep to the same rule.</p>
+  <p>The engine can also run its server inside a web page, for a single-player game played in the browser. LuaJIT cannot run there, so that server runs plain <b>Lua 5.1</b>. Write for Lua 5.1 alone and a script runs in both: no <code>goto</code>, no <code>ffi</code> and no <code>jit</code>. The engine's own scripts keep to the same rule.</p>
   <p>Lua tutorials on the web mostly teach 5.3 or 5.4. What is not there:</p>
   <table>
     <thead><tr><th>Newer Lua</th><th>In this engine</th></tr></thead>
