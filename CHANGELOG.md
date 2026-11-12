@@ -5,6 +5,8 @@ anything not released yet is under **Unreleased**.
 
 ## Unreleased
 
+## 0.1.1 -- 2026-11-12
+
 ### Changed
 
 - **Studio 0.4.3 is stable** (on engine 0.2.4). What the pages badged as
@@ -104,7 +106,7 @@ anything not released yet is under **Unreleased**.
   - Moving a module by its id, and "delete a module…".
   - A plugin editor's bar says when its changes are kept.
 
-  The playtest fixes are covered where their features are taught, and screenshots are retaken.
+  The fixes are covered where their features are taught, and screenshots are retaken.
 - **Graphs, engine 0.2.2:** a game graph hears deaths and hurts on any map. A
   worked example is the starter's death screen, and there is an exercise for
   your own. Advanced covers `mobs.hurt` taking the attacker, `e:swing()`,
